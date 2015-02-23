@@ -37,13 +37,13 @@ class BrowsingTest(TestCase):
         """ Test can view the credits page
         """
 
-        self._find_expected_content(path="/credits", msg="Credits")
+        self._find_expected_content(path="/credits/", msg="Credits")
 
     def test_search_page(self):
         """ Test can view the search page
         """
 
-        self._find_expected_content(path="/search", msg="Search")
+        self._find_expected_content(path="/search/", msg="Search")
 
     def test_results_page(self):
         """ Test can view the results page

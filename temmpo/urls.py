@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
     url(r'^search/$', SearchView.as_view(), name='search'),
-    url(r'^results/(?P<hash>\w+)$', ResultsView.as_view(), name='results'),
+    url(r'^results/(?P<hash>[-\w]+)$', ResultsView.as_view(), name='results'),
     # url(r'^results/$', ResultsListingView.as_view(), name='results_listing'),
 
     url(r'^admin/', include(admin.site.urls)),
