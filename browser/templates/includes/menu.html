@@ -1,0 +1,8 @@
+<header id="header">
+    <h1><a href="{% url 'home' %}" id="logo">TeMMPo</a></h1>
+    <nav id="nav">
+        <a href="{% url 'home' %}" {% if active == "home" %}class="current-page-item"{% endif %}>Home</a>
+        <a href="{% url 'credits' %}" {% if active == "home" %}class="current-page-item"{% endif %} >Credits</a>
+        <a href="{% url 'search' %}" {% if active == "home" %}class="current-page-item"{% endif %}>Search</a>
+    </nav>
+</header>
