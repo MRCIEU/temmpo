@@ -4,5 +4,6 @@
         <a href="{% url 'home' %}" {% if active == "home" %}class="current-page-item"{% endif %}>Home</a>
         <a href="{% url 'credits' %}" {% if active == "credits" %}class="current-page-item"{% endif %} >Credits</a>
         <a href="{% url 'search' %}" {% if active == "search" %}class="current-page-item"{% endif %}>Search</a>
+        <a href="{% url 'results-listing' %}" {% if active == "my-list" %}class="current-page-item"{% endif %}>My list</a>
     </nav>
 </header>

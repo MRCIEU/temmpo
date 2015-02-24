@@ -11,7 +11,7 @@
 {% block sectiontitle %}Select MeSH® terms{% endblock %}
 
 {% block section %}
-<form action="" method="post">
+<form action="{% url 'term-selector' %}" method="post">
 {% csrf_token %}
 {# form.as_p #} {# TODO: Wire up jquery tree (multi) select form widget #}
 <button type="submit">Submit</button>

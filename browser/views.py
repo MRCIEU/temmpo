@@ -1,10 +1,9 @@
-# from django.shortcuts import render
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView  # , DetailView
 from django.views.generic.edit import FormView
 from django.core.urlresolvers import reverse_lazy
 # from django.views.generic.list import ListView
 
-from forms import AbstractFileUploadForm
+from forms import AbstractFileUploadForm, MeshTermSelectorForm
 
 
 class HomeView(TemplateView):
@@ -36,8 +35,11 @@ class SearchView(FormView):
         return context
 
 
-class MeshTermSelector(TemplateView):
+class MeshTermSelector(FormView):
     template_name = "term_selector.html"
+    # Make this dynamicly send to results page
+    form_class = MeshTermSelectorForm
+    success_url = reverse_lazy("results", kwargs={'hash': "EXAMPLE-UUID-HERE"})
 
     def get_context_data(self, **kwargs):
         context = super(MeshTermSelector, self).get_context_data(**kwargs)

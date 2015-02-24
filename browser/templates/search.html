@@ -1,4 +1,4 @@
-{% extends "onecolumn.html" %}
+{% extends "twocolumn1.html" %}
 
 {% block title %}TeMMPo: Search{% endblock %}
 
@@ -7,13 +7,25 @@
 
 {% block sectiontitle %}Search{% endblock %}
 
+{% block section-minor %}
+
+<p>Reuse an existing collection:</p>
+{# TODO: Remove placeholder existing file uploads #}
+<ul class="link-list">
+    <li><a href="{% url 'term-selector' %}">citation-23001.txt</a></li>
+    <li><a href="{% url 'term-selector' %}">citation-99001.txt</a></li>
+</ul>
+
+{% endblock %}
+
 {% block section %}
 <p>
-    Upoad your text file of medical journal abstracts.
+    Upload a new text file of medical journal abstracts.
 </p>
 <form action="{% url 'search' %}" method="post" enctype="multipart/form-data">
 {% csrf_token %}
 {{ form.as_p }}
 <button type="submit">Upload</button>
 </form>
+
 {% endblock %}
