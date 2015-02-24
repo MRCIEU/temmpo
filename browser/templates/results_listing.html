@@ -2,29 +2,44 @@
 
 {% block title %}TeMMPo: My list{% endblock %}
 
-{% block description %}{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.5/css/jquery.dataTables.css" />
+{% endblock %}
 
-{% block keywords %}{% endblock %}
+{% block scripts %}
+<script src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#results').DataTable({
+        "columnDefs": [
+            { "orderable": false, "targets": [ -1, -2 ],
+             }
+            ],
+        "order": [ 1, 'desc' ],   {# TODO: Ensure in sync with listview ordering #}
+    });
+} );
+</script>
+{% endblock %}
 
 {% block sectiontitle %}My list{% endblock %}
 
 {% block section %}
 
-<table class="dataTable display">
+<table id="results" class="dataTable display">
     <caption>Results</caption>
     <thead>
         <tr>
             <th scope="col" class="dt-left">Abstracts</th>
-            <th scope="col" class="dt-left">Date uploaded</th>
+            <th scope="col" class="dt-left">Date</th>
             <th scope="col" class="dt-left">Terms</th>
             <th scope="col" class="dt-left">Visualisations</th>
             <th scope="col" class="dt-left">Archives</th>
             <!-- th scope="col">Delete</th --> {# TODO Should each file & or related searches be deletable #}
         </tr>
     </thead>
-    <tbody>
+    <tbody>{# TODO: Remove placeholder output and loop through results #}
         <tr>
-            <th scope="row" rowspan="2">citation-23001.txt</th>{# TODO: Remove placeholder output and loop rows, where abstracts file name cell can span many rows #}
+            <th scope="row">citation-23001.txt</th>
             <td>23/02/2015</td>
             <td>Human</td>
             <td><a href="#" title="Visualisation of 'Human' over citation-23001.txt">View result</a></td>
@@ -32,20 +47,25 @@
             <!-- <td>[X]</td> -->
         </tr>
         <tr>
+            <th scope="row">citation-23001.txt</th>
             <td>23/02/2015</td>
-            <td>Human</td>
-            <td><a href="#" title="Visualisation of 'Human' over citation-23001.txt">View result</a></td>
-            <td><a href="#" title="Download visualisation of 'Human' over citation-23001.txt">Download archive</a></td>
+            <td>Blood Transfusion</td>
+            <td><a href="#" title="Visualisation of 'Blood Transfusion' over citation-23001.txt">View result</a></td>
+            <td><a href="#" title="Download visualisation of 'Blood Transfusion' over citation-23001.txt">Download archive</a></td>
             <!-- <td>[X]</td> -->
         </tr>
         <tr>
             <th scope="row">citation-99001.txt</th>
             <td>20/02/2015</td>
-            <td>Human</td>
-            <td><a href="#" title="Visualisation of 'Human' over citation-99001.txt">View result</a></td>
-            <td><a href="#" title="Download visualisation of 'Human' over citation-99001.txt">Download archive</a></td>
+            <td>Coenzymes</td>
+            <td><a href="#" title="Visualisation of 'Coenzymes' over citation-99001.txt">View result</a></td>
+            <td><a href="#" title="Download visualisation of 'Coenzymes' over citation-99001.txt">Download archive</a></td>
             <!-- <td>[X]</td> -->
         </tr>
     </tbody>
 </table>
+
+<div class="controls">
+    <a href="{% url 'search' %}" class="button">New search</a>
+</div>
 {% endblock %}

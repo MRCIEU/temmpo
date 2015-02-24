@@ -2,17 +2,15 @@
 
 {% block title %}TeMMPo: Search{% endblock %}
 
-{% block description %}{% endblock %}
-
-{% block keywords %}{% endblock %}
-
 {% block scripts %}
 {% endblock %}
 
 {% block sectiontitle %}Search{% endblock %}
 
 {% block section %}
-
+<p>
+    Upoad your text file of medical journal abstracts.
+</p>
 <form action="" method="post" enctype="multipart/form-data">
 {% csrf_token %}
 {{ form.as_p }}
