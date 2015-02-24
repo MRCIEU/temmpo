@@ -6,40 +6,17 @@
 -->
 <html>
 	<head>
-		<title>Minimaxing by HTML5 UP</title>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="description" content="" />
-		<meta name="keywords" content="" />
-		<link href="http://fonts.googleapis.com/css?family=Ubuntu+Condensed" rel="stylesheet">
-		<script src="js/jquery.min.js"></script>
-		<script src="js/skel.min.js"></script>
-		<script src="js/skel-layers.min.js"></script>
-		<script src="js/init.js"></script>
-		<noscript>
-			<link rel="stylesheet" href="css/skel.css" />
-			<link rel="stylesheet" href="css/style.css" />
-			<link rel="stylesheet" href="css/style-desktop.css" />
-		</noscript>
-		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie9.css" /><![endif]-->
-		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
+		<title>{% block title %}{% endblock %}</title>
+		{% include 'includes/header.html' %}
+		{% block scripts %}{% endblock %}
+		{% block styles %}{% endblock %}
 	</head>
 	<body>
 		<div id="header-wrapper">
 			<div class="container">
 				<div class="row">
 					<div class="12u">
-						
-						<header id="header">
-							<h1><a href="#" id="logo">Minimaxing</a></h1>
-							<nav id="nav">
-								<a href="index.html" class="current-page-item">Homepage</a>
-								<a href="twocolumn1.html">Two Column #1</a>
-								<a href="twocolumn2.html">Two Column #2</a>
-								<a href="onecolumn.html">One Column</a>
-								<a href="threecolumn.html">Three Column</a>
-							</nav>
-						</header>
-					
+						{% include 'includes/menu.html' %}
 					</div>
 				</div>
 			</div>
@@ -48,13 +25,27 @@
 			<div class="container">
 
 				<div id="banner">
-					<h2>Put something cool here!</h2>
-					<span>And put something almost as cool here, but a bit longer ...</span>
+					<h2>{% block headertitle %}{% endblock %}</h2>
+					<span>{% block headersubtitle %}{% endblock %}</span>
 				</div>
 
 			</div>
 		</div>
 		<div id="main">
+			<div class="container">
+				<div class="row main-row">
+					<div class="12u">
+						
+						<section>
+							<h2>{% block sectiontitle %}{% endblock %}</h2>
+							{% block section %}{% endblock %}
+						</section>
+					
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--div id="main">
 			<div class="container">
 				<div class="row main-row">
 					<div class="4u">
@@ -180,10 +171,10 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div -->
 		<div id="footer-wrapper">
 			<div class="container">
-				<div class="row">
+				<!-- div class="row">
 					<div class="8u">
 						
 						<section>
@@ -245,7 +236,7 @@
 						</section>
 
 					</div>
-				</div>
+				</div -->
 				<div class="row">
 					<div class="12u">
 
