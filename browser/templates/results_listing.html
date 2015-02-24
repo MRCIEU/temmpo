@@ -1,18 +1,51 @@
 {% extends "onecolumn.html" %}
 
-{% block title %}TeMMPo: My results{% endblock %}
+{% block title %}TeMMPo: My list{% endblock %}
 
 {% block description %}{% endblock %}
 
 {% block keywords %}{% endblock %}
 
-{% block sectiontitle %}My results{% endblock %}
+{% block sectiontitle %}My list{% endblock %}
 
 {% block section %}
-<p>
-Loreme ipsum dolor sit amet, consectetur adipiscing elit. Donec ex quam, porttitor nec ex non, mollis egestas tellus. Pellentesque efficitur blandit felis ut mollis. Morbi consequat eget turpis ac faucibus. Nunc placerat, risus gravida lacinia ullamcorper, mi risus eleifend ipsum, quis rutrum dui urna quis augue. Etiam condimentum pulvinar nulla, id feugiat libero placerat sit amet. Proin malesuada dolor a efficitur fringilla. Sed ultricies vestibulum dui. Quisque vel sem at nulla consectetur luctus a a mauris. In hac habitasse platea dictumst. Donec commodo ornare velit, in condimentum mauris lobortis vel.
-</p>
-<p>
-Donec rhoncus turpis in eleifend faucibus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam vel pharetra mi. Ut euismod venenatis malesuada. Aliquam feugiat sodales nisl eget maximus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam efficitur orci vel velit viverra aliquam. Suspendisse fringilla eu sapien convallis ultricies. Nulla sed sodales dui. Duis dolor velit, porttitor ut accumsan eleifend, consequat at lacus. Etiam eu egestas justo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec sit amet nulla nulla. Proin sit amet erat tempor, porttitor lacus ac, sollicitudin ligula. Cras id dolor ut lorem sagittis mattis. Vivamus quis dapibus mi.
-</p>
+
+<table class="dataTable display">
+    <caption>Results</caption>
+    <thead>
+        <tr>
+            <th scope="col" class="dt-left">Abstracts</th>
+            <th scope="col" class="dt-left">Date uploaded</th>
+            <th scope="col" class="dt-left">Terms</th>
+            <th scope="col" class="dt-left">Visualisations</th>
+            <th scope="col" class="dt-left">Archives</th>
+            <!-- th scope="col">Delete</th --> {# TODO Should each file & or related searches be deletable #}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row" rowspan="2">citation-23001.txt</th>{# TODO: Remove placeholder output and loop rows, where abstracts file name cell can span many rows #}
+            <td>23/02/2015</td>
+            <td>Human</td>
+            <td><a href="#" title="Visualisation of 'Human' over citation-23001.txt">View result</a></td>
+            <td><a href="#" title="Download visualisation of 'Human' over citation-23001.txt">Download archive</a></td>
+            <!-- <td>[X]</td> -->
+        </tr>
+        <tr>
+            <td>23/02/2015</td>
+            <td>Human</td>
+            <td><a href="#" title="Visualisation of 'Human' over citation-23001.txt">View result</a></td>
+            <td><a href="#" title="Download visualisation of 'Human' over citation-23001.txt">Download archive</a></td>
+            <!-- <td>[X]</td> -->
+        </tr>
+        <tr>
+            <th scope="row">citation-99001.txt</th>
+            <td>20/02/2015</td>
+            <td>Human</td>
+            <td><a href="#" title="Visualisation of 'Human' over citation-99001.txt">View result</a></td>
+            <td><a href="#" title="Download visualisation of 'Human' over citation-99001.txt">Download archive</a></td>
+            <!-- <td>[X]</td> -->
+        </tr>
+    </tbody>
+</table>
 {% endblock %}

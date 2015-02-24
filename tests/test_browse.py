@@ -22,7 +22,7 @@ class BrowsingTest(TestCase):
         if url_path:
             path = reverse(url_path)
 
-        response = self.browser.get(path)
+        response = self.browser.get(path, follow=True)
         self.assertContains(response, msg,
                             msg_prefix="Expected %(msg)s at %(path)s" %
                             {'msg': msg, 'path': path})
@@ -52,6 +52,12 @@ class BrowsingTest(TestCase):
         self._find_expected_content(path="/results/" + RESULT_HASH,
                                     msg="Results")
 
+    def test_results_listing_page(self):
+        """ Test can view the results listing page
+        """
+
+        self._find_expected_content(path="/results/", msg="My list")
+
     # Additional features
 
     # def test_register_page(self):
@@ -71,13 +77,8 @@ class BrowsingTest(TestCase):
     #     """ Test can view the sign out page
     #     """
 
-    #     self._find_expected_content(path="/logout", msg="You have signed out")
-
-    # def test_results_listing_page(self):
-    #     """ Test can view the results listing page
-    #     """
-
-    #     self._find_expected_content(path="/results", msg="My results")
+    #     self._find_expected_content(path="/logout",
+    #                                 msg="You have signed out")
 
     # def test_results_archive(self):
     #     """

@@ -1,0 +1,21 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Select MeSH® terms{% endblock %}
+
+{% block description %}{% endblock %}
+
+{% block keywords %}{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block sectiontitle %}Select MeSH® terms{% endblock %}
+
+{% block section %}
+
+<form action="" method="post">
+{% csrf_token %}
+{# form.as_p #} {# TODO: Wire up jquery tree (multi) select form widget #}
+<button type="submit">Submit</button>
+</form>
+{% endblock %}

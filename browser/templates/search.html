@@ -6,8 +6,16 @@
 
 {% block keywords %}{% endblock %}
 
+{% block scripts %}
+{% endblock %}
+
 {% block sectiontitle %}Search{% endblock %}
 
 {% block section %}
 
+<form action="" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit">Upload</button>
+</form>
 {% endblock %}

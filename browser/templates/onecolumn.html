@@ -6,7 +6,10 @@
 -->
 <html>
 	<head>
+		<title>{% block title %}{% endblock %}</title>
 		{% include 'includes/header.html' %}
+		{% block scripts %}{% endblock %}
+		{% block styles %}{% endblock %}
 	</head>
 	<body>
 		<div id="header-wrapper">
