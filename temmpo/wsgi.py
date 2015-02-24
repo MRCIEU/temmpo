@@ -1,3 +1,4 @@
+#!/usr/local/projects/tmma/lib/dev/bin/python
 """
 WSGI config for temmpo project.
 
@@ -8,7 +9,7 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "temmpo.settings")
+os.environ["DJANGO_SETTINGS_MODULE"] = "temmpo.settings.dev"
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
