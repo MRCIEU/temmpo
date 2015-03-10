@@ -17,7 +17,7 @@ Total 17217 papers containing mediators AND the MeSH term <strong>Human</strong>
 
 <p id="chart"></p>
 {# TODO: remove references to energy example #}
-{# TODO remove placeholder JSON to build graph #}
+{# TODO remove placeholder JSON to build graph, base on results search field #}
 <script>
 var margin = {top: 1, right: 1, bottom: 6, left: 1},
     width = 960 - margin.left - margin.right,
@@ -95,5 +95,7 @@ d3.json("{{ STATIC_URL}}js/Human_topresults_v5.csv.json", function(energy) {
 });
 
 </script>
+
+{# Add collapsible form to create a new search based on changing the MeSH filter #}
 
 {% endblock %}
