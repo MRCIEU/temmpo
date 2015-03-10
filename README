@@ -1,0 +1,10 @@
+README
+
+To install:
+
+TODO: Add notes re fabric commands to build environment
+
+To set up database:
+
+# Run migrations to set up the database structure
+../../bin/python manage.py migrate

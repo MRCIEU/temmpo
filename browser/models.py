@@ -14,9 +14,6 @@ class Gene(models.Model):
     """
     name = models.CharField(max_length=300)  # TODO: Confirm maximum term length
 
-    class Meta:
-        abstract = True  # TODO: Remove to create DB tables
-
 
 class MeshTerm(models.Model):
     """ FUTURE: May generate JSON as a yearly task when mesh terms are updated 
@@ -27,18 +24,12 @@ class MeshTerm(models.Model):
     # TODO: Decide whether to record if using to generate JSON file dynamically for http://www.jstree.com/docs/json/
     parent_id = models.IntegerField(blank=True, null=True) # must allow for root to be defined
 
-    class Meta:
-        abstract = True  # TODO: Remove to create DB tables
-
 
 class Upload(models.Model):
     """ """
 
     user = models.ForeignKey(User, null=False, blank=False, related_name="uploads")
     abstracts_upload = models.FileField() # Add: blank=True, null=True if not first step when creating a search
-
-    class Meta:
-        abstract = True  # TODO: Remove to create DB tables
 
 
 class Abstract(models.Model):
@@ -57,9 +48,6 @@ class Abstract(models.Model):
     headings = models.ForeignKey(MeshTerm, null=False, blank=False) # TODO Give good relationship names
     abstract = models.TextField("Abstract")
 
-    class Meta:
-        abstract = True  # TODO: Remove to create DB tables
-
 
 class SearchCriteria(models.Model):
 
@@ -70,18 +58,16 @@ class SearchCriteria(models.Model):
     # TODO: Review if need to denormalise term data and store in TextField for performance reasons
     exposure_terms = models.ManyToManyField(MeshTerm,
         verbose_name="exposure MeSH terms", blank=True, null=True,
-        help_text="Select one or more terms")
+        help_text="Select one or more terms", related_name='+')
     outcome_terms = models.ManyToManyField(MeshTerm,
         verbose_name="outcome MeSH terms", blank=True, null=True,
-        help_text="Select one or more terms")
+        help_text="Select one or more terms", related_name='+')
     mediator_terms = models.ManyToManyField(MeshTerm,
         verbose_name="mediator MeSH terms", blank=True, null=True,
-        help_text="Select one or more terms")
+        help_text="Select one or more terms", related_name='+')
     # TODO: Decide comma or line delimited, could normalise to look up table as well
-    genes = models.ForeignKey(Gene, blank=True, null=True, help_text="Enter one or more gene symbol")
-
-    class Meta:
-        abstract = True  # TODO: Remove to create DB tables
+    genes = models.ManyToManyField(Gene, blank=True, null=True, 
+        related_name='+', help_text="Enter one or more gene symbol")
 
 
 class SearchResult(models.Model):
@@ -94,9 +80,6 @@ class SearchResult(models.Model):
     # Confirm maximum term length
     mesh_filter = models.CharField("MeSH filter", max_length=300, blank=True, null=True)
     results = models.FileField(blank=True, null=True,)  # JSON file for output
-
-    class Meta:
-        abstract = True  # TODO: Remove to create DB tables
 
 
 """
