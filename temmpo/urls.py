@@ -15,4 +15,8 @@ urlpatterns = patterns('',
 
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
+
+    # Django user authentication
+    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
+    url('^', include('django.contrib.auth.urls')),
 )

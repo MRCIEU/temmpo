@@ -85,3 +85,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_ROOT = '/usr/local/projects/tmma/var'
+
+LOGIN_REDIRECT_URL = 'results-listing' # 'search'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'

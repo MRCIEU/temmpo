@@ -4,6 +4,12 @@
         <a href="{% url 'home' %}" {% if active == "home" %}class="current-page-item"{% endif %}>Home</a>
         <a href="{% url 'credits' %}" {% if active == "credits" %}class="current-page-item"{% endif %} >Credits</a>
         <a href="{% url 'search' %}" {% if active == "search" %}class="current-page-item"{% endif %}>Search</a>
+        {% if user.is_authenticated %}
         <a href="{% url 'results-listing' %}" {% if active == "my-list" %}class="current-page-item"{% endif %}>My list</a>
+        <a href="{% url 'logout' %}">Sign out</a>
+        {% else %}
+           <a href="{# url 'register' #}" {% if active == "register" %}class="current-page-item"{% endif %}>Register</a> {# TODO wire up registration form #}
+           <a href="{% url 'login' %}" {% if active == "login" %}class="current-page-item"{% endif %}>Sign in</a>
+        {% endif %}
     </nav>
 </header>

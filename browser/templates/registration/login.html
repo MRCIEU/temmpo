@@ -1,0 +1,14 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Sign in{% endblock %}
+
+{% block sectiontitle %}Sign in{% endblock %}
+
+{% block section %}
+<form action="{% url 'login' %}" method="post" >
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign in</button>
+    {# TODO: Redirect to search or my list #}
+</form>
+{% endblock %}
