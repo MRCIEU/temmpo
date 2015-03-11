@@ -23,9 +23,9 @@
     Upload a new text file of medical journal abstracts.
 </p>
 <form action="{% url 'search' %}" method="post" enctype="multipart/form-data">
-{% csrf_token %}
-{{ form.as_p }}
-<button type="submit" class="button">Upload</button>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button">Upload</button>
 </form>
 
 {% endblock %}

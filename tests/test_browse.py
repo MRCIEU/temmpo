@@ -17,13 +17,18 @@ class BrowsingTest(TestCase):
         self.browser = Client()
         super(BrowsingTest, self).setUp()
 
-    def _find_expected_content(self, path="", url_path=None, msg=""):
+    def _find_expected_content(self, path="", url_path=None, msg="", requires_login=False):
 
         if url_path:
             path = reverse(url_path)
 
         response = self.browser.get(path, follow=True)
-        self.assertContains(response, msg,
+
+        if requires_login:
+            # TODO extend tests to cover logging in
+            self.assertContains(response, 'Username', msg_prefix="Expected be redirected to the login page")
+        else:
+            self.assertContains(response, msg,
                             msg_prefix="Expected %(msg)s at %(path)s" %
                             {'msg': msg, 'path': path})
 
@@ -43,20 +48,21 @@ class BrowsingTest(TestCase):
         """ Test can view the search page
         """
 
-        self._find_expected_content(path="/search/", msg="Search")
+        self._find_expected_content(path="/search/", msg="Search", requires_login=True)
 
     def test_results_page(self):
         """ Test can view the results page
         """
 
         self._find_expected_content(path="/results/" + RESULT_HASH,
-                                    msg="Results")
+                                    msg="Results",
+                                    requires_login=True)
 
     def test_results_listing_page(self):
         """ Test can view the results listing page
         """
 
-        self._find_expected_content(path="/results/", msg="My list")
+        self._find_expected_content(path="/results/", msg="My list", requires_login=True)
 
     # Additional features
 
