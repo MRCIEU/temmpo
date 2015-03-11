@@ -7,8 +7,10 @@
 {% block section %}
 <form action="{% url 'login' %}" method="post" >
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign in</button>
+    <table class="form-table">
+    {{ form.as_table }}
+    </table>
+    <button type="submit" class="button" >Sign in</button>
     {# TODO: Redirect to search or my list #}
 </form>
 {% endblock %}
