@@ -1,10 +1,19 @@
 README
 
-To install:
+Installation:
 
 TODO: Add notes re fabric commands to build environment
 
-To set up database:
+Set up database:
 
 # Run migrations to set up the database structure
+cd src/temmpo
 ../../bin/python manage.py migrate
+
+# Create a super user
+ ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev
+
+Running tests:
+
+cd src/temmpo
+ ../../bin/python manage.py test tests/ --settings=temmpo.settings.dev
