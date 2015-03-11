@@ -5,5 +5,5 @@ class AbstractFileUploadForm(forms.Form):
     abstracts = forms.FileField()
 
 
-class MeshTermSelectorForm(forms.Form):
+class MeshFilterSelectorForm(forms.Form):
     pass

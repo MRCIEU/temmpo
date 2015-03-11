@@ -3,7 +3,7 @@ from django.views.generic.edit import FormView
 from django.core.urlresolvers import reverse_lazy
 # from django.views.generic.list import ListView
 
-from forms import AbstractFileUploadForm, MeshTermSelectorForm
+from forms import AbstractFileUploadForm, MeshFilterSelectorForm
 
 
 class HomeView(TemplateView):
@@ -37,8 +37,8 @@ class SearchView(FormView):
 
 class MeshTermSelector(FormView):
     template_name = "term_selector.html"
-    # Make this dynamicly send to results page
-    form_class = MeshTermSelectorForm
+    form_class = MeshFilterSelectorForm
+    # TODO: Make this dynamically send to results page
     success_url = reverse_lazy("results", kwargs={'hash': "EXAMPLE-UUID-HERE"})
 
     def get_context_data(self, **kwargs):
