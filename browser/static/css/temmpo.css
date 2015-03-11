@@ -43,3 +43,15 @@ dd {
 {
     width:75%;
 }*/
+
+
+.form-table th, td
+{
+  text-align: left;
+  padding: 0.5em;
+}
+
+.form-table 
+{
+  margin-bottom: 1em;
+}

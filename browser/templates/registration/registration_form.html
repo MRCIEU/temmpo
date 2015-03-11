@@ -6,10 +6,11 @@
 
 {% block section %}
 <form action="{% url 'registration_register' %}" method="post" >
-
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
+    <table class="form-table">
+    {{ form.as_table }}
+    </table>
+    <button type="submit" class="button">Register</button>
 </form>
 <p>{# TODO Write note about privacy of personal information and data not being share d with third parties #}</p>
 {# Use version of registration form that includes terms of service https://django-registration-redux.readthedocs.org/en/latest/forms.html#registration.forms.RegistrationFormTermsOfService #}
