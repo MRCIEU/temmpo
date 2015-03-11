@@ -5,6 +5,7 @@ distribute==0.6.24
 django-ajax-upload-widget==0.5.5
 django-bft==0.2.0
 django-chunked-upload==1.0.3
+django-registration-redux==1.1
 httplib2==0.9
 oauth2==1.5.211
 oauthlib==0.7.2

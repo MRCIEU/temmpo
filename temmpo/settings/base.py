@@ -37,7 +37,7 @@ DEFAULT_APPS = [
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = ['registration',]
 LOCAL_APPS = ['browser',]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -89,3 +89,8 @@ MEDIA_ROOT = '/usr/local/projects/tmma/var'
 LOGIN_REDIRECT_URL = 'results-listing' # 'search'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
+
+# Registration
+ACCOUNT_ACTIVATION_DAYS = 14
+REGISTRATION_AUTO_LOGIN = True
+REGISTRATION_OPEN = True

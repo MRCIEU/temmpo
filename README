@@ -4,6 +4,8 @@ Installation:
 
 TODO: Add notes re fabric commands to build environment
 
+See: deploy/now.txt
+
 Set up database:
 
 # Run migrations to set up the database structure

@@ -1,0 +1,16 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Register{% endblock %}
+
+{% block sectiontitle %}Register{% endblock %}
+
+{% block section %}
+<form action="{% url 'registration_register' %}" method="post" >
+
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Register</button>
+</form>
+<p>{# TODO Write note about privacy of personal information and data not being share d with third parties #}</p>
+{# Use version of registration form that includes terms of service https://django-registration-redux.readthedocs.org/en/latest/forms.html#registration.forms.RegistrationFormTermsOfService #}
+{% endblock %}
