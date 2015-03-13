@@ -51,7 +51,17 @@ dd {
   padding: 0.5em;
 }
 
+.form-table th
+{
+  vertical-align: middle;
+}
+
 .form-table 
 {
   margin-bottom: 1em;
+}
+
+.errorlist
+{
+  color: #800000;
 }
