@@ -65,13 +65,13 @@ class ResultsView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing the search form
+         """ Ensure user logs in before viewing the results pages
          """
          return super(ResultsView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ResultsView, self).get_context_data(**kwargs)
-        context['active'] = 'search'
+        context['active'] = 'results'
         return context
 
 
@@ -81,11 +81,11 @@ class ResultsListingView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing the search form
+         """ Ensure user logs in before viewing the results listing page
          """
          return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ResultsListingView, self).get_context_data(**kwargs)
-        context['active'] = 'my-list'
+        context['active'] = 'results'
         return context

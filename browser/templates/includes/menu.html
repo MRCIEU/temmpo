@@ -5,7 +5,7 @@
         <a href="{% url 'credits' %}" {% if active == "credits" %}class="current-page-item"{% endif %} >Credits</a>
         <a href="{% url 'search' %}" {% if active == "search" %}class="current-page-item"{% endif %}>Search</a>
         {% if user.is_authenticated %}
-        <a href="{% url 'results-listing' %}" {% if active == "my-list" %}class="current-page-item"{% endif %}>My list</a>
+        <a href="{% url 'results-listing' %}" {% if active == "results" %}class="current-page-item"{% endif %}>Results</a>
         <a href="{% url 'logout' %}">Sign out</a>
         {% else %}
            <a href="{% url 'registration_register' %}" {% if active == "register" %}class="current-page-item"{% endif %}>Register</a>
