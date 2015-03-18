@@ -185,7 +185,8 @@ class ResultsView(TemplateView):
         # TODO TBC: group by mediator
         context['mediators'] = ['ATM'] # Gene or mediator mesh
         context['results'] = [{'exposure':'Diary Products', 'lcount': '5', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '1', 'count':'1'},
-                              {'exposure':'Diarying', 'lcount': '46', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '2', 'count': '55'}, ]
+                              {'exposure':'Diarying', 'lcount': '46', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '2', 'count': '55'},
+                              {'exposure':'Recombinant Proteins AND Growth Hormone AND Cattle', 'lcount': '...', 'mediator':'PROC', 'outcome':'Prostatic Neoplasms', 'rcount': '...', 'count': '6'}, ]
         return context
 
 
