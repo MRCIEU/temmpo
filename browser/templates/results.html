@@ -108,6 +108,8 @@ d3.json("{{ json_url }}", function(matches) {
   }
 });
 </script>
+
+<div class="mediators-summary">
 <h3>Mediators</h3>
 
 <h4>Layout options</h4>
@@ -117,6 +119,7 @@ d3.json("{{ json_url }}", function(matches) {
     <li>Confirm: If count is split into Left and right match components</li>
 </ol>
 <hr />
+<h5>Layout 1</h5>
 <table class="results-breakdown dataTable display">
   <thead>
     <tr>
@@ -139,8 +142,9 @@ d3.json("{{ json_url }}", function(matches) {
 </table>
 
 <hr />
+<h5>Layout 2</h5>
 <table class="results-breakdown dataTable display">
-  <capton>{{ results.0.mediator }}</caption>
+  <caption>Mediator: {{ results.0.mediator }}</caption>
   <thead>
     <tr>
       <th>Exposure</th>
@@ -159,8 +163,9 @@ d3.json("{{ json_url }}", function(matches) {
   </tbody>
 </table>
 <hr />
+<h5>Layout 3</h5>
 <table class="results-breakdown dataTable display">
-  <capton>{{ results.0.mediator }}</caption>
+  <caption>Mediator: {{ results.0.mediator }}</caption>
   <thead>
     <tr>
       <th>Exposure</th>
@@ -180,7 +185,7 @@ d3.json("{{ json_url }}", function(matches) {
     {% endfor %}
   </tbody>
 </table>
-
+</div>
 {# TODO: Add collapsible form to create a new search based on changing the MeSH filter #}
 
 {% endblock %}
