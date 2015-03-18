@@ -4,27 +4,41 @@
 
 {% block sectiontitle %}Results{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.5/css/jquery.dataTables.css" />
+{% endblock %}
+
+
 {% block scripts %}
-<script src="http://d3js.org/d3.v2.min.js?2.9.1"></script> {# TODO: Confirm if need to remain pinned to older version could it be 2.x or 3.x #}
-{# <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> #}
+{# Chart related JS #}
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="{{ STATIC_URL}}js/sankey.js"></script>
+
+{# Data table related JS #}
+<script src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    // $('.results-breakdown').DataTable({
+    //     "order": [ 3, 'desc' ],
+    // });
+  $('table.dataTable').dataTable();
+} );
+</script>
 {% endblock %}
 
 {% block section %}
 <p>
-Total 17217 papers containing mediators AND the MeSH term <strong>Human</strong>.
+Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 
 <p id="chart"></p>
-{# TODO: remove references to energy example #}
-{# TODO remove placeholder JSON to build graph, base on results search field #}
 <script>
 var margin = {top: 1, right: 1, bottom: 6, left: 1},
     width = 960 - margin.left - margin.right,
     height = 960 - margin.top - margin.bottom;
 
 var formatNumber = d3.format(",.0f"),
-    format = function(d) { return formatNumber(d) + " TWh"; },
+    format = function(d) { return formatNumber(d) + " TWh"; }, // TODO: Verify this TWh
     color = d3.scale.category20();
 
 var svg = d3.select("#chart").append("svg")
@@ -40,15 +54,15 @@ var sankey = d3.sankey()
 
 var path = sankey.link();
 
-d3.json("{{ STATIC_URL}}js/Human_topresults_v5.csv.json", function(energy) {
+d3.json("{{ json_url }}", function(matches) {
 
   sankey
-      .nodes(energy.nodes)
-      .links(energy.links)
+      .nodes(matches.nodes)
+      .links(matches.links)
       .layout(32);
 
   var link = svg.append("g").selectAll(".link")
-      .data(energy.links)
+      .data(matches.links)
     .enter().append("path")
       .attr("class", "link")
       .attr("d", path)
@@ -59,7 +73,7 @@ d3.json("{{ STATIC_URL}}js/Human_topresults_v5.csv.json", function(energy) {
       .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + format(d.value); });
 
   var node = svg.append("g").selectAll(".node")
-      .data(energy.nodes)
+      .data(matches.nodes)
     .enter().append("g")
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
@@ -93,9 +107,80 @@ d3.json("{{ STATIC_URL}}js/Human_topresults_v5.csv.json", function(energy) {
     link.attr("d", path);
   }
 });
-
 </script>
+<h3>Mediators</h3>
 
-{# Add collapsible form to create a new search based on changing the MeSH filter #}
+<h4>Layout options</h4>
+<ol style="list-style:decimal">
+    <li>List all mediators in one table </li>
+    <li>Group by mediator in separate tables - list all on one page or allow user to select which mediator to view</li>
+    <li>Confirm: If count is split into Left and right match components</li>
+</ol>
+<hr />
+<table class="results-breakdown dataTable display">
+  <thead>
+    <tr>
+      <th>Exposure</th>
+      <th>Mediator</th>
+      <th>Outcome</th>
+      <th>Match count</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for result in results %}
+    <tr>
+      <td>{{ result.exposure }}</td>
+      <td>{{ result.mediator }}</td>
+      <td>{{ result.outcome }}</td>
+      <td>{{ result.count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<hr />
+<table class="results-breakdown dataTable display">
+  <capton>{{ results.0.mediator }}</caption>
+  <thead>
+    <tr>
+      <th>Exposure</th>
+      <th>Outcome</th>
+      <th>Match count</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for result in results %}
+    <tr>
+      <td>{{ result.exposure }}</td>
+      <td>{{ result.outcome }}</td>
+      <td>{{ result.count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<hr />
+<table class="results-breakdown dataTable display">
+  <capton>{{ results.0.mediator }}</caption>
+  <thead>
+    <tr>
+      <th>Exposure</th>
+      <th>Left match count</th>
+      <th>Outcome</th>
+      <th>Right match count</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for result in results %}
+    <tr>
+      <td>{{ result.exposure }}</td>
+      <td>{{ result.lcount }}</td>
+      <td>{{ result.outcome }}</td>
+      <td>{{ result.rcount }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# TODO: Add collapsible form to create a new search based on changing the MeSH filter #}
 
 {% endblock %}

@@ -1,9 +1,23 @@
+from datetime import datetime
+import re
+import unicodedata
+
 from django.db import models
 from django.contrib.auth.models import User
 
 
+def get_user_upload_location(instance, filename):
+    # Based on slugify code - from django.utils.text import slugify
+
+    filename = unicodedata.normalize('NFKD', filename).encode('ascii', 'ignore')
+    filename = unicode(re.sub('[^\.\w\s-]', '', filename).strip().lower())
+    filename = re.sub('[-\s]+', '-', filename)
+
+    return datetime.now().strftime('/'.join(['abstracts', str(instance.user.id), '%Y-%m-%d', '%H-%M-%S-' + filename]))
+
+
 class Gene(models.Model):
-    """ 
+    """
     TODO: Pre-populate this lookup table
     # Subset of gene names, possible vocabulary source:
     # ftp://ftp.ncbi.nih.gov/gene/DATA/)? Or only Human Genes
@@ -16,46 +30,57 @@ class Gene(models.Model):
 
 
 class MeshTerm(models.Model):
-    """ FUTURE: May generate JSON as a yearly task when mesh terms are updated 
+    """ FUTURE: May generate JSON as a yearly task when mesh terms are updated
         TODO: Pre-populate with entire tree from  http://www.nlm.nih.gov/mesh/
     """
 
-    term = models.CharField(max_length=300)  # TODO: Confirm maximum term length 
+    term = models.CharField(max_length=300)  # TODO: Confirm maximum term length
     # TODO: Decide whether to record if using to generate JSON file dynamically for http://www.jstree.com/docs/json/
-    parent_id = models.IntegerField(blank=True, null=True) # must allow for root to be defined
+    parent_id = models.IntegerField(blank=True, null=True)  # must allow for root to be defined
 
 
 class Upload(models.Model):
     """ """
 
-    user = models.ForeignKey(User, null=False, blank=False, related_name="uploads")
-    abstracts_upload = models.FileField() # Add: blank=True, null=True if not first step when creating a search
+    user = models.ForeignKey(User, null=False, blank=False,
+                             related_name="uploads")
+    abstracts_upload = models.FileField(upload_to=get_user_upload_location)
+
+    def __str__(self):
+            return self.abstracts_upload.name
 
 
 class Abstract(models.Model):
-    """ Would be useful for database/python based matching 
-        Probably need be extended or replaced when using Solr/Spark (https://spark.apache.org) / Lucene based matching
-        For instance add custom method to the CitationManager to output in format that selected search engine consumes
+    """ Would be useful for database/python based matching
+        Probably need be extended or replaced when using Solr/Spark
+        (https://spark.apache.org) / Lucene based matching
+        For instance add custom method to the CitationManager to output in
+        format that selected search engine consumes
 
         # NB: Title and other fields are available but not stored nor used
     """
 
     # NB: Storing each abstracts per user, not aggregating for general use.
-    # Review direction of relationship 
-    upload = models.ForeignKey(Upload, null=False, blank=False, related_name="abstracts")
+    # Review direction of relationship
+    upload = models.ForeignKey(Upload, null=False, blank=False,
+                               related_name="abstracts")
     citation_id = models.IntegerField("Unique Identifier")
-    # TODO: Confirm if matching a denormalised multi line text field is faster suits certain matching modules better
-    headings = models.ForeignKey(MeshTerm, null=False, blank=False) # TODO Give good relationship names
+    # TODO: Confirm if matching a denormalised multi line text field is faster
+    # suits certain matching modules better
+    # TODO Give good relationship names
+    headings = models.ForeignKey(MeshTerm, null=False, blank=False)
     abstract = models.TextField("Abstract")
 
 
 class SearchCriteria(models.Model):
 
     upload = models.ForeignKey(Upload, related_name="searches")
-    name = models.CharField(max_length=300)
+    name = models.CharField(help_text="Optional name for search criteria",
+                            max_length=300, blank=True, default="")
     created = models.DateTimeField(auto_now_add=True)
 
-    # TODO: Review if need to denormalise term data and store in TextField for performance reasons
+    # TODO: Review if need to denormalise term data and store in TextField for
+    # performance reasons
     exposure_terms = models.ManyToManyField(MeshTerm,
         verbose_name="exposure MeSH terms", blank=True, null=True,
         help_text="Select one or more terms", related_name='+')
@@ -66,20 +91,21 @@ class SearchCriteria(models.Model):
         verbose_name="mediator MeSH terms", blank=True, null=True,
         help_text="Select one or more terms", related_name='+')
     # TODO: Decide comma or line delimited, could normalise to look up table as well
-    genes = models.ManyToManyField(Gene, blank=True, null=True, 
+    genes = models.ManyToManyField(Gene, blank=True, null=True,
         related_name='+', help_text="Enter one or more gene symbol")
 
 
 class SearchResult(models.Model):
 
-    criteria = models.ForeignKey(SearchCriteria) # TODO ensure cascade deletes
+    criteria = models.ForeignKey(SearchCriteria)
     # related_name="result"
 
-    # Abstracting out mesh filter and results as more likely to change the filter 
+    # Abstracting out mesh filter and results as more likely to change the filter
     # but use the same set of other search criteria
     # Confirm maximum term length
     mesh_filter = models.CharField("MeSH filter", max_length=300, blank=True, null=True)
     results = models.FileField(blank=True, null=True,)  # JSON file for output
+    # mediator_counts # TODO need to support displaying mediator match count table
 
 
 """

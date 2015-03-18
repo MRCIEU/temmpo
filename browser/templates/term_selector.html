@@ -1,6 +1,6 @@
 {% extends "twocolumn2.html" %}
 
-{% block title %}TeMMPo: Select MeSH® terms{% endblock %}
+{% block title %}TeMMPo: Select {{ type }} MeSH® terms{% endblock %}
 
 {% block scripts %}
 <!-- Not bad, but not check box style -->
@@ -78,7 +78,7 @@ var data = [
 {% block sectiontitle %}Select MeSH® terms{% endblock %}
 
 {% block section %}
-<form action="{% url 'term-selector' %}" method="post">
+<form action="" method="post">
 {% csrf_token %}
 {# form.as_p #} {# TODO: Wire up jquery tree (multi) select form widget #}
 
@@ -168,9 +168,9 @@ $('#terms').tree({
 {% block section-minor-title %}Quick search{% endblock %}
 
 {% block section-minor %}
-<form action="{% url 'term-selector' %}" method="post">
+<form action="" method="post">
 {% csrf_token %}
-<label for="tag" /></label>
+<label for="tag">Term</label>
 <input id="tags" name="tags" type="text" value="" />
 <button type="submit">Submit</button>
 </form>

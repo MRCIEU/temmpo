@@ -7,6 +7,7 @@ from django.test import TestCase, Client
 
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
+RESULT_ID = '1'
 
 
 class BrowsingTest(TestCase):
@@ -54,7 +55,7 @@ class BrowsingTest(TestCase):
         """ Test can view the results page
         """
 
-        self._find_expected_content(path="/results/" + RESULT_HASH,
+        self._find_expected_content(path="/results/" + RESULT_ID,
                                     msg="Results",
                                     requires_login=True)
 

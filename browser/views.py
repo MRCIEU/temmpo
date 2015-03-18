@@ -1,11 +1,13 @@
 from django.views.generic.base import TemplateView  # , DetailView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 # from django.views.generic.list import ListView
 
-from forms import AbstractFileUploadForm, MeshFilterSelectorForm
+from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
+                           OutcomeForm, FilterForm)
+from browser.models import SearchCriteria, SearchResult
 
 
 class HomeView(TemplateView):
@@ -25,39 +27,141 @@ class CreditsView(TemplateView):
         context['active'] = 'credits'
         return context
 
-class SearchView(FormView):
+
+class SearchView(CreateView):
     form_class = AbstractFileUploadForm
     template_name = "search.html"
-    success_url = reverse_lazy("term-selector")
+
+    def get_success_url(self):
+        # TODO this should direct to newly create search criteria tied to
+        # uploaded file
+        # Create a new SearchCriteria object
+        self.search_criteria = SearchCriteria(upload=self.object)
+        self.search_criteria.save()
+        return reverse('exposure-selector',
+                       kwargs={'pk': self.search_criteria.id})
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing the search form
-         """
-         return super(SearchView, self).dispatch(request, *args, **kwargs)
+        """ Ensure user logs in before viewing the search form
+        """
+        return super(SearchView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
         context['active'] = 'search'
         return context
 
+    def get_initial(self):
+        return {'user': self.request.user}
 
-class MeshTermSelector(FormView):
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super(SearchView, self).form_valid(form)
+
+
+class ExposureSelector(UpdateView):
     template_name = "term_selector.html"
-    form_class = MeshFilterSelectorForm
-    # TODO: Make this dynamically send to results page
-    success_url = reverse_lazy("results", kwargs={'hash': "EXAMPLE-UUID-HERE"})
+    form_class = ExposureForm
+    model = SearchCriteria
+
+    def get_success_url(self):
+        return reverse('mediator-selector', kwargs={'pk': self.object.id})
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing the search form
-         """
-         return super(MeshTermSelector, self).dispatch(request, *args, **kwargs)
+        """ Ensure user logs in before viewing the form
+        """
+        return super(ExposureSelector, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(MeshTermSelector, self).get_context_data(**kwargs)
+        context = super(ExposureSelector, self).get_context_data(**kwargs)
+        context['active'] = 'search'
+        context['type'] = 'Exposure'
+        return context
+
+
+class MediatorSelector(UpdateView):
+    template_name = "term_selector.html"
+    form_class = MediatorForm
+    model = SearchCriteria
+
+    def get_success_url(self):
+        return reverse('outcome-selector', kwargs={'pk': self.object.id})
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Ensure user logs in before viewing the form
+        """
+        return super(MediatorSelector, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(MediatorSelector, self).get_context_data(**kwargs)
+        context['active'] = 'search'
+        context['type'] = 'Mediator'
+        return context
+
+
+class OutcomeSelector(UpdateView):
+    template_name = "term_selector.html"
+    form_class = OutcomeForm
+    model = SearchCriteria
+
+    def get_success_url(self):
+        # TODO adjust to use newly created object
+        return reverse('filter-selector', kwargs={'pk': self.search_result.id})
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Ensure user logs in before viewing the form
+        """
+        return super(OutcomeSelector, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(OutcomeSelector, self).get_context_data(**kwargs)
+        context['active'] = 'search'
+        context['type'] = 'Outcome'
+        return context
+
+    def form_valid(self, form):
+        # Create a new SearchCriteria object
+        self.search_result = SearchResult(criteria=self.object)
+        self.search_result.save()
+        return super(OutcomeSelector, self).form_valid(form)
+
+
+class SearchExisting(TemplateView):
+    """TODO: Replace with CreateView/UpdateView akin to ExposureSelector """
+    template_name = "term_selector.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchExisting, self).get_context_data(**kwargs)
+        context['active'] = 'search'
+        context['type'] = 'Exposure'
+        return context
+
+
+class FilterSelector(UpdateView):
+    # TODO should be a single select version of template
+    template_name = "term_selector.html"
+    form_class = FilterForm
+    model = SearchResult
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Ensure user logs in before viewing the search form
+        """
+        return super(FilterSelector, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(FilterSelector, self).get_context_data(**kwargs)
         context['active'] = 'search'
         return context
+
+    def get_success_url(self):
+        return reverse('results', kwargs={'pk': self.object.id})
 
 
 class ResultsView(TemplateView):
@@ -72,6 +176,16 @@ class ResultsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ResultsView, self).get_context_data(**kwargs)
         context['active'] = 'results'
+
+        # TODO flesh out results object
+
+        context['mesh_term_filter'] = 'Human'
+        context['article_count'] = 17217
+        context['json_url'] = '/static/js/Human_topresults_v5.csv.json'
+        # TODO TBC: group by mediator
+        context['mediators'] = ['ATM'] # Gene or mediator mesh
+        context['results'] = [{'exposure':'Diary Products', 'lcount': '5', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '1', 'count':'1'},
+                              {'exposure':'Diarying', 'lcount': '46', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '2', 'count': '55'}, ]
         return context
 
 
