@@ -153,7 +153,7 @@ d3.json("{{ json_url }}", function(matches) {
     </tr>
   </thead>
   <tbody>
-    {% for result in results %}
+    {% for result in results|slice:":2"  %}
     <tr>
       <td>{{ result.exposure }}</td>
       <td>{{ result.outcome }}</td>
@@ -175,7 +175,7 @@ d3.json("{{ json_url }}", function(matches) {
     </tr>
   </thead>
   <tbody>
-    {% for result in results %}
+    {% for result in results|slice:":2" %}
     <tr>
       <td>{{ result.exposure }}</td>
       <td>{{ result.lcount }}</td>
