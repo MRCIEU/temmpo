@@ -7,7 +7,7 @@ import mptt.fields
 
 
 class Migration(migrations.Migration):
-
+    """ This migration will only work on an empty table """
     dependencies = [
         ('browser', '0001_initial'),
     ]

@@ -28,14 +28,15 @@ class Gene(models.Model):
     # TBC as a source: http://www.genenames.org/cgi-bin/statistics
     # TBC: http://www.genenames.org/cgi-bin/genefamilies/download-all/json
     """
-    name = models.CharField(max_length=300)  # TODO: Confirm maximum term length
+    name = models.CharField(max_length=300)  # TODO: Confirm maximum length
 
 
 class MeshTerm(MPTTModel):
     """ FUTURE: May generate JSON as a yearly task when mesh terms are updated
         TODO: Pre-populate with entire tree from  http://www.nlm.nih.gov/mesh/
     """
-    term = models.CharField(max_length=300)  # TODO: Confirm maximum term length
+    term = models.CharField(max_length=300)  # TODO: Confirm maximum length
+    tree_number = models.CharField(max_length=50)  # TODO: Confirm maximum length
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
 
