@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -26,6 +25,8 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+APACHE = False
+
 # Application definition
 
 DEFAULT_APPS = [
@@ -37,7 +38,7 @@ DEFAULT_APPS = [
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS = ['registration',]
+THIRD_PARTY_APPS = ['registration', 'mptt', ] # 'oraclepool',
 LOCAL_APPS = ['browser',]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -72,7 +73,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-gb'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = False
 
@@ -80,11 +81,14 @@ USE_L10N = False
 
 USE_TZ = True
 
+SHORT_DATE_FORMAT = 'd/m/Y'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
+MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
-MEDIA_ROOT = '/usr/local/projects/tmma/var'
+MEDIA_ROOT = VAR_PATH = os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','var'))
 
 LOGIN_REDIRECT_URL = 'results-listing' # 'search'
 LOGIN_URL = 'login'
@@ -94,3 +98,18 @@ LOGOUT_URL = 'logout'
 ACCOUNT_ACTIVATION_DAYS = 14
 REGISTRATION_AUTO_LOGIN = True
 REGISTRATION_OPEN = True
+
+# Import private settings specific to this environment like Database connections and SECRET_KEY
+# from outside of public git repo.
+
+# settings_file_name = 'temmpo_private_settings.py'
+# paths = (os.path.join(os.path.expanduser("~"), settings_file_name), 
+#     os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','etc', settings_file_name)))
+
+# for path in paths:
+#     if os.path.exists(path):
+#         execfile(path)
+#         break
+# else:
+#     print("Warning: Expected to find a local private settings override file in one of these locations")
+#     print(paths)

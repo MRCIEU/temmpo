@@ -5,6 +5,8 @@ import unicodedata
 from django.db import models
 from django.contrib.auth.models import User
 
+from mptt.models import MPTTModel, TreeForeignKey
+
 
 def get_user_upload_location(instance, filename):
     # Based on slugify code - from django.utils.text import slugify
@@ -29,14 +31,12 @@ class Gene(models.Model):
     name = models.CharField(max_length=300)  # TODO: Confirm maximum term length
 
 
-class MeshTerm(models.Model):
+class MeshTerm(MPTTModel):
     """ FUTURE: May generate JSON as a yearly task when mesh terms are updated
         TODO: Pre-populate with entire tree from  http://www.nlm.nih.gov/mesh/
     """
-
     term = models.CharField(max_length=300)  # TODO: Confirm maximum term length
-    # TODO: Decide whether to record if using to generate JSON file dynamically for http://www.jstree.com/docs/json/
-    parent_id = models.IntegerField(blank=True, null=True)  # must allow for root to be defined
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
 
 class Upload(models.Model):
