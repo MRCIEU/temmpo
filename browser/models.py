@@ -39,6 +39,13 @@ class MeshTerm(MPTTModel):
     tree_number = models.CharField(max_length=50)  # TODO: Confirm maximum length
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
+    def __str__(self):
+        return self.term
+
+    # TODO: Should this be an attribute
+    def get_term_with_tree_number(self):
+        return self.term + ";" + self.tree_number
+
 
 class Upload(models.Model):
     """ """
@@ -48,7 +55,7 @@ class Upload(models.Model):
     abstracts_upload = models.FileField(upload_to=get_user_upload_location)
 
     def __str__(self):
-            return self.abstracts_upload.name
+        return self.abstracts_upload.name
 
 
 class Abstract(models.Model):
