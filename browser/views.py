@@ -1,10 +1,9 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.views.generic.base import TemplateView  # , DetailView
-from django.views.generic.edit import FormView, CreateView, UpdateView
-# from django.views.generic.list import ListView
+from django.views.generic.base import TemplateView, RedirectView
+from django.views.generic.edit import CreateView, UpdateView
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
@@ -34,7 +33,7 @@ class SearchView(CreateView):
     template_name = "search.html"
 
     def get_success_url(self):
-        # TODO this should direct to newly create search criteria tied to
+        # This should redirect to newly create search criteria tied to
         # uploaded file
         # Create a new SearchCriteria object
         self.search_criteria = SearchCriteria(upload=self.object)
@@ -70,7 +69,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the form
         """
-        self.tree_number = kwargs.get('tree_number', 'A')
+        self.tree_number = kwargs.get('tree_number', None)
         return super(TermSelectorAbstractUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -80,8 +79,9 @@ class TermSelectorAbstractUpdateView(UpdateView):
         context = super(TermSelectorAbstractUpdateView, self).get_context_data(**kwargs)
         context['active'] = 'search'
         context['root_nodes'] = MeshTerm.objects.root_nodes()
-        context['selected_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)   # TODO Selecting could be based on person preferences
-        context['nodes'] = context['selected_node'].get_descendants(include_self=False) # MeshTerm.objects.filter(parent=context['selected_node'])# context['selected_node'].get_descendants(include_self=True)
+        if self.tree_number:
+            context['selected_tree_root_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)   # TODO Selecting could be based on person preferences
+            context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
 
         return context
 
@@ -147,19 +147,19 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         return result
 
 
-class SearchExisting(TemplateView):
-    """TODO: Replace with CreateView/UpdateView akin to ExposureSelector """
-    template_name = "term_selector.html"
+class SearchExisting(RedirectView):
+    """Create new search criteria based on existing one and pass to
+       ExposureSelector view """
+    permanant = False
 
-    def get_context_data(self, **kwargs):
-        context = super(SearchExisting, self).get_context_data(**kwargs)
-        context['active'] = 'search'
-        context['type'] = 'Exposure'
-        return context
+    def get_redirect_url(self, *args, **kwargs):
+        criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
+        criteria.pk = None
+        criteria.save()
+        return reverse('exposure-selector', kwargs={'pk': criteria.pk})
 
 
 class FilterSelector(UpdateView):
-    # TODO should be a single select version of template
     template_name = "filter_selector.html"
     form_class = FilterForm
     model = SearchResult

@@ -84,7 +84,8 @@ var data = [
         {% csrf_token %}
         <label for="tags">Term</label>
         <input id="tags" name="tags" type="text" value="" />
-        <button type="submit">Submit</button>
+
+        <button type="submit">Add</button>
     </form>
 {% endblock %}
 
@@ -93,77 +94,88 @@ var data = [
     <h2>MeSH® trees</h2>
 
     <!-- Mesh Term tree families -->
-    {% for node in root_nodes %}
-        <ul class="link-list">
-            <li><a href="{% url term_selector_by_family_url pk=form.instance.id tree_number=node.tree_number %}">{{ node.term }}</a></li>
-        </ul>
-    {% endfor %}
-
+    <ul id="tree-family">
+        {% for node in root_nodes %}
+            <li>
+                {% if selected_tree_root_node and node == selected_tree_root_node %}
+                  <strong>{{ node.term }}</strong>
+                {% else %}
+                  <a href="{% url term_selector_by_family_url pk=form.instance.id tree_number=node.tree_number %}">{{ node.term }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}
 
 {% block right-column %}
+    
+    {% if selected_tree_root_node %}
+      <h2>Select {{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
 
-    <h2>Select {{ selected_node }} <acronym title="Medical Subject Headings">MeSH®</acronym> terms</h2>
+      <form action="." method="post">
+          {% csrf_token %}
 
-    <form action="." method="post">
-        {% csrf_token %}
+          {# form.as_p #} {# TODO: Wire up jquery tree (multi) select form widget #}
 
-        {# form.as_p #} {# TODO: Wire up jquery tree (multi) select form widget #}
+          <!-- div id="terms" data-url="{{ STATIC_URL }}js/mesh-sample.json"></div -->
 
-        <!-- div id="terms" data-url="{{ STATIC_URL }}js/mesh-sample.json"></div -->
+          <!-- div id="terms"></div -->
 
-        <!-- div id="terms"></div -->
+          <!-- div id="xmlMenuTree"></div>  
+          <script type="text/javascript">
+              $(document).ready(function(){
+                  var options = {
+                      xmlUrl: '{{ STATIC_URL }}menuTree.xml',
+                      treePanelId: 'terms',
+                      loadingText: 'Loading...',
+                      loadingError: 'Error: Loading Error.',
+                      initialExpanded: true,
+                      toggleSpeed: 400,
+                      storeState: true
+                  };
+                  $('#xmlMenuTree').xmltree(options);
+              });
+          </script -->
+          <!-- js tree -->
+          <div id="term_tree">
+              <ul>
+                  {% recursetree nodes %}
+                      <li>
+                          {{ node.term }}
+                          {% if not node.is_leaf_node %}
+                              <ul class="children">
+                                  {{ children }}
+                              </ul>
+                          {% endif %}
+                      </li>
+                  {% endrecursetree %}
+              </ul>
 
-        <!-- div id="xmlMenuTree"></div>  
-        <script type="text/javascript">
-            $(document).ready(function(){
-                var options = {
-                    xmlUrl: '{{ STATIC_URL }}menuTree.xml',
-                    treePanelId: 'terms',
-                    loadingText: 'Loading...',
-                    loadingError: 'Error: Loading Error.',
-                    initialExpanded: true,
-                    toggleSpeed: 400,
-                    storeState: true
-                };
-                $('#xmlMenuTree').xmltree(options);
-            });
-        </script -->
-        <!-- js tree -->
-        <div id="term_tree">
-            <ul>
-                {% recursetree nodes %}
-                    <li>
-                        {{ node.term }}
-                        {% if not node.is_leaf_node %}
-                            <ul class="children">
-                                {{ children }}
-                            </ul>
-                        {% endif %}
-                    </li>
-                {% endrecursetree %}
-            </ul>
+          </div>
+          <script>
+          $(function () { $('#term_tree').jstree(
+              {"plugins" : [ "checkbox" ],  //"wholerow", 
+               "core" : 
+                  { 'multiple': false }
+              }
+              ); });
+          // See: Ajax and JSON versions http://www.jstree.com/docs/json/
+          // plugins http://www.jstree.com/plugins/
+          </script>
+          <button type="submit">Select</button>
 
-        </div>
-        <script>
-        $(function () { $('#term_tree').jstree(
-            {"plugins" : [ "checkbox" ],  //"wholerow", 
-             "core" : 
-                { 'multiple': false }
-            }
-            ); });
-        // See: Ajax and JSON versions http://www.jstree.com/docs/json/
-        // plugins http://www.jstree.com/plugins/
-        </script>
-        <button type="submit">Select</button>
+          <!-- <script>
+          $('#terms').tree();
 
-        <!-- <script>
-        $('#terms').tree();
+          $('#terms').tree({
+               data: data
+          });
 
-        $('#terms').tree({
-             data: data
-        });
+          </script -->
+      </form>
+    {% else %}
+        <h2>No tree family selected</h2>
+        <p>Select a Mesh Tree family to explore or use the quick term search.<p>
 
-        </script -->
-    </form>
+    {% endif %}
 {% endblock %}
