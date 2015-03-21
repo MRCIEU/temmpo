@@ -1,13 +1,14 @@
-from django.views.generic.base import TemplateView  # , DetailView
-from django.views.generic.edit import FormView, CreateView, UpdateView
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateView  # , DetailView
+from django.views.generic.edit import FormView, CreateView, UpdateView
 # from django.views.generic.list import ListView
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
-from browser.models import SearchCriteria, SearchResult
+from browser.models import SearchCriteria, SearchResult, MeshTerm
 
 
 class HomeView(TemplateView):
@@ -74,12 +75,18 @@ class ExposureSelector(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the form
         """
+        self.tree_number = kwargs.get('tree_number', 'A')
         return super(ExposureSelector, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ExposureSelector, self).get_context_data(**kwargs)
         context['active'] = 'search'
         context['type'] = 'Exposure'
+        context['term_selector_by_family_url'] = 'exposure-selector-by-family'
+        context['root_nodes'] = MeshTerm.objects.root_nodes()
+        context['selected_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)   # TODO Selecting could be based on person preferences
+        context['nodes'] = context['selected_node'].get_descendants(include_self=False) # MeshTerm.objects.filter(parent=context['selected_node'])# context['selected_node'].get_descendants(include_self=True)
+
         return context
 
 

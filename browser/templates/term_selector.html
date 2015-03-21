@@ -1,4 +1,5 @@
-{% extends "twocolumn2.html" %}
+{% extends "threecolumn.html" %}
+{% load mptt_tags %}
 
 {% block title %}TeMMPo: Select {{ type }} MeSH® terms{% endblock %}
 
@@ -75,104 +76,94 @@ var data = [
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jstree/themes/default/style.min.css" />
 {% endblock %}
 
-{% block sectiontitle %}Select MeSH® terms{% endblock %}
+{% block left-column %}
+    <h2>Quick search</h2>
 
-{% block section %}
-<form action="" method="post">
-{% csrf_token %}
-{# form.as_p #} {# TODO: Wire up jquery tree (multi) select form widget #}
+    {# TODO wire up search by term name form #}
+    <form action="." method="post">
+        {% csrf_token %}
+        <label for="tags">Term</label>
+        <input id="tags" name="tags" type="text" value="" />
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
 
-<!-- div id="terms" data-url="{{ STATIC_URL }}js/mesh-sample.json"></div -->
+{% block middle-column %}
 
-<!-- div id="terms"></div --> 
+    <h2>MeSH® trees</h2>
 
-<!-- div id="xmlMenuTree"></div>  
-<script type="text/javascript">  
-    $(document).ready(function(){  
-        var options = {    
-            xmlUrl: '{{ STATIC_URL }}menuTree.xml',  
-            treePanelId: 'terms',  
-            loadingText: 'Loading...',  
-            loadingError: 'Error: Loading Error.',  
-            initialExpanded: true,  
-            toggleSpeed: 400,  
-            storeState: true  
-        };  
-        $('#xmlMenuTree').xmltree(options);  
-    });  
-</script -->  
-
-<!-- js tree -->
-<div id="jstree_demo_div">
-  <ul>
-    <!-- Anatomy A Anatomy [A]
-    Organisms B Organisms [B]
-    Diseases C Diseases [C]
-    Chemicals and Drugs D Chemicals and Drugs [D]
-    Analytical, Diagnostic and Therapeutic Techniques and Equipment E Analytical, Diagnostic and Therapeutic Techniques and Equipment [E]
-    Psychiatry and Psychology F Psychiatry and Psychology [F]
-    Phenomena and Processes G Phenomena and Processes [G]
-    Disciplines and Occupations H Disciplines and Occupations [H]
-    Anthropology, Education, Sociology and Social Phenomena I Anthropology, Education, Sociology and Social Phenomena [I]
-    Technology, Industry, Agriculture J Technology, Industry, Agriculture [J]
-    Humanities K Humanities [K]
-    Information Science L Information Science [L]
-    Named Groups M Named Groups [M]
-    Health Care N Health Care [N]
-    Publication Characteristics V Publication Characteristics [V]
-    Geographicals Z Geographicals [Z]
--->
-
-    <li>Human
-      <ul>
-        <li>Child 1</li>
-        <li><a href="#">Child 2</a></li>
-      </ul>
-    </li>
-    <li>Parent 2
-      <ul>
-        <li>Child A</li>
-        <li><a href="#">Child B</a></li>
-        <li><a href="#">Child C</a></li>
-        <li><a href="#">Child D</a></li>
-        <li><a href="#">Child E</a></li>
-      </ul>
-    </li>
-  </ul>
-</div>
-
-<script>
-$(function () { $('#jstree_demo_div').jstree(
-    {"plugins" : [ "checkbox" ],  //"wholerow", 
-     "core" : 
-        { 'multiple': false }
-    }
-    ); });
-// See: Ajax and JSON versions http://www.jstree.com/docs/json/
-// plugins http://www.jstree.com/plugins/
-</script>
-<button type="submit">Submit</button>
-</form>
-
-<!-- <script>
-$('#terms').tree();
-
-$('#terms').tree({
-     data: data
-});
-
-</script -->
+    <!-- Mesh Term tree families -->
+    {% for node in root_nodes %}
+        <ul class="link-list">
+            <li><a href="{% url term_selector_by_family_url pk=form.instance.id tree_number=node.tree_number %}">{{ node.term }}</a></li>
+        </ul>
+    {% endfor %}
 
 {% endblock %}
 
-{% block section-minor-title %}Quick search{% endblock %}
+{% block right-column %}
 
-{% block section-minor %}
-<form action="" method="post">
-{% csrf_token %}
-<label for="tag">Term</label>
-<input id="tags" name="tags" type="text" value="" />
-<button type="submit">Submit</button>
-</form>
+    <h2>Select {{ selected_node }} <acronym title="Medical Subject Headings">MeSH®</acronym> terms</h2>
 
+    <form action="." method="post">
+        {% csrf_token %}
+
+        {# form.as_p #} {# TODO: Wire up jquery tree (multi) select form widget #}
+
+        <!-- div id="terms" data-url="{{ STATIC_URL }}js/mesh-sample.json"></div -->
+
+        <!-- div id="terms"></div -->
+
+        <!-- div id="xmlMenuTree"></div>  
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var options = {
+                    xmlUrl: '{{ STATIC_URL }}menuTree.xml',
+                    treePanelId: 'terms',
+                    loadingText: 'Loading...',
+                    loadingError: 'Error: Loading Error.',
+                    initialExpanded: true,
+                    toggleSpeed: 400,
+                    storeState: true
+                };
+                $('#xmlMenuTree').xmltree(options);
+            });
+        </script -->
+        <!-- js tree -->
+        <div id="term_tree">
+            <ul>
+                {% recursetree nodes %}
+                    <li>
+                        {{ node.term }}
+                        {% if not node.is_leaf_node %}
+                            <ul class="children">
+                                {{ children }}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endrecursetree %}
+            </ul>
+
+        </div>
+        <script>
+        $(function () { $('#term_tree').jstree(
+            {"plugins" : [ "checkbox" ],  //"wholerow", 
+             "core" : 
+                { 'multiple': false }
+            }
+            ); });
+        // See: Ajax and JSON versions http://www.jstree.com/docs/json/
+        // plugins http://www.jstree.com/plugins/
+        </script>
+        <button type="submit">Submit</button>
+
+        <!-- <script>
+        $('#terms').tree();
+
+        $('#terms').tree({
+             data: data
+        });
+
+        </script -->
+    </form>
 {% endblock %}
