@@ -1,0 +1,16 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Select filter{% endblock %}
+
+{% block sectiontitle %}Select filter{% endblock %}
+
+{% block section %}
+
+    <form action="." method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="button">Start search</button>
+    </form>
+{% endblock %}

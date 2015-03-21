@@ -4,6 +4,7 @@ import unicodedata
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.humanize.templatetags.humanize import naturaltime
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -102,6 +103,11 @@ class SearchCriteria(models.Model):
     genes = models.ManyToManyField(Gene, blank=True, null=True,
         related_name='+', help_text="Enter one or more gene symbol")
 
+    def __unicode__(self):
+        if self.name:
+            return self.name
+        else:
+            return naturaltime(self.created)
 
 class SearchResult(models.Model):
 

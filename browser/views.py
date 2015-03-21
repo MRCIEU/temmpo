@@ -51,6 +51,7 @@ class SearchView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
         context['active'] = 'search'
+        context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
         return context
 
     def get_initial(self):
@@ -63,26 +64,21 @@ class SearchView(CreateView):
         return super(SearchView, self).form_valid(form)
 
 
-class ExposureSelector(UpdateView):
-    template_name = "term_selector.html"
-    form_class = ExposureForm
-    model = SearchCriteria
-
-    def get_success_url(self):
-        return reverse('mediator-selector', kwargs={'pk': self.object.id})
+class TermSelectorAbstractUpdateView(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the form
         """
         self.tree_number = kwargs.get('tree_number', 'A')
-        return super(ExposureSelector, self).dispatch(request, *args, **kwargs)
+        return super(TermSelectorAbstractUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(ExposureSelector, self).get_context_data(**kwargs)
+        """ Sub class should define type, term_selector_url,
+            term_selector_by_family_url """
+
+        context = super(TermSelectorAbstractUpdateView, self).get_context_data(**kwargs)
         context['active'] = 'search'
-        context['type'] = 'Exposure'
-        context['term_selector_by_family_url'] = 'exposure-selector-by-family'
         context['root_nodes'] = MeshTerm.objects.root_nodes()
         context['selected_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)   # TODO Selecting could be based on person preferences
         context['nodes'] = context['selected_node'].get_descendants(include_self=False) # MeshTerm.objects.filter(parent=context['selected_node'])# context['selected_node'].get_descendants(include_self=True)
@@ -90,7 +86,25 @@ class ExposureSelector(UpdateView):
         return context
 
 
-class MediatorSelector(UpdateView):
+class ExposureSelector(TermSelectorAbstractUpdateView):
+
+    template_name = "term_selector.html"
+    form_class = ExposureForm
+    model = SearchCriteria
+
+    def get_success_url(self):
+        return reverse('mediator-selector', kwargs={'pk': self.object.id})
+
+    def get_context_data(self, **kwargs):
+        context = super(ExposureSelector, self).get_context_data(**kwargs)
+        context['type'] = 'Exposure'
+        context['term_selector_by_family_url'] = 'exposure-selector-by-family'
+
+        return context
+
+
+class MediatorSelector(TermSelectorAbstractUpdateView):
+
     template_name = "term_selector.html"
     form_class = MediatorForm
     model = SearchCriteria
@@ -98,45 +112,39 @@ class MediatorSelector(UpdateView):
     def get_success_url(self):
         return reverse('outcome-selector', kwargs={'pk': self.object.id})
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the form
-        """
-        return super(MediatorSelector, self).dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
-        context['active'] = 'search'
         context['type'] = 'Mediator'
+        context['term_selector_by_family_url'] = 'outcome-selector-by-family'
         return context
 
 
-class OutcomeSelector(UpdateView):
+class OutcomeSelector(TermSelectorAbstractUpdateView):
+
     template_name = "term_selector.html"
     form_class = OutcomeForm
     model = SearchCriteria
 
     def get_success_url(self):
-        # TODO adjust to use newly created object
-        return reverse('filter-selector', kwargs={'pk': self.search_result.id})
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the form
-        """
-        return super(OutcomeSelector, self).dispatch(request, *args, **kwargs)
+        return reverse_lazy('filter-selector', kwargs={'pk': self.search_result.id})
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
-        context['active'] = 'search'
         context['type'] = 'Outcome'
+        context['term_selector_by_family_url'] = 'outcome-selector-by-family'
         return context
 
     def form_valid(self, form):
-        # Create a new SearchCriteria object
-        self.search_result = SearchResult(criteria=self.object)
+        # Create a new SearchResult object
+        # TODO test
+        print "OutcomeSelector:form_valid"
+        print "self.object", self.object
+        print "self.form.instance"
+        self.search_result = SearchResult(criteria=form.instance)
         self.search_result.save()
-        return super(OutcomeSelector, self).form_valid(form)
+
+        result = super(OutcomeSelector, self).form_valid(form)
+        return result
 
 
 class SearchExisting(TemplateView):
@@ -152,7 +160,7 @@ class SearchExisting(TemplateView):
 
 class FilterSelector(UpdateView):
     # TODO should be a single select version of template
-    template_name = "term_selector.html"
+    template_name = "filter_selector.html"
     form_class = FilterForm
     model = SearchResult
 

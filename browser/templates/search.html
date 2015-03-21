@@ -8,14 +8,14 @@
 {% block sectiontitle %}Search{% endblock %}
 
 {% block section-minor %}
-
-<p>Reuse an existing collection:</p>
-{# TODO: Remove place holder existing file uploads #}
+<p>Existing search criteria:</p>
 <ul class="link-list">
-    <li><a href="{# url 'edit-search' pk={{ upload.id}} #}">citation-23001.txt</a></li>
-    <li><a href="">citation-99001.txt</a></li>
+    {% for search in criteria %}
+        <li><a href="{% url 'edit-search' pk=search.id %}">{{ search }}</a></li>
+    {% empty %}
+        <li>No saved search criteria.</li>
+    {% endfor %}
 </ul>
-
 {% endblock %}
 
 {% block section %}
@@ -27,5 +27,4 @@
     {{ form.as_p }}
     <button type="submit" class="button">Upload</button>
 </form>
-
 {% endblock %}
