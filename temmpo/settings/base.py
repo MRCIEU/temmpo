@@ -38,10 +38,11 @@ DEFAULT_APPS = [
     'django.contrib.staticfiles',
 ]
 
+THIRD_PARTY_PRE_APPS = ['autocomplete_light',]
 THIRD_PARTY_APPS = ['registration', 'mptt', ] # 'oraclepool',
 LOCAL_APPS = ['browser',]
 
-INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = THIRD_PARTY_PRE_APPS + DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
