@@ -1,11 +1,18 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
+# browser app dependencies
+import autocomplete_light
+autocomplete_light.autodiscover()
+
 from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector)
 
 urlpatterns = patterns('',
+    # browser app dependencies
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
+
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
