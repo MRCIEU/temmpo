@@ -5,7 +5,7 @@
 
 {% block scripts %}
 <!-- Not bad, but not check box style -->
-<!-- <script src="{{ STATIC_URL }}js/tree.jquery.js"></script> 
+<!-- <script src="{{ STATIC_URL }}js/tree.jquery.js"></script>
 <script>
 var data = [
     {
@@ -76,6 +76,11 @@ var data = [
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jstree/themes/default/style.min.css" />
 {% endblock %}
 
+
+{% block page-heading %}
+<h1>{{ form_title }}</h1>
+{% endblock %}
+
 {% block left-column %}
     <h2>Quick search</h2>
 
@@ -83,14 +88,13 @@ var data = [
     <form action="." method="post">
         {% csrf_token %}
         <label for="tags">Term</label>
-        <input id="tags" name="tags" type="text" value="" />
+        <input id="tags" name="tags" type="text" value="" disabled />
 
-        <button type="submit">Add</button>
+        <button type="submit" disabled>Add</button>
     </form>
 {% endblock %}
 
 {% block middle-column %}
-
     <h2>MeSH® trees</h2>
 
     <!-- Mesh Term tree families -->
@@ -108,7 +112,7 @@ var data = [
 {% endblock %}
 
 {% block right-column %}
-    
+
     {% if selected_tree_root_node %}
       <h2>Select {{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
 
@@ -121,7 +125,7 @@ var data = [
 
           <!-- div id="terms"></div -->
 
-          <!-- div id="xmlMenuTree"></div>  
+          <!-- div id="xmlMenuTree"></div>
           <script type="text/javascript">
               $(document).ready(function(){
                   var options = {
@@ -154,8 +158,8 @@ var data = [
           </div>
           <script>
           $(function () { $('#term_tree').jstree(
-              {"plugins" : [ "checkbox" ],  //"wholerow", 
-               "core" : 
+              {"plugins" : [ "checkbox" ],  //"wholerow",
+               "core" :
                   { 'multiple': false }
               }
               ); });
