@@ -10,7 +10,15 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from os import uname
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+# Dynamic config based on server host, vebuild and if dev, user name
+SERVER = uname()[1]
+THIS_PATH = os.path.dirname(__file__)
+APP_ROOT = '/'.join(THIS_PATH.split('/')[0:-4])
+VEDIR = APP_ROOT.split('/')[-1]  # demo, alpha etc.
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
