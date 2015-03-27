@@ -19,7 +19,7 @@ def pre_populate_genes():
         for line in genefile:
             line = line.strip().split()
             genename = line[2]
-            print genename
+            #print genename
             if line[4] == "-":
                 synonyms = []
             else:
