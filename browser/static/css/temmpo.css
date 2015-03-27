@@ -6,6 +6,11 @@ h1,h2 {
     text-transform: none;
 }
 
+h1 {
+  font-size : 210%;
+  padding-left : 90px;
+}
+
 dd {
     line-height: 1.8em;
 }
@@ -56,7 +61,7 @@ dd {
   vertical-align: middle;
 }
 
-.form-table 
+.form-table
 {
   margin-bottom: 1em;
 }
