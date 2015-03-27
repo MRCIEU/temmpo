@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
 import unicodedata
+import os
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -57,8 +58,11 @@ class Upload(models.Model):
     abstracts_upload = models.FileField(upload_to=get_user_upload_location)
 
     def __str__(self):
-        return self.abstracts_upload.name
+        return self.filename
 
+    @property
+    def filename(self):
+        return os.path.basename(self.abstracts_upload.file.name)
 
 class Abstract(models.Model):
     """ Would be useful for database/python based matching
