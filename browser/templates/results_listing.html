@@ -30,27 +30,30 @@ $(document).ready(function() {
     <thead>
         <tr>
             <th scope="col" class="dt-left">Abstracts</th>
-            <th scope="col" class="dt-left">Date</th>
+            <th scope="col" class="dt-left">Date criteria selected</th>
             <th scope="col" class="dt-left">Terms</th>
             <th scope="col" class="dt-left">Visualisations</th>
             <th scope="col" class="dt-left">Archives</th>
             <!-- th scope="col">Delete</th --> {# TODO Should each file & or only related searches be deletable #}
         </tr>
     </thead>
-    <tbody>{# TODO: Remove place holder output and loop through search results #}
+    <tbody>
+        {% for result in results %}
         <tr>
-            <th scope="row">citation-23001.txt</th>
-            <td>23/02/2015</td>
-            <td>Human</td> 
-            <td><a href="{% url 'results' pk='1' %}" title="Visualisation of 'Human' over citation-23001.txt">View result</a></td>
-            <td><a href="#" title="Download visualisation of 'Human' over citation-23001.txt">Download archive</a></td>
+            <th scope="row">{{ result.criteria.upload }}</th>
+            <td>{{ result.criteria.created }}</td>
+            <td>{{ result.mesh_filter }}</td> 
+            <td><a href="{% url 'results' pk='{{ result.pk }}' %}" title="Visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">View result</a></td>
+            <td><a href="#" title="Download visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download archive</a></td>
             <!-- <td>[X]</td> -->
         </tr>
+        {% endfor %}
+        {# TODO: Remove place holder output and loop through search results #}
         <tr>
             <th scope="row">citation-23001.txt</th>
             <td>23/02/2015</td>
             <td>Blood Transfusion</td>
-            <td><a href="#" title="Visualisation of 'Blood Transfusion' over citation-23001.txt">View result</a></td>
+            <td><a href="{% url 'results' pk='99' %}" title="Visualisation of 'Blood Transfusion' over citation-23001.txt">View result</a></td>
             <td><a href="#" title="Download visualisation of 'Blood Transfusion' over citation-23001.txt">Download archive</a></td>
             <!-- <td>[X]</td> -->
         </tr>
@@ -58,7 +61,7 @@ $(document).ready(function() {
             <th scope="row">citation-99001.txt</th>
             <td>20/02/2015</td>
             <td>Coenzymes</td>
-            <td><a href="#" title="Visualisation of 'Coenzymes' over citation-99001.txt">View result</a></td>
+            <td><a href="{% url 'results' pk='99' %}" title="Visualisation of 'Coenzymes' over citation-99001.txt">View result</a></td>
             <td><a href="#" title="Download visualisation of 'Coenzymes' over citation-99001.txt">Download archive</a></td>
             <!-- <td>[X]</td> -->
         </tr>
