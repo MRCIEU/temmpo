@@ -36,6 +36,7 @@ class SearchView(CreateView):
         # This should redirect to newly create search criteria tied to
         # uploaded file
         # Create a new SearchCriteria object
+        print "SEARCH VIEW"
         self.search_criteria = SearchCriteria(upload=self.object)
         self.search_criteria.save()
         return reverse('exposure-selector',
@@ -97,6 +98,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ExposureSelector, self).get_context_data(**kwargs)
+        context['form_title'] = 'Select an exposure'
         context['type'] = 'Exposure'
         context['term_selector_by_family_url'] = 'exposure-selector-by-family'
 
@@ -114,6 +116,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
+        context['form_title'] = 'Select a mediator'
         context['type'] = 'Mediator'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
         return context
@@ -130,6 +133,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
+        context['form_title'] = 'Select an outcome'
         context['type'] = 'Outcome'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
         return context
@@ -172,6 +176,7 @@ class FilterSelector(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(FilterSelector, self).get_context_data(**kwargs)
+        context['form_title'] = 'Select a filter'
         context['active'] = 'search'
         return context
 
