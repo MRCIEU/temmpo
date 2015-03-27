@@ -16,20 +16,21 @@
 			<div class="container">
 				<div class="row">
 					<div class="12u">
-						
+
 						{% include 'includes/menu.html' %}
-					
+
 					</div>
 				</div>
 			</div>
 		</div>
+		{% block page-heading %}{% endblock %}
 		<div id="main">
 			<div class="container">
 				<div class="row main-row">
 					<div class="3u">
 
 						{% block left-column %}{% endblock %}
-					
+
 					</div>
 					<div class="3u">
 						{% block middle-column %}{% endblock %}
