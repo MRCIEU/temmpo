@@ -30,6 +30,7 @@ class Gene(models.Model):
     # TBC: http://www.genenames.org/cgi-bin/genefamilies/download-all/json
     """
     name = models.CharField(max_length=300)  # TODO: Confirm maximum length
+    synonym_for = models.ForeignKey('self', null=True, blank=True, related_name='primary_gene')
 
 
 class MeshTerm(MPTTModel):
