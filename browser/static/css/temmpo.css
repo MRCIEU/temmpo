@@ -80,4 +80,9 @@ dd {
   padding:1em !important;
   margin:1em !important;
   line-height:1em !important;
+  margin-bottom : 10px;
+}
+
+ul#tree-family li {
+   margin-bottom : 8px;
 }
