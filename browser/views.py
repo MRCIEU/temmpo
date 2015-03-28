@@ -37,7 +37,6 @@ class SearchView(CreateView):
         # This should redirect to newly create search criteria tied to
         # uploaded file
         # Create a new SearchCriteria object
-        print "SEARCH VIEW"
         self.search_criteria = SearchCriteria(upload=self.object)
         self.search_criteria.save()
         return reverse('exposure-selector',
@@ -108,7 +107,12 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         context['type'] = 'Exposure'
         context['next_type'] = 'Mediators'
         context['term_selector_by_family_url'] = 'exposure-selector-by-family'
+        # This is a mess, the form model is SearchCriteria but the ID in the
+        # URL is for the SearchResult
+        search_result = SearchResult.objects.get(pk = self.object.id)
+        context['pre_selected'] = ",".join(search_result.criteria.get_form_codes('exposure'))
 
+        print self.object.id, search_result.criteria.get_form_codes('exposure')
         return context
 
     def form_valid(self, form):
@@ -125,6 +129,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
                 search_result.save()
             else:
                 search_result = SearchResult.objects.get(pk = form.instance.id)
+                search_result.save()
 
             cleaned_data = form.cleaned_data
 
@@ -169,7 +174,10 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
                     mesh_term = MeshTerm.objects.get(pk = term_id)
                     search_criteria.exposure_terms.add(mesh_term)
 
-            print search_result.id, search_result.criteria.exposure_terms.all()
+                self.search_result = search_result
+                self.search_result.save()
+
+            print search_result.id, search_result.criteria.id, search_result.criteria.exposure_terms.all()
             return super(ExposureSelector, self).form_valid(form)
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
