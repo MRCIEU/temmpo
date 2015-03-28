@@ -105,6 +105,16 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
 
         return context
 
+#    def form_valid(self, form):
+#        print form.cleaned_data
+#        self.object = form.save(commit=False)
+#        for person in form.cleaned_data['members']:
+#            membership = Membership()
+#            membership.group = self.object
+#            membership.person = person
+#            membership.save()
+#        return super(ModelFormMixin, self).form_valid(form)
+
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
 
