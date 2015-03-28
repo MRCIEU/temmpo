@@ -1,6 +1,5 @@
 {% extends "onecolumn.html" %}
 {% load humanize %}
-
 {% block title %}TeMMPo: My list{% endblock %}
 
 {% block styles %}
@@ -42,12 +41,12 @@ $(document).ready(function() {
         {% for result in results %}
         <tr>
             <th scope="row" class="dt-left">{{ result.criteria.upload }}</th>
-            <td>{{ result.criteria.created|date:"d/M/Y H:i" }}</td>
+            <td>{{ result.criteria.created|date:"d M Y H:i" }}</td>
             <td>
                 {% if result.has_completed %}
                 <a href="{% url 'results' pk=result.pk %}" title="Visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">View result</a>
                 {% else %}
-                <em>Processing (started {{ results.started_processing|naturaltime}})</em>
+                <em>Processing</em> (started {{ result.started_processing|naturaltime}})</em>
                 {% endif %}
             </td>
             <td>
