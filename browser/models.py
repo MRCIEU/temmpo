@@ -132,7 +132,7 @@ class SearchCriteria(models.Model):
 
 class SearchResult(models.Model):
 
-    criteria = models.ForeignKey(SearchCriteria)
+    criteria = models.ForeignKey(SearchCriteria, related_name='search_results')
     # related_name="result"
 
     # Abstracting out mesh filter and results as more likely to change the filter
