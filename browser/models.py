@@ -145,6 +145,9 @@ class SearchResult(models.Model):
     # Store the unique part of the results filenames
     filename_stub = models.CharField(max_length=100, blank=True, null=True)
 
+    started_processing = models.DateTimeField(blank=True, null=True)
+    ended_processing = models.DateTimeField(blank=True, null=True)
+
 """
 Should be able to use default Django User without any custom fields
 
