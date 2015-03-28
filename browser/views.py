@@ -98,14 +98,13 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
 
     def get_success_url(self):
         if self.move_type == 'choose':
-            print "choose more"
             return reverse('exposure-selector', kwargs={'pk': self.object.id})
         else:
             return reverse('mediator-selector', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super(ExposureSelector, self).get_context_data(**kwargs)
-        context['form_title'] = 'Select an exposure'
+        context['form_title'] = 'Select Exposures'
         context['type'] = 'Exposure'
         context['next_type'] = 'Mediators'
         context['term_selector_by_family_url'] = 'exposure-selector-by-family'
@@ -178,13 +177,18 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
     template_name = "term_selector.html"
     form_class = MediatorForm
     model = SearchCriteria
+    move_type = 'progress'
 
     def get_success_url(self):
-        return reverse('outcome-selector', kwargs={'pk': self.object.id})
+        if self.move_type == 'choose':
+            return reverse('mediator-selector', kwargs={'pk': self.object.id})
+        else:
+            return reverse('outcome-selector', kwargs={'pk': self.object.id})
+
 
     def get_context_data(self, **kwargs):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
-        context['form_title'] = 'Select a mediator'
+        context['form_title'] = 'Select Mediators'
         context['type'] = 'Mediator'
         context['next_type'] = 'Outcomes'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
@@ -202,7 +206,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
-        context['form_title'] = 'Select an outcome'
+        context['form_title'] = 'Select Outcome'
         context['type'] = 'Outcome'
         context['next_type'] = 'Genes and Filters'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
