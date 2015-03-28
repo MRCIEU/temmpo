@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -401,10 +403,12 @@ class FilterSelector(UpdateView):
 
             # Get search result object
             if not SearchResult.objects.filter(pk = form.instance.id).exists():
-                search_result = SearchResult(criteria=form.instance)
+                search_result = SearchResult(criteria=form.instance,
+                                             started_processing=datetime.datetime.now())
                 search_result.save()
             else:
                 search_result = SearchResult.objects.get(pk = form.instance.id)
+                search_result.started_processing = datetime.datetime.now()
                 search_result.save()
 
         search_criteria = search_result.criteria
@@ -420,6 +424,7 @@ class FilterSelector(UpdateView):
             search_criteria.genes.add(this_gene)
 
         self.search_result = search_result
+        self.search_result.started_processing = datetime.datetime.now()
         self.search_result.save()
 
         # Python subprocess
