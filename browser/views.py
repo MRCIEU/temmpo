@@ -231,7 +231,6 @@ class ResultsListingView(ListView):
 #        return context
 
     def get_queryset(self):
-        print SearchResult.objects.filter(criteria__upload__user = self.request.user)
         return SearchResult.objects.filter(criteria__upload__user = self.request.user)
 
 #class ResultsListingView(TemplateView):
