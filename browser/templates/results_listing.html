@@ -42,9 +42,24 @@ $(document).ready(function() {
         <tr>
             <th scope="row" class="dt-left">{{ result.criteria.upload }}</th>
             <td>{{ result.criteria.created|date:"d/M/Y H:i" }}</td>
-            <td><a href="{% url 'results' pk=result.pk %}" title="Visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">View result</a></td>
-            <td><a href="#" title="Download score data of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download score data</a> (CSV)</td>
-            <td><a href="#" title="Download Abstract IDs for '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download abstract IDs</a> (CSV)</td>
+            <td>
+                {% if result.has_completed %}
+                <a href="{% url 'results' pk=result.pk %}" title="Visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">View result</a>
+                {% else %}
+                <em>Processing</em>
+                {% endif %}
+            </td>
+            <td>
+                {% if result.has_completed %}
+                <a href="#" title="Download score data of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download score data</a> (CSV)
+                {% endif%}
+            </td>
+
+            <td>
+                {% if result.has_completed %}
+                <a href="#" title="Download Abstract IDs for '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download abstract IDs</a> (CSV)
+                {% endif %}
+            </td>
             <!-- <td>[X]</td> -->
         </tr>
         {% endfor %}
