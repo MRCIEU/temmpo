@@ -111,10 +111,10 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         context['term_selector_by_family_url'] = 'exposure-selector-by-family'
         # This is a mess, the form model is SearchCriteria but the ID in the
         # URL is for the SearchResult
-        search_result = SearchResult.objects.get(pk = self.object.id)
-        context['pre_selected'] = ",".join(search_result.criteria.get_form_codes('exposure'))
+        #search_result = SearchResult.objects.get(pk = self.object.id)
+        context['pre_selected'] = ",".join(self.object.get_form_codes('exposure'))
 
-        print self.object.id, search_result.criteria.get_form_codes('exposure')
+        print self.object.id, self.object.get_form_codes('exposure')
         return context
 
     def form_valid(self, form):
@@ -126,12 +126,12 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
             #print "self.form.instance", form.cleaned_data
 
             # Get search result object
-            if not SearchResult.objects.filter(pk = form.instance.id).exists():
-                search_result = SearchResult(criteria=form.instance)
-                search_result.save()
-            else:
-                search_result = SearchResult.objects.get(pk = form.instance.id)
-                search_result.save()
+            #if not SearchResult.objects.filter(pk = form.instance.id).exists():
+            #    search_result = SearchResult(criteria=form.instance)
+            #    search_result.save()
+            #else:
+            #    search_result = SearchResult.objects.get(pk = form.instance.id)
+            #    search_result.save()
 
             cleaned_data = form.cleaned_data
 
@@ -139,7 +139,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
                 self.move_type = cleaned_data['btn_submit']
 
             if 'term_data' in cleaned_data:
-                search_criteria = search_result.criteria
+                search_criteria = self.object
                 search_criteria.save()
 
                 # Get root node
@@ -175,10 +175,10 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
                     mesh_term = MeshTerm.objects.get(pk = term_id)
                     search_criteria.exposure_terms.add(mesh_term)
 
-                self.search_result = search_result
-                self.search_result.save()
+                #self.search_result = search_result
+                #self.search_result.save()
 
-            print search_result.id, search_result.criteria.id, search_result.criteria.exposure_terms.all()
+            #print search_result.id, search_result.criteria.id, search_result.criteria.exposure_terms.all()
             return super(ExposureSelector, self).form_valid(form)
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
@@ -190,7 +190,6 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
 
     def get_success_url(self):
         if self.move_type == 'choose':
-            print "Choose"
             return reverse('mediator-selector', kwargs={'pk': self.object.id})
         else:
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
@@ -203,10 +202,10 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
         context['next_type'] = 'Outcomes'
         context['term_selector_by_family_url'] = 'mediator-selector-by-family'
         # This is a mess
-        search_result = SearchResult.objects.get(pk = self.object.id)
-        context['pre_selected'] = ",".join(search_result.criteria.get_form_codes('mediator'))
+        #search_result = SearchResult.objects.get(pk = self.object.id)
+        context['pre_selected'] = ",".join(self.object.get_form_codes('mediator'))
 
-        print self.object.id, search_result.criteria.get_form_codes('mediator')
+        print self.object.id, self.object.get_form_codes('mediator')
         return context
 
     def form_valid(self, form):
@@ -218,12 +217,12 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
             #print "self.form.instance", form.cleaned_data
 
             # Get search result object
-            if not SearchResult.objects.filter(pk = form.instance.id).exists():
-                search_result = SearchResult(criteria=form.instance)
-                search_result.save()
-            else:
-                search_result = SearchResult.objects.get(pk = form.instance.id)
-                search_result.save()
+            #if not SearchResult.objects.filter(pk = form.instance.id).exists():
+            #    search_result = SearchResult(criteria=form.instance)
+            #    search_result.save()
+            #else:
+            #    search_result = SearchResult.objects.get(pk = form.instance.id)
+            #    search_result.save()
 
             cleaned_data = form.cleaned_data
 
@@ -231,7 +230,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
                 self.move_type = cleaned_data['btn_submit']
 
             if 'term_data' in cleaned_data:
-                search_criteria = search_result.criteria
+                search_criteria = self.object
                 search_criteria.save()
 
                 # Get root node
@@ -267,10 +266,10 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
                     mesh_term = MeshTerm.objects.get(pk = term_id)
                     search_criteria.mediator_terms.add(mesh_term)
 
-                self.search_result = search_result
-                self.search_result.save()
+                #self.search_result = search_result
+                #self.search_result.save()
 
-            print search_result.id, search_result.criteria.id, search_result.criteria.mediator_terms.all()
+            #print search_result.id, search_result.criteria.id, search_result.criteria.mediator_terms.all()
             return super(MediatorSelector, self).form_valid(form)
 
 
@@ -285,7 +284,13 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         if self.move_type == 'choose':
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
         else:
-            return reverse('filter-selector', kwargs={'pk': self.object.id})
+            # Create search results
+            if not SearchResult.objects.filter(criteria = self.object).exists():
+                search_results = SearchResult(criteria=self.object)
+                search_results.save()
+            else:
+                search_results = SearchResult.objects.get(criteria=self.object)
+            return reverse('filter-selector', kwargs={'pk': search_results.id})
 
 
     def get_context_data(self, **kwargs):
@@ -295,10 +300,10 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         context['next_type'] = 'Genes and Filters'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
         # This is a mess
-        search_result = SearchResult.objects.get(pk = self.object.id)
-        context['pre_selected'] = ",".join(search_result.criteria.get_form_codes('outcome'))
+        #search_result = SearchResult.objects.get(pk = self.object.id)
+        context['pre_selected'] = ",".join(self.object.get_form_codes('outcome'))
 
-        print self.object.id, search_result.criteria.get_form_codes('outcome')
+        print self.object.id, self.object.get_form_codes('outcome')
         return context
 
     def form_valid(self, form):
@@ -310,12 +315,12 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
             #print "self.form.instance", form.cleaned_data
 
             # Get search result object
-            if not SearchResult.objects.filter(pk = form.instance.id).exists():
-                search_result = SearchResult(criteria=form.instance)
-                search_result.save()
-            else:
-                search_result = SearchResult.objects.get(pk = form.instance.id)
-                search_result.save()
+            #if not SearchResult.objects.filter(pk = form.instance.id).exists():
+            #    search_result = SearchResult(criteria=form.instance)
+            #    search_result.save()
+            #else:
+            #    search_result = SearchResult.objects.get(pk = form.instance.id)
+            #    search_result.save()
 
             cleaned_data = form.cleaned_data
 
@@ -323,7 +328,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
                 self.move_type = cleaned_data['btn_submit']
 
             if 'term_data' in cleaned_data:
-                search_criteria = search_result.criteria
+                search_criteria = self.object
                 search_criteria.save()
 
                 # Get root node
@@ -359,10 +364,10 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
                     mesh_term = MeshTerm.objects.get(pk = term_id)
                     search_criteria.outcome_terms.add(mesh_term)
 
-                self.search_result = search_result
-                self.search_result.save()
+                #self.search_result = search_result
+                #self.search_result.save()
 
-            print search_result.id, search_result.criteria.id, search_result.criteria.outcome_terms.all()
+            #print search_result.id, search_result.criteria.id, search_result.criteria.outcome_terms.all()
             return super(OutcomeSelector, self).form_valid(form)
 
 
@@ -399,20 +404,23 @@ class FilterSelector(UpdateView):
     def form_valid(self, form):
         # Store genes
         print "eh", form.instance.id
-        if form.is_valid():
+        #if form.is_valid():
+        #
+        #    # Get search result object
+        #    if not SearchResult.objects.filter(pk = form.instance.id).exists():
+        #        search_result = SearchResult(criteria=form.instance,
+        #                                     started_processing=datetime.datetime.now())
+        #        search_result.save()
+        #    else:
+        #        search_result = SearchResult.objects.get(pk = form.instance.id)
+        #        search_result.started_processing = datetime.datetime.now()
+        #        search_result.save()
 
-            # Get search result object
-            if not SearchResult.objects.filter(pk = form.instance.id).exists():
-                search_result = SearchResult(criteria=form.instance,
-                                             started_processing=datetime.datetime.now())
-                search_result.save()
-            else:
-                search_result = SearchResult.objects.get(pk = form.instance.id)
-                search_result.started_processing = datetime.datetime.now()
-                search_result.save()
+        #search_criteria = search_result.criteria
+        #search_criteria.save()
 
+        search_result = self.object
         search_criteria = search_result.criteria
-        search_criteria.save()
 
         gene_data = form.cleaned_data['genes']
         gene_list = gene_data.split(',')
@@ -423,9 +431,10 @@ class FilterSelector(UpdateView):
             this_gene = Gene.objects.get(name__iexact=ind_gene)
             search_criteria.genes.add(this_gene)
 
-        self.search_result = search_result
-        self.search_result.started_processing = datetime.datetime.now()
-        self.search_result.save()
+        #self.search_result = search_result
+        search_result.started_processing = datetime.datetime.now()
+        search_result.save()
+        #self.search_result = search_result
 
         # Python subprocess
         # http://stackoverflow.com/questions/636561/how-can-i-run-an-external-command-asynchronously-from-python
