@@ -44,6 +44,7 @@ DEFAULT_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 ]
 
 THIRD_PARTY_PRE_APPS = ['autocomplete_light',]
@@ -112,7 +113,7 @@ REGISTRATION_OPEN = True
 # from outside of public git repo.
 
 # settings_file_name = 'temmpo_private_settings.py'
-# paths = (os.path.join(os.path.expanduser("~"), settings_file_name), 
+# paths = (os.path.join(os.path.expanduser("~"), settings_file_name),
 #     os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','etc', settings_file_name)))
 
 # for path in paths:
