@@ -1,5 +1,5 @@
 from django import forms
-from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm
+from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
 
 
 class AbstractFileUploadForm(forms.ModelForm):
@@ -85,8 +85,30 @@ class OutcomeForm(forms.ModelForm):
 
 
 class FilterForm(forms.ModelForm):
+    genes = forms.CharField(widget=forms.Textarea,
+                            required=True,
+                            label = 'Enter genes',
+                            help_text = 'CSV separated')
+
+    ex_filter = forms.ChoiceField(widget = forms.Select(),
+                                  choices = ([('1','Human'), ]),
+                                  required = False,
+                                  label = 'Filter')
+
     class Meta:
         model = SearchResult
-        fields = ['mesh_filter', ]
+        fields = ['genes', 'ex_filter' ]
+
+
+    def clean_genes(self):
+        data = self.cleaned_data['genes']
+
+        gene_list = data.split(',')
+
+        for ind_gene in gene_list:
+            if not Gene.objects.filter(name__iexact=ind_gene).exists():
+                raise forms.ValidationError("Unrecognised gene: %s" % ind_gene)
+
+        return data
 
 # TODO create custom form fields widgets
