@@ -125,7 +125,9 @@ class SearchResult(models.Model):
     mesh_filter = models.CharField("MeSH filter", max_length=300, blank=True, null=True)
     results = models.FileField(blank=True, null=True,)  # JSON file for output
     # mediator_counts # TODO need to support displaying mediator match count table
-
+    has_completed = models.Boolean(default=False)
+    # Store the unique part of the results filenames
+    filename_stub = models.CharField(max_length=100, blank=True, null=True)
 
 """
 Should be able to use default Django User without any custom fields
