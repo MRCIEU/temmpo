@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, RedirectView
+from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
@@ -186,7 +187,6 @@ class FilterSelector(UpdateView):
 
 class ResultsView(TemplateView):
     template_name = "results.html"
-
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
          """ Ensure user logs in before viewing the results pages
@@ -210,9 +210,10 @@ class ResultsView(TemplateView):
         return context
 
 
-class ResultsListingView(TemplateView):
+class ResultsListingView(ListView):
     """ TODO: Convert to a ListView """
     template_name = "results_listing.html"
+    context_object_name = "results"
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -220,7 +221,31 @@ class ResultsListingView(TemplateView):
          """
          return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super(ResultsListingView, self).get_context_data(**kwargs)
-        context['active'] = 'results'
-        return context
+#    def get_context_data(self, **kwargs):
+#        context = super(ResultsListingView, self).get_context_data(**kwargs)
+#        context['results'] = SearchResult.objects.filter(criteria__upload__user = self.request.user)
+#
+#        #Application.objects.filter(status='IP', principle_investigator=self.request.user
+#        context['active'] = 'results'
+#
+#        return context
+
+    def get_queryset(self):
+        print SearchResult.objects.filter(criteria__upload__user = self.request.user)
+        return SearchResult.objects.filter(criteria__upload__user = self.request.user)
+
+#class ResultsListingView(TemplateView):
+#    """ TODO: Convert to a ListView """
+#    template_name = "results_listing.html"
+#
+#    @method_decorator(login_required)
+#    def dispatch(self, request, *args, **kwargs):
+#         """ Ensure user logs in before viewing the results listing page
+#         """
+#         return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
+#
+#    def get_context_data(self, **kwargs):
+#        context = super(ResultsListingView, self).get_context_data(**kwargs)
+#        context['active'] = 'results'
+#
+#        return context
