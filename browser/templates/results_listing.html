@@ -32,7 +32,8 @@ $(document).ready(function() {
             <th scope="col" class="dt-left">Abstract file upload</th>
             <th scope="col" class="dt-left">Date criteria selected</th>
             <th scope="col" class="dt-left">Visualisations</th>
-            <th scope="col" class="dt-left">Archives</th>
+            <th scope="col" class="dt-left">Score data</th>
+            <th scope="col" class="dt-left">Abstract IDs</th>
             <!-- th scope="col">Delete</th --> {# TODO Should each file & or only related searches be deletable #}
         </tr>
     </thead>
@@ -42,7 +43,8 @@ $(document).ready(function() {
             <th scope="row" class="dt-left">{{ result.criteria.upload }}</th>
             <td>{{ result.criteria.created|date:"d/M/Y H:i" }}</td>
             <td><a href="{% url 'results' pk=result.pk %}" title="Visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">View result</a></td>
-            <td><a href="#" title="Download visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download archive</a></td>
+            <td><a href="#" title="Download score data of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download score data</a> (CSV)</td>
+            <td><a href="#" title="Download Abstract IDs for '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download abstract IDs</a> (CSV)</td>
             <!-- <td>[X]</td> -->
         </tr>
         {% endfor %}
