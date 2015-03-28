@@ -176,10 +176,24 @@ var data = [
           });
 
           </script -->
-          <input type="text" name="term_data" id="term_data" value="" />
+          <input type="text" name="term_data" id="term_data" value="{{ pre_selected }}" />
           <input type="hidden" name="selected_tree_root_node_id" id="selected_tree_root_node_id" value="{{ selected_tree_root_node_id }}" />
       </form>
       <script src="{{ STATIC_URL }}js/tree_handler.js"></script>
+      <script async type="text/javascript">
+      $( document ).ready(function() {
+          // Open all
+          var pre_selected = "{{ pre_selected }}";
+          var pre_sel_list = pre_selected.split(",");
+
+          pre_sel_list.map( function(item) {
+              var node = '#' + item;
+              // Open the node
+              $('#term_tree').jstree(true).check_node(node);
+          })
+      });
+      </script>
+
     {% else %}
         <h2>No tree family selected</h2>
         <p>Select a Mesh Tree family to explore.<p>
