@@ -83,6 +83,8 @@ class TermSelectorAbstractUpdateView(UpdateView):
         context['root_nodes'] = MeshTerm.objects.root_nodes()
         if self.tree_number:
             context['selected_tree_root_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)   # TODO Selecting could be based on person preferences
+            context['selected_tree_root_node_id'] = MeshTerm.objects.get(tree_number = self.tree_number).pk
+            print "FOoo", MeshTerm.objects.get(tree_number = self.tree_number).pk
             context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
 
         return context
@@ -93,18 +95,84 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
     template_name = "term_selector.html"
     form_class = ExposureForm
     model = SearchCriteria
+    move_type = 'progress'
 
     def get_success_url(self):
-        return reverse('mediator-selector', kwargs={'pk': self.object.id})
+        if self.move_type == 'choose':
+            print "choose more"
+            return reverse('exposure-selector', kwargs={'pk': self.object.id})
+        else:
+            return reverse('mediator-selector', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super(ExposureSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select an exposure'
         context['type'] = 'Exposure'
+        context['next_type'] = 'Mediators'
         context['term_selector_by_family_url'] = 'exposure-selector-by-family'
 
         return context
 
+    def form_valid(self, form):
+        # Store mapping
+        if form.is_valid():
+            # TODO test
+            #print "ExposureSelector:form_valid"
+            #print "self.object", form.instance.id
+            #print "self.form.instance", form.cleaned_data
+
+            # Get search result object
+            if not SearchResult.objects.filter(pk = form.instance.id).exists():
+                search_result = SearchResult(criteria=form.instance)
+                search_result.save()
+            else:
+                search_result = SearchResult.objects.get(pk = form.instance.id)
+
+            cleaned_data = form.cleaned_data
+
+            if 'btn_submit' in cleaned_data:
+                self.move_type = cleaned_data['btn_submit']
+
+            if 'term_data' in cleaned_data:
+                search_criteria = search_result.criteria
+                search_criteria.save()
+
+                # Get root node
+                root_node_id = cleaned_data['selected_tree_root_node_id']
+                root_node = MeshTerm.objects.get(pk = root_node_id)
+
+                # Need to handle data that's been removed
+                orig_terms = search_criteria.get_form_codes('exposure')
+                all_node_terms = cleaned_data['term_data'].split(',')
+                # Terms that are for this node and were previously present
+                same_terms = list(set(orig_terms) & set(all_node_terms))
+                # Terms that were present but don't include new terms requested
+                different_terms = list(set(orig_terms) - set(all_node_terms))
+                # Terms for this node we had before - new request
+                to_add = list(set(same_terms) - set(all_node_terms))
+
+                #print "Adding", to_add
+
+                for potential_term in different_terms:
+                    # Term could still be present but part of this parent node
+                    # so need to remove it
+                    term_id = int(potential_term[5:])
+                    test_term = MeshTerm.objects.get(pk = term_id)
+
+                    if test_term.get_root() == root_node:
+                        # Item has been deselected
+                        #print "removing", test_term
+                        search_criteria.exposure_terms.remove(test_term)
+
+
+                for mesh_term_id in all_node_terms:
+                    term_id = int(mesh_term_id[5:])
+
+                    mesh_term = MeshTerm.objects.get(pk = term_id)
+                    search_criteria.exposure_terms.add(mesh_term)
+
+            print search_result.id, search_result.criteria.exposure_terms.all()
+            return super(ExposureSelector, self).form_valid(form)
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
 
@@ -119,6 +187,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select a mediator'
         context['type'] = 'Mediator'
+        context['next_type'] = 'Outcomes'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
         return context
 
@@ -136,6 +205,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select an outcome'
         context['type'] = 'Outcome'
+        context['next_type'] = 'Genes and Filters'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
         return context
 
