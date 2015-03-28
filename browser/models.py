@@ -97,16 +97,32 @@ class SearchCriteria(models.Model):
     # performance reasons
     exposure_terms = models.ManyToManyField(MeshTerm,
         verbose_name="exposure MeSH terms", blank=True, null=True,
-        help_text="Select one or more terms", related_name='+')
+        help_text="Select one or more terms", related_name='sc_exposure')
     outcome_terms = models.ManyToManyField(MeshTerm,
         verbose_name="outcome MeSH terms", blank=True, null=True,
-        help_text="Select one or more terms", related_name='+')
+        help_text="Select one or more terms", related_name='sc_outcome')
     mediator_terms = models.ManyToManyField(MeshTerm,
         verbose_name="mediator MeSH terms", blank=True, null=True,
-        help_text="Select one or more terms", related_name='+')
+        help_text="Select one or more terms", related_name='sc_mediator')
     # TODO: Decide comma or line delimited, could normalise to look up table as well
     genes = models.ManyToManyField(Gene, blank=True, null=True,
-        related_name='+', help_text="Enter one or more gene symbol")
+        related_name='sc_gene', help_text="Enter one or more gene symbol")
+
+    def get_form_codes(self, search_type = 'exposure'):
+        form_ids = None
+        if search_type == 'exposure':
+            form_ids = self.exposure_terms.values_list('id', flat=True)
+        elif search_type == 'outcome':
+            form_ids = self.outcome_terms.values_list('id', flat=True)
+        elif search_type == 'mediator':
+            form_ids = self.mediator_terms.values_list('id', flat=True)
+        elif search_type == 'gene':
+            form_ids = self.mediator_terms.values_list('id', flat=True)
+
+        if form_ids:
+            return ["%s%s" % ('mtid_', id) for id in form_ids]
+        else:
+            return []
 
     def __unicode__(self):
         if self.name:
