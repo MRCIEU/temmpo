@@ -1,8 +1,8 @@
 {% extends "onecolumn.html" %}
 
-{% block title %}TeMMPo: Select filter{% endblock %}
+{% block title %}TeMMPo: Select genes and filter{% endblock %}
 
-{% block sectiontitle %}Select filter{% endblock %}
+{% block sectiontitle %}Select genes and filter{% endblock %}
 
 {% block section %}
 
@@ -11,6 +11,7 @@
 
         {{ form.as_p }}
 
+        <p>Searches can take a long time so you will be emailed when yours has finished and data is available.</p>
         <button type="submit" class="button">Start search</button>
     </form>
 {% endblock %}
