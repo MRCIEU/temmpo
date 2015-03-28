@@ -1,4 +1,5 @@
 {% extends "onecolumn.html" %}
+{% load humanize %}
 
 {% block title %}TeMMPo: My list{% endblock %}
 
@@ -46,7 +47,7 @@ $(document).ready(function() {
                 {% if result.has_completed %}
                 <a href="{% url 'results' pk=result.pk %}" title="Visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">View result</a>
                 {% else %}
-                <em>Processing</em>
+                <em>Processing (started {{ results.started_processing|naturaltime}})</em>
                 {% endif %}
             </td>
             <td>
