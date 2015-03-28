@@ -167,7 +167,6 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
                         #print "removing", test_term
                         search_criteria.exposure_terms.remove(test_term)
 
-
                 for mesh_term_id in all_node_terms:
                     term_id = int(mesh_term_id[5:])
 
@@ -189,6 +188,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
 
     def get_success_url(self):
         if self.move_type == 'choose':
+            print "Choose"
             return reverse('mediator-selector', kwargs={'pk': self.object.id})
         else:
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
@@ -199,8 +199,77 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
         context['form_title'] = 'Select Mediators'
         context['type'] = 'Mediator'
         context['next_type'] = 'Outcomes'
-        context['term_selector_by_family_url'] = 'outcome-selector-by-family'
+        context['term_selector_by_family_url'] = 'mediator-selector-by-family'
+        # This is a mess
+        search_result = SearchResult.objects.get(pk = self.object.id)
+        context['pre_selected'] = ",".join(search_result.criteria.get_form_codes('mediator'))
+
+        print self.object.id, search_result.criteria.get_form_codes('mediator')
         return context
+
+    def form_valid(self, form):
+        # Store mapping
+        if form.is_valid():
+            # TODO test
+            #print "MediatorSelector:form_valid"
+            #print "self.object", form.instance.id
+            #print "self.form.instance", form.cleaned_data
+
+            # Get search result object
+            if not SearchResult.objects.filter(pk = form.instance.id).exists():
+                search_result = SearchResult(criteria=form.instance)
+                search_result.save()
+            else:
+                search_result = SearchResult.objects.get(pk = form.instance.id)
+                search_result.save()
+
+            cleaned_data = form.cleaned_data
+
+            if 'btn_submit' in cleaned_data:
+                self.move_type = cleaned_data['btn_submit']
+
+            if 'term_data' in cleaned_data:
+                search_criteria = search_result.criteria
+                search_criteria.save()
+
+                # Get root node
+                root_node_id = cleaned_data['selected_tree_root_node_id']
+                root_node = MeshTerm.objects.get(pk = root_node_id)
+
+                # Need to handle data that's been removed
+                orig_terms = search_criteria.get_form_codes('mediator')
+                all_node_terms = cleaned_data['term_data'].split(',')
+                # Terms that are for this node and were previously present
+                same_terms = list(set(orig_terms) & set(all_node_terms))
+                # Terms that were present but don't include new terms requested
+                different_terms = list(set(orig_terms) - set(all_node_terms))
+                # Terms for this node we had before - new request
+                to_add = list(set(same_terms) - set(all_node_terms))
+
+                #print "Adding", to_add
+
+                for potential_term in different_terms:
+                    # Term could still be present but part of this parent node
+                    # so need to remove it
+                    term_id = int(potential_term[5:])
+                    test_term = MeshTerm.objects.get(pk = term_id)
+
+                    if test_term.get_root() == root_node:
+                        # Item has been deselected
+                        #print "removing", test_term
+                        search_criteria.mediator_terms.remove(test_term)
+
+                for mesh_term_id in all_node_terms:
+                    term_id = int(mesh_term_id[5:])
+
+                    mesh_term = MeshTerm.objects.get(pk = term_id)
+                    search_criteria.mediator_terms.add(mesh_term)
+
+                self.search_result = search_result
+                self.search_result.save()
+
+            print search_result.id, search_result.criteria.id, search_result.criteria.mediator_terms.all()
+            return super(MediatorSelector, self).form_valid(form)
 
 
 class OutcomeSelector(TermSelectorAbstractUpdateView):
@@ -208,16 +277,26 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
     template_name = "term_selector.html"
     form_class = OutcomeForm
     model = SearchCriteria
+    move_type = 'progress'
 
     def get_success_url(self):
-        return reverse_lazy('filter-selector', kwargs={'pk': self.search_result.id})
+        if self.move_type == 'choose':
+            return reverse('outcome-selector', kwargs={'pk': self.object.id})
+        else:
+            return reverse('filter-selector', kwargs={'pk': self.object.id})
+
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
-        context['form_title'] = 'Select Outcome'
+        context['form_title'] = 'Select Outcomes'
         context['type'] = 'Outcome'
         context['next_type'] = 'Genes and Filters'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
+        # This is a mess
+        search_result = SearchResult.objects.get(pk = self.object.id)
+        context['pre_selected'] = ",".join(search_result.criteria.get_form_codes('outcome'))
+
+        print self.object.id, search_result.criteria.get_form_codes('outcome')
         return context
 
     def form_valid(self, form):
@@ -231,6 +310,72 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
 
         result = super(OutcomeSelector, self).form_valid(form)
         return result
+
+
+    def form_valid(self, form):
+        # Store mapping
+        if form.is_valid():
+            # TODO test
+            #print "OutcomeSelector:form_valid"
+            #print "self.object", form.instance.id
+            #print "self.form.instance", form.cleaned_data
+
+            # Get search result object
+            if not SearchResult.objects.filter(pk = form.instance.id).exists():
+                search_result = SearchResult(criteria=form.instance)
+                search_result.save()
+            else:
+                search_result = SearchResult.objects.get(pk = form.instance.id)
+                search_result.save()
+
+            cleaned_data = form.cleaned_data
+
+            if 'btn_submit' in cleaned_data:
+                self.move_type = cleaned_data['btn_submit']
+
+            if 'term_data' in cleaned_data:
+                search_criteria = search_result.criteria
+                search_criteria.save()
+
+                # Get root node
+                root_node_id = cleaned_data['selected_tree_root_node_id']
+                root_node = MeshTerm.objects.get(pk = root_node_id)
+
+                # Need to handle data that's been removed
+                orig_terms = search_criteria.get_form_codes('outcome')
+                all_node_terms = cleaned_data['term_data'].split(',')
+                # Terms that are for this node and were previously present
+                same_terms = list(set(orig_terms) & set(all_node_terms))
+                # Terms that were present but don't include new terms requested
+                different_terms = list(set(orig_terms) - set(all_node_terms))
+                # Terms for this node we had before - new request
+                to_add = list(set(same_terms) - set(all_node_terms))
+
+                #print "Adding", to_add
+
+                for potential_term in different_terms:
+                    # Term could still be present but part of this parent node
+                    # so need to remove it
+                    term_id = int(potential_term[5:])
+                    test_term = MeshTerm.objects.get(pk = term_id)
+
+                    if test_term.get_root() == root_node:
+                        # Item has been deselected
+                        #print "removing", test_term
+                        search_criteria.outcome_terms.remove(test_term)
+
+                for mesh_term_id in all_node_terms:
+                    term_id = int(mesh_term_id[5:])
+
+                    mesh_term = MeshTerm.objects.get(pk = term_id)
+                    search_criteria.outcome_terms.add(mesh_term)
+
+                self.search_result = search_result
+                self.search_result.save()
+
+            print search_result.id, search_result.criteria.id, search_result.criteria.outcome_terms.all()
+            return super(OutcomeSelector, self).form_valid(form)
+
 
 
 class SearchExisting(RedirectView):
