@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
-from browser.models import SearchCriteria, SearchResult, MeshTerm
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene
 
 
 class HomeView(TemplateView):
@@ -300,19 +300,6 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         return context
 
     def form_valid(self, form):
-        # Create a new SearchResult object
-        # TODO test
-        print "OutcomeSelector:form_valid"
-        print "self.object", self.object
-        print "self.form.instance"
-        self.search_result = SearchResult(criteria=form.instance)
-        self.search_result.save()
-
-        result = super(OutcomeSelector, self).form_valid(form)
-        return result
-
-
-    def form_valid(self, form):
         # Store mapping
         if form.is_valid():
             # TODO test
@@ -407,8 +394,41 @@ class FilterSelector(UpdateView):
         context['active'] = 'search'
         return context
 
+    def form_valid(self, form):
+        # Store genes
+        print "eh", form.instance.id
+        if form.is_valid():
+
+            # Get search result object
+            if not SearchResult.objects.filter(pk = form.instance.id).exists():
+                search_result = SearchResult(criteria=form.instance)
+                search_result.save()
+            else:
+                search_result = SearchResult.objects.get(pk = form.instance.id)
+                search_result.save()
+
+        search_criteria = search_result.criteria
+        search_criteria.save()
+
+        gene_data = form.cleaned_data['genes']
+        gene_list = gene_data.split(',')
+
+        for ind_gene in gene_list:
+            # Genes have already been checked at this point so we need to get
+            # te gene and then add it to the results
+            this_gene = Gene.objects.get(name__iexact=ind_gene)
+            search_criteria.genes.add(this_gene)
+
+        self.search_result = search_result
+        self.search_result.save()
+
+        # Python subprocess
+        # http://stackoverflow.com/questions/636561/how-can-i-run-an-external-command-asynchronously-from-python
+
+        return super(FilterSelector, self).form_valid(form)
+
     def get_success_url(self):
-        return reverse('results', kwargs={'pk': self.object.id})
+        return reverse('results-listing')
 
 
 class ResultsView(TemplateView):
