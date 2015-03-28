@@ -144,7 +144,7 @@ var data = [
           <div id="term_tree">
               <ul>
                   {% recursetree nodes %}
-                      <li>
+                      <li id="mtid_{{ node.id }}">
                           {{ node.term }}
                           {% if not node.is_leaf_node %}
                               <ul class="children">
@@ -160,14 +160,14 @@ var data = [
           $(function () { $('#term_tree').jstree(
               {"plugins" : [ "checkbox" ],  //"wholerow",
                "core" :
-                  { 'multiple': false }
+                  { 'multiple': true }
               }
               ); });
           // See: Ajax and JSON versions http://www.jstree.com/docs/json/
           // plugins http://www.jstree.com/plugins/
           </script>
-          <button type="submit">Select</button>
-
+          <button type="submit" name="btn_submit" value="choose">Select these terms and choose more {{ type }} terms</button>
+          <button type="submit" name="btn_submit" value="progress">Select these terms and move on to select {{ next_type }}</button>
           <!-- <script>
           $('#terms').tree();
 
@@ -176,10 +176,13 @@ var data = [
           });
 
           </script -->
+          <input type="text" name="term_data" id="term_data" value="" />
+          <input type="hidden" name="selected_tree_root_node_id" id="selected_tree_root_node_id" value="{{ selected_tree_root_node_id }}" />
       </form>
+      <script src="{{ STATIC_URL }}js/tree_handler.js"></script>
     {% else %}
         <h2>No tree family selected</h2>
-        <p>Select a Mesh Tree family to explore or use the quick term search.<p>
+        <p>Select a Mesh Tree family to explore.<p>
 
     {% endif %}
 {% endblock %}
