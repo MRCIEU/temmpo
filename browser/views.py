@@ -84,7 +84,6 @@ class TermSelectorAbstractUpdateView(UpdateView):
         if self.tree_number:
             context['selected_tree_root_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)   # TODO Selecting could be based on person preferences
             context['selected_tree_root_node_id'] = MeshTerm.objects.get(tree_number = self.tree_number).pk
-            print "FOoo", MeshTerm.objects.get(tree_number = self.tree_number).pk
             context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
 
         return context
