@@ -58,7 +58,8 @@ def perform_search(search_result_stub_id):
     WEIGHTFILTER = 2
     GRAPHVIZEDGEMULTIPLIER = 3
     resultfilename = 'results_' + str(search_result_stub.id) + '_' + str.replace(MESHFILTER," ","_").lower() + "_topresults"
-    results_path = os.path.dirname(search_result_stub.criteria.upload.abstracts_upload.path) + '/'
+    results_path = '%s%s' % (settings.APP_ROOT, '/src/temmpo/browser/static/results/')
+    #os.path.dirname(search_result_stub.criteria.upload.abstracts_upload.path) + '/'
     print "Set constants"
 
     # Get synonyms, edges and identifiers, citations
@@ -74,7 +75,8 @@ def perform_search(search_result_stub_id):
                                                   synonymlookup, synonymlisting,\
                                                   exposuremesh, identifiers,\
                                                   edges, outcomemesh, \
-                                                  mediatormesh, MESHFILTER)
+                                                  mediatormesh, MESHFILTER, \
+                                                  results_path, resultfilename)
     print "Counted edges"
 
     # Create results
@@ -130,7 +132,6 @@ def generate_synonyms2():
 def generate_synonyms():
     # Create a dictionary of synoynms
     full_path = "%s%s%s" % (settings.APP_ROOT, '/src/temmpo/browser/static/data-files/', 'Homo_sapiens.gene_info')
-    print full_path
     genefile = open(full_path,'r')
     synonymlookup = dict()
     synonymresults = dict()
@@ -207,9 +208,11 @@ def searchgene(texttosearch, searchstring):
     return searchstringre.search(texttosearch)
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,\
-               identifiers, edges, outcomemesh, mediatormesh, MESHFILTER):
+               identifiers, edges, outcomemesh, mediatormesh, MESHFILTER, \
+               results_path, resultfilename):
     # Go through and count edges
     papercounter = 0
+    citation_id = set()
 
     for citation in citations:
         countthis = 0
@@ -219,6 +222,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     gene = synonymlookup[gene]
                     for genesyn in synonymlisting[gene]:
                         if string.find(citation.fields["Abstract"],genesyn) > 0:
+                            citation_id.add(citation.fields["Unique Identifier"].strip())
                             if searchgene(citation.fields["Abstract"],genesyn):
                                 countthis = 1
                                 for exposure in exposuremesh:
@@ -253,6 +257,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                 try:
                     if string.find(citation.fields["MeSH Subject Headings"],mediator) > 0:
                         countthis = 1
+                        citation_id.add(citation.fields["Unique Identifier"].strip())
                         for exposure in exposuremesh:
                             exposurel = exposure.split(" AND ")
                             if len(exposurel) == 1:
@@ -282,6 +287,13 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     nothing = 0
         if countthis == 1:
             papercounter += 1
+
+    # Output citation ids
+    if citation_id:
+        resultfile = open('%s%s_abstracts.csv' % (results_path,resultfilename),'w')
+        resultfile.write(",\n".join(str(e) for e in citation_id))
+        resultfile.write(",")
+        resultfile.close()
 
     return papercounter, edges, identifiers
 
