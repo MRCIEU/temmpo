@@ -117,12 +117,29 @@ class SearchCriteria(models.Model):
         elif search_type == 'mediator':
             form_ids = self.mediator_terms.values_list('id', flat=True)
         elif search_type == 'gene':
-            form_ids = self.mediator_terms.values_list('id', flat=True)
+            form_ids = self.genes.values_list('id', flat=True)
 
         if form_ids:
             return ["%s%s" % ('mtid_', id) for id in form_ids]
         else:
             return []
+
+    def get_wcrf_input_variables(self, codename = 'exposure'):
+        input_variables = None
+        if codename == 'exposure':
+            input_variables = self.exposure_terms.values_list('term', flat=True)
+        elif codename == 'outcome':
+            input_variables = self.outcome_terms.values_list('term', flat=True)
+        elif codename == 'mediator':
+            input_variables = self.mediator_terms.values_list('term', flat=True)
+        elif codename == 'gene':
+            input_variables = self.genes.values_list('name', flat=True)
+
+        if input_variables:
+            return input_variables
+        else:
+            return []
+
 
     def __unicode__(self):
         if self.name:
