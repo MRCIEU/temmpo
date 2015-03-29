@@ -3,6 +3,9 @@ import datetime
 import string, math
 import os
 
+from django.conf import settings
+from django.core.mail import send_mail
+
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene
 
 class citation:
@@ -16,7 +19,7 @@ class citation:
         self.fields[self.currentfield] += fieldcontent
 
 
-def perform_search(search_result_stub):
+def perform_search(search_result_stub_id):
     """
     Main function for performing the term search.
 
@@ -30,6 +33,12 @@ def perform_search(search_result_stub):
     createjson()
 
     """
+    # Get search result
+    search_result_stub = SearchResult.objects.get(pk = int(search_result_stub_id))
+
+    search_result_stub.started_processing = datetime.datetime.now()
+    search_result_stub.has_completed = False
+    search_result_stub.save()
 
     # Get main data
     user = search_result_stub.criteria.upload.user
@@ -39,11 +48,16 @@ def perform_search(search_result_stub):
     outcomemesh = search_result_stub.criteria.get_wcrf_input_variables('outcome')
     mediatormesh = search_result_stub.criteria.get_wcrf_input_variables('mediator')
 
+    #print "GENE", genelist
+    #print "EXP", exposuremesh
+    #print "OUT", outcomemesh
+    #print "MED", mediatormesh
+
     # Constants
     MESHFILTER = "Human"
     WEIGHTFILTER = 2
     GRAPHVIZEDGEMULTIPLIER = 3
-    resultfilename = str.replace(MESHFILTER," ","_")+"_topresults_v5.csv"
+    resultfilename = 'results_' + str(search_result_stub.id) + '_' + str.replace(MESHFILTER," ","_").lower() + "_topresults"
     results_path = os.path.dirname(search_result_stub.criteria.upload.abstracts_upload.path) + '/'
     print "Set constants"
 
@@ -71,7 +85,7 @@ def perform_search(search_result_stub):
     print "Created results"
 
     # Print edges
-    printedges(edges, exposuremesh, outcomemesh, results_path)
+    printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename)
     print "Printed edges"
 
     createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename)
@@ -82,13 +96,15 @@ def perform_search(search_result_stub):
     search_result_stub.has_completed = True
     # 2 - Give end time
     search_result_stub.ended_processing = datetime.datetime.now()
-
+    search_result_stub.save()
     # 3 - Email user
-    # TODO
+    user_email = search_result_stub.criteria.upload.user.email
+    send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
+    [user_email,])
 
     print "Done housekeeping"
 
-def generate_synonyms():
+def generate_synonyms2():
     """
     Generate a list of gene synonyms
     """
@@ -107,6 +123,31 @@ def generate_synonyms():
                 synonymlookup[syn] = each_gene.name
             synonymlisting[each_gene.name] = all_synonyms + [each_gene.name]
 
+    #print synonymlookup
+    #print synonymlisting
+    return synonymlookup, synonymlisting
+
+def generate_synonyms():
+    # Create a dictionary of synoynms
+    full_path = "%s%s%s" % (settings.APP_ROOT, '/src/temmpo/browser/static/data-files/', 'Homo_sapiens.gene_info')
+    print full_path
+    genefile = open(full_path,'r')
+    synonymlookup = dict()
+    synonymresults = dict()
+    synonymlisting = dict()
+    for line in genefile:
+        line = line.strip().split()
+        genename = line[2]
+        if line[4] == "-":
+            synonyms = []
+        else:
+            synonyms = line[4].split("|")
+        fulllist = synonyms + [genename]
+        for synonym in synonyms:
+                synonymlookup[synonym] = genename
+        synonymlookup[genename] = genename
+        synonymlisting[genename] = fulllist
+    genefile.close()
     return synonymlookup, synonymlisting
 
 def createedgelist(genelist, synonymlookup, exposuremesh, outcomemesh, mediatormesh):
@@ -250,7 +291,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,\
     # Gephi input
 
     ### TODO - Work out where to put results file
-    resultfile = open('%s%s' % (results_path,resultfilename),'w')
+    resultfile = open('%s%s.csv' % (results_path,resultfilename),'w')
 
     exposurecounter = {}
     outcomecounter = {}
@@ -406,7 +447,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,\
     gvfile.close()
 
 
-def printedges(edges, exposuremesh, outcomemesh, results_path):
+def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
     edge_score = ''
     for ikey in edges.keys():
         b,d = 0,0
@@ -419,7 +460,7 @@ def printedges(edges, exposuremesh, outcomemesh, results_path):
         bf,df = float(b),float(d)
         if (bf and df) > 0.0:
             score1 = min(bf,df)/max(bf,df)*(bf+df)
-            edge_score = "\t".join([ikey,str(b),str(d),str(score1)])#,score2
+            edge_score = edge_score + "\t".join([ikey,str(b),str(d),str(score1)]) + "\n"#,score2
         else: score1 = "NA"
     # TODO - Should this be stored anywhere?
 
