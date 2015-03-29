@@ -27,10 +27,11 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block section %}
+<!--
 <p>
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
-
+-->
 <p id="chart"></p>
 <script>
 var margin = {top: 1, right: 1, bottom: 6, left: 1},
@@ -108,7 +109,7 @@ d3.json("{{ json_url }}", function(matches) {
   }
 });
 </script>
-
+<!--
 <div class="mediators-summary">
 <h3>Mediators</h3>
 
@@ -187,5 +188,5 @@ d3.json("{{ json_url }}", function(matches) {
 </table>
 </div>
 {# TODO: Add collapsible form to create a new search based on changing the MeSH filter #}
-
+-->
 {% endblock %}
