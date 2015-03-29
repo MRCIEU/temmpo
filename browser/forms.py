@@ -105,9 +105,19 @@ class FilterForm(forms.ModelForm):
 
         gene_list = data.split(',')
 
+        matched_genes = []
+        unmatched_genes = []
+
         for ind_gene in gene_list:
+            ind_gene = ind_gene.strip()
             if not Gene.objects.filter(name__iexact=ind_gene).exists():
-                raise forms.ValidationError("Unrecognised gene: %s" % ind_gene)
+                unmatched_genes.append(ind_gene)
+            else:
+                matched_genes.append(ind_gene)
+
+        if len(unmatched_genes) > 0:
+            print ",".join(matched_genes)
+            raise forms.ValidationError("Gene(s) not found in current list of stored genes (from Homo_sapiens.gene_info): %s" % ",".join(unmatched_genes))
 
         return data
 
