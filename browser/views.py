@@ -462,10 +462,10 @@ class ResultsView(TemplateView):
         context['active'] = 'results'
 
         # TODO flesh out results object
-
         context['mesh_term_filter'] = 'Human'
         context['article_count'] = 17217
-        context['json_url'] = '/static/js/Human_topresults_v5.csv.json'
+        json_filename = 'results_%s_human_topresults.json' % int(kwargs['pk'])
+        context['json_url'] = '/static/results/' + json_filename
         # TODO TBC: group by mediator
         context['mediators'] = ['ATM'] # Gene or mediator mesh
         context['results'] = [{'exposure':'Diary Products', 'lcount': '5', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '1', 'count':'1'},
@@ -496,6 +496,8 @@ class ResultsListingView(ListView):
 
     def get_queryset(self):
         return SearchResult.objects.filter(criteria__upload__user = self.request.user)
+
+
 
 #class ResultsListingView(TemplateView):
 #    """ TODO: Convert to a ListView """
