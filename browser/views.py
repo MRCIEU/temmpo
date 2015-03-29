@@ -7,11 +7,12 @@ from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
+#from django.core.management import call_command
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene
-
+from browser.matching import perform_search
 
 class HomeView(TemplateView):
     template_name = "home.html"
@@ -114,7 +115,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         #search_result = SearchResult.objects.get(pk = self.object.id)
         context['pre_selected'] = ",".join(self.object.get_form_codes('exposure'))
 
-        print self.object.id, self.object.get_form_codes('exposure')
+        #print self.object.id, self.object.get_form_codes('exposure')
         return context
 
     def form_valid(self, form):
@@ -205,7 +206,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
         #search_result = SearchResult.objects.get(pk = self.object.id)
         context['pre_selected'] = ",".join(self.object.get_form_codes('mediator'))
 
-        print self.object.id, self.object.get_form_codes('mediator')
+        #print self.object.id, self.object.get_form_codes('mediator')
         return context
 
     def form_valid(self, form):
@@ -303,7 +304,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         #search_result = SearchResult.objects.get(pk = self.object.id)
         context['pre_selected'] = ",".join(self.object.get_form_codes('outcome'))
 
-        print self.object.id, self.object.get_form_codes('outcome')
+        #print self.object.id, self.object.get_form_codes('outcome')
         return context
 
     def form_valid(self, form):
@@ -403,7 +404,6 @@ class FilterSelector(UpdateView):
 
     def form_valid(self, form):
         # Store genes
-        print "eh", form.instance.id
         #if form.is_valid():
         #
         #    # Get search result object
@@ -433,11 +433,15 @@ class FilterSelector(UpdateView):
 
         #self.search_result = search_result
         search_result.started_processing = datetime.datetime.now()
+        search_result.has_completed = False
         search_result.save()
         #self.search_result = search_result
 
         # Python subprocess
         # http://stackoverflow.com/questions/636561/how-can-i-run-an-external-command-asynchronously-from-python
+
+        # Run the search
+        perform_searc(search_result.id)
 
         return super(FilterSelector, self).form_valid(form)
 
