@@ -51,13 +51,13 @@ $(document).ready(function() {
             </td>
             <td>
                 {% if result.has_completed %}
-                <a href="#" title="Download score data of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download score data</a> (CSV)
+                <a href="/static/results/results_{{ result.pk }}_human_topresults.csv" title="Download score data of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download score data</a> (CSV)
                 {% endif%}
             </td>
 
             <td>
                 {% if result.has_completed %}
-                <a href="#" title="Download Abstract IDs for '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download abstract IDs</a> (CSV)
+                <a href="/static/results/results_{{ result.pk }}_human_topresults_abstracts.csv" title="Download Abstract IDs for '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download abstract IDs</a> (CSV)
                 {% endif %}
             </td>
             <!-- <td>[X]</td> -->
