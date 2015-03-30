@@ -474,11 +474,11 @@ def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
         bf,df = float(b),float(d)
         if (bf and df) > 0.0:
             score1 = min(bf,df)/max(bf,df)*(bf+df)
-            edge_score = edge_score + "\t".join([ikey,str(b),str(d),str(score1)]) + "\n"#,score2
+            edge_score = edge_score + ",".join([ikey,str(b),str(d),str(score1)]) + ",\n"#,score2
         else: score1 = "NA"
     # TODO - Should this be stored anywhere?
 
-    edgefile = open('%s%s.edge' % (results_path,resultfilename),'w')
+    edgefile = open('%s%s_edge.csv' % (results_path,resultfilename),'w')
     edgefile.write(edge_score)
     edgefile.close()
 
