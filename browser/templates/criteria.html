@@ -1,0 +1,36 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Search criteria{% endblock %}
+
+{% block sectiontitle %}Search criteria{% endblock %}
+
+{% block section %}
+<table id="criteria" class="dataTable display">
+    <caption>Criteria</caption>
+    <thead>
+        <tr>
+        	<th scope="col" class="dt-left">Criteria reference</th>
+            <th scope="col" class="dt-left">Criteria values</th>
+        </tr>
+    </thead>
+     <tbody>
+        <tr>
+        	<th scope="row" class="dt-left">Exposures</th>
+            <td>{{ exposures }}</td>
+        </tr>
+        <tr>
+        	<th scope="row" class="dt-left">Mediators</th>
+            <td>{{ mediators }}</td>
+        </tr>
+        <tr>
+        	<th scope="row" class="dt-left">Outcomes</th>
+            <td>{{ outcomes }}</td>
+        </tr>
+        <tr>
+        	<th scope="row" class="dt-left">Genes</th>
+            <td>{{ genes }}</td>
+        </tr>
+     </tbody>
+</table>
+
+{% endblock %}
