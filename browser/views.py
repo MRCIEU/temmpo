@@ -441,7 +441,7 @@ class FilterSelector(UpdateView):
         # http://stackoverflow.com/questions/636561/how-can-i-run-an-external-command-asynchronously-from-python
 
         # Run the search
-        perform_searc(search_result.id)
+        perform_search(search_result.id)
 
         return super(FilterSelector, self).form_valid(form)
 
