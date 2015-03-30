@@ -62,3 +62,4 @@ db.sqlite3-journal
 .project
 .pydevproject
 org.eclipse.core.resources.prefs
+browser/static/results/results_*
