@@ -7,6 +7,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
+from django.http import Http404
+
 #from django.core.management import call_command
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
@@ -73,6 +75,16 @@ class TermSelectorAbstractUpdateView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the form
         """
+        
+        # Prevent one user viewing data for another
+        scid = int(kwargs['pk'])
+        if SearchCriteria.objects.filter(pk = scid).exists():
+            sccheck = SearchCriteria.objects.get(pk = scid)
+            if request.user.id != sccheck.upload.user.id:
+               raise Http404("Not found")
+        else:
+            raise Http404("Not found")
+        
         self.tree_number = kwargs.get('tree_number', None)
         return super(TermSelectorAbstractUpdateView, self).dispatch(request, *args, **kwargs)
 
@@ -394,6 +406,16 @@ class FilterSelector(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the search form
         """
+        
+        # Prevent user viewing data for another user
+        srid = int(kwargs['pk'])
+        if SearchResult.objects.filter(pk = srid).exists():
+            srcheck = SearchResult.objects.get(pk = srid)
+            if request.user.id != srcheck.criteria.upload.user.id:
+               raise Http404("Not found")
+        else:
+            raise Http404("Not found")
+        
         return super(FilterSelector, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -403,22 +425,7 @@ class FilterSelector(UpdateView):
         return context
 
     def form_valid(self, form):
-        # Store genes
-        #if form.is_valid():
-        #
-        #    # Get search result object
-        #    if not SearchResult.objects.filter(pk = form.instance.id).exists():
-        #        search_result = SearchResult(criteria=form.instance,
-        #                                     started_processing=datetime.datetime.now())
-        #        search_result.save()
-        #    else:
-        #        search_result = SearchResult.objects.get(pk = form.instance.id)
-        #        search_result.started_processing = datetime.datetime.now()
-        #        search_result.save()
-
-        #search_criteria = search_result.criteria
-        #search_criteria.save()
-
+        # Store genes an filter
         search_result = self.object
         search_criteria = search_result.criteria
 
@@ -427,21 +434,22 @@ class FilterSelector(UpdateView):
 
         for ind_gene in gene_list:
             # Genes have already been checked at this point so we need to get
-            # te gene and then add it to the results
+            # the gene and then add it to the results
+            ind_gene = ind_gene.strip()
             this_gene = Gene.objects.get(name__iexact=ind_gene)
             search_criteria.genes.add(this_gene)
 
-        #self.search_result = search_result
+        # Set metadata
         search_result.started_processing = datetime.datetime.now()
         search_result.has_completed = False
         search_result.save()
-        #self.search_result = search_result
-
-        # Python subprocess
-        # http://stackoverflow.com/questions/636561/how-can-i-run-an-external-command-asynchronously-from-python
 
         # Run the search
         perform_search(search_result.id)
+
+        search_result.ended_processing = datetime.datetime.now()
+        search_result.has_completed = True
+        search_result.save()
 
         return super(FilterSelector, self).form_valid(form)
 
@@ -455,6 +463,16 @@ class ResultsView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
          """ Ensure user logs in before viewing the results pages
          """
+         
+         # Prevent user viewing data for another user
+         srid = int(kwargs['pk'])
+         if SearchResult.objects.filter(pk = srid).exists():
+             srcheck = SearchResult.objects.get(pk = srid)
+             if request.user.id != srcheck.criteria.upload.user.id:
+                raise Http404("Not found")
+         else:
+             raise Http404("Not found")
+         
          return super(ResultsView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -482,17 +500,8 @@ class ResultsListingView(ListView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
          """ Ensure user logs in before viewing the results listing page
-         """
+         """        
          return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
-
-#    def get_context_data(self, **kwargs):
-#        context = super(ResultsListingView, self).get_context_data(**kwargs)
-#        context['results'] = SearchResult.objects.filter(criteria__upload__user = self.request.user)
-#
-#        #Application.objects.filter(status='IP', principle_investigator=self.request.user
-#        context['active'] = 'results'
-#
-#        return context
 
     def get_queryset(self):
         return SearchResult.objects.filter(criteria__upload__user = self.request.user)
@@ -505,6 +514,15 @@ class CriteriaView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
          """ Ensure user logs in before viewing
          """
+         # Prevent user viewing data for another user
+         srid = int(kwargs['pk'])
+         if SearchResult.objects.filter(pk = srid).exists():
+             srcheck = SearchResult.objects.get(pk = srid)
+             if request.user.id != srcheck.criteria.upload.user.id:
+                raise Http404("Not found")
+         else:
+             raise Http404("Not found")
+             
          return super(CriteriaView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
