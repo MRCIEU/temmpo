@@ -482,8 +482,9 @@ class ResultsView(TemplateView):
         # TODO flesh out results object
         context['mesh_term_filter'] = 'Human'
         context['article_count'] = 17217
-        json_filename = 'results_%s_human_topresults.json' % int(kwargs['pk'])
-        context['json_url'] = '/static/results/' + json_filename
+        json_filename = reverse('json-data', kwargs=kwargs)
+        #'results_%s_human_topresults.json' % int(kwargs['pk'])
+        context['json_url'] = json_filename
         # TODO TBC: group by mediator
         context['mediators'] = ['ATM'] # Gene or mediator mesh
         context['results'] = [{'exposure':'Diary Products', 'lcount': '5', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '1', 'count':'1'},
@@ -539,6 +540,80 @@ class CriteriaView(TemplateView):
         return context
 
 
+class CountDataView(RedirectView):
+    permanent = True
+    query_string = False
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+         """ Ensure user logs in before viewing
+         """
+         # Prevent user viewing data for another user
+         # Pretty dirty but OK for now...
+         srid = int(kwargs['pk'])
+         if SearchResult.objects.filter(pk = srid).exists():
+             srcheck = SearchResult.objects.get(pk = srid)
+             if request.user.id != srcheck.criteria.upload.user.id:
+                raise Http404("Not found")
+         else:
+             raise Http404("Not found")
+             
+         return super(CountDataView, self).dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
+        searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = '/static/results/results_%s_human_topresults.edge' % searchres.pk
+        return url
+
+class AbstractDataView(RedirectView):
+    permanent = True
+    query_string = False
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+         """ Ensure user logs in before viewing
+         """
+         # Prevent user viewing data for another user
+         # Pretty dirty but OK for now...
+         srid = int(kwargs['pk'])
+         if SearchResult.objects.filter(pk = srid).exists():
+             srcheck = SearchResult.objects.get(pk = srid)
+             if request.user.id != srcheck.criteria.upload.user.id:
+                raise Http404("Not found")
+         else:
+             raise Http404("Not found")
+             
+         return super(AbstractDataView, self).dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
+        searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = '/static/results/results_%s_human_topresults_abstracts.csv' % searchres.pk
+        return url
+
+class JSONDataView(RedirectView):
+    permanent = True
+    query_string = False
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+         """ Ensure user logs in before viewing
+         """
+         # Prevent user viewing data for another user
+         # Pretty dirty but OK for now...
+         srid = int(kwargs['pk'])
+         if SearchResult.objects.filter(pk = srid).exists():
+             srcheck = SearchResult.objects.get(pk = srid)
+             if request.user.id != srcheck.criteria.upload.user.id:
+                raise Http404("Not found")
+         else:
+             raise Http404("Not found")
+             
+         return super(JSONDataView, self).dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
+        searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = '/static/results/results_%s_human_topresults.json' % searchres.pk
+        return url
 
 
 #class ResultsListingView(TemplateView):
