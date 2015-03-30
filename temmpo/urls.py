@@ -8,7 +8,7 @@ autocomplete_light.autodiscover()
 from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
-                           CriteriaView)
+                           CriteriaView, CountDataView, AbstractDataView, JSONDataView)
 
 urlpatterns = patterns('',
     # browser app dependencies
@@ -29,7 +29,10 @@ urlpatterns = patterns('',
     url(r'^results/(?P<pk>\d+)/$', ResultsView.as_view(), name='results'),
     url(r'^results/$', ResultsListingView.as_view(), name='results-listing'),
     url(r'^search-criteria/(?P<pk>\d+)/$', CriteriaView.as_view(), name='criteria'),
-
+    url(r'^data/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count-data'),
+    url(r'^data/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts-data'),
+    url(r'^data/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json-data'),
+    
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
 
