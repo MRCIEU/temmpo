@@ -31,7 +31,7 @@ $(document).ready(function() {
         <tr>
             <th scope="col" class="dt-left">Abstract file</th>
             <th scope="col" class="dt-left">Date uploaded</th>
-        	<th scope="col" class="dt-left">Search criteria</th>
+        	<th scope="col" class="dt-left">View search criteria</th>
             <th scope="col" class="dt-left">Visualisations</th>
             <th scope="col" class="dt-left">Score data</th>
             <th scope="col" class="dt-left">Abstract IDs</th>
@@ -53,13 +53,13 @@ $(document).ready(function() {
             </td>
             <td>
                 {% if result.has_completed %}
-                <a href="/static/results/results_{{ result.pk }}_human_topresults.csv" title="Download score data of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download score data</a> (CSV)
+                <a href="/static/results/results_{{ result.pk }}_human_topresults.csv" title="Download score data of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Score data</a> (CSV)
                 {% endif%}
             </td>
 
             <td>
                 {% if result.has_completed %}
-                <a href="/static/results/results_{{ result.pk }}_human_topresults_abstracts.csv" title="Download Abstract IDs for '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Download abstract IDs</a> (CSV)
+                <a href="/static/results/results_{{ result.pk }}_human_topresults_abstracts.csv" title="Download Abstract IDs for '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">Abstract IDs</a> (CSV)
                 {% endif %}
             </td>
             <!-- <td>[X]</td> -->
