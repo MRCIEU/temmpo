@@ -7,7 +7,8 @@ autocomplete_light.autodiscover()
 
 from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
-                           ExposureSelector, MediatorSelector, OutcomeSelector)
+                           ExposureSelector, MediatorSelector, OutcomeSelector,
+                           CriteriaView)
 
 urlpatterns = patterns('',
     # browser app dependencies
@@ -27,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^search/edit/(?P<pk>\d+)/$', SearchExisting.as_view(), name="edit-search"), # Create a new search based on an existing abstract set
     url(r'^results/(?P<pk>\d+)/$', ResultsView.as_view(), name='results'),
     url(r'^results/$', ResultsListingView.as_view(), name='results-listing'),
+    url(r'^search-criteria/(?P<pk>\d+)/$', CriteriaView.as_view(), name='criteria'),
 
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
