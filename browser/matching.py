@@ -94,10 +94,17 @@ def perform_search(search_result_stub_id):
     print "Created JSON"
 
     # Housekeeping
+    # 1 - Mark results done
+    search_result_stub = SearchResult.objects.get(pk = int(search_result_stub_id))
+    search_result_stub.has_completed = True
+    # 2 - Give end time
+    search_result_stub.ended_processing = datetime.datetime.now()
+    search_result_stub.save()
     
     # 3 - Email user
-    #user_email = search_result_stub2.criteria.upload.user.email
-    #send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk', [user_email,])
+    #user_email = search_result_stub.criteria.upload.user.email
+    #send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
+    #[user_email,])
 
     print "Done housekeeping"
 
