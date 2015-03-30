@@ -562,7 +562,7 @@ class CountDataView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = '/static/results/results_%s_human_topresults.edge' % searchres.pk
+        url = '/static/results/results_%s_human_topresults_edge.csv' % searchres.pk
         return url
 
 class AbstractDataView(RedirectView):
