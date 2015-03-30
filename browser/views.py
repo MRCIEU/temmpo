@@ -498,6 +498,30 @@ class ResultsListingView(ListView):
         return SearchResult.objects.filter(criteria__upload__user = self.request.user)
 
 
+class CriteriaView(TemplateView):
+    template_name = "criteria.html"
+    
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+         """ Ensure user logs in before viewing
+         """
+         return super(CriteriaView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(CriteriaView, self).get_context_data(**kwargs)
+        
+        searchresult = SearchResult.objects.get(pk = int(kwargs['pk']))
+        context['result'] = searchresult
+        
+        context['exposures'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('exposure'))
+        context['mediators'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('mediator'))
+        context['outcomes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('outcome'))
+        context['genes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('gene'))
+        
+        return context
+
+
+
 
 #class ResultsListingView(TemplateView):
 #    """ TODO: Convert to a ListView """
