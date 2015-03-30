@@ -29,8 +29,9 @@ $(document).ready(function() {
     <caption>Results</caption>
     <thead>
         <tr>
-            <th scope="col" class="dt-left">Abstract file upload</th>
-            <th scope="col" class="dt-left">Date criteria selected</th>
+            <th scope="col" class="dt-left">Abstract file</th>
+            <th scope="col" class="dt-left">Date uploaded</th>
+        	<th scope="col" class="dt-left">Search criteria</th>
             <th scope="col" class="dt-left">Visualisations</th>
             <th scope="col" class="dt-left">Score data</th>
             <th scope="col" class="dt-left">Abstract IDs</th>
@@ -42,6 +43,7 @@ $(document).ready(function() {
         <tr>
             <th scope="row" class="dt-left">{{ result.criteria.upload }}</th>
             <td>{{ result.criteria.created|date:"d M Y H:i" }}</td>
+        	<th scope="row" class="dt-left"><a href="{% url 'criteria' pk=result.pk %}" title="Search criteria for resultset '{{ result.pk }}'">Search criteria</a></th>
             <td>
                 {% if result.has_completed %}
                 <a href="{% url 'results' pk=result.pk %}" title="Visualisation of '{{ result.mesh_filter }}' over {{ result.criteria.upload }}">View result</a>
@@ -65,8 +67,6 @@ $(document).ready(function() {
         {% endfor %}
     </tbody>
 </table>
-
-# TODO - Link to search
 
 <div class="controls">
     <a href="{% url 'search' %}" class="button">New search</a>
