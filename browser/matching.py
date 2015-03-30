@@ -463,6 +463,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,\
 
 def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
     edge_score = ''
+    expanded_edge_score = ''
     for ikey in edges.keys():
         b,d = 0,0
         for exposure in exposuremesh:
@@ -475,12 +476,19 @@ def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
         if (bf and df) > 0.0:
             score1 = min(bf,df)/max(bf,df)*(bf+df)
             edge_score = edge_score + ",".join([ikey,str(b),str(d),str(score1)]) + ",\n"#,score2
-        else: score1 = "NA"
-    # TODO - Should this be stored anywhere?
+            #expanded_edge_score = expanded_edge_score + ",".join([ikey,exposure,outcome,str(score1)]) + ",\n"#,score2
 
+        else: score1 = "NA"
+
+    # Write out edge file
     edgefile = open('%s%s_edge.csv' % (results_path,resultfilename),'w')
     edgefile.write(edge_score)
     edgefile.close()
+
+    #edgeexpfile = open('%s%s_edge_expanded.csv' % (results_path,resultfilename),'w')
+    #edgeexpfile.write(expanded_edge_score)
+    #edgeexpfile.close()
+
 
 def createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename):
 
