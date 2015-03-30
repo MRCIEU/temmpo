@@ -1,6 +1,7 @@
+import re
+
 from django import forms
 from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
-
 
 class AbstractFileUploadForm(forms.ModelForm):
     # abstracts = forms.FileField()  # TODO use custom ajax upload form field
@@ -50,7 +51,6 @@ class MediatorForm(forms.ModelForm):
 
     def clean(self, *args, **kwargs):
         cleaned_data = super(MediatorForm, self).clean()
-        print "Mediator clean", cleaned_data, args, kwargs
 
         # Not sure this is needed now.
         if 'term_data' in cleaned_data:
@@ -107,17 +107,32 @@ class FilterForm(forms.ModelForm):
 
         matched_genes = []
         unmatched_genes = []
-
+        
         for ind_gene in gene_list:
+            # Check gene name
             ind_gene = ind_gene.strip()
-            if not Gene.objects.filter(name__iexact=ind_gene).exists():
-                unmatched_genes.append(ind_gene)
-            else:
-                matched_genes.append(ind_gene)
+            gene_ok = True
+            if re.search(r'[^a-zA-z0-9\-]+', ind_gene):
+                gene_ok = False
+                raise forms.ValidationError("Invalid gene name found. Gene can only be contain a-z, A-Z, 0-9 and the hyphen character: %s" % ind_gene)
 
-        if len(unmatched_genes) > 0:
-            print ",".join(matched_genes)
-            raise forms.ValidationError("Gene(s) not found in current list of stored genes (from Homo_sapiens.gene_info): %s" % ",".join(unmatched_genes))
+            # Shouldn't reach this point if gene not OK
+            if gene_ok:
+                if not Gene.objects.filter(name__iexact=ind_gene).exists():
+                    # Can't find that gene so create it....
+                    # Unhappy about this but Tom's code accepts all genes 
+                    # rather than those from a controlled list as was 
+                    # originally the case here.
+                    unmatched_genes.append(ind_gene)
+                    new_gene = Gene(name = ind_gene)
+                    new_gene.save()
+                    print "Added gene: ", new_gene.name
+                    
+#                 else:
+#                     matched_genes.append(ind_gene)
+
+#         if len(unmatched_genes) > 0:
+#             raise forms.ValidationError("Gene(s) not found in current list of stored genes (from Homo_sapiens.gene_info): %s" % ",".join(unmatched_genes))
 
         return data
 
