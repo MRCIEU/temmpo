@@ -1,3 +1,4 @@
+# Build script for TeMMPo
 MY_USER=$(whoami)
 BASEPATH="/usr/local/projects/tmma/lib/"$MY_USER
 if [[ ! -d "$BASEPATH" ]]; then
