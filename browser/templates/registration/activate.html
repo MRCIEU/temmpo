@@ -1,0 +1,10 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Account activation failed{% endblock %}
+
+{% block sectiontitle %}Account activatication failed{% endblock %}
+
+{% block section %}
+<p>You account could not be activated activated.</p>
+<p>There was a problem with your activation token: {{ activation_key }}. Possibly you have already activated your account.</p>
+{% endblock %}
