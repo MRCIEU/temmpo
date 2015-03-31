@@ -19,6 +19,7 @@ THIS_PATH = os.path.dirname(__file__)
 APP_ROOT = '/'.join(THIS_PATH.split('/')[0:-4])
 VEDIR = APP_ROOT.split('/')[-1]  # demo, alpha etc.
 
+ADMINS = ('cmtsa@ilrt.org',)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -31,7 +32,9 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '137.222.16.18',
+                 '.ilrt.bris.ac.uk', '.ilrt.bristol.ac.uk',
+                 '.bris.ac.uk', '.bristol.ac.uk', 'temmpo.org.uk']
 
 APACHE = False
 
@@ -47,9 +50,9 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_PRE_APPS = ['autocomplete_light',]
-THIRD_PARTY_APPS = ['registration', 'mptt', ] # 'oraclepool',
-LOCAL_APPS = ['browser',]
+THIRD_PARTY_PRE_APPS = ['autocomplete_light', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', ]  # 'oraclepool',
+LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = THIRD_PARTY_PRE_APPS + DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -100,7 +103,7 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 MEDIA_ROOT = VAR_PATH = os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','var'))
 
-LOGIN_REDIRECT_URL = 'results-listing' # 'search'
+LOGIN_REDIRECT_URL = 'results-listing'  # 'search'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
@@ -111,7 +114,7 @@ REGISTRATION_OPEN = True
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
-
+# TODO when moving to Oracle DB
 # settings_file_name = 'temmpo_private_settings.py'
 # paths = (os.path.join(os.path.expanduser("~"), settings_file_name),
 #     os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','etc', settings_file_name)))
