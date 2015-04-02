@@ -86,9 +86,9 @@ class OutcomeForm(forms.ModelForm):
 
 class FilterForm(forms.ModelForm):
     genes = forms.CharField(widget=forms.Textarea,
-                            required=True,
-                            label = 'Enter genes',
-                            help_text = 'CSV separated')
+                            required=False,
+                            label = 'Enter genes (optional)',
+                            help_text = 'Separated by commas')
 
     ex_filter = forms.ChoiceField(widget = forms.Select(),
                                   choices = ([('1','Human'), ]),
