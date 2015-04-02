@@ -84,7 +84,7 @@ echo "What about django.wsgi"
 # KeepAlive Off
 # WSGIApplicationGroup tmma
 
-# Alias /static "/usr/local/projects/tmma/lib/prod/src/temmpo/browser/static"
+# Alias /static "/usr/local/projects/tmma/lib/prod/static"
 # <Location "/static">
 #     SetHandler None
 # </Location>
