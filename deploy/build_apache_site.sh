@@ -30,6 +30,7 @@ echo "Create required sub directories"
 mkdir etc
 mkdir share
 mkdir src
+mkdir static
 mkdir var
 mkdir var/results
 
