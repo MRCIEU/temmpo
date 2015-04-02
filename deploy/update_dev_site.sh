@@ -54,5 +54,6 @@ cd src
 sudo /usr/local/bin/reset-perms -u temmpo
 sudo chown www-data temmpo/temmpo
 sudo chown www-data temmpo/temmpo/db.sqlite3
+sudo chmod g+w temmpo/temmpo/db.sqlite3 # For load data commands etc
 
 echo "You may now wish to load the fixture data: genes.json and mesh-terms.json"
