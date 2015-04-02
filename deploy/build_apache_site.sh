@@ -31,6 +31,7 @@ mkdir etc
 mkdir share
 mkdir src
 mkdir var
+mkdir var/results
 
 # Clone git repo
 echo "Clone repo"

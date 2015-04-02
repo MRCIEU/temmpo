@@ -15,6 +15,7 @@ mkdir -p etc
 mkdir -p share
 mkdir -p src
 mkdir -p var
+mkdir -p var/results
 
 # Clone git repo
 # TODO - pull a particular branch?
