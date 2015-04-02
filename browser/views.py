@@ -1,6 +1,7 @@
 import datetime
 
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
@@ -9,12 +10,11 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import Http404
 
-#from django.core.management import call_command
-
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene
 from browser.matching import perform_search
+
 
 class HomeView(TemplateView):
     template_name = "home.html"
@@ -75,16 +75,16 @@ class TermSelectorAbstractUpdateView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the form
         """
-        
+
         # Prevent one user viewing data for another
         scid = int(kwargs['pk'])
         if SearchCriteria.objects.filter(pk = scid).exists():
             sccheck = SearchCriteria.objects.get(pk = scid)
             if request.user.id != sccheck.upload.user.id:
-               raise Http404("Not found")
+                raise Http404("Not found")
         else:
             raise Http404("Not found")
-        
+
         self.tree_number = kwargs.get('tree_number', None)
         return super(TermSelectorAbstractUpdateView, self).dispatch(request, *args, **kwargs)
 
@@ -194,6 +194,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
             #print search_result.id, search_result.criteria.id, search_result.criteria.exposure_terms.all()
             return super(ExposureSelector, self).form_valid(form)
 
+
 class MediatorSelector(TermSelectorAbstractUpdateView):
 
     template_name = "term_selector.html"
@@ -206,7 +207,6 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
             return reverse('mediator-selector', kwargs={'pk': self.object.id})
         else:
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
-
 
     def get_context_data(self, **kwargs):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
@@ -298,13 +298,12 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
         else:
             # Create search results
-            if not SearchResult.objects.filter(criteria = self.object).exists():
+            if not SearchResult.objects.filter(criteria=self.object).exists():
                 search_results = SearchResult(criteria=self.object)
                 search_results.save()
             else:
                 search_results = SearchResult.objects.get(criteria=self.object)
             return reverse('filter-selector', kwargs={'pk': search_results.id})
-
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
@@ -384,7 +383,6 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
             return super(OutcomeSelector, self).form_valid(form)
 
 
-
 class SearchExisting(RedirectView):
     """Create new search criteria based on existing one and pass to
        ExposureSelector view """
@@ -406,16 +404,16 @@ class FilterSelector(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the search form
         """
-        
+
         # Prevent user viewing data for another user
         srid = int(kwargs['pk'])
         if SearchResult.objects.filter(pk = srid).exists():
             srcheck = SearchResult.objects.get(pk = srid)
             if request.user.id != srcheck.criteria.upload.user.id:
-               raise Http404("Not found")
+                raise Http404("Not found")
         else:
             raise Http404("Not found")
-        
+
         return super(FilterSelector, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -459,21 +457,22 @@ class FilterSelector(UpdateView):
 
 class ResultsView(TemplateView):
     template_name = "results.html"
+
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing the results pages
-         """
-         
-         # Prevent user viewing data for another user
-         srid = int(kwargs['pk'])
-         if SearchResult.objects.filter(pk = srid).exists():
-             srcheck = SearchResult.objects.get(pk = srid)
-             if request.user.id != srcheck.criteria.upload.user.id:
+        """ Ensure user logs in before viewing the results pages
+        """
+
+        # Prevent user viewing data for another user
+        srid = int(kwargs['pk'])
+        if SearchResult.objects.filter(pk = srid).exists():
+            srcheck = SearchResult.objects.get(pk = srid)
+            if request.user.id != srcheck.criteria.upload.user.id:
                 raise Http404("Not found")
-         else:
-             raise Http404("Not found")
-         
-         return super(ResultsView, self).dispatch(request, *args, **kwargs)
+        else:
+            raise Http404("Not found")
+
+        return super(ResultsView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ResultsView, self).get_context_data(**kwargs)
@@ -500,43 +499,43 @@ class ResultsListingView(ListView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing the results listing page
-         """        
-         return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
+        """ Ensure user logs in before viewing the results listing page
+        """
+        return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return SearchResult.objects.filter(criteria__upload__user = self.request.user)
+        return SearchResult.objects.filter(criteria__upload__user=self.request.user)
 
 
 class CriteriaView(TemplateView):
     template_name = "criteria.html"
-    
+
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing
-         """
-         # Prevent user viewing data for another user
-         srid = int(kwargs['pk'])
-         if SearchResult.objects.filter(pk = srid).exists():
-             srcheck = SearchResult.objects.get(pk = srid)
-             if request.user.id != srcheck.criteria.upload.user.id:
+        """ Ensure user logs in before viewing
+        """
+        # Prevent user viewing data for another user
+        srid = int(kwargs['pk'])
+        if SearchResult.objects.filter(pk = srid).exists():
+            srcheck = SearchResult.objects.get(pk = srid)
+            if request.user.id != srcheck.criteria.upload.user.id:
                 raise Http404("Not found")
-         else:
-             raise Http404("Not found")
-             
-         return super(CriteriaView, self).dispatch(request, *args, **kwargs)
+        else:
+            raise Http404("Not found")
+
+        return super(CriteriaView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CriteriaView, self).get_context_data(**kwargs)
-        
+
         searchresult = SearchResult.objects.get(pk = int(kwargs['pk']))
         context['result'] = searchresult
-        
+
         context['exposures'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('exposure'))
         context['mediators'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('mediator'))
         context['outcomes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('outcome'))
         context['genes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('gene'))
-        
+
         return context
 
 
@@ -546,24 +545,25 @@ class CountDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing
-         """
-         # Prevent user viewing data for another user
-         # Pretty dirty but OK for now...
-         srid = int(kwargs['pk'])
-         if SearchResult.objects.filter(pk = srid).exists():
-             srcheck = SearchResult.objects.get(pk = srid)
-             if request.user.id != srcheck.criteria.upload.user.id:
+        """ Ensure user logs in before viewing
+        """
+        # Prevent user viewing data for another user
+        # Pretty dirty but OK for now...
+        srid = int(kwargs['pk'])
+        if SearchResult.objects.filter(pk = srid).exists():
+            srcheck = SearchResult.objects.get(pk = srid)
+            if request.user.id != srcheck.criteria.upload.user.id:
                 raise Http404("Not found")
-         else:
-             raise Http404("Not found")
-             
-         return super(CountDataView, self).dispatch(request, *args, **kwargs)
+        else:
+            raise Http404("Not found")
+
+        return super(CountDataView, self).dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
         searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = '/static/results/results_%s_human_topresults_edge.csv' % searchres.pk
+        url = settings.MEDIA_URL + 'results/results_%s_human_topresults_edge.csv' % searchres.pk
         return url
+
 
 class AbstractDataView(RedirectView):
     permanent = True
@@ -571,24 +571,25 @@ class AbstractDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing
-         """
-         # Prevent user viewing data for another user
-         # Pretty dirty but OK for now...
-         srid = int(kwargs['pk'])
-         if SearchResult.objects.filter(pk = srid).exists():
-             srcheck = SearchResult.objects.get(pk = srid)
-             if request.user.id != srcheck.criteria.upload.user.id:
+        """ Ensure user logs in before viewing
+        """
+        # Prevent user viewing data for another user
+        # Pretty dirty but OK for now...
+        srid = int(kwargs['pk'])
+        if SearchResult.objects.filter(pk = srid).exists():
+            srcheck = SearchResult.objects.get(pk = srid)
+            if request.user.id != srcheck.criteria.upload.user.id:
                 raise Http404("Not found")
-         else:
-             raise Http404("Not found")
-             
-         return super(AbstractDataView, self).dispatch(request, *args, **kwargs)
+        else:
+            raise Http404("Not found")
+
+        return super(AbstractDataView, self).dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
         searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = '/static/results/results_%s_human_topresults_abstracts.csv' % searchres.pk
+        url = settings.MEDIA_URL + 'results/results_%s_human_topresults_abstracts.csv' % searchres.pk
         return url
+
 
 class JSONDataView(RedirectView):
     permanent = True
@@ -596,23 +597,23 @@ class JSONDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-         """ Ensure user logs in before viewing
-         """
-         # Prevent user viewing data for another user
-         # Pretty dirty but OK for now...
-         srid = int(kwargs['pk'])
-         if SearchResult.objects.filter(pk = srid).exists():
-             srcheck = SearchResult.objects.get(pk = srid)
-             if request.user.id != srcheck.criteria.upload.user.id:
+        """ Ensure user logs in before viewing
+        """
+        # Prevent user viewing data for another user
+        # Pretty dirty but OK for now...
+        srid = int(kwargs['pk'])
+        if SearchResult.objects.filter(pk = srid).exists():
+            srcheck = SearchResult.objects.get(pk = srid)
+            if request.user.id != srcheck.criteria.upload.user.id:
                 raise Http404("Not found")
-         else:
-             raise Http404("Not found")
-             
-         return super(JSONDataView, self).dispatch(request, *args, **kwargs)
+        else:
+            raise Http404("Not found")
+
+        return super(JSONDataView, self).dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
         searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = '/static/results/results_%s_human_topresults.json' % searchres.pk
+        url = settings.MEDIA_URL + 'results/results_%s_human_topresults.json' % searchres.pk
         return url
 
 

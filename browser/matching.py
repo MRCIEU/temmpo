@@ -58,7 +58,7 @@ def perform_search(search_result_stub_id):
     WEIGHTFILTER = 2
     GRAPHVIZEDGEMULTIPLIER = 3
     resultfilename = 'results_' + str(search_result_stub.id) + '_' + str.replace(MESHFILTER," ","_").lower() + "_topresults"
-    results_path = '%s%s' % (settings.APP_ROOT, '/src/temmpo/browser/static/results/')
+    results_path = settings.RESULTS_PATH
     #os.path.dirname(search_result_stub.criteria.upload.abstracts_upload.path) + '/'
     print "Set constants"
 

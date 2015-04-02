@@ -19,7 +19,7 @@ THIS_PATH = os.path.dirname(__file__)
 APP_ROOT = '/'.join(THIS_PATH.split('/')[0:-4])
 VEDIR = APP_ROOT.split('/')[-1]  # demo, alpha etc.
 
-ADMINS = ('cmtsa@ilrt.org',)
+ADMINS = (('Tessa Alexander', 'cmtsa@ilrt.org'),)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -29,7 +29,6 @@ SECRET_KEY = 'fva(zwxn6)g6bk$46e=(_b-5&*y1%!jd*hrn+yke91g@i#%dj%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '137.222.16.18',
@@ -101,7 +100,10 @@ SHORT_DATE_FORMAT = 'd/m/Y'
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
-MEDIA_ROOT = VAR_PATH = os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','var'))
+MEDIA_ROOT = "%s/%s" % (APP_ROOT, 'var')
+STATIC_ROOT = "%s/%s" % (APP_ROOT, 'static')
+
+RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 
 LOGIN_REDIRECT_URL = 'results-listing'  # 'search'
 LOGIN_URL = 'login'
@@ -111,6 +113,67 @@ LOGOUT_URL = 'logout'
 ACCOUNT_ACTIVATION_DAYS = 14
 REGISTRATION_AUTO_LOGIN = True
 REGISTRATION_OPEN = True
+
+#  Logging
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': True,
+#     'filters': {
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse'
+#          }
+#     },
+#     'formatters': {
+#         'verbose': {
+#             'format': '[%(asctime)s] %(levelname)-8s %(process)d %(thread)d %(name)s:%(message)s',
+#             'datefmt': '%Y-%m-%d %a %H:%M:%S'
+#         },
+#     },
+#     'handlers': {
+#         'null': {
+#             'level': 'DEBUG',
+#             'class': 'django.utils.log.NullHandler',
+#         },
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose'
+#         },
+#         'local_file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'formatter': 'verbose',
+#             'filename': '%s/debug.log' % APP_ROOT,
+#             'maxBytes': 1024 * 1024 * 10,
+#         },
+#         'syslog': {
+#             'level': 'INFO',
+#             'class': 'logging.handlers.SysLogHandler',
+#         },
+#         'mail_admins': {
+#             'level': 'ERROR',
+#             'filters': ['require_debug_false'],
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'include_html': True,
+#         }
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['null'],
+#             'propagate': True,
+#             'level': 'INFO',
+#         },
+#         'django.request': {
+#             'handlers': ['mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#     },
+#     'root': {
+#              'handlers': ['console', 'local_file'],
+#              'level': 'DEBUG',
+#     }
+# }
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
