@@ -34,7 +34,8 @@ class Gene(models.Model):
     synonym_for = models.ForeignKey('self', null=True, blank=True, related_name='primary_gene')
 
     def __str__(self):
-        return "Gene: ", self.name
+        return "Gene: " + self.name
+
 
 class MeshTerm(MPTTModel):
     """ FUTURE: May generate JSON as a yearly task when mesh terms are updated
