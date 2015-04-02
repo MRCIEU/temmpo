@@ -1,5 +1,14 @@
 # Build script for TeMMPo
-BASEPATH="/usr/local/projects/tmma/lib/dev"
+NAME='dev'
+
+# Allow override of environment name
+if [ -n "$1" ]; then
+    NAME=$1
+fi
+
+BASEPATH="/usr/local/projects/tmma/lib/"$NAME
+
+echo "Updating the following environment: "$BASEPATH
 
 if [ ! -d "$BASEPATH" ]; then
   echo "Environment does not exist"
@@ -15,6 +24,7 @@ mkdir -p etc
 mkdir -p share
 mkdir -p src
 mkdir -p var
+mkdir -p static
 mkdir -p var/results
 
 # Clone git repo
@@ -57,4 +67,12 @@ sudo chown www-data temmpo/temmpo
 sudo chown www-data temmpo/temmpo/db.sqlite3
 sudo chmod g+w temmpo/temmpo/db.sqlite3 # For load data commands etc
 
-echo "You may now wish to load the fixture data: genes.json and mesh-terms.json"
+echo "Collect static"
+cd $BASEPATH
+cd src/temmpo
+pwd
+../../bin/python manage.py collectstatic
+
+echo "#### You may now wish to load the fixture data: genes.json and mesh-terms.json"
+
+echo "#### Run Apache graceful"
