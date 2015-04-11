@@ -33,7 +33,8 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '137.222.16.18',
                  '.ilrt.bris.ac.uk', '.ilrt.bristol.ac.uk',
-                 '.bris.ac.uk', '.bristol.ac.uk', 'temmpo.org.uk']
+                 '.bris.ac.uk', '.bristol.ac.uk', 'temmpo.org.uk',
+                 'www.temmpo.org.uk',]
 
 APACHE = False
 
