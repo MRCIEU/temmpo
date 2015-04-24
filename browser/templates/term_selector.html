@@ -4,30 +4,6 @@
 {% block title %}TeMMPo: Select {{ type }} MeSH® terms{% endblock %}
 
 {% block scripts %}
-<!-- Not bad, but not check box style -->
-<!-- <script src="{{ STATIC_URL }}js/tree.jquery.js"></script>
-<script>
-var data = [
-    {
-        label: 'Human', id: 1,
-        children: [
-            { label: 'child1', id: 2 },
-            { label: 'child2', id: 3 }
-        ]
-    },
-    {
-        label: 'node2', id: 4,
-        children: [
-            { label: 'child3', id: 5 }
-        ]
-    }
-];
-</script>-->
-
-<!-- Too old dismissed -->
-<!-- script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script -->
-<!-- script src="{{ STATIC_URL }}js/jquery.xmltree.plugin.min.2.0.js"></script -->
-
 <!-- jstree -->
 <script src="{{ STATIC_URL }}js/jstree/jstree.min.js"></script>
 <script>
@@ -66,16 +42,9 @@ var data = [
 {% endblock %}
 
 {% block styles %}
-<!-- link rel="stylesheet" href="{{ STATIC_URL }}css/jqtree.css" / -->
-
-<!-- link rel="stylesheet" href="{{ STATIC_URL }}css/xmlmenutree.css" / -->
-
-<!-- link rel="stylesheet" href="{{ STATIC_URL }}css/xmltree.css" / -->
-
 <!-- jsTree -->
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jstree/themes/default/style.min.css" />
 {% endblock %}
-
 
 {% block page-heading %}
 <h1>{{ form_title }}</h1>
@@ -89,6 +58,8 @@ var data = [
         {% csrf_token %}
         <label for="tags">Term</label>
         <input id="tags" name="tags" type="text" value="" disabled />
+
+        {# TODO display form fields properly #}
 
         <button type="submit" disabled>Add</button>
     </form>

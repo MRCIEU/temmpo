@@ -12,7 +12,7 @@ from django.http import Http404
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
 from browser.matching import perform_search
 
 
@@ -56,7 +56,10 @@ class SearchView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
         context['active'] = 'search'
+        context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
         context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
+        # TODO check if quicker
+        # context['criteria'] = context['uploads'].searches.all().order_by('-created')
         return context
 
     def get_initial(self):
@@ -383,6 +386,16 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
             return super(OutcomeSelector, self).form_valid(form)
 
 
+class SearchExistingUpload(RedirectView):    
+    permanant = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        upload = get_object_or_404(Upload, pk=kwargs['pk'])
+        criteria = SearchCriteria(upload=upload)
+        criteria.save()
+        return reverse('exposure-selector', kwargs={'pk': criteria.pk})
+
+
 class SearchExisting(RedirectView):
     """Create new search criteria based on existing one and pass to
        ExposureSelector view """
@@ -478,17 +491,9 @@ class ResultsView(TemplateView):
         context = super(ResultsView, self).get_context_data(**kwargs)
         context['active'] = 'results'
 
-        # TODO flesh out results object
-        context['mesh_term_filter'] = 'Human'
-        context['article_count'] = 17217
+        # TODO: TMMA-30 Add tabular version of results table as per PDF
         json_filename = reverse('json-data', kwargs=kwargs)
-        #'results_%s_human_topresults.json' % int(kwargs['pk'])
         context['json_url'] = json_filename
-        # TODO TBC: group by mediator
-        context['mediators'] = ['ATM'] # Gene or mediator mesh
-        context['results'] = [{'exposure':'Diary Products', 'lcount': '5', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '1', 'count':'1'},
-                              {'exposure':'Diarying', 'lcount': '46', 'mediator':'IL6', 'outcome':'Prostatic Neoplasms', 'rcount': '2', 'count': '55'},
-                              {'exposure':'Recombinant Proteins AND Growth Hormone AND Cattle', 'lcount': '...', 'mediator':'PROC', 'outcome':'Prostatic Neoplasms', 'rcount': '...', 'count': '6'}, ]
         return context
 
 

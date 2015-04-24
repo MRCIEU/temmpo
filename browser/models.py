@@ -150,6 +150,7 @@ class SearchCriteria(models.Model):
         else:
             return naturaltime(self.created)
 
+
 class SearchResult(models.Model):
 
     criteria = models.ForeignKey(SearchCriteria, related_name='search_results')

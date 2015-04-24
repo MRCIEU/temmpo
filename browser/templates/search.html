@@ -8,7 +8,18 @@
 {% block sectiontitle %}Search{% endblock %}
 
 {% block section-minor %}
-<p>Existing search criteria:</p>
+
+<h3>Use previously uploaded files:</h3>
+<ul class="link-list">
+    {% for upload in uploads %}
+        <li><a href="{% url 'reuse-upload' pk=upload.id %}">{{ upload }}</a></li>
+    {% empty %}
+        <li>No previously uploaded abstracts.</li>
+    {% endfor %}
+</ul>
+<!-- TODO Need to paginate or collapse list at some point-->
+
+<h3>Reuse existing search criteria:</h3>
 <ul class="link-list">
     {% for search in criteria %}
         <li><a href="{% url 'edit-search' pk=search.id %}">{{ search }}</a></li>
@@ -16,6 +27,7 @@
         <li>No saved search criteria.</li>
     {% endfor %}
 </ul>
+<!-- TODO Need to paginate or collapse list at some point-->
 {% endblock %}
 
 {% block section %}

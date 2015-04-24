@@ -9,7 +9,8 @@ autocomplete_light.autodiscover()
 from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
-                           CriteriaView, CountDataView, AbstractDataView, JSONDataView)
+                           CriteriaView, CountDataView, AbstractDataView, JSONDataView,
+                           SearchExistingUpload)
 
 urlpatterns = patterns('',
     # browser app dependencies
@@ -19,6 +20,8 @@ urlpatterns = patterns('',
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
     url(r'^search/$', SearchView.as_view(), name='search'), # Upload new abstract set
+    url(r'^search/edit/(?P<pk>\d+)/$', SearchExisting.as_view(), name="edit-search"), # Create a new search based on an existing search criteria
+    url(r'^search/reuse/(?P<pk>\d+)/$', SearchExistingUpload.as_view(), name="reuse-upload"), # Create a new search based on previously uploaded set of abstracts
     url(r'^exposure/(?P<pk>\d+)/$', ExposureSelector.as_view(), name="exposure-selector"),
     url(r'^exposure/(?P<pk>\d+)/(?P<tree_number>\w+)/$', ExposureSelector.as_view(), name="exposure-selector-by-family"),
     url(r'^mediator/(?P<pk>\d+)/$', MediatorSelector.as_view(), name="mediator-selector"),
@@ -26,7 +29,6 @@ urlpatterns = patterns('',
     url(r'^outcome/(?P<pk>\d+)/$', OutcomeSelector.as_view(), name="outcome-selector"),
     url(r'^outcome/(?P<pk>\d+)/(?P<tree_number>\w+)/$', OutcomeSelector.as_view(), name="outcome-selector-by-family"),
     url(r'^filter/(?P<pk>\d+)/$', FilterSelector.as_view(), name="filter-selector"),
-    url(r'^search/edit/(?P<pk>\d+)/$', SearchExisting.as_view(), name="edit-search"), # Create a new search based on an existing abstract set
     url(r'^results/(?P<pk>\d+)/$', ResultsView.as_view(), name='results'),
     url(r'^results/$', ResultsListingView.as_view(), name='results-listing'),
     url(r'^search-criteria/(?P<pk>\d+)/$', CriteriaView.as_view(), name='criteria'),
