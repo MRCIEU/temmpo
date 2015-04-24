@@ -116,65 +116,65 @@ REGISTRATION_AUTO_LOGIN = True
 REGISTRATION_OPEN = True
 
 #  Logging
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'filters': {
-#         'require_debug_false': {
-#             '()': 'django.utils.log.RequireDebugFalse'
-#          }
-#     },
-#     'formatters': {
-#         'verbose': {
-#             'format': '[%(asctime)s] %(levelname)-8s %(process)d %(thread)d %(name)s:%(message)s',
-#             'datefmt': '%Y-%m-%d %a %H:%M:%S'
-#         },
-#     },
-#     'handlers': {
-#         'null': {
-#             'level': 'DEBUG',
-#             'class': 'django.utils.log.NullHandler',
-#         },
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'verbose'
-#         },
-#         'local_file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.handlers.RotatingFileHandler',
-#             'formatter': 'verbose',
-#             'filename': '%s/debug.log' % APP_ROOT,
-#             'maxBytes': 1024 * 1024 * 10,
-#         },
-#         'syslog': {
-#             'level': 'INFO',
-#             'class': 'logging.handlers.SysLogHandler',
-#         },
-#         'mail_admins': {
-#             'level': 'ERROR',
-#             'filters': ['require_debug_false'],
-#             'class': 'django.utils.log.AdminEmailHandler',
-#             'include_html': True,
-#         }
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['null'],
-#             'propagate': True,
-#             'level': 'INFO',
-#         },
-#         'django.request': {
-#             'handlers': ['mail_admins'],
-#             'level': 'ERROR',
-#             'propagate': False,
-#         },
-#     },
-#     'root': {
-#              'handlers': ['console', 'local_file'],
-#              'level': 'DEBUG',
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+         }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)-8s %(process)d %(thread)d %(name)s:%(message)s',
+            'datefmt': '%Y-%m-%d %a %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'local_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': '%s/debug.log' % APP_ROOT,
+            'maxBytes': 1024 * 1024 * 10,
+        },
+        'syslog': {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+    'root': {
+             'handlers': ['console', 'local_file'],
+             'level': 'DEBUG',
+    }
+}
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
