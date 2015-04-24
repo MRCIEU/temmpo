@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from django.shortcuts import get_object_or_404
 from django.conf import settings
@@ -14,6 +15,8 @@ from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
 from browser.matching import perform_search
+
+logger = logging.getLogger(__name__)
 
 
 class HomeView(TemplateView):
@@ -387,7 +390,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
 
 
 class SearchExistingUpload(RedirectView):    
-    permanant = False
+    permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
         upload = get_object_or_404(Upload, pk=kwargs['pk'])
@@ -399,7 +402,7 @@ class SearchExistingUpload(RedirectView):
 class SearchExisting(RedirectView):
     """Create new search criteria based on existing one and pass to
        ExposureSelector view """
-    permanant = False
+    permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
         criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
