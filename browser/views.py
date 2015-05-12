@@ -393,7 +393,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
             return super(OutcomeSelector, self).form_valid(form)
 
 
-class SearchExistingUpload(RedirectView):    
+class SearchExistingUpload(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
@@ -409,10 +409,19 @@ class SearchExisting(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
-        criteria.pk = None
-        criteria.save()
-        return reverse('exposure-selector', kwargs={'pk': criteria.pk})
+        """ Copy across existing search criteria and allow user to amend """
+        original_criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
+
+        # NB: Need to deep copy to ensure Many to Many relationship is captured
+        criteria_copy = SearchCriteria(upload=original_criteria.upload)
+        criteria_copy.save()
+        criteria_copy.genes = original_criteria.genes.all()
+        criteria_copy.exposure_terms = original_criteria.exposure_terms.all()
+        criteria_copy.outcome_terms = original_criteria.outcome_terms.all()
+        criteria_copy.mediator_terms = original_criteria.mediator_terms.all()
+        criteria_copy.save()
+
+        return reverse('exposure-selector', kwargs={'pk': criteria_copy.pk})
 
 
 class FilterSelector(UpdateView):
@@ -543,6 +552,7 @@ class CriteriaView(TemplateView):
         context['mediators'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('mediator'))
         context['outcomes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('outcome'))
         context['genes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('gene'))
+        context['url'] = reverse('edit-search', kwargs={'pk': searchresult.criteria.id})
 
         return context
 
