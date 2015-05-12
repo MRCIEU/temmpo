@@ -31,7 +31,8 @@ class BrowsingTest(TestCase):
         self.user = User.objects.create_user(id=999,
             username='may', email='may@example.com', password='12345#abc')
 
-    def _find_expected_content(self, path="", url_path=None, msg="", requires_login=False):
+    def _find_expected_content(self, path="", url_path=None, msg="", 
+        requires_login=False):
 
         if url_path:
             path = reverse(url_path)
@@ -62,7 +63,8 @@ class BrowsingTest(TestCase):
         """ Test can view the search page
         """
 
-        self._find_expected_content(path="/search/", msg="Search", requires_login=True)
+        self._find_expected_content(path="/search/", msg="Search", 
+            requires_login=True)
 
     def test_results_page(self):
         """ Test can view the results page
@@ -76,17 +78,23 @@ class BrowsingTest(TestCase):
         """ Test can view the results listing page
         """
 
-        self._find_expected_content(path="/results/", msg="My list", requires_login=True)
+        self._find_expected_content(path="/results/", msg="My list", 
+            requires_login=True)
 
     def test_matching(self):
         """
         Mesh terms 
 
-        exposure: Humans    (B01.050.150.900.649.801.400.112.400.400 Organisms > Eukaryota > Animals > Chordata > Vertebrates > Mammals > Primates > Haplorhini > Catarrhini > Hominidae)
+        exposure: Humans    (B01.050.150.900.649.801.400.112.400.400 Organisms >
+         Eukaryota > Animals > Chordata > Vertebrates > Mammals > Primates > 
+         Haplorhini > Catarrhini > Hominidae)
 
-        mediator: Phenotype (G05.695 Phenomena and Processes > Genetic Phenomena) 
+        mediator: Phenotype (G05.695 Phenomena and Processes > 
+            Genetic Phenomena) 
 
-        outcome: Apoptosis (G04.299.139.160 Phenomena and Processes > Cell Physiological Phenomena > Cell Physiological Processes > Cell Death)
+        outcome: Apoptosis (G04.299.139.160 Phenomena and Processes > 
+            Cell Physiological Phenomena > Cell Physiological Processes > 
+            Cell Death)
 
         gene: TRPC1 
 
@@ -94,7 +102,8 @@ class BrowsingTest(TestCase):
         or 
         citation file: 13-53-45-22-39-12-citation_1-400.txt
 
-        Should find matches with both mediator term and gene only finds matches with the gene
+        Should find matches with both mediator term and gene only finds matches 
+        with the gene when the WEIGHTFILTER threshhold is zero
         """
 
         test_file = open(os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt'), 'r')
@@ -118,8 +127,8 @@ class BrowsingTest(TestCase):
         search_result = SearchResult()
         search_result.pk = 999
         search_result.criteria = search_criteria
-        search_result.started_processing = datetime.datetime.now()
-        search_result.has_completed = False
+        # search_result.started_processing = datetime.datetime.now()
+        # search_result.has_completed = False
         search_result.save()
 
         # Run the search
@@ -128,8 +137,11 @@ class BrowsingTest(TestCase):
         # Retrieve updated results object        
         search_result = SearchResult.objects.get(id=999)
 
-        test_results_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '.csv'), 'r')
-        self.assertEqual(len(test_results_csv.readlines()), 2) # Expected at least two matches
+        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
+        print "RESULTS ARE IN THE THIS FILE: "
+        print test_results_edge_csv.name
+        self.assertEqual(len(test_results_edge_csv.readlines()), 2) # Expected at least two matches
+
 
 
     # Additional features

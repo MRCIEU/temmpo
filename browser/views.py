@@ -305,10 +305,14 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         else:
             # Create search results
             if not SearchResult.objects.filter(criteria=self.object).exists():
+                # print "CREATING NEW RESULTS OBJECT ####"
+                # TODO: Review when we re-enable re-using search criteria
                 search_results = SearchResult(criteria=self.object)
                 search_results.save()
             else:
+                # print "REUSING RESULTS OBJECT ####"
                 search_results = SearchResult.objects.get(criteria=self.object)
+
             return reverse('filter-selector', kwargs={'pk': search_results.id})
 
     def get_context_data(self, **kwargs):
@@ -453,18 +457,19 @@ class FilterSelector(UpdateView):
             this_gene = Gene.objects.get(name__iexact=ind_gene)
             search_criteria.genes.add(this_gene)
 
+        # TODO: Move this to the perform_search function in matching
         # Set metadata
-        search_result.started_processing = datetime.datetime.now()
-        search_result.has_completed = False
-        search_result.save()
+        # search_result.started_processing = datetime.datetime.now()
+        # search_result.has_completed = False
+        # search_result.save()
 
         # Run the search
         perform_search(search_result.id)
 
-        search_result.ended_processing = datetime.datetime.now()
-        search_result.has_completed = True
-        search_result.save()
-
+        # NB: Need to reload the object from DB for this view after performiong the search
+        self.object = SearchResult.objects.get(id=self.object.id)
+        
+        # TODO review, appears that filter is only saved to result object after performing the search
         return super(FilterSelector, self).form_valid(form)
 
     def get_success_url(self):
@@ -568,8 +573,8 @@ class CountDataView(RedirectView):
         return super(CountDataView, self).dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
-        searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/results_%s_human_topresults_edge.csv' % searchres.pk
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.MEDIA_URL + 'results/%s_edge.csv' % search_result.filename_stub
         return url
 
 
@@ -594,8 +599,8 @@ class AbstractDataView(RedirectView):
         return super(AbstractDataView, self).dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
-        searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/results_%s_human_topresults_abstracts.csv' % searchres.pk
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.MEDIA_URL + 'results/%s_abstracts.csv' % search_result.filename_stub
         return url
 
 
@@ -620,8 +625,8 @@ class JSONDataView(RedirectView):
         return super(JSONDataView, self).dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
-        searchres = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/results_%s_human_topresults.json' % searchres.pk
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.MEDIA_URL + 'results/%s.json' % search_result.filename_stub
         return url
 
 

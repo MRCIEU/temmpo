@@ -91,7 +91,7 @@ class FilterForm(forms.ModelForm):
                             help_text = 'Separated by commas')
 
     ex_filter = forms.ChoiceField(widget = forms.Select(),
-                                  choices = ([('1','Human'), ]),
+                                  choices = ([('1','Humans'), ]),
                                   required = False,
                                   label = 'Filter')
 

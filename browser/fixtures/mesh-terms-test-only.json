@@ -1,6 +1,58 @@
 [
 {
     "fields": {
+        "rght": 5103,
+        "term": "Cells",
+        "parent": 33717,
+        "level": 1,
+        "tree_number": "A11",
+        "lft": 3476,
+        "tree_id": 1
+    },
+    "model": "browser.meshterm",
+    "pk": 1784
+},
+{
+    "fields": {
+        "rght": 3766,
+        "term": "Cells, Cultured",
+        "parent": 1784,
+        "level": 2,
+        "tree_number": "A11.251",
+        "lft": 3669,
+        "tree_id": 1
+    },
+    "model": "browser.meshterm",
+    "pk": 1881
+},
+{
+    "fields": {
+        "rght": 3723,
+        "term": "Cell Line",
+        "parent": 1881,
+        "level": 3,
+        "tree_number": "A11.251.210",
+        "lft": 3670,
+        "tree_id": 1
+    },
+    "model": "browser.meshterm",
+    "pk": 1882
+},
+{
+    "fields": {
+        "rght": 3710,
+        "term": "Cell Line, Tumor",
+        "parent": 1882,
+        "level": 4,
+        "tree_number": "A11.251.210.190",
+        "lft": 3687,
+        "tree_id": 1
+    },
+    "model": "browser.meshterm",
+    "pk": 1891
+},
+{
+    "fields": {
         "rght": 4829,
         "term": "Eukaryota",
         "parent": 33718,
@@ -128,6 +180,19 @@
     },
     "model": "browser.meshterm",
     "pk": 3612
+},
+{
+    "fields": {
+        "rght": 6232,
+        "term": "Anatomy",
+        "parent": null,
+        "level": 0,
+        "tree_number": "A",
+        "lft": 1,
+        "tree_id": 1
+    },
+    "model": "browser.meshterm",
+    "pk": 33717
 },
 {
     "fields": {

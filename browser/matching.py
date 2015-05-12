@@ -1,6 +1,7 @@
 import re
 import datetime
 import string, math
+import sys
 import os
 
 from django.conf import settings
@@ -54,7 +55,7 @@ def perform_search(search_result_stub_id):
     #print "MED", mediatormesh
 
     # Constants
-    MESHFILTER = "Human"
+    MESHFILTER = "Humans"
     WEIGHTFILTER = 2
     GRAPHVIZEDGEMULTIPLIER = 3
     resultfilename = 'results_' + str(search_result_stub.id) + '_' + str.replace(MESHFILTER," ","_").lower() + "_topresults"
@@ -95,8 +96,8 @@ def perform_search(search_result_stub_id):
 
     # Housekeeping
     # 1 - Mark results done
-    search_result_stub = SearchResult.objects.get(pk = int(search_result_stub_id))
     search_result_stub.has_completed = True
+    search_result_stub.filename_stub = resultfilename
     # 2 - Give end time
     search_result_stub.ended_processing = datetime.datetime.now()
     search_result_stub.save()
@@ -212,6 +213,7 @@ def searchgene(texttosearch, searchstring):
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,\
                identifiers, edges, outcomemesh, mediatormesh, MESHFILTER, \
                results_path, resultfilename):
+
     # Go through and count edges
     papercounter = 0
     citation_id = set()
@@ -253,16 +255,20 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                             identifiers[gene][1][outcome].append(citation.fields["Unique Identifier"])
                                 break
                 except:
+                    print "Unexpected error handling genes:", sys.exc_info()
+                    print " for gene:", gene
                     nothing = 0
             #Repeat for other mediators
             for mediator in mediatormesh:
+
                 try:
                     if string.find(citation.fields["MeSH Subject Headings"],mediator) > 0:
                         countthis = 1
                         citation_id.add(citation.fields["Unique Identifier"].strip())
                         for exposure in exposuremesh:
                             exposurel = exposure.split(" AND ")
-                            if len(exposurel) == 1:
+                            if len(exposurel) == 2:
+                                # print "exposurel", exposurel
                                 if string.find(citation.fields["MeSH Subject Headings"],exposurel[0]) > 0 and string.find(citation.fields["MeSH Subject Headings"],exposurel[1]) > 0:
                                     edges[mediator][0][exposure] += 1
                                     identifiers[mediator][0][exposure].append(citation.fields["Unique Identifier"])
@@ -275,6 +281,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     edges[mediator][0][exposure] += 1
                                     identifiers[mediator][0][exposure].append(citation.fields["Unique Identifier"])
                         for outcome in outcomemesh:
+                            # print "b"
                             outcomel = outcome.split(" AND ")
                             if len(outcomel) > 1:
                                 if string.find(citation.fields["MeSH Subject Headings"],outcomel[0]) > 0 and string.find(citation.fields["MeSH Subject Headings"],outcomel[1]) > 0:
@@ -286,6 +293,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     identifiers[mediator][1][outcome].append(citation.fields["Unique Identifier"])
                         break
                 except:
+                    print "Unexpected error handling mediator:", sys.exc_info()
+                    print " for mediator:", mediator
                     nothing = 0
         if countthis == 1:
             papercounter += 1
