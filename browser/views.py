@@ -443,7 +443,7 @@ class FilterSelector(UpdateView):
         return context
 
     def form_valid(self, form):
-        # Store genes an filter
+        # Store genes and filter
         search_result = self.object
         search_criteria = search_result.criteria
 
@@ -457,19 +457,14 @@ class FilterSelector(UpdateView):
             this_gene = Gene.objects.get(name__iexact=ind_gene)
             search_criteria.genes.add(this_gene)
 
-        # TODO: Move this to the perform_search function in matching
-        # Set metadata
-        # search_result.started_processing = datetime.datetime.now()
-        # search_result.has_completed = False
-        # search_result.save()
+        # TODO: Save filter mesh term - mesh_filter
 
         # Run the search
         perform_search(search_result.id)
 
-        # NB: Need to reload the object from DB for this view after performiong the search
-        self.object = SearchResult.objects.get(id=self.object.id)
-        
-        # TODO review, appears that filter is only saved to result object after performing the search
+        # Reset form instance after manipulating object in perform searh function
+        form.instance = SearchResult.objects.get(id=self.object.id)
+        # TODO review, if filter is only saved to result object after performing the search
         return super(FilterSelector, self).form_valid(form)
 
     def get_success_url(self):
