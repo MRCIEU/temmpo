@@ -1,9 +1,18 @@
 """ TeMMPo test suite - browsing expected url paths
 """
+import datetime
 import logging
+import os
 
+
+from django.conf import settings
+from django.contrib.auth.models import AnonymousUser, User
+from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
+
+from browser.matching import perform_search
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
 
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
@@ -14,9 +23,13 @@ class BrowsingTest(TestCase):
     """ Run simple tests for browsing the TeMMPo application
     """
 
+    fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json',]
+
     def setUp(self):
-        self.browser = Client()
         super(BrowsingTest, self).setUp()
+        self.browser = Client()
+        self.user = User.objects.create_user(id=999,
+            username='may', email='may@example.com', password='12345#abc')
 
     def _find_expected_content(self, path="", url_path=None, msg="", requires_login=False):
 
@@ -64,6 +77,60 @@ class BrowsingTest(TestCase):
         """
 
         self._find_expected_content(path="/results/", msg="My list", requires_login=True)
+
+    def test_matching(self):
+        """
+        Mesh terms 
+
+        exposure: Humans    (B01.050.150.900.649.801.400.112.400.400 Organisms > Eukaryota > Animals > Chordata > Vertebrates > Mammals > Primates > Haplorhini > Catarrhini > Hominidae)
+
+        mediator: Phenotype (G05.695 Phenomena and Processes > Genetic Phenomena) 
+
+        outcome: Apoptosis (G04.299.139.160 Phenomena and Processes > Cell Physiological Phenomena > Cell Physiological Processes > Cell Death)
+
+        gene: TRPC1 
+
+        citation file: test-abstract.txt
+        or 
+        citation file: 13-53-45-22-39-12-citation_1-400.txt
+
+        Should find matches with both mediator term and gene only finds matches with the gene
+        """
+
+        test_file = open(os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt'), 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'))
+        upload.save()
+
+        exposure_terms = MeshTerm.objects.get(term="Humans").get_descendants(include_self=True)
+        mediator_terms = MeshTerm.objects.get(term="Phenotype").get_descendants(include_self=True)
+        outcome_terms = MeshTerm.objects.get(term="Apoptosis").get_descendants(include_self=True)
+        genes = Gene.objects.filter(name="TRPC1")
+
+        search_criteria = SearchCriteria(upload=upload)
+        search_criteria.save()
+
+        search_criteria.genes = genes
+        search_criteria.exposure_terms = exposure_terms
+        search_criteria.outcome_terms = outcome_terms
+        search_criteria.mediator_terms = mediator_terms
+        search_criteria.save()
+
+        search_result = SearchResult()
+        search_result.pk = 999
+        search_result.criteria = search_criteria
+        search_result.started_processing = datetime.datetime.now()
+        search_result.has_completed = False
+        search_result.save()
+
+        # Run the search
+        perform_search(search_result.id)
+
+        # Retrieve updated results object        
+        search_result = SearchResult.objects.get(id=999)
+
+        test_results_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '.csv'), 'r')
+        self.assertEqual(len(test_results_csv.readlines()), 2) # Expected at least two matches
+
 
     # Additional features
 

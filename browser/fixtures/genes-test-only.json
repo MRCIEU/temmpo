@@ -1,0 +1,10 @@
+[
+{
+    "fields": {
+        "synonym_for": null,
+        "name": "TRPC1"
+    },
+    "model": "browser.gene",
+    "pk": 21899
+}
+]
