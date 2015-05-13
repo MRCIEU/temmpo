@@ -128,30 +128,15 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         context['type'] = 'Exposure'
         context['next_type'] = 'Mediators'
         context['term_selector_by_family_url'] = 'exposure-selector-by-family'
-        # This is a mess, the form model is SearchCriteria but the ID in the
-        # URL is for the SearchResult
-        #search_result = SearchResult.objects.get(pk = self.object.id)
         context['pre_selected'] = ",".join(self.object.get_form_codes('exposure'))
+        context['next_url'] = reverse('mediator-selector', kwargs={'pk': self.object.id})
+        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables('exposure'))
 
-        #print self.object.id, self.object.get_form_codes('exposure')
         return context
 
     def form_valid(self, form):
         # Store mapping
         if form.is_valid():
-            # TODO test
-            #print "ExposureSelector:form_valid"
-            #print "self.object", form.instance.id
-            #print "self.form.instance", form.cleaned_data
-
-            # Get search result object
-            #if not SearchResult.objects.filter(pk = form.instance.id).exists():
-            #    search_result = SearchResult(criteria=form.instance)
-            #    search_result.save()
-            #else:
-            #    search_result = SearchResult.objects.get(pk = form.instance.id)
-            #    search_result.save()
-
             cleaned_data = form.cleaned_data
 
             if 'btn_submit' in cleaned_data:
@@ -220,29 +205,14 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
         context['type'] = 'Mediator'
         context['next_type'] = 'Outcomes'
         context['term_selector_by_family_url'] = 'mediator-selector-by-family'
-        # This is a mess
-        #search_result = SearchResult.objects.get(pk = self.object.id)
         context['pre_selected'] = ",".join(self.object.get_form_codes('mediator'))
-
-        #print self.object.id, self.object.get_form_codes('mediator')
+        context['next_url'] = reverse('outcome-selector', kwargs={'pk': self.object.id})
+        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables('mediator'))
         return context
 
     def form_valid(self, form):
         # Store mapping
         if form.is_valid():
-            # TODO test
-            #print "MediatorSelector:form_valid"
-            #print "self.object", form.instance.id
-            #print "self.form.instance", form.cleaned_data
-
-            # Get search result object
-            #if not SearchResult.objects.filter(pk = form.instance.id).exists():
-            #    search_result = SearchResult(criteria=form.instance)
-            #    search_result.save()
-            #else:
-            #    search_result = SearchResult.objects.get(pk = form.instance.id)
-            #    search_result.save()
-
             cleaned_data = form.cleaned_data
 
             if 'btn_submit' in cleaned_data:
@@ -285,10 +255,6 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
                     mesh_term = MeshTerm.objects.get(pk = term_id)
                     search_criteria.mediator_terms.add(mesh_term)
 
-                #self.search_result = search_result
-                #self.search_result.save()
-
-            #print search_result.id, search_result.criteria.id, search_result.criteria.mediator_terms.all()
             return super(MediatorSelector, self).form_valid(form)
 
 
@@ -303,17 +269,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         if self.move_type == 'choose':
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
         else:
-            # Create search results
-            if not SearchResult.objects.filter(criteria=self.object).exists():
-                # print "CREATING NEW RESULTS OBJECT ####"
-                # TODO: Review when we re-enable re-using search criteria
-                search_results = SearchResult(criteria=self.object)
-                search_results.save()
-            else:
-                # print "REUSING RESULTS OBJECT ####"
-                search_results = SearchResult.objects.get(criteria=self.object)
-
-            return reverse('filter-selector', kwargs={'pk': search_results.id})
+            return reverse('filter-selector', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
@@ -321,9 +277,10 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         context['type'] = 'Outcome'
         context['next_type'] = 'Genes and Filters'
         context['term_selector_by_family_url'] = 'outcome-selector-by-family'
-        # This is a mess
-        #search_result = SearchResult.objects.get(pk = self.object.id)
         context['pre_selected'] = ",".join(self.object.get_form_codes('outcome'))
+        context['next_url'] = reverse('filter-selector', kwargs={'pk': self.object.id})
+        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables('outcome'))
+
 
         #print self.object.id, self.object.get_form_codes('outcome')
         return context
@@ -427,18 +384,18 @@ class SearchExisting(RedirectView):
 class FilterSelector(UpdateView):
     template_name = "filter_selector.html"
     form_class = FilterForm
-    model = SearchResult
+    model = SearchCriteria
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the search form
+        """ Ensure user logs in before viewing the form
         """
 
-        # Prevent user viewing data for another user
-        srid = int(kwargs['pk'])
-        if SearchResult.objects.filter(pk = srid).exists():
-            srcheck = SearchResult.objects.get(pk = srid)
-            if request.user.id != srcheck.criteria.upload.user.id:
+        # Prevent one user viewing data for another
+        scid = int(kwargs['pk'])
+        if SearchCriteria.objects.filter(pk = scid).exists():
+            sccheck = SearchCriteria.objects.get(pk = scid)
+            if request.user.id != sccheck.upload.user.id:
                 raise Http404("Not found")
         else:
             raise Http404("Not found")
@@ -453,27 +410,16 @@ class FilterSelector(UpdateView):
 
     def form_valid(self, form):
         # Store genes and filter
-        search_result = self.object
-        search_criteria = search_result.criteria
 
-        gene_data = form.cleaned_data['genes']
-        gene_list = gene_data.split(',')
-
-        for ind_gene in gene_list:
-            # Genes have already been checked at this point so we need to get
-            # the gene and then add it to the results
-            ind_gene = ind_gene.strip()
-            this_gene = Gene.objects.get(name__iexact=ind_gene)
-            search_criteria.genes.add(this_gene)
-
-        # TODO: Save filter mesh term - mesh_filter
+        # Save genes to search criteria
+        form.save()
 
         # Run the search
+        search_result = SearchResult(criteria=self.object)
+        # TODO Save mesh filter term
+        search_result.save()
         perform_search(search_result.id)
 
-        # Reset form instance after manipulating object in perform searh function
-        form.instance = SearchResult.objects.get(id=self.object.id)
-        # TODO review, if filter is only saved to result object after performing the search
         return super(FilterSelector, self).form_valid(form)
 
     def get_success_url(self):

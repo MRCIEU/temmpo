@@ -86,3 +86,9 @@ dd {
 ul#tree-family li {
    margin-bottom : 8px;
 }
+
+.sml-button {
+    font-size: 90%;
+    padding: 5px 15px 5px 15px;
+    margin: 0.5em 0em;
+  }

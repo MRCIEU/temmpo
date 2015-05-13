@@ -128,31 +128,32 @@ class BrowsingTest(TestCase):
         search_criteria.mediator_terms = mediator_terms
         search_criteria.save()
 
-        search_result = SearchResult()
-        search_result.pk = 999
-        search_result.criteria = search_criteria
-        # search_result.started_processing = datetime.datetime.now()
-        # search_result.has_completed = False
-        search_result.save()
+        # search_result = SearchResult()
+        # search_result.pk = 999
+        # search_result.criteria = search_criteria
+        # # search_result.started_processing = datetime.datetime.now()
+        # # search_result.has_completed = False
+        # search_result.save()
 
         # Run the search, by posting filter and gene selection form
         # TODO post mesh filter data
         self._login_user()
-        path = reverse('filter-selector', kwargs={'pk': search_result.id})
+        path = reverse('filter-selector', kwargs={'pk': search_criteria.id})
         response = self.client.post(path, {'genes':'TRPC1'}, follow=True)
+
 
         # TODO: Split into pure integration and unit text version that does not use views
         # perform_search(search_result.id)
 
-        # Retrieve updated results object
-        search_result = SearchResult.objects.get(id=999)
+        # Retrieve results object
+        search_result = SearchResult.objects.get(criteria=search_criteria)
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         print "RESULTS ARE IN THE THIS FILE: "
         print test_results_edge_csv.name
         self.assertEqual(len(test_results_edge_csv.readlines()), 2) # Expected two matches
         self.assertTrue(search_result.has_completed)
-        self.assertContains(response, "Search criteria for resultset '999'")
+        self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
 
     # Additional features
@@ -183,3 +184,5 @@ class BrowsingTest(TestCase):
 
     #     self._find_expected_content(path="/results/%s/archive" %
     #                                 RESULT_HASH, msg="Download")
+
+# def test_gene_input # Can it handle new genes, unexpected spaces and other characters 

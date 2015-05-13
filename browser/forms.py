@@ -2,6 +2,7 @@ import re
 
 from django import forms
 from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
+from browser.widgets import GeneTextarea
 
 class AbstractFileUploadForm(forms.ModelForm):
     # abstracts = forms.FileField()  # TODO use custom ajax upload form field
@@ -36,6 +37,7 @@ class ExposureForm(forms.ModelForm):
             cleaned_data['exposure_terms'] = MeshTerm.objects.filter(tree_number__in = all_terms)
 
         return cleaned_data
+
 
 class MediatorForm(forms.ModelForm):
     term_data = forms.CharField(widget=forms.HiddenInput,
@@ -85,7 +87,7 @@ class OutcomeForm(forms.ModelForm):
 
 
 class FilterForm(forms.ModelForm):
-    genes = forms.CharField(widget=forms.Textarea,
+    genes = forms.CharField(widget=GeneTextarea,
                             required=False,
                             label = 'Enter genes (optional)',
                             help_text = 'Separated by commas')
@@ -96,21 +98,21 @@ class FilterForm(forms.ModelForm):
                                   label = 'Filter')
 
     class Meta:
-        model = SearchResult
+        model = SearchCriteria
         fields = ['genes', 'ex_filter' ]
 
 
     def clean_genes(self):
         data = self.cleaned_data['genes']
 
-        gene_list = data.split(',')
+        # Clean up data
+        gene_list = [x.strip() for x in data.split(',')]
+        gene_list = [x for x in gene_list if x]
 
         matched_genes = []
         unmatched_genes = []
         
         for ind_gene in gene_list:
-            # Check gene name
-            ind_gene = ind_gene.strip()
             gene_ok = True
             if re.search(r'[^a-zA-z0-9\-]+', ind_gene):
                 gene_ok = False
@@ -134,6 +136,26 @@ class FilterForm(forms.ModelForm):
 #         if len(unmatched_genes) > 0:
 #             raise forms.ValidationError("Gene(s) not found in current list of stored genes (from Homo_sapiens.gene_info): %s" % ",".join(unmatched_genes))
 
-        return data
+        return ','.join(gene_list)
+
+    def save(self, commit=True):
+
+        # Clear any existing genes
+        self.instance.genes.clear()
+
+        gene_data = self.cleaned_data['genes']
+
+        if gene_data:
+
+            gene_list = gene_data.split(',')
+
+            for ind_gene in gene_list:
+                # Genes have already been checked at this point so we need to get
+                # the gene object and then add it to the criteria object
+                ind_gene = ind_gene.strip()
+                this_gene = Gene.objects.get(name__iexact=ind_gene)
+                self.instance.genes.add(this_gene)
+
+        return self.instance
 
 # TODO create custom form fields widgets

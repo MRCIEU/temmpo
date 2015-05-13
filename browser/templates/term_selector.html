@@ -51,6 +51,7 @@
 {% endblock %}
 
 {% block left-column %}
+  <section>
     <h2>Quick search</h2>
 
     {# TODO wire up search by term name form #}
@@ -63,6 +64,17 @@
 
         <button type="submit" disabled>Add</button>
     </form>
+  </section>
+
+    {% if pre_selected_term_names %}
+    <section>
+      <h2>Current {{ type|lower }} terms</h2>
+      <p>{{ pre_selected_term_names }}</p>
+      {# TODO Improve mechanism for moving through workflow #}
+      <a href="{{ next_url }}" class="button">Select {{ next_type }}</a>
+  </section>
+    {% endif %}
+  
 {% endblock %}
 
 {% block middle-column %}
@@ -137,8 +149,8 @@
           // See: Ajax and JSON versions http://www.jstree.com/docs/json/
           // plugins http://www.jstree.com/plugins/
           </script>
-          <button type="submit" name="btn_submit" value="choose">Select these terms and choose more {{ type }} terms</button>
-          <button type="submit" name="btn_submit" value="progress">Select these terms and move on to select {{ next_type }}</button>
+          <button type="submit" name="btn_submit" value="choose" class="sml-button button">Select these terms and choose more {{ type }} terms</button>
+          <button type="submit" name="btn_submit" value="progress" class="sml-button button">Select these terms and move on to select {{ next_type }}</button>
           <!-- <script>
           $('#terms').tree();
 
