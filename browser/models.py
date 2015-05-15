@@ -22,11 +22,11 @@ def get_user_upload_location(instance, filename):
 
 class Gene(models.Model):
     """
-    TODO: Pre-populate this lookup table
-    # Subset of gene names, possible vocabulary source:
-    # ftp://ftp.ncbi.nih.gov/gene/DATA/)? Or only Human Genes
+    Prepoulated with genes from:
     # ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
     # ftp://ftp.ncbi.nih.gov/gene/DATA/README
+
+    Possible alternatives:
     # TBC as a source: http://www.genenames.org/cgi-bin/statistics
     # TBC: http://www.genenames.org/cgi-bin/genefamilies/download-all/json
     """
@@ -38,8 +38,10 @@ class Gene(models.Model):
 
 
 class MeshTerm(MPTTModel):
-    """ FUTURE: May generate JSON as a yearly task when mesh terms are updated
-        TODO: Pre-populate with entire tree from  http://www.nlm.nih.gov/mesh/
+    """Pre-populated with MeSH terms from http://www.nlm.nih.gov/mesh/
+
+    FUTURE TODO: Generate JSON as a yearly task when mesh terms are updated, see 
+    management command import_mesh_terms.py
     """
     term = models.CharField(max_length=300)  # TODO: Confirm maximum length
     tree_number = models.CharField(max_length=50)  # TODO: Confirm maximum length
@@ -48,7 +50,6 @@ class MeshTerm(MPTTModel):
     def __str__(self):
         return self.term
 
-    # TODO: Should this be an attribute
     def get_term_with_tree_number(self):
         return self.term + ";" + self.tree_number
 
@@ -66,6 +67,7 @@ class Upload(models.Model):
     @property
     def filename(self):
         return os.path.basename(self.abstracts_upload.file.name)
+
 
 class Abstract(models.Model):
     """ Would be useful for database/python based matching
@@ -143,7 +145,6 @@ class SearchCriteria(models.Model):
         else:
             return []
 
-
     def __unicode__(self):
         if self.name:
             return self.name
@@ -154,10 +155,10 @@ class SearchCriteria(models.Model):
 class SearchResult(models.Model):
 
     criteria = models.ForeignKey(SearchCriteria, related_name='search_results')
-    # related_name="result"
 
     # Abstracting out mesh filter and results as more likely to change the filter
     # but use the same set of other search criteria
+    
     # Confirm maximum term length
     mesh_filter = models.CharField("MeSH filter", max_length=300, blank=True, null=True)
     results = models.FileField(blank=True, null=True,)  # JSON file for output
@@ -165,7 +166,6 @@ class SearchResult(models.Model):
     has_completed = models.BooleanField(default=False)
     # Store the unique part of the results filenames
     filename_stub = models.CharField(max_length=100, blank=True, null=True)
-
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
 
