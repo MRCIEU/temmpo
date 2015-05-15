@@ -1,15 +1,17 @@
 import datetime
 import logging
 
-from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.utils.decorators import method_decorator
-from django.views.generic.base import TemplateView, RedirectView
-from django.views.generic import ListView
-from django.views.generic.edit import CreateView, UpdateView
 from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView
+from django.views.generic.base import TemplateView, RedirectView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
 
 from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
                            OutcomeForm, FilterForm)
@@ -61,8 +63,6 @@ class SearchView(CreateView):
         context['active'] = 'search'
         context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
         context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
-        # TODO check if quicker
-        # context['criteria'] = context['uploads'].searches.all().order_by('-created')
         return context
 
     def get_initial(self):
@@ -87,7 +87,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         if SearchCriteria.objects.filter(pk = scid).exists():
             sccheck = SearchCriteria.objects.get(pk = scid)
             if request.user.id != sccheck.upload.user.id:
-                raise Http404("Not found")
+                raise PermissionDenied
         else:
             raise Http404("Not found")
 
@@ -178,9 +178,6 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
 
                     mesh_term = MeshTerm.objects.get(pk = term_id)
                     search_criteria.exposure_terms.add(mesh_term)
-
-                #self.search_result = search_result
-                #self.search_result.save()
 
             #print search_result.id, search_result.criteria.id, search_result.criteria.exposure_terms.all()
             return super(ExposureSelector, self).form_valid(form)
@@ -281,25 +278,11 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         context['next_url'] = reverse('filter-selector', kwargs={'pk': self.object.id})
         context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables('outcome'))
 
-
-        #print self.object.id, self.object.get_form_codes('outcome')
         return context
 
     def form_valid(self, form):
         # Store mapping
         if form.is_valid():
-            # TODO test
-            #print "OutcomeSelector:form_valid"
-            #print "self.object", form.instance.id
-            #print "self.form.instance", form.cleaned_data
-
-            # Get search result object
-            #if not SearchResult.objects.filter(pk = form.instance.id).exists():
-            #    search_result = SearchResult(criteria=form.instance)
-            #    search_result.save()
-            #else:
-            #    search_result = SearchResult.objects.get(pk = form.instance.id)
-            #    search_result.save()
 
             cleaned_data = form.cleaned_data
 
@@ -342,9 +325,6 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
 
                     mesh_term = MeshTerm.objects.get(pk = term_id)
                     search_criteria.outcome_terms.add(mesh_term)
-
-                #self.search_result = search_result
-                #self.search_result.save()
 
             #print search_result.id, search_result.criteria.id, search_result.criteria.outcome_terms.all()
             return super(OutcomeSelector, self).form_valid(form)
@@ -396,7 +376,7 @@ class FilterSelector(UpdateView):
         if SearchCriteria.objects.filter(pk = scid).exists():
             sccheck = SearchCriteria.objects.get(pk = scid)
             if request.user.id != sccheck.upload.user.id:
-                raise Http404("Not found")
+                raise PermissionDenied
         else:
             raise Http404("Not found")
 
@@ -409,15 +389,18 @@ class FilterSelector(UpdateView):
         return context
 
     def form_valid(self, form):
-        # Store genes and filter
+        """Store genes and filter"""
 
         # Save genes to search criteria
         form.save()
 
-        # Run the search
+        # Create search result object and save mesh filter term
         search_result = SearchResult(criteria=self.object)
-        # TODO Save mesh filter term
+        mesh_filter = form.cleaned_data['mesh_filter']
+        search_result.mesh_filter = mesh_filter
         search_result.save()
+
+        # Run the search
         perform_search(search_result.id)
 
         return super(FilterSelector, self).form_valid(form)
@@ -439,7 +422,7 @@ class ResultsView(TemplateView):
         if SearchResult.objects.filter(pk = srid).exists():
             srcheck = SearchResult.objects.get(pk = srid)
             if request.user.id != srcheck.criteria.upload.user.id:
-                raise Http404("Not found")
+                raise PermissionDenied
         else:
             raise Http404("Not found")
 
@@ -456,7 +439,6 @@ class ResultsView(TemplateView):
 
 
 class ResultsListingView(ListView):
-    """ TODO: Convert to a ListView """
     template_name = "results_listing.html"
     context_object_name = "results"
 
@@ -470,20 +452,22 @@ class ResultsListingView(ListView):
         return SearchResult.objects.filter(criteria__upload__user=self.request.user)
 
 
-class CriteriaView(TemplateView):
+class CriteriaView(DetailView):
     template_name = "criteria.html"
+    model = SearchCriteria
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing
         """
         # Prevent user viewing data for another user
-        srid = int(kwargs['pk'])
-        if SearchResult.objects.filter(pk = srid).exists():
-            srcheck = SearchResult.objects.get(pk = srid)
-            if request.user.id != srcheck.criteria.upload.user.id:
-                raise Http404("Not found")
-        else:
+        criteria_id = int(kwargs['pk'])
+        try:
+            criteria = SearchCriteria.objects.get(pk=criteria_id)
+            if request.user.id != criteria.upload.user.id:
+                raise PermissionDenied
+
+        except ObjectDoesNotExist:
             raise Http404("Not found")
 
         return super(CriteriaView, self).dispatch(request, *args, **kwargs)
@@ -491,14 +475,11 @@ class CriteriaView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(CriteriaView, self).get_context_data(**kwargs)
 
-        searchresult = SearchResult.objects.get(pk = int(kwargs['pk']))
-        context['result'] = searchresult
-
-        context['exposures'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('exposure'))
-        context['mediators'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('mediator'))
-        context['outcomes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('outcome'))
-        context['genes'] = ", ".join(searchresult.criteria.get_wcrf_input_variables('gene'))
-        context['url'] = reverse('edit-search', kwargs={'pk': searchresult.criteria.id})
+        context['exposures'] = ", ".join(self.object.get_wcrf_input_variables('exposure'))
+        context['mediators'] = ", ".join(self.object.get_wcrf_input_variables('mediator'))
+        context['outcomes'] = ", ".join(self.object.get_wcrf_input_variables('outcome'))
+        context['genes'] = ", ".join(self.object.get_wcrf_input_variables('gene'))
+        context['url'] = reverse('edit-search', kwargs={'pk': self.object.id})
 
         return context
 
@@ -517,7 +498,7 @@ class CountDataView(RedirectView):
         if SearchResult.objects.filter(pk = srid).exists():
             srcheck = SearchResult.objects.get(pk = srid)
             if request.user.id != srcheck.criteria.upload.user.id:
-                raise Http404("Not found")
+                raise PermissionDenied
         else:
             raise Http404("Not found")
 
@@ -543,7 +524,7 @@ class AbstractDataView(RedirectView):
         if SearchResult.objects.filter(pk = srid).exists():
             srcheck = SearchResult.objects.get(pk = srid)
             if request.user.id != srcheck.criteria.upload.user.id:
-                raise Http404("Not found")
+                raise PermissionDenied
         else:
             raise Http404("Not found")
 
@@ -569,7 +550,7 @@ class JSONDataView(RedirectView):
         if SearchResult.objects.filter(pk = srid).exists():
             srcheck = SearchResult.objects.get(pk = srid)
             if request.user.id != srcheck.criteria.upload.user.id:
-                raise Http404("Not found")
+                raise PermissionDenied
         else:
             raise Http404("Not found")
 
@@ -579,20 +560,3 @@ class JSONDataView(RedirectView):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
         url = settings.MEDIA_URL + 'results/%s.json' % search_result.filename_stub
         return url
-
-
-#class ResultsListingView(TemplateView):
-#    """ TODO: Convert to a ListView """
-#    template_name = "results_listing.html"
-#
-#    @method_decorator(login_required)
-#    def dispatch(self, request, *args, **kwargs):
-#         """ Ensure user logs in before viewing the results listing page
-#         """
-#         return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
-#
-#    def get_context_data(self, **kwargs):
-#        context = super(ResultsListingView, self).get_context_data(**kwargs)
-#        context['active'] = 'results'
-#
-#        return context

@@ -48,6 +48,7 @@ def perform_search(search_result_stub_id):
     exposuremesh = search_result_stub.criteria.get_wcrf_input_variables('exposure')
     outcomemesh = search_result_stub.criteria.get_wcrf_input_variables('outcome')
     mediatormesh = search_result_stub.criteria.get_wcrf_input_variables('mediator')
+    mesh_filter = search_result_stub.mesh_filter # Previously hardcoded to Human then Humans
 
     #print "GENE", genelist
     #print "EXP", exposuremesh
@@ -55,14 +56,12 @@ def perform_search(search_result_stub_id):
     #print "MED", mediatormesh
 
     # Constants
-    MESHFILTER = "Humans"
     WEIGHTFILTER = 2
     GRAPHVIZEDGEMULTIPLIER = 3
-    resultfilename = 'results_' + str(search_result_stub.id) + '_' + str.replace(MESHFILTER," ","_").lower() + "_topresults"
+    resultfilename = 'results_' + str(search_result_stub.id) + '_' + mesh_filter.replace(" ","_").lower() + "_topresults"
     results_path = settings.RESULTS_PATH
-    #os.path.dirname(search_result_stub.criteria.upload.abstracts_upload.path) + '/'
-    print "Set constants"
 
+    print "Set constants"
     # Get synonyms, edges and identifiers, citations
     synonymlookup, synonymlisting = generate_synonyms()
     print "Done synonyms"
@@ -76,14 +75,14 @@ def perform_search(search_result_stub_id):
                                                   synonymlookup, synonymlisting,\
                                                   exposuremesh, identifiers,\
                                                   edges, outcomemesh, \
-                                                  mediatormesh, MESHFILTER, \
+                                                  mediatormesh, mesh_filter, \
                                                   results_path, resultfilename)
     print "Counted edges"
 
     # Create results
     createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,\
                      synonymlookup, edges, WEIGHTFILTER, mediatormesh, \
-                     MESHFILTER, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename)
+                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename)
 
     print "Created results"
 
@@ -211,7 +210,7 @@ def searchgene(texttosearch, searchstring):
     return searchstringre.search(texttosearch)
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,\
-               identifiers, edges, outcomemesh, mediatormesh, MESHFILTER, \
+               identifiers, edges, outcomemesh, mediatormesh, mesh_filter, \
                results_path, resultfilename):
 
     # Go through and count edges
@@ -220,7 +219,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     for citation in citations:
         countthis = 0
-        if string.find(citation.fields["MeSH Subject Headings"],MESHFILTER) > 0:
+        # TODO optimisation - check Absctrat seciton exists sooner
+        if not mesh_filter or string.find(citation.fields["MeSH Subject Headings"],mesh_filter) > 0:
             for gene in genelist:
                 try:
                     gene = synonymlookup[gene]
@@ -254,10 +254,14 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                             edges[gene][1][outcome] += 1
                                             identifiers[gene][1][outcome].append(citation.fields["Unique Identifier"])
                                 break
+                except KeyError:
+                    # Some citations have no Abstract section
+                    pass
                 except:
+                    # Report unexpected errors
                     print "Unexpected error handling genes:", sys.exc_info()
-                    print " for gene:", gene
-                    nothing = 0
+                    print " for gene:", genes
+
             #Repeat for other mediators
             for mediator in mediatormesh:
 
@@ -292,10 +296,14 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     edges[mediator][1][outcome] += 1
                                     identifiers[mediator][1][outcome].append(citation.fields["Unique Identifier"])
                         break
+                except KeyError:
+                    # Some citations have no Abstract section
+                    pass
                 except:
+                    # Report unexpected errors
                     print "Unexpected error handling mediator:", sys.exc_info()
                     print " for mediator:", mediator
-                    nothing = 0
+
         if countthis == 1:
             papercounter += 1
 
@@ -310,7 +318,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
 def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,\
                      synonymlookup, edges, WEIGHTFILTER, mediatormesh, \
-                     MESHFILTER, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
+                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
     # Gephi input
 
     ### TODO - Work out where to put results file
@@ -379,7 +387,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,\
 
     #Output GEPHI file
     gvfile = open('%s%s.gv' % (results_path,resultfilename),'w')
-    gvfile.write('digraph prof {\n size="6,4"; ratio = fill; label = "' + MESHFILTER + '"; labelloc = "t"; node [style=filled];\n')
+    gvfile.write('digraph prof {\n size="6,4"; ratio = fill; label = "' + mesh_filter + '"; labelloc = "t"; node [style=filled];\n')
     for exposure in exposurecounter.keys():
         gvfile.write('"EXPOSURE" -> "'+exposure+'" [dir=none,penwidth='+str((int(math.log10(exposurecounter[exposure]+0.1))+1)*GRAPHVIZEDGEMULTIPLIER)+'];\n')
     for genel in genelist:

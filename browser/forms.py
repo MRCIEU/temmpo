@@ -92,14 +92,16 @@ class FilterForm(forms.ModelForm):
                             label = 'Enter genes (optional)',
                             help_text = 'Separated by commas')
 
-    ex_filter = forms.ChoiceField(widget = forms.Select(),
-                                  choices = ([('1','Humans'), ]),
+    # Need to explictly save the related search result object
+    mesh_filter = forms.ChoiceField(widget = forms.Select(),
+                                  choices = ([('','None'), ('Humans','Humans'),]),
                                   required = False,
-                                  label = 'Filter')
+                                  label = 'Filter',
+                                  initial="Humans")
 
     class Meta:
         model = SearchCriteria
-        fields = ['genes', 'ex_filter' ]
+        fields = ['genes', 'mesh_filter' ]
 
 
     def clean_genes(self):
