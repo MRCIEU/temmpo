@@ -219,7 +219,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     for citation in citations:
         countthis = 0
-        # TODO optimisation - check Absctrat seciton exists sooner
+        # TODO optimisation - check Abstract seciton exists sooner
         if not mesh_filter or string.find(citation.fields["MeSH Subject Headings"],mesh_filter) > 0:
             for gene in genelist:
                 try:
