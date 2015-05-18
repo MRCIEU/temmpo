@@ -55,7 +55,6 @@ cd $VE
 cd src/temmpo
 pwd
 ../../bin/pip install -r deploy/project-eggs-freeze.txt
-../../bin/pip install -r deploy/now.txt
 
 #bin/pip install django # Tested with 1.7.4
 #bin/pip install django-chunked-upload # Trialing

@@ -48,7 +48,6 @@ cd $BASEPATH
 cd src/temmpo
 pwd
 ../../bin/pip install -r deploy/project-eggs-freeze.txt
-../../bin/pip install -r deploy/now.txt
 
 # DB
 echo "Update database with any new migrations"
