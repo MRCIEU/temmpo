@@ -1,16 +1,20 @@
 README
 
-Installation:
+Installation
+------------
 
 TODO: Add notes re fabric commands to build environment
 
-See: deploy/now.txt
+See: deploy/*
 
 Set up database:
 
 # Run migrations to set up the database structure
 cd src/temmpo
 ../../bin/python manage.py migrate
+
+# More specific migrations
+../../bin/python manage.py migrate browser
 
 # Create a super user
  ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev
@@ -19,3 +23,29 @@ Running tests:
 
 cd src/temmpo
  ../../bin/python manage.py test tests/ --settings=temmpo.settings.dev
+
+
+Deployment
+----------
+
+# Tag in git using fabric utilty function
+
+# Tag release, e.g. version 0.4
+fab taggit:master,0.4,temmpo
+
+# Move/update prod_stable branch 
+fab taggit:master,prod_stable,temmpo
+
+# On production environment, e.g. 
+cd /usr/local/projects/tmma/lib/prod/src/temmpo
+
+# One off
+git branch --set-upstream prod_stable origin/prod_stable
+
+git pull
+
+../../bin/python manage.py collectstatic --dry-run
+../../bin/python manage.py collectstatic
+
+
+../../bin/python manage.py migrate browser	
