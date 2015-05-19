@@ -75,6 +75,22 @@ class SearchView(CreateView):
         return super(SearchView, self).form_valid(form)
 
 
+class MeshTermListByFamily(TemplateView):
+
+    template_name = "term_selector_trimmed.html"
+
+    def get_context_data(self, **kwargs):
+        """ Sub class should define type, term_selector_url,
+            term_selector_by_family_url """
+
+        tree_number = kwargs.get('tree_number', None)
+        context = super(MeshTermListByFamily, self).get_context_data(**kwargs)
+        context['selected_tree_root_node'] = get_object_or_404(MeshTerm, tree_number=tree_number)
+        context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
+
+        return context
+
+
 class TermSelectorAbstractUpdateView(UpdateView):
 
     @method_decorator(login_required)
@@ -104,7 +120,8 @@ class TermSelectorAbstractUpdateView(UpdateView):
         if self.tree_number:
             context['selected_tree_root_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)
             context['selected_tree_root_node_id'] = context['selected_tree_root_node'].pk
-            context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
+            context['selected_tree_html_file_name']="includes/mesh-terms-"+self.tree_number+".html"
+            # context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
         return context
 
 

@@ -10,7 +10,7 @@ from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
                            CriteriaView, CountDataView, AbstractDataView, JSONDataView,
-                           SearchExistingUpload)
+                           SearchExistingUpload, MeshTermListByFamily)
 
 urlpatterns = patterns('',
     # browser app dependencies
@@ -35,6 +35,7 @@ urlpatterns = patterns('',
     url(r'^data/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count-data'),
     url(r'^data/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts-data'),
     url(r'^data/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json-data'),
+    url(r'^mesh-terms-by-family/(?P<tree_number>\w+)/$', MeshTermListByFamily.as_view(), name="mesh-terms-by-family"),
     
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
