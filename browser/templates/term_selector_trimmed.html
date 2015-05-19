@@ -1,0 +1,48 @@
+{% load mptt_tags %}
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Mesh term family</title>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
+
+        
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+        
+        <script src="{{ STATIC_URL }}js/jstree/jstree.min.js"></script>
+
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/jstree/themes/default/style.min.css" />
+    </head>
+    <body>
+
+        <!-- START TREE -->
+
+        <div id="term_tree">
+            <ul>
+                {% recursetree nodes %}
+                    <li id="mtid_{{ node.id }}" class="jstree-open"> {# Need to open the tree to ensure decendent nodes are not hiudden when scrapping #}
+                        {{ node.term }}
+                        {% if not node.is_leaf_node %}
+                            <ul class="children">
+                                {{ children }}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endrecursetree %}
+            </ul>
+        </div>
+        <script>
+        $(function () { 
+            $('#term_tree').jstree(
+                      {"plugins" : [ "checkbox"],
+                       "core" :
+                          { 'multiple': true }
+                      }
+                  );
+        });
+        </script>
+        <script src="{{ STATIC_URL }}js/tree_handler.js"></script>
+        <!-- END TREE -->
+
+    </body>
+</html>
