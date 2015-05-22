@@ -133,6 +133,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
                 search_criteria.save()
                 all_node_terms = cleaned_data['term_data'].split(',')
                 all_node_terms = [x[5:] for x in all_node_terms]
+
                 self.set_terms(all_node_terms)
 
             return super(TermSelectorAbstractUpdateView, self).form_valid(form)
@@ -158,6 +159,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         return context
 
     def set_terms(self, node_terms):
+        # TODO: Any selected nodes must have all children included in selected set
         self.object.exposure_terms.clear()
         self.object.exposure_terms = node_terms
 
