@@ -1,20 +1,19 @@
 {% extends "threecolumn.html" %}
-{% load mptt_tags %}
 
 {% block title %}TeMMPo: Select {{ type }} MeSH® terms{% endblock %}
 
-{% block scripts %}
-<!-- jsTree -->
-<script src="{{ STATIC_URL }}js/jstree/jstree.min.js"></script>
-{% endblock %}
-
 {% block styles %}
 <!-- jsTree -->
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jstree/themes/default/style.min.css" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/themes/default/style.min.css" />
+{% endblock %}
+
+
+{% block scripts %}
+<!-- jsTree -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/jstree.min.js"></script>
 {% endblock %}
 
 {% block page-heading %}
-<h1>{{ form_title }}</h1>
 {# TODO: TMMA-67 #}
 <!-- 
 <ul id="crumbs">
@@ -27,7 +26,20 @@
 {% endblock %}
 
 {% block left-column %}
-  <!-- section><h1>{{ form_title }}</h1></section -->
+    <section><h1>{{ form_title }}</h1></section>
+
+    {# TODO replace with list of previous term selections for this type, need option to add to or replace terms, with ability to clear current terms #}
+    {% if pre_selected_term_names %}
+    <section>
+      <h2>Current {{ type }} terms</h2>
+      <p>{{ pre_selected_term_names }}</p>
+      {# TODO Improve mechanism for moving through workflow #}
+      <a href="{{ next_url }}" class="button">Select {{ next_type }}</a>
+  </section>
+    {% endif %}
+{% endblock %}
+
+{% block middle-column %}
 
   <section>
     <h2>Quick search</h2>
@@ -41,63 +53,55 @@
         <button type="submit" disabled>Add</button>
     </form>
   </section>
-    {% if pre_selected_term_names %}
-    <section>
-      <h2>Current {{ type|lower }} terms</h2>
-      <p>{{ pre_selected_term_names }}</p>
-      {# TODO Improve mechanism for moving through workflow #}
-      <a href="{{ next_url }}" class="button">Select {{ next_type }}</a>
-  </section>
-    {% endif %}
-{% endblock %}
 
-{% block middle-column %}
-  <section>
-    <h2>MeSH® trees</h2>
-    <!-- MeSH Term tree families -->
-    <ul id="tree-family">
-        {% for node in root_nodes %}
-            <li>
-                {% if selected_tree_root_node and node == selected_tree_root_node %}
-                  <strong>{{ node.term }}</strong>
-                {% else %}
-                  <a href="{% url term_selector_by_family_url pk=form.instance.id tree_number=node.tree_number %}">{{ node.term }}</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-  </section>
 {% endblock %}
 
 {% block right-column %}
-    {% if selected_tree_root_node %}
+    {# if selected_tree_root_node #}
       <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
 
       <form action="." method="post">
           {% csrf_token %}
           <!-- js tree -->
-          {# Static version #}
-          {% include selected_tree_html_file_name %}
+          {# Ajax version #}
+          <div id="term_tree">
+          </div>
           <button type="submit" name="btn_submit" value="choose" class="sml-button button">Select these terms and choose more {{ type }} terms</button>
+          
           <button type="submit" name="btn_submit" value="progress" class="sml-button button">Select these terms and move on to select {{ next_type }}</button>
-          <input type="hidden" name="term_data" id="term_data" value="{{ pre_selected }}" />
-          <input type="hidden" name="selected_tree_root_node_id" id="selected_tree_root_node_id" value="{{ selected_tree_root_node_id }}" />
-      </form>
-      <script async type="text/javascript">
-      $( document ).ready(function() {
-          // Open all
-          var pre_selected = "{{ pre_selected }}";
-          var pre_sel_list = pre_selected.split(",");
 
-          pre_sel_list.map( function(item) {
-              var node = '#' + item;
-              // Open the node
-              $('#term_tree').jstree(true).check_node(node);
-          })
-      });
+          <input type="hidden" name="term_data" id="term_data" value="{{ pre_selected }}" />
+      </form>
+
+      <script type="text/javascript">
+        $(function() {
+          $("#term_tree").jstree({
+            "plugins" : [ "checkbox"],
+            "core" : {
+              "data" : {
+                "url" : "{{ json_url }}",
+                "data" : function (node) {
+                  return { "id" : node.id };
+                }
+              }
+            }
+          });
+        });
+
+        $( "document" ).ready(function() {
+            // Open all
+            var pre_selected = "{{ pre_selected }}";
+            var pre_sel_list = pre_selected.split(",");
+
+            pre_sel_list.map( function(item) {
+                var node = '#' + item;
+                // Open the node
+                $('#term_tree').jstree(true).check_node(node);
+            })
+        });
+
       </script>
-    {% else %}
-        <h2>No tree family selected</h2>
-        <p>Select a Mesh Tree family to explore.<p>
-    {% endif %}
+
+      <script src="/static/js/tree_handler.js"></script>
+
 {% endblock %}

@@ -3,7 +3,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -75,23 +75,16 @@ class SearchView(CreateView):
         return super(SearchView, self).form_valid(form)
 
 
-class MeshTermListByFamily(TemplateView):
-
-    template_name = "term_selector_trimmed.html"
-
-    def get_context_data(self, **kwargs):
-        """ Sub class should define type, term_selector_url,
-            term_selector_by_family_url """
-
-        tree_number = kwargs.get('tree_number', None)
-        context = super(MeshTermListByFamily, self).get_context_data(**kwargs)
-        context['selected_tree_root_node'] = get_object_or_404(MeshTerm, tree_number=tree_number)
-        context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
-
-        return context
-
-
 class TermSelectorAbstractUpdateView(UpdateView):
+
+    template_name = "term_selector.html"
+    model = SearchCriteria
+    move_type = 'progress'
+
+    # Required implementations
+    # form_class = None
+    # type = None
+    # set_terms(self, node_terms)
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -116,21 +109,40 @@ class TermSelectorAbstractUpdateView(UpdateView):
 
         context = super(TermSelectorAbstractUpdateView, self).get_context_data(**kwargs)
         context['active'] = 'search'
-        context['root_nodes'] = MeshTerm.objects.root_nodes()
-        if self.tree_number:
-            context['selected_tree_root_node'] = get_object_or_404(context['root_nodes'], tree_number=self.tree_number)
-            context['selected_tree_root_node_id'] = context['selected_tree_root_node'].pk
-            context['selected_tree_html_file_name']="includes/mesh-terms-"+self.tree_number+".html"
-            # context['nodes'] = context['selected_tree_root_node'].get_descendants(include_self=False)
+        context['type'] = self.type
+        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables(self.type))
+        context['json_url'] = reverse('mesh-terms-as-json-for-criteria', kwargs={'pk':self.object.id, 'type':self.type})
+        context['pre_selected'] = ",".join(self.object.get_form_codes(self.type))
         return context
+
+    def form_valid(self, form):
+        """TODO: Need to add abilty to select child nodes not shown in client side tree
+           TODO: BUG: When reusing a search criteria and adding terms from different trees - appears to remove / not save original terms if tree stays closed
+
+        """
+
+        # Store mapping
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+
+            if 'btn_submit' in cleaned_data:
+                self.move_type = cleaned_data['btn_submit']
+
+            if 'term_data' in cleaned_data:
+                search_criteria = self.object
+                search_criteria.save()
+                all_node_terms = cleaned_data['term_data'].split(',')
+                all_node_terms = [x[5:] for x in all_node_terms]
+                self.set_terms(all_node_terms)
+
+            return super(TermSelectorAbstractUpdateView, self).form_valid(form)
 
 
 class ExposureSelector(TermSelectorAbstractUpdateView):
 
-    template_name = "term_selector.html"
+    # template_name = "term_selector.html"
     form_class = ExposureForm
-    model = SearchCriteria
-    move_type = 'progress'
+    type = 'exposure'
 
     def get_success_url(self):
         if self.move_type == 'choose':
@@ -140,63 +152,14 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ExposureSelector, self).get_context_data(**kwargs)
-        context['form_title'] = 'Select Exposures'
-        context['type'] = 'Exposure'
-        context['next_type'] = 'Mediators'
-        context['term_selector_by_family_url'] = 'exposure-selector-by-family'
-        context['pre_selected'] = ",".join(self.object.get_form_codes('exposure'))
+        context['form_title'] = 'Select exposures'
+        context['next_type'] = 'mediators'
         context['next_url'] = reverse('mediator-selector', kwargs={'pk': self.object.id})
-        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables('exposure'))
-
         return context
 
-    def form_valid(self, form):
-        # Store mapping
-        if form.is_valid():
-            cleaned_data = form.cleaned_data
-
-            if 'btn_submit' in cleaned_data:
-                self.move_type = cleaned_data['btn_submit']
-
-            if 'term_data' in cleaned_data:
-                search_criteria = self.object
-                search_criteria.save()
-
-                # Get root node
-                root_node_id = cleaned_data['selected_tree_root_node_id']
-                root_node = MeshTerm.objects.get(pk = root_node_id)
-
-                # Need to handle data that's been removed
-                orig_terms = search_criteria.get_form_codes('exposure')
-                all_node_terms = cleaned_data['term_data'].split(',')
-                # Terms that are for this node and were previously present
-                same_terms = list(set(orig_terms) & set(all_node_terms))
-                # Terms that were present but don't include new terms requested
-                different_terms = list(set(orig_terms) - set(all_node_terms))
-                # Terms for this node we had before - new request
-                to_add = list(set(same_terms) - set(all_node_terms))
-
-                #print "Adding", to_add
-
-                for potential_term in different_terms:
-                    # Term could still be present but part of this parent node
-                    # so need to remove it
-                    term_id = int(potential_term[5:])
-                    test_term = MeshTerm.objects.get(pk = term_id)
-
-                    if test_term.get_root() == root_node:
-                        # Item has been deselected
-                        #print "removing", test_term
-                        search_criteria.exposure_terms.remove(test_term)
-
-                for mesh_term_id in all_node_terms:
-                    term_id = int(mesh_term_id[5:])
-
-                    mesh_term = MeshTerm.objects.get(pk = term_id)
-                    search_criteria.exposure_terms.add(mesh_term)
-
-            #print search_result.id, search_result.criteria.id, search_result.criteria.exposure_terms.all()
-            return super(ExposureSelector, self).form_valid(form)
+    def set_terms(self, node_terms):
+        self.object.exposure_terms.clear()
+        self.object.exposure_terms = node_terms
 
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
@@ -205,6 +168,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
     form_class = MediatorForm
     model = SearchCriteria
     move_type = 'progress'
+    type = 'mediator'
 
     def get_success_url(self):
         if self.move_type == 'choose':
@@ -214,61 +178,14 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
-        context['form_title'] = 'Select Mediators'
-        context['type'] = 'Mediator'
-        context['next_type'] = 'Outcomes'
-        context['term_selector_by_family_url'] = 'mediator-selector-by-family'
-        context['pre_selected'] = ",".join(self.object.get_form_codes('mediator'))
+        context['form_title'] = 'Select mediators'
+        context['next_type'] = 'outcomes'
         context['next_url'] = reverse('outcome-selector', kwargs={'pk': self.object.id})
-        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables('mediator'))
         return context
 
-    def form_valid(self, form):
-        # Store mapping
-        if form.is_valid():
-            cleaned_data = form.cleaned_data
-
-            if 'btn_submit' in cleaned_data:
-                self.move_type = cleaned_data['btn_submit']
-
-            if 'term_data' in cleaned_data:
-                search_criteria = self.object
-                search_criteria.save()
-
-                # Get root node
-                root_node_id = cleaned_data['selected_tree_root_node_id']
-                root_node = MeshTerm.objects.get(pk = root_node_id)
-
-                # Need to handle data that's been removed
-                orig_terms = search_criteria.get_form_codes('mediator')
-                all_node_terms = cleaned_data['term_data'].split(',')
-                # Terms that are for this node and were previously present
-                same_terms = list(set(orig_terms) & set(all_node_terms))
-                # Terms that were present but don't include new terms requested
-                different_terms = list(set(orig_terms) - set(all_node_terms))
-                # Terms for this node we had before - new request
-                to_add = list(set(same_terms) - set(all_node_terms))
-
-                #print "Adding", to_add
-
-                for potential_term in different_terms:
-                    # Term could still be present but part of this parent node
-                    # so need to remove it
-                    term_id = int(potential_term[5:])
-                    test_term = MeshTerm.objects.get(pk = term_id)
-
-                    if test_term.get_root() == root_node:
-                        # Item has been deselected
-                        #print "removing", test_term
-                        search_criteria.mediator_terms.remove(test_term)
-
-                for mesh_term_id in all_node_terms:
-                    term_id = int(mesh_term_id[5:])
-
-                    mesh_term = MeshTerm.objects.get(pk = term_id)
-                    search_criteria.mediator_terms.add(mesh_term)
-
-            return super(MediatorSelector, self).form_valid(form)
+    def set_terms(self, node_terms):
+        self.object.mediator_terms.clear()
+        self.object.mediator_terms = node_terms
 
 
 class OutcomeSelector(TermSelectorAbstractUpdateView):
@@ -277,6 +194,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
     form_class = OutcomeForm
     model = SearchCriteria
     move_type = 'progress'
+    type = 'outcome'
 
     def get_success_url(self):
         if self.move_type == 'choose':
@@ -286,64 +204,14 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
-        context['form_title'] = 'Select Outcomes'
-        context['type'] = 'Outcome'
+        context['form_title'] = 'Select outcomes'
         context['next_type'] = 'Genes and Filters'
-        context['term_selector_by_family_url'] = 'outcome-selector-by-family'
-        context['pre_selected'] = ",".join(self.object.get_form_codes('outcome'))
         context['next_url'] = reverse('filter-selector', kwargs={'pk': self.object.id})
-        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables('outcome'))
-
         return context
 
-    def form_valid(self, form):
-        # Store mapping
-        if form.is_valid():
-
-            cleaned_data = form.cleaned_data
-
-            if 'btn_submit' in cleaned_data:
-                self.move_type = cleaned_data['btn_submit']
-
-            if 'term_data' in cleaned_data:
-                search_criteria = self.object
-                search_criteria.save()
-
-                # Get root node
-                root_node_id = cleaned_data['selected_tree_root_node_id']
-                root_node = MeshTerm.objects.get(pk = root_node_id)
-
-                # Need to handle data that's been removed
-                orig_terms = search_criteria.get_form_codes('outcome')
-                all_node_terms = cleaned_data['term_data'].split(',')
-                # Terms that are for this node and were previously present
-                same_terms = list(set(orig_terms) & set(all_node_terms))
-                # Terms that were present but don't include new terms requested
-                different_terms = list(set(orig_terms) - set(all_node_terms))
-                # Terms for this node we had before - new request
-                to_add = list(set(same_terms) - set(all_node_terms))
-
-                #print "Adding", to_add
-
-                for potential_term in different_terms:
-                    # Term could still be present but part of this parent node
-                    # so need to remove it
-                    term_id = int(potential_term[5:])
-                    test_term = MeshTerm.objects.get(pk = term_id)
-
-                    if test_term.get_root() == root_node:
-                        # Item has been deselected
-                        #print "removing", test_term
-                        search_criteria.outcome_terms.remove(test_term)
-
-                for mesh_term_id in all_node_terms:
-                    term_id = int(mesh_term_id[5:])
-
-                    mesh_term = MeshTerm.objects.get(pk = term_id)
-                    search_criteria.outcome_terms.add(mesh_term)
-
-            #print search_result.id, search_result.criteria.id, search_result.criteria.outcome_terms.all()
-            return super(OutcomeSelector, self).form_valid(form)
+    def set_terms(self, node_terms):
+        self.object.outcome_terms.clear()
+        self.object.outcome_terms = node_terms
 
 
 class SearchExistingUpload(RedirectView):
@@ -357,7 +225,8 @@ class SearchExistingUpload(RedirectView):
 
 
 class SearchExisting(RedirectView):
-    """Create new search criteria based on existing one and pass to
+    """TODO: Change to allow separate term collection reuse
+       Create new search criteria based on existing one and pass to
        ExposureSelector view """
     permanent = False
 
@@ -576,3 +445,94 @@ class JSONDataView(RedirectView):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
         url = settings.MEDIA_URL + 'results/%s.json' % search_result.filename_stub
         return url
+
+# json.dump()
+
+import json
+from mptt.templatetags.mptt_tags import cache_tree_children
+from django.http import JsonResponse
+
+
+class MeshTermsAsJSON(TemplateView):
+
+    def node_to_dict(self, node):
+        result = {
+            'id': "mtid_"+str(node.id),
+            'text': node.term,
+        }
+
+        if self.selected and node in self.selected:
+            result['state'] = {'selected': True}
+
+        elif self.ancestor_ids and node.id in self.ancestor_ids:
+            # Get parent nodes to be partially shaded in trees
+            result['state'] = {'undetermined': True}
+
+        if node.get_descendant_count():
+            result['children'] = True
+
+        return result
+
+    def _get_int_id(self):
+        id_part = self.requested_node_id[5:]
+        result = ''
+        try:
+            result = int(id_part)
+        except ValueError:
+            raise ValidationError
+
+        return result
+
+    def dispatch(self, request, *args, **kwargs):
+
+        # When selecting root nodes # is sent; otherwise node id prefixed with mtid_
+        self.requested_node_id = request.GET.get('id', '#')
+        self.search_criteria_id = kwargs.get('pk', None)
+        self.type = kwargs.get('type', None)
+        self.selected = None
+        self.ancestor_ids = []
+
+        if self.requested_node_id == '#':
+            nodes = MeshTerm.objects.root_nodes()
+        else:
+            nodes = get_object_or_404(MeshTerm, id=self._get_int_id()).get_children()
+
+        if self.search_criteria_id:
+            sc = get_object_or_404(SearchCriteria, id=self.search_criteria_id)
+            self.selected = getattr(sc, self.type+'_terms').all()
+            for node in self.selected:
+                self.ancestor_ids.extend(node.get_ancestors().values_list("id", flat=True))
+
+        dicts = []
+        for n in nodes:
+            dicts.append(self.node_to_dict(n))
+
+        return JsonResponse(dicts, safe=False)
+
+
+
+class MeshTermsAllAsJSON(TemplateView):
+
+    def recursive_node_to_dict(self, node):
+        """Recursive """
+
+        node_id = "mtid_" + str(node.id)
+        result = {
+            'id': node_id,
+            'text': node.term,
+        }
+
+        children = [self.recursive_node_to_dict(c) for c in node.get_children()]
+        if children:
+            result['children'] = children
+
+        return result
+
+    def dispatch(self, request, *args, **kwargs):
+
+        root_nodes = MeshTerm.objects.root_nodes()
+        dicts = []
+        for n in root_nodes:
+            dicts.append(self.recursive_node_to_dict(n))
+
+        return JsonResponse(dicts, safe=False)
