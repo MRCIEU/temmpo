@@ -8,5 +8,8 @@ $('#term_tree').on("changed.jstree", function (e, data) {
     // NB: state plugin seemed to have the same problem
 
     // IDEA: For nodes that tree does not have loaded in term_data - preserve and merge with currently selected - update js
+
+    // on change - merge selected tree nodes with subset of previously nodes that do not exist in the tree - possible check if undetermined nodes is an ancestor ?? possible can compare using tree_number string comparison
+    // TODO: Nodes that have children when selected should also select all child nodes - action in views form handler
     $('#term_data').val(data.selected);
 });
