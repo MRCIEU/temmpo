@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
@@ -86,6 +86,20 @@ class TermSelectorAbstractUpdateView(UpdateView):
     # type = None
     # set_terms(self, node_terms)
 
+    def _select_child_nodes(self, mesh_term_ids):
+        mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
+
+        child_term_ids = []
+        for mesh_term in mesh_terms:
+            if not mesh_term.is_leaf_node():
+                child_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))
+
+        mesh_term_ids.extend(child_term_ids)
+        mesh_term_ids = list(set(mesh_term_ids))
+
+        return mesh_term_ids
+
+
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the form
@@ -116,9 +130,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        """TODO: Need to add abilty to select child nodes not shown in client side tree
-           TODO: BUG: When reusing a search criteria and adding terms from different trees - appears to remove / not save original terms if tree stays closed
-
+        """Select child nodes not shown in client side tree
         """
 
         # Store mapping
@@ -131,10 +143,11 @@ class TermSelectorAbstractUpdateView(UpdateView):
             if 'term_data' in cleaned_data:
                 search_criteria = self.object
                 search_criteria.save()
-                all_node_terms = cleaned_data['term_data'].split(',')
-                all_node_terms = [x[5:] for x in all_node_terms]
-
-                self.set_terms(all_node_terms)
+                mesh_term_ids = cleaned_data['term_data'].split(',')
+                mesh_term_ids = [int(x[5:]) for x in mesh_term_ids]
+                # Ensure all child nodes are selected
+                mesh_term_ids = self._select_child_nodes(mesh_term_ids)
+                self.set_terms(mesh_term_ids)
 
             return super(TermSelectorAbstractUpdateView, self).form_valid(form)
 
@@ -447,12 +460,6 @@ class JSONDataView(RedirectView):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
         url = settings.MEDIA_URL + 'results/%s.json' % search_result.filename_stub
         return url
-
-# json.dump()
-
-import json
-from mptt.templatetags.mptt_tags import cache_tree_children
-from django.http import JsonResponse
 
 
 class MeshTermsAsJSON(TemplateView):
