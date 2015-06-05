@@ -3,18 +3,19 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
 
-# browser app dependencies
+# browser app dependencies TODO: Clean up if not used with TMMA-68
 import autocomplete_light
 autocomplete_light.autodiscover()
 
 from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
-                           CriteriaView, CountDataView, AbstractDataView, JSONDataView,
-                           SearchExistingUpload, MeshTermsAsJSON, MeshTermsAllAsJSON)
+                           CriteriaView, CountDataView, AbstractDataView,
+                           JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
+                           MeshTermsAllAsJSON)
 
 urlpatterns = patterns('',
-    # browser app dependencies
+    # autocomplete_light
     url(r'^autocomplete/', include('autocomplete_light.urls')),
 
     # browser app
@@ -39,7 +40,7 @@ urlpatterns = patterns('',
 
     url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh-terms-as-json"),
     url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh-terms-as-json-for-criteria"),
-    
+
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
 
