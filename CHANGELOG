@@ -1,0 +1,14 @@
+0.6    Update wording on home page
+
+0.5    Need to update Django MPTT egg (used with MeshTerm trees) - ../../bin/pip install --upgrade django-mptt --no-deps
+
+0.4    
+
+0.3    
+
+0.2    Deployment changes
+       Bug fix Gene str name
+       Make configuring genes in search form optional
+       Ensure application can be served over www. sub domain
+
+0.1    Initial release
