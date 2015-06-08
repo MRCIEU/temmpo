@@ -51,8 +51,8 @@
     <h2>Bulk edit</h2>
     <form action="." method="post">
         {% csrf_token %}
-        <label for="bulk_replace_terms">Terms (separated by <strong>;</strong>)</label>
-        <textarea id="bulk_replace_terms" name="bulk_replace_terms" rows="10" cols="30"></textarea>
+        <label for="bulk_replace_terms">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
+        <textarea id="bulk_replace_terms" name="bulk_replace_terms" rows="10" cols="35"></textarea>
 
         <button type="submit" name="btn_submit" value="replace" class="sml-button button">Replace</button>
     </form>
