@@ -28,7 +28,14 @@
 {% block left-column %}
     <section><h1>{{ form_title }}</h1></section>
 
-    {# TODO replace with list of previous term selections for this type, need option to add to or replace terms, with ability to clear current terms #}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
     {% if pre_selected_term_names %}
     <section>
       <h2>Current {{ type }} terms</h2>
@@ -41,14 +48,13 @@
 
 {% block middle-column %}
   <section>
-    {# TODO wire up bulk edit form #}
     <h2>Bulk edit</h2>
     <form action="." method="post">
         {% csrf_token %}
-        <label for="tags">Terms</label>
-        <textarea id="tags" name="tags" disabled="disabled"></textarea>
+        <label for="bulk_replace_terms">Terms (separated by <strong>;</strong>)</label>
+        <textarea id="bulk_replace_terms" name="bulk_replace_terms" rows="10" cols="30"></textarea>
 
-        <button type="submit" value="bulk_edit" class="sml-button button" disabled="disabled">Replace</button>
+        <button type="submit" name="btn_submit" value="replace" class="sml-button button">Replace</button>
     </form>
   </section>
 {% endblock %}

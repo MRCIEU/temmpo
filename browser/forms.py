@@ -16,9 +16,10 @@ class AbstractFileUploadForm(forms.ModelForm):
 # http://django-mptt.github.io/django-mptt/forms.html
 
 
-class ExposureForm(forms.ModelForm):
-    term_data = forms.CharField(widget=forms.HiddenInput,
-                                required=True)
+class TermSelectorForm(forms.ModelForm):
+    bulk_replace_terms = forms.CharField(widget=forms.Textarea(), 
+        required=False, label="Bulk replace terms")
+    term_data = forms.CharField(widget=forms.HiddenInput, required=False)
 
     selected_tree_root_node_id = forms.CharField(widget=forms.HiddenInput,
                                          required=False)
@@ -27,63 +28,6 @@ class ExposureForm(forms.ModelForm):
     class Meta:
         model = SearchCriteria
         fields = ['term_data', 'selected_tree_root_node_id','btn_submit']
-
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(ExposureForm, self).clean()
-
-        # Not sure this is needed
-        if 'term_data' in cleaned_data:
-            all_terms = cleaned_data['term_data'].split(',')
-            cleaned_data['exposure_terms'] = MeshTerm.objects.filter(tree_number__in = all_terms)
-
-        return cleaned_data
-
-
-class MediatorForm(forms.ModelForm):
-    term_data = forms.CharField(widget=forms.HiddenInput,
-                                required=True)
-
-    selected_tree_root_node_id = forms.CharField(widget=forms.HiddenInput,
-                                         required=False)
-    btn_submit = forms.CharField(widget=forms.HiddenInput)
-
-    class Meta:
-        model = SearchCriteria
-        fields = ['term_data', 'selected_tree_root_node_id','btn_submit']
-
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(MediatorForm, self).clean()
-
-        # Not sure this is needed now.
-        if 'term_data' in cleaned_data:
-            all_terms = cleaned_data['term_data'].split(',')
-            cleaned_data['mediator_terms'] = MeshTerm.objects.filter(tree_number__in = all_terms)
-
-        return cleaned_data
-
-
-class OutcomeForm(forms.ModelForm):
-    term_data = forms.CharField(widget=forms.HiddenInput,
-                                required=True)
-
-    selected_tree_root_node_id = forms.CharField(widget=forms.HiddenInput,
-                                         required=False)
-    btn_submit = forms.CharField(widget=forms.HiddenInput)
-
-    class Meta:
-        model = SearchCriteria
-        fields = ['term_data', 'selected_tree_root_node_id','btn_submit']
-
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(OutcomeForm, self).clean()
-        print "Outcome clean", cleaned_data, args, kwargs
-
-        # Not sure this is needed now.
-        if 'term_data' in cleaned_data:
-            all_terms = cleaned_data['term_data'].split(',')
-            cleaned_data['outcome_terms'] = MeshTerm.objects.filter(tree_number__in = all_terms)
-
-        return cleaned_data
 
 
 class FilterForm(forms.ModelForm):

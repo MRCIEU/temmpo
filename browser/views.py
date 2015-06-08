@@ -3,6 +3,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse
@@ -13,8 +14,7 @@ from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
-from browser.forms import (AbstractFileUploadForm, ExposureForm, MediatorForm,
-                           OutcomeForm, FilterForm)
+from browser.forms import (AbstractFileUploadForm, TermSelectorForm, FilterForm)
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
 from browser.matching import perform_search
 
@@ -79,26 +79,42 @@ class TermSelectorAbstractUpdateView(UpdateView):
 
     template_name = "term_selector.html"
     model = SearchCriteria
+    form_class = TermSelectorForm
     move_type = 'progress'
-
     # Required implementations
-    # form_class = None
     # type = None
     # set_terms(self, node_terms)
 
-    def _select_child_nodes(self, mesh_term_ids):
+    def _select_child_nodes_by_id(self, mesh_term_ids):
         mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
-
         child_term_ids = []
         for mesh_term in mesh_terms:
             if not mesh_term.is_leaf_node():
                 child_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))
 
         mesh_term_ids.extend(child_term_ids)
+        # Deduplicate ids
         mesh_term_ids = list(set(mesh_term_ids))
-
         return mesh_term_ids
 
+    def _select_child_nodes_by_name(self, mesh_term_names):
+        mesh_term_ids = []
+        child_term_ids = []
+
+        for name in mesh_term_names:
+            try:
+                mesh_term = MeshTerm.objects.get(term__iexact=name)       
+                mesh_term_ids.append(mesh_term.id)
+                if not mesh_term.is_leaf_node():
+                    mesh_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))                    
+            except ObjectDoesNotExist:
+                messages.add_message(self.request, messages.WARNING, '%s: could not be found' %  name)
+
+        # Add to messages
+        mesh_term_ids.extend(child_term_ids)
+        # Deduplicate ids
+        mesh_term_ids = list(set(mesh_term_ids)) 
+        return mesh_term_ids
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -124,7 +140,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         context = super(TermSelectorAbstractUpdateView, self).get_context_data(**kwargs)
         context['active'] = 'search'
         context['type'] = self.type
-        context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables(self.type))
+        context['pre_selected_term_names'] = "; ".join(self.object.get_wcrf_input_variables(self.type))
         context['json_url'] = reverse('mesh-terms-as-json-for-criteria', kwargs={'pk':self.object.id, 'type':self.type})
         context['json_search_url'] = reverse("mesh-terms-search-json")
         context['pre_selected'] = ",".join(self.object.get_form_codes(self.type))
@@ -141,9 +157,13 @@ class TermSelectorAbstractUpdateView(UpdateView):
             if 'btn_submit' in cleaned_data:
                 self.move_type = cleaned_data['btn_submit']
 
-            if 'term_data' in cleaned_data:
-                search_criteria = self.object
-                search_criteria.save()
+            if self.move_type == "replace" and 'bulk_replace_terms' in cleaned_data:
+                mesh_terms = cleaned_data['bulk_replace_terms'].split(';')
+                mesh_terms = [x.strip() for x in mesh_terms if x.strip()]
+                mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
+                self.set_terms(mesh_term_ids)
+
+            elif 'term_data' in cleaned_data:
                 mesh_term_ids = cleaned_data['term_data'].split(',')
                 mesh_term_ids = [int(x[5:]) for x in mesh_term_ids]
                 # Ensure all child nodes are selected
@@ -155,12 +175,10 @@ class TermSelectorAbstractUpdateView(UpdateView):
 
 class ExposureSelector(TermSelectorAbstractUpdateView):
 
-    # template_name = "term_selector.html"
-    form_class = ExposureForm
     type = 'exposure'
 
     def get_success_url(self):
-        if self.move_type == 'choose':
+        if self.move_type in ('choose', 'replace',):
             return reverse('exposure-selector', kwargs={'pk': self.object.id})
         else:
             return reverse('mediator-selector', kwargs={'pk': self.object.id})
@@ -173,21 +191,17 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         return context
 
     def set_terms(self, node_terms):
-        # TODO: Any selected nodes must have all children included in selected set
+        # NB: Any selected nodes should have all children included in selected set
         self.object.exposure_terms.clear()
         self.object.exposure_terms = node_terms
 
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
 
-    template_name = "term_selector.html"
-    form_class = MediatorForm
-    model = SearchCriteria
-    move_type = 'progress'
     type = 'mediator'
 
     def get_success_url(self):
-        if self.move_type == 'choose':
+        if self.move_type in ('choose', 'replace',):
             return reverse('mediator-selector', kwargs={'pk': self.object.id})
         else:
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
@@ -195,6 +209,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
     def get_context_data(self, **kwargs):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select mediators'
+
         context['next_type'] = 'outcomes'
         context['next_url'] = reverse('outcome-selector', kwargs={'pk': self.object.id})
         return context
@@ -206,14 +221,11 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
 
 class OutcomeSelector(TermSelectorAbstractUpdateView):
 
-    template_name = "term_selector.html"
-    form_class = OutcomeForm
-    model = SearchCriteria
     move_type = 'progress'
     type = 'outcome'
 
     def get_success_url(self):
-        if self.move_type == 'choose':
+        if self.move_type in ('choose', 'replace',):
             return reverse('outcome-selector', kwargs={'pk': self.object.id})
         else:
             return reverse('filter-selector', kwargs={'pk': self.object.id})
