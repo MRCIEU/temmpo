@@ -4,13 +4,13 @@
 
 {% block styles %}
 <!-- jsTree -->
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/themes/default/style.min.css" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/themes/default/style.min.css" />
 {% endblock %}
 
 
 {% block scripts %}
 <!-- jsTree -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/jstree.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/jstree.min.js"></script>
 {% endblock %}
 
 {% block page-heading %}
@@ -40,25 +40,30 @@
 {% endblock %}
 
 {% block middle-column %}
-
   <section>
-    <h2>Quick search</h2>
-
-    {# TODO wire up quick search by term name form #}
+    {# TODO wire up bulk edit form #}
+    <h2>Bulk edit</h2>
     <form action="." method="post">
         {% csrf_token %}
-        <label for="tags">Term</label>
-        <input id="tags" name="tags" type="text" value="" disabled />
+        <label for="tags">Terms</label>
+        <textarea id="tags" name="tags" disabled="disabled"></textarea>
 
-        <button type="submit" disabled>Add</button>
+        <button type="submit" value="bulk_edit" class="sml-button button" disabled="disabled">Replace</button>
     </form>
   </section>
-
 {% endblock %}
 
 {% block right-column %}
     {# if selected_tree_root_node #}
       <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
+
+
+      <form action="." method="post" id="search_form">
+          <!-- Search -->
+          <label for="search_term">Search</label>
+          <input id="search_term" name="search_term" type="text" value="" />
+          <button type="submit" id="search_button" value="search" class="sml-button button">Search</button>
+      </form>
 
       <form action="." method="post">
           {% csrf_token %}
@@ -76,17 +81,47 @@
       <script type="text/javascript">
         $(function() {
           $("#term_tree").jstree({
-            "plugins" : [ "checkbox"],
+            "plugins" : [ "checkbox", "search"],
             "core" : {
               "data" : {
                 "url" : "{{ json_url }}",
                 "data" : function (node) {
                   return { "id" : node.id };
                 }
+              },
+            },
+            "search" : {
+                "ajax" : {
+                  "url" : "{{ json_search_url }}"
+                }
               }
-            }
           });
         });
+
+        // TODO: Preferably add visaul queue to when the search has completed
+        // possibly hide control / show a spinner
+        // Need to hide on complete of the .search event.        
+        $( "document" ).ready(function () {
+              $('#search_form').submit(function (event) {
+                  var v = $('#search_term').val();
+                  $('#term_tree').jstree(true).search(v);
+                  event.preventDefault();
+              });
+        });
+
+        // Alternative search as you type method
+        // $(function () {
+        //       var to = false;
+        //       $('#search_term').keyup(function () {
+        //         if(to) { 
+        //           clearTimeout(to); 
+        //         }
+        //         to = setTimeout(function () {
+        //             var v = $('#search_term').val();
+        //             $('#term_tree').jstree(true).search(v);
+        //           }, 250);
+        //         })
+        //   });
 
         $( "document" ).ready(function() {
             // Open all
@@ -102,6 +137,6 @@
 
       </script>
 
-      <script src="/static/js/tree_handler.js"></script>
+      <script src="{{ STATIC_URL }}js/tree_handler.js"></script>
 
 {% endblock %}

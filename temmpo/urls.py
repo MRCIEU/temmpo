@@ -12,7 +12,7 @@ from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
                            CriteriaView, CountDataView, AbstractDataView,
                            JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
-                           MeshTermsAllAsJSON)
+                           MeshTermsAllAsJSON, MeshTermSearchJSON)
 
 urlpatterns = patterns('',
     # autocomplete_light
@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     url(r'^data/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json-data'),
 
     url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh-terms-as-json"),
+    url(r'^mesh-terms-search-json/$', MeshTermSearchJSON.as_view(), name="mesh-terms-search-json"),
     url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh-terms-as-json-for-criteria"),
 
     # Django admin

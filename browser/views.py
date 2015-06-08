@@ -1,10 +1,10 @@
-import datetime
+import copy
 import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -126,6 +126,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         context['type'] = self.type
         context['pre_selected_term_names'] = ", ".join(self.object.get_wcrf_input_variables(self.type))
         context['json_url'] = reverse('mesh-terms-as-json-for-criteria', kwargs={'pk':self.object.id, 'type':self.type})
+        context['json_search_url'] = reverse("mesh-terms-search-json")
         context['pre_selected'] = ",".join(self.object.get_form_codes(self.type))
         return context
 
@@ -545,3 +546,31 @@ class MeshTermsAllAsJSON(TemplateView):
             dicts.append(self.recursive_node_to_dict(n))
 
         return JsonResponse(dicts, safe=False)
+
+
+class MeshTermSearchJSON(TemplateView):
+
+    # def node_to_dict_with_ancestors(self, node):
+    #     nodes = node.get_ancestors(ascending=True, include_self=True)
+    #     chain = {}
+
+    #     for n in nodes:
+    #         link = {'id': "mtid_" + str(n.id), 'text': n.term, }
+    #         if chain:
+    #             link['children'] = copy.copy(chain)
+    #         elif n.get_descendant_count():
+    #             link['children'] = True
+    #         chain = link
+
+    #     return chain
+
+    def dispatch(self, request, *args, **kwargs):
+        search_term = request.GET.get("str", "").strip()
+        if search_term:
+            root_nodes = MeshTerm.objects.filter(term__istartswith=search_term)
+            results = []
+            for n in root_nodes:
+                results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  #self.node_to_dict_with_ancestors(n)
+
+        results = ["mtid_%d" % x for x in results]
+        return JsonResponse(results, safe=False)
