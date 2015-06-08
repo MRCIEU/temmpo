@@ -102,13 +102,14 @@ class TermSelectorAbstractUpdateView(UpdateView):
         child_term_ids = []
 
         for name in mesh_term_names:
-            try:
-                mesh_term = MeshTerm.objects.get(term__iexact=name)       
-                mesh_term_ids.append(mesh_term.id)
-                if not mesh_term.is_leaf_node():
-                    mesh_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))                    
-            except ObjectDoesNotExist:
+            mesh_terms = MeshTerm.objects.filter(term__iexact=name)
+            if mesh_terms.count() == 0:
                 messages.add_message(self.request, messages.WARNING, '%s: could not be found' %  name)
+            else:
+                for term in mesh_terms:
+                    mesh_term_ids.append(term.id)
+                    if not term.is_leaf_node():
+                        mesh_term_ids.extend(term.get_descendants().values_list('id', flat=True))
 
         # Add to messages
         mesh_term_ids.extend(child_term_ids)
@@ -388,10 +389,10 @@ class CriteriaView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(CriteriaView, self).get_context_data(**kwargs)
 
-        context['exposures'] = ", ".join(self.object.get_wcrf_input_variables('exposure'))
-        context['mediators'] = ", ".join(self.object.get_wcrf_input_variables('mediator'))
-        context['outcomes'] = ", ".join(self.object.get_wcrf_input_variables('outcome'))
-        context['genes'] = ", ".join(self.object.get_wcrf_input_variables('gene'))
+        context['exposures'] = "; ".join(self.object.get_wcrf_input_variables('exposure'))
+        context['mediators'] = "; ".join(self.object.get_wcrf_input_variables('mediator'))
+        context['outcomes'] = "; ".join(self.object.get_wcrf_input_variables('outcome'))
+        context['genes'] = "; ".join(self.object.get_wcrf_input_variables('gene'))
         context['url'] = reverse('edit-search', kwargs={'pk': self.object.id})
 
         return context
