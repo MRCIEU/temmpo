@@ -1,3 +1,14 @@
+0.7    Updated egg requirements
+       Tidied urls
+       Added search mesh term tree functionality
+       Upgraded version of jstree library
+       Remove unsed files
+       Add functionality to bulk clear or replace mesh terms
+       Removed unused form cleaning code
+       Refactored form classes
+       Handle non unique mesh terms when using bulk edit input
+       Display terms separated by semi colons
+
 0.6    Update wording on home page
 
 0.5    Need to update Django MPTT egg (used with MeshTerm trees) - ../../bin/pip install --upgrade django-mptt --no-deps
