@@ -166,7 +166,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
 
             elif 'term_data' in cleaned_data:
                 mesh_term_ids = cleaned_data['term_data'].split(',')
-                mesh_term_ids = [int(x[5:]) for x in mesh_term_ids]
+                mesh_term_ids = [int(x[5:]) for x in mesh_term_ids if len(x) > 5]
                 # Ensure all child nodes are selected
                 mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
                 self.set_terms(mesh_term_ids)
