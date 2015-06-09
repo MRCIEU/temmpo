@@ -1,3 +1,5 @@
+0.7.1  Bug fix form refactoring and fix saving terms via the tree  
+
 0.7    Updated egg requirements
        Tidied urls
        Added search mesh term tree functionality

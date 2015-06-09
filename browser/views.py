@@ -168,7 +168,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
                 mesh_term_ids = cleaned_data['term_data'].split(',')
                 mesh_term_ids = [int(x[5:]) for x in mesh_term_ids]
                 # Ensure all child nodes are selected
-                mesh_term_ids = self._select_child_nodes(mesh_term_ids)
+                mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
                 self.set_terms(mesh_term_ids)
 
             return super(TermSelectorAbstractUpdateView, self).form_valid(form)
