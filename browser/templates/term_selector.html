@@ -26,42 +26,51 @@
 {% endblock %}
 
 {% block left-column %}
-    <section><h1>{{ form_title }}</h1></section>
+    <section>
+      <h2>{{ form_title }}</h2>
+      {% if messages %}
+      <ul class="errorlist">
+          {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+      </ul>
+      {% endif %}
 
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+      {% if form.non_field_errors %}
+        <p class="warning">The following terms have been already used as exposure, mediator, outcome or gene criteria:</p>
+        <ul class="errorlist">
+           {% for error in form.non_field_errors %}
+           <li>{{ error }}</li>
+           {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
 
     {% if pre_selected_term_names %}
     <section>
-      <h2>Current {{ type }} terms</h2>
-      <p>{{ pre_selected_term_names }}</p>
-      {# TODO Improve mechanism for moving through workflow #}
-      <a href="{{ next_url }}" class="button">Select {{ next_type }}</a>
-  </section>
+        <h3>Current {{ type }} terms</h3>
+        <p>{{ pre_selected_term_names }}</p>
+        {# TODO Improve mechanism for moving through workflow #}
+        <a href="{{ next_url }}" class="button">Select {{ next_type }}</a>
+    </section>
     {% endif %}
 {% endblock %}
 
 {% block middle-column %}
   <section>
-    <h2>Bulk edit</h2>
+    <h3>Bulk edit</h3>
     <form action="." method="post">
         {% csrf_token %}
-        <label for="bulk_replace_terms">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
-        <textarea id="bulk_replace_terms" name="bulk_replace_terms" rows="10" cols="35"></textarea>
-
-        <button type="submit" name="btn_submit" value="replace" class="sml-button button">Replace</button>
+        <label for="term_names">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
+        <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
+        <button type="submit" name="btn_submit" value="replace" class="sml-button button">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
     </form>
   </section>
 {% endblock %}
 
 {% block right-column %}
     {# if selected_tree_root_node #}
-      <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
+      <h3>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h3>
 
 
       <form action="." method="post" id="search_form">
@@ -81,7 +90,7 @@
           
           <button type="submit" name="btn_submit" value="progress" class="sml-button button">Select these terms and move on to select {{ next_type }}</button>
 
-          <input type="hidden" name="term_data" id="term_data" value="{{ pre_selected }}" />
+          <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
       </form>
 
       <script type="text/javascript">

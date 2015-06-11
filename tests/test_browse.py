@@ -6,7 +6,7 @@ import os
 
 
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -17,6 +17,7 @@ from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
 RESULT_ID = '1'
+TEST_FILE_PATH = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
 
 
 class BrowsingTest(TestCase):
@@ -35,21 +36,16 @@ class BrowsingTest(TestCase):
         # self.client.logout()
         self.client.login(username='may', password='12345#abc')
 
-    def _find_expected_content(self, path="", url_path=None, msg="", 
-        requires_login=False):
-
-        if url_path:
-            path = reverse(url_path)
-
+    def _find_expected_content(self, path="", msg="", msg_list=None):
         response = self.client.get(path, follow=True)
 
-        if requires_login:
-            # TODO extend tests to cover logging in
-            self.assertContains(response, 'Username', msg_prefix="Expected be redirected to the login page")
-        else:
-            self.assertContains(response, msg,
-                            msg_prefix="Expected %(msg)s at %(path)s" %
-                            {'msg': msg, 'path': path})
+        if not msg_list:
+            msg_list = [msg, ]
+
+        for text in msg_list:
+            self.assertContains(response, text,
+                msg_prefix="Expected %(msg)s at %(path)s" %
+                {'msg': text, 'path': path})
 
     def test_home_page(self):
         """ Test can view the home page
@@ -66,41 +62,41 @@ class BrowsingTest(TestCase):
     def test_search_page(self):
         """ Test can view the search page
         """
-
-        self._find_expected_content(path="/search/", msg="Search", 
-            requires_login=True)
+        self._find_expected_content(path="/search", msg="sign in to use this tool")
+        self._login_user()
+        self._find_expected_content(path="/search/", msg="Upload a new text file")
 
     def test_results_page(self):
         """ Test can view the results page
         """
-
-        self._find_expected_content(path="/results/" + RESULT_ID,
-                                    msg="Results",
-                                    requires_login=True)
+        self._find_expected_content(path="/results/"+RESULT_ID, msg="sign in to use this tool")
+        self._login_user()
+        # TODO add a mock search object
+        # self._find_expected_content(path="/results/"+RESULT_ID, msg='id="chart"')
 
     def test_results_listing_page(self):
         """ Test can view the results listing page
         """
-
-        self._find_expected_content(path="/results/", msg="My list", 
-            requires_login=True)
+        self._find_expected_content(path="/results/", msg="sign in to use this tool")
+        self._login_user()
+        self._find_expected_content(path="/results/", msg="My list")
 
     def test_matching(self):
         """
-        Mesh terms 
+        Mesh terms
 
         exposure: Humans    (B01.050.150.900.649.801.400.112.400.400 Organisms >
-         Eukaryota > Animals > Chordata > Vertebrates > Mammals > Primates > 
+         Eukaryota > Animals > Chordata > Vertebrates > Mammals > Primates >
          Haplorhini > Catarrhini > Hominidae)
 
-        mediator: Phenotype (G05.695 Phenomena and Processes > 
-            Genetic Phenomena) 
+        mediator: Phenotype (G05.695 Phenomena and Processes >
+            Genetic Phenomena)
 
-        outcome: Apoptosis (G04.299.139.160 Phenomena and Processes > 
-            Cell Physiological Phenomena > Cell Physiological Processes > 
+        outcome: Apoptosis (G04.299.139.160 Phenomena and Processes >
+            Cell Physiological Phenomena > Cell Physiological Processes >
             Cell Death)
 
-        gene: TRPC1 
+        gene: TRPC1
 
         citation file: test-abstract.txt
         or 
@@ -110,9 +106,10 @@ class BrowsingTest(TestCase):
         with the gene when the WEIGHTFILTER threshhold is zero
         """
 
-        test_file = open(os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt'), 'r')
+        test_file = open(TEST_FILE_PATH, 'r')
         upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'))
         upload.save()
+        test_file.close()
 
         exposure_terms = MeshTerm.objects.get(term="Humans").get_descendants(include_self=True)
         mediator_terms = MeshTerm.objects.get(term="Phenotype").get_descendants(include_self=True)
@@ -137,10 +134,10 @@ class BrowsingTest(TestCase):
 
         # Run the search, by posting filter and gene selection form
         # TODO post mesh filter data
+        # TODO split into separare tests - unit and integration
         self._login_user()
         path = reverse('filter-selector', kwargs={'pk': search_criteria.id})
-        response = self.client.post(path, {'genes':'TRPC1'}, follow=True)
-
+        response = self.client.post(path, {'genes': 'TRPC1'}, follow=True)
 
         # TODO: Split into pure integration and unit text version that does not use views
         # perform_search(search_result.id)
@@ -151,32 +148,55 @@ class BrowsingTest(TestCase):
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         print "RESULTS ARE IN THE THIS FILE: "
         print test_results_edge_csv.name
-        self.assertEqual(len(test_results_edge_csv.readlines()), 2) # Expected two matches
+        self.assertEqual(len(test_results_edge_csv.readlines()), 2)  # Expected two matches
         self.assertTrue(search_result.has_completed)
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
+    def test_search_bulk_term_edit(self):
+
+        self._login_user()
+
+        search_path = reverse('search')
+        response = self.client.get(search_path)
+        # self.assertContains(response, "Upload a new text file", html=True)
+
+        self._find_expected_content(path=search_path,
+                                    msg="Upload a new text file")
+
+        with open(TEST_FILE_PATH, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload},
+                                        follow=True)
+
+            self.assertContains(response, "Select exposures")
+            self.assertContains(response, "Bulk edit")
+
+            response = self.client.post(search_path,
+                                        {'term_names': upload,
+                                         "btn_submit": ""},
+                                        follow=True)
 
     # Additional features
 
-    # def test_register_page(self):
-    #     """ Test can view the register page
-    #     """
+    def test_register_page(self):
+        """ Test can view the register page
+        """
+        self._find_expected_content(path="/register",
+                                    msg_list=["Register", "Password (again)", ])
 
-    #     self._find_expected_content(path="/register",
-    #                                 msg="Create an account")
+    def test_login_page(self):
+        """ Test can view the sign in page
+        """
+        self._find_expected_content(path="/login", msg="Sign in")
 
-    # def test_login_page(self):
-    #     """ Test can the sign in page
-    #     """
+    def test_logout_page(self):
+        """ Test logging out redirects to sign in page
+        """
+        response = self.client.get("/logout")
+        self.assertEqual(response.status_code, 301)
 
-    #     self._find_expected_content(path="/login", msg="Sign in")
-
-    # def test_logout_page(self):
-    #     """ Test can view the sign out page
-    #     """
-
-    #     self._find_expected_content(path="/logout",
-    #                                 msg="You have signed out")
+        self._find_expected_content(path="/logout",
+                                    msg="Sign in")
 
     # def test_results_archive(self):
     #     """
@@ -185,4 +205,5 @@ class BrowsingTest(TestCase):
     #     self._find_expected_content(path="/results/%s/archive" %
     #                                 RESULT_HASH, msg="Download")
 
-# def test_gene_input # Can it handle new genes, unexpected spaces and other characters 
+# def test_gene_input # Can it handle new genes, unexpected spaces and other
+# characters

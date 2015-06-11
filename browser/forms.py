@@ -1,8 +1,11 @@
 import re
 
 from django import forms
+from django.contrib import messages
+
 from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
 from browser.widgets import GeneTextarea
+
 
 class AbstractFileUploadForm(forms.ModelForm):
     # abstracts = forms.FileField()  # TODO use custom ajax upload form field
@@ -17,17 +20,92 @@ class AbstractFileUploadForm(forms.ModelForm):
 
 
 class TermSelectorForm(forms.ModelForm):
-    bulk_replace_terms = forms.CharField(widget=forms.Textarea(), 
+    term_names = forms.CharField(widget=forms.Textarea(),
         required=False, label="Bulk replace terms")
-    term_data = forms.CharField(widget=forms.HiddenInput, required=False)
-
-    selected_tree_root_node_id = forms.CharField(widget=forms.HiddenInput,
-                                         required=False)
+    term_tree_ids = forms.CharField(widget=forms.HiddenInput, required=False)
     btn_submit = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
         model = SearchCriteria
-        fields = ['term_data', 'selected_tree_root_node_id','btn_submit']
+        fields = ['term_tree_ids', 'btn_submit', 'term_names', ]
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.type = kwargs.pop('type', None)
+        super(TermSelectorForm, self).__init__(*args, **kwargs)
+
+    def _select_child_nodes_by_id(self, mesh_term_ids):
+        # TODO: TMMA-100 SQL has a 999 param limit
+        mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
+        child_term_ids = []
+        for mesh_term in mesh_terms:
+            if not mesh_term.is_leaf_node():
+                child_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))
+
+        mesh_term_ids.extend(child_term_ids)
+        # Deduplicate ids
+        mesh_term_ids = list(set(mesh_term_ids))
+        return mesh_term_ids
+
+    def _select_child_nodes_by_name(self, mesh_term_names):
+        mesh_term_ids = []
+        child_term_ids = []
+
+        for name in mesh_term_names:
+            mesh_terms = MeshTerm.objects.filter(term__iexact=name)
+            if mesh_terms.count() == 0:
+                messages.add_message(self.request, messages.WARNING, '%s: could not be found' %  name)
+                # raise a validation error versus a message
+            else:
+                for term in mesh_terms:
+                    mesh_term_ids.append(term.id)
+                    if not term.is_leaf_node():
+                        mesh_term_ids.extend(term.get_descendants().values_list('id', flat=True))
+
+        mesh_term_ids.extend(child_term_ids)
+        # Deduplicate ids
+        mesh_term_ids = list(set(mesh_term_ids))
+        return mesh_term_ids
+
+    def clean(self):
+        mesh_term_ids = []
+        if self.cleaned_data['btn_submit'] == "replace" and 'term_names' in self.cleaned_data:
+            mesh_terms = self.cleaned_data['term_names'].split(';')
+            mesh_terms = [x.strip() for x in mesh_terms if x.strip()]
+            mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
+
+        elif 'term_tree_ids' in self.cleaned_data:
+            mesh_term_ids = self.cleaned_data['term_tree_ids'].split(',')
+            mesh_term_ids = [int(x[5:]) for x in mesh_term_ids if len(x) > 5]
+            # Ensure all child nodes are selected
+            mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
+
+        if mesh_term_ids:
+            duplicates = []
+            # NB: Rewritten query to avoid using large __in filter queries, see TMMA-100
+            exposures = self.instance.exposure_terms.values_list("id", flat=True)
+            mediators = self.instance.mediator_terms.values_list("id", flat=True)
+            outcomes = self.instance.outcome_terms.values_list("id", flat=True)
+
+            if self.type != 'exposure':
+                duplicates.extend([x for x in mesh_term_ids if x in exposures])
+            if self.type != 'mediator':
+                duplicates.extend([x for x in mesh_term_ids if x in mediators])
+            if self.type != 'outcome':
+                duplicates.extend([x for x in mesh_term_ids if x in outcomes])
+
+            # TODO handle the fact that users can add genes which may conflict with other exposures or outcomes.
+            # genes = self.instance.genes.all().values_list("name", flat=True)
+
+            # Stuff pre-processed terms into cleaned data if no duplicates
+            if not duplicates:
+                self.cleaned_data['mesh_term_ids'] = mesh_term_ids
+            else:
+                # TODO: TMMA-100 SQL has a 999 param limit
+                duplicates = list(MeshTerm.objects.filter(id__in=duplicates).values_list("term", flat=True).distinct())
+                raise forms.ValidationError(duplicates, code='duplicates')
+
+        return super(TermSelectorForm, self).clean()
 
 
 class FilterForm(forms.ModelForm):
@@ -37,11 +115,11 @@ class FilterForm(forms.ModelForm):
                             help_text = 'Separated by commas')
 
     # Need to explictly save the related search result object
-    mesh_filter = forms.ChoiceField(widget = forms.Select(),
-                                  choices = ([('','None'), ('Humans','Humans'),]),
-                                  required = False,
-                                  label = 'Filter',
-                                  initial="Humans")
+    mesh_filter = forms.ChoiceField(widget=forms.Select(),
+                                    choices=([('', 'None'), ('Humans', 'Humans'),]),
+                                    required=False,
+                                    label='Filter',
+                                    initial="Humans")
 
     class Meta:
         model = SearchCriteria

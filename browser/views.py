@@ -1,9 +1,9 @@
 import copy
 import logging
+import math
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse
@@ -76,46 +76,19 @@ class SearchView(CreateView):
 
 
 class TermSelectorAbstractUpdateView(UpdateView):
-
     template_name = "term_selector.html"
     model = SearchCriteria
     form_class = TermSelectorForm
     move_type = 'progress'
     # Required implementations
     # type = None
-    # set_terms(self, node_terms)
+    # def set_terms(self, node_terms)
 
-    def _select_child_nodes_by_id(self, mesh_term_ids):
-        mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
-        child_term_ids = []
-        for mesh_term in mesh_terms:
-            if not mesh_term.is_leaf_node():
-                child_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))
-
-        mesh_term_ids.extend(child_term_ids)
-        # Deduplicate ids
-        mesh_term_ids = list(set(mesh_term_ids))
-        return mesh_term_ids
-
-    def _select_child_nodes_by_name(self, mesh_term_names):
-        mesh_term_ids = []
-        child_term_ids = []
-
-        for name in mesh_term_names:
-            mesh_terms = MeshTerm.objects.filter(term__iexact=name)
-            if mesh_terms.count() == 0:
-                messages.add_message(self.request, messages.WARNING, '%s: could not be found' %  name)
-            else:
-                for term in mesh_terms:
-                    mesh_term_ids.append(term.id)
-                    if not term.is_leaf_node():
-                        mesh_term_ids.extend(term.get_descendants().values_list('id', flat=True))
-
-        # Add to messages
-        mesh_term_ids.extend(child_term_ids)
-        # Deduplicate ids
-        mesh_term_ids = list(set(mesh_term_ids)) 
-        return mesh_term_ids
+    def get_form_kwargs(self):
+        kwargs = super(TermSelectorAbstractUpdateView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        kwargs['type'] = self.type
+        return kwargs
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -148,34 +121,22 @@ class TermSelectorAbstractUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        """Select child nodes not shown in client side tree
+        """Auto select any children of selected nodes
         """
 
-        # Store mapping
         if form.is_valid():
             cleaned_data = form.cleaned_data
 
             if 'btn_submit' in cleaned_data:
                 self.move_type = cleaned_data['btn_submit']
 
-            if self.move_type == "replace" and 'bulk_replace_terms' in cleaned_data:
-                mesh_terms = cleaned_data['bulk_replace_terms'].split(';')
-                mesh_terms = [x.strip() for x in mesh_terms if x.strip()]
-                mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
-                self.set_terms(mesh_term_ids)
-
-            elif 'term_data' in cleaned_data:
-                mesh_term_ids = cleaned_data['term_data'].split(',')
-                mesh_term_ids = [int(x[5:]) for x in mesh_term_ids if len(x) > 5]
-                # Ensure all child nodes are selected
-                mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
-                self.set_terms(mesh_term_ids)
+            if 'mesh_term_ids' in cleaned_data:
+                self.set_terms(cleaned_data['mesh_term_ids'])
 
             return super(TermSelectorAbstractUpdateView, self).form_valid(form)
 
 
 class ExposureSelector(TermSelectorAbstractUpdateView):
-
     type = 'exposure'
 
     def get_success_url(self):
@@ -194,11 +155,15 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
     def set_terms(self, node_terms):
         # NB: Any selected nodes should have all children included in selected set
         self.object.exposure_terms.clear()
-        self.object.exposure_terms = node_terms
+        # TODO: Only slice to up assignment when db backend requires it 
+        # - max 999 with sqlite; see: batch_size ; DatabaseOperations.max_batch_size
+        # TODO: TMMA-100 SQL has a 999 param limit
+        slices = int(math.ceil(len(node_terms) / 500.0))
+        for i in range(0, slices):
+            self.object.exposure_terms.add(*node_terms[i * 500:((i + 1) * 500)])
 
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
-
     type = 'mediator'
 
     def get_success_url(self):
@@ -216,13 +181,15 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
         return context
 
     def set_terms(self, node_terms):
+        # NB: Any selected nodes should have all children included in selected set
         self.object.mediator_terms.clear()
-        self.object.mediator_terms = node_terms
+        # Split up assignment - max 9999 with sql
+        slices = int(math.ceil(len(node_terms) / 500.0))
+        for i in range(0, slices):
+            self.object.mediator_terms.add(*node_terms[i * 500:((i + 1) * 500)])
 
 
 class OutcomeSelector(TermSelectorAbstractUpdateView):
-
-    move_type = 'progress'
     type = 'outcome'
 
     def get_success_url(self):
@@ -239,9 +206,12 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         return context
 
     def set_terms(self, node_terms):
+        # NB: Any selected nodes should have all children included in selected set
         self.object.outcome_terms.clear()
-        self.object.outcome_terms = node_terms
-
+        # Split up assignment - max 9999 with sql
+        slices = int(math.ceil(len(node_terms) / 500.0))
+        for i in range(0, slices):
+            self.object.outcome_terms.add(*node_terms[i * 500:((i + 1) * 500)])
 
 class SearchExistingUpload(RedirectView):
     permanent = False

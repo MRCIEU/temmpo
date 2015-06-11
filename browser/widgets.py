@@ -19,6 +19,7 @@ class GeneTextarea(forms.widgets.Textarea):
 
         elif isinstance(value, list):
             try:
+                # TODO: TMMA-100 SQL has a 999 param limit 
             	# Try to look up list of IDs and turn into Gene names
             	genes = Gene.objects.filter(id__in=value)
             	value = ",".join(genes.values_list('name', flat=True))

@@ -5,7 +5,7 @@ $('#term_tree').on("changed.jstree", function (e, data) {
 
     // TODO: Nodes that have children when selected should also select all child nodes - action in views form handler
 
-    var previously_selected_nodes = $('#term_data').val().split(","); ;
+    var previously_selected_nodes = $('#term_tree_ids').val().split(","); ;
     var unloaded_selected_nodes = [];
 
     for (i = 0; i < previously_selected_nodes.length; i++) {
@@ -28,8 +28,8 @@ $('#term_tree').on("changed.jstree", function (e, data) {
 	unloaded_selected_nodes_str = unloaded_selected_nodes.join()
 
 	if (unloaded_selected_nodes_str &&  data.selected){
-		$('#term_data').val(data.selected + "," + unloaded_selected_nodes_str);
+		$('#term_tree_ids').val(data.selected + "," + unloaded_selected_nodes_str);
 	} else {
-    	$('#term_data').val(data.selected);
+    	$('#term_tree_ids').val(data.selected);
 	}	
 });

@@ -66,7 +66,7 @@ dd {
   margin-bottom: 1em;
 }
 
-.errorlist
+.errorlist, .warning
 {
   color: #800000;
 }
