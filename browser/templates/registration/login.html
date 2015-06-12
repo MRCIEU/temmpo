@@ -16,3 +16,8 @@ You need to <a href="{% url 'registration_register' %}">register</a> or sign in 
     <button type="submit" class="button" >Sign in</button>
 </form>
 {% endblock %}
+{% block additional_content %}
+<section>
+	<p><a href="{% url 'password_reset' %}">Forgotten your password?</a></p>
+</section>
+{% endblock %}
