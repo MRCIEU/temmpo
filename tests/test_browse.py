@@ -136,7 +136,7 @@ class BrowsingTest(TestCase):
         # TODO post mesh filter data
         # TODO split into separare tests - unit and integration
         self._login_user()
-        path = reverse('filter-selector', kwargs={'pk': search_criteria.id})
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
         response = self.client.post(path, {'genes': 'TRPC1'}, follow=True)
 
         # TODO: Split into pure integration and unit text version that does not use views

@@ -12,7 +12,7 @@
 <h3>Use previously uploaded files:</h3>
 <ul class="link-list">
     {% for upload in uploads %}
-        <li><a href="{% url 'reuse-upload' pk=upload.id %}">{{ upload }}</a></li>
+        <li><a href="{% url 'reuse_upload' pk=upload.id %}">{{ upload }}</a></li>
     {% empty %}
         <li>No previously uploaded abstracts.</li>
     {% endfor %}

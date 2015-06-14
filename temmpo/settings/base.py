@@ -106,7 +106,7 @@ STATIC_ROOT = "%s/%s" % (APP_ROOT, 'static')
 
 RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 
-LOGIN_REDIRECT_URL = 'results-listing'  # 'search'
+LOGIN_REDIRECT_URL = 'results_listing'  # 'search'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 

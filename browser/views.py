@@ -49,7 +49,7 @@ class SearchView(CreateView):
         # Create a new SearchCriteria object
         self.search_criteria = SearchCriteria(upload=self.object)
         self.search_criteria.save()
-        return reverse('exposure-selector',
+        return reverse('exposure_selector',
                        kwargs={'pk': self.search_criteria.id})
 
     @method_decorator(login_required)
@@ -115,8 +115,8 @@ class TermSelectorAbstractUpdateView(UpdateView):
         context['active'] = 'search'
         context['type'] = self.type
         context['pre_selected_term_names'] = "; ".join(self.object.get_wcrf_input_variables(self.type))
-        context['json_url'] = reverse('mesh-terms-as-json-for-criteria', kwargs={'pk':self.object.id, 'type':self.type})
-        context['json_search_url'] = reverse("mesh-terms-search-json")
+        context['json_url'] = reverse('mesh_terms_as_json_for_criteria', kwargs={'pk':self.object.id, 'type':self.type})
+        context['json_search_url'] = reverse("mesh_terms_search_json")
         context['pre_selected'] = ",".join(self.object.get_form_codes(self.type))
         return context
 
@@ -141,15 +141,15 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
 
     def get_success_url(self):
         if self.move_type in ('choose', 'replace',):
-            return reverse('exposure-selector', kwargs={'pk': self.object.id})
+            return reverse('exposure_selector', kwargs={'pk': self.object.id})
         else:
-            return reverse('mediator-selector', kwargs={'pk': self.object.id})
+            return reverse('mediator_selector', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super(ExposureSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select exposures'
         context['next_type'] = 'mediators'
-        context['next_url'] = reverse('mediator-selector', kwargs={'pk': self.object.id})
+        context['next_url'] = reverse('mediator_selector', kwargs={'pk': self.object.id})
         return context
 
     def set_terms(self, node_terms):
@@ -168,16 +168,16 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
 
     def get_success_url(self):
         if self.move_type in ('choose', 'replace',):
-            return reverse('mediator-selector', kwargs={'pk': self.object.id})
+            return reverse('mediator_selector', kwargs={'pk': self.object.id})
         else:
-            return reverse('outcome-selector', kwargs={'pk': self.object.id})
+            return reverse('outcome_selector', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super(MediatorSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select mediators'
 
         context['next_type'] = 'outcomes'
-        context['next_url'] = reverse('outcome-selector', kwargs={'pk': self.object.id})
+        context['next_url'] = reverse('outcome_selector', kwargs={'pk': self.object.id})
         return context
 
     def set_terms(self, node_terms):
@@ -194,15 +194,15 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
 
     def get_success_url(self):
         if self.move_type in ('choose', 'replace',):
-            return reverse('outcome-selector', kwargs={'pk': self.object.id})
+            return reverse('outcome_selector', kwargs={'pk': self.object.id})
         else:
-            return reverse('filter-selector', kwargs={'pk': self.object.id})
+            return reverse('filter_selector', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super(OutcomeSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select outcomes'
         context['next_type'] = 'Genes and Filters'
-        context['next_url'] = reverse('filter-selector', kwargs={'pk': self.object.id})
+        context['next_url'] = reverse('filter_selector', kwargs={'pk': self.object.id})
         return context
 
     def set_terms(self, node_terms):
@@ -220,7 +220,7 @@ class SearchExistingUpload(RedirectView):
         upload = get_object_or_404(Upload, pk=kwargs['pk'])
         criteria = SearchCriteria(upload=upload)
         criteria.save()
-        return reverse('exposure-selector', kwargs={'pk': criteria.pk})
+        return reverse('exposure_selector', kwargs={'pk': criteria.pk})
 
 
 class SearchExisting(RedirectView):
@@ -242,7 +242,7 @@ class SearchExisting(RedirectView):
         criteria_copy.mediator_terms = original_criteria.mediator_terms.all()
         criteria_copy.save()
 
-        return reverse('exposure-selector', kwargs={'pk': criteria_copy.pk})
+        return reverse('exposure_selector', kwargs={'pk': criteria_copy.pk})
 
 
 class FilterSelector(UpdateView):
@@ -290,7 +290,7 @@ class FilterSelector(UpdateView):
         return super(FilterSelector, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('results-listing')
+        return reverse('results_listing')
 
 
 class ResultsView(TemplateView):
@@ -317,7 +317,7 @@ class ResultsView(TemplateView):
         context['active'] = 'results'
 
         # TODO: TMMA-30 Add tabular version of results table as per PDF
-        json_filename = reverse('json-data', kwargs=kwargs)
+        json_filename = reverse('json_data', kwargs=kwargs)
         context['json_url'] = json_filename
         return context
 
@@ -363,7 +363,7 @@ class CriteriaView(DetailView):
         context['mediators'] = "; ".join(self.object.get_wcrf_input_variables('mediator'))
         context['outcomes'] = "; ".join(self.object.get_wcrf_input_variables('outcome'))
         context['genes'] = "; ".join(self.object.get_wcrf_input_variables('gene'))
-        context['url'] = reverse('edit-search', kwargs={'pk': self.object.id})
+        context['url'] = reverse('edit_search', kwargs={'pk': self.object.id})
 
         return context
 

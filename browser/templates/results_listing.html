@@ -52,13 +52,13 @@ $(document).ready(function() {
             </td>
             <td>
                 {% if result.has_completed %}
-                <a href="{% url 'count-data' pk=result.pk %}" title="Count data for resultset '{{ result.pk }}'">Score data</a> (CSV)
+                <a href="{% url 'count_data' pk=result.pk %}" title="Count data for resultset '{{ result.pk }}'">Score data</a> (CSV)
                 {% endif%}
             </td>
 
             <td>
                 {% if result.has_completed %}
-                <a href="{% url 'abstracts-data' pk=result.pk %}" title="Abstract data for resultset '{{ result.pk }}'">Abstract IDs</a> (CSV)
+                <a href="{% url 'abstracts_data' pk=result.pk %}" title="Abstract data for resultset '{{ result.pk }}'">Abstract IDs</a> (CSV)
                 {% endif %}
             </td>
             <!-- <td>[X]</td> -->
