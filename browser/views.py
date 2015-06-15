@@ -302,10 +302,10 @@ class ResultsView(TemplateView):
         """
 
         # Prevent user viewing data for another user
-        srid = int(kwargs['pk'])
-        if SearchResult.objects.filter(pk = srid).exists():
-            srcheck = SearchResult.objects.get(pk = srid)
-            if request.user.id != srcheck.criteria.upload.user.id:
+        self.id = int(kwargs['pk'])
+        if SearchResult.objects.filter(pk=self.id).exists():
+            self.search_result = SearchResult.objects.select_related('criteria__upload').get(pk=self.id)
+            if request.user.id != self.search_result.criteria.upload.user.id:
                 raise PermissionDenied
         else:
             raise Http404("Not found")
@@ -318,7 +318,10 @@ class ResultsView(TemplateView):
 
         # TODO: TMMA-30 Add tabular version of results table as per PDF
         json_filename = reverse('json_data', kwargs=kwargs)
+        csv_filename = reverse('count_data', kwargs=kwargs)
+        context['search_result'] = self.search_result        
         context['json_url'] = json_filename
+        context['csv_url'] = csv_filename
         return context
 
 

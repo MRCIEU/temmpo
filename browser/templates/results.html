@@ -20,6 +20,11 @@
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 -->
+{% if search_result.mesh_filter %}
+  <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term</p>
+{% endif %}
+
+<p><a href="{{ csv_url }}">Download as CSV</a></p>
 <p id="chart"></p>
 <script>
 var margin = {top: 1, right: 1, bottom: 6, left: 1},

@@ -1,4 +1,5 @@
-0.8    TMMA-75 Enable term filtering, e.g. Human
+0.8    TMMA-30 Add link to download CSV of matches from results page
+       TMMA-75 Enable term filtering, e.g. Human
        Install alternative autocomplete egg: django-selectable==0.9.0
        Remove django-autocomplete-light
        Upgrade Django to 1.7.8  ../../bin/pip install Django==1.7.8
