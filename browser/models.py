@@ -6,6 +6,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.utils.encoding import python_2_unicode_compatible
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -37,6 +38,7 @@ class Gene(models.Model):
         return "Gene: " + self.name
 
 
+@python_2_unicode_compatible
 class MeshTerm(MPTTModel):
     """Pre-populated with MeSH terms from http://www.nlm.nih.gov/mesh/
 
@@ -54,6 +56,7 @@ class MeshTerm(MPTTModel):
         return self.term + ";" + self.tree_number
 
 
+@python_2_unicode_compatible
 class Upload(models.Model):
     """ """
 
