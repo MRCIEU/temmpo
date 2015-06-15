@@ -1,4 +1,17 @@
-0.7.2  Bug fix requesting external content over http not https.
+0.8    TMMA-75 Enable term filtering, e.g. Human
+       Install alternative autocomplete egg: django-selectable==0.9.0
+       Remove django-autocomplete-light
+       Upgrade Django to 1.7.8  ../../bin/pip install Django==1.7.8
+       Update base and dev egg requirements
+       Rename bloacks and url names to use Django naming comventions
+       TMMA-20 Wire up password reset and change forms
+       Add more tests
+       Batch add terms to avoid SQLlite limitations (TMMA-100 in progress)
+       Refactor termselector form/view validation
+       Ensure user cannot use the same terms for exposure, mediator and/or outcomes
+       Show errors on term selector page
+       Repopulate the bulk edit form field after errors
+       Bug fix requesting external content over http not https
        Bug fix CSS
 
 0.7.1  Bug fix form refactoring and fix saving terms via the tree  

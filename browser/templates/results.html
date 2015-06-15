@@ -5,7 +5,6 @@
 {% block section_title %}Results{% endblock %}
 
 {% block styles %}
-<!-- <link rel="stylesheet" href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.csss" /> -->
 {% endblock %}
 
 
@@ -13,17 +12,6 @@
 {# Chart related JS #}
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="{{ STATIC_URL}}js/sankey.js"></script>
-
-{# Data table related JS #}
-<!-- <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script> -->
-<script>
-// $(document).ready(function() {
-//     // $('.results-breakdown').DataTable({
-//     //     "order": [ 3, 'desc' ],
-//     // });
-//   $('table.dataTable').dataTable();
-// } );
-</script>
 {% endblock %}
 
 {% block section %}

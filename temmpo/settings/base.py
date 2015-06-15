@@ -50,11 +50,10 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_PRE_APPS = ['autocomplete_light', ]
-THIRD_PARTY_APPS = ['registration', 'mptt', ]  # 'oraclepool',
+THIRD_PARTY_APPS = ['registration', 'mptt', 'selectable', ]  # 'oraclepool',
 LOCAL_APPS = ['browser', ]
 
-INSTALLED_APPS = LOCAL_APPS + THIRD_PARTY_PRE_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
+INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',

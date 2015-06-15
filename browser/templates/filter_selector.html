@@ -4,8 +4,10 @@
 
 {% block section_title %}Select genes and filter{% endblock %}
 
-{% block section %}
+{% block scripts %}{{ form.media.js }}{% endblock %}
+{% block styles %}{{ form.media.css }}{% endblock %}
 
+{% block section %}
     <form action="." method="post">
         {% csrf_token %}
 

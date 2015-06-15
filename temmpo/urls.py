@@ -3,10 +3,6 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
 
-# browser app dependencies TODO: Clean up if not used with TMMA-68
-import autocomplete_light
-autocomplete_light.autodiscover()
-
 from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
@@ -15,8 +11,9 @@ from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            MeshTermsAllAsJSON, MeshTermSearchJSON)
 
 urlpatterns = patterns('',
-    # autocomplete_light
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
+
+    # Django selectable
+    url(r'^selectable/', include('selectable.urls')),
 
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),

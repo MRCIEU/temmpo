@@ -3,6 +3,9 @@ import re
 from django import forms
 from django.contrib import messages
 
+from selectable.forms import AutoCompleteWidget, AutoCompleteSelectField
+
+from browser.lookups import MeshTermLookup
 from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
 from browser.widgets import GeneTextarea
 
@@ -114,17 +117,15 @@ class FilterForm(forms.ModelForm):
                             label = 'Enter genes (optional)',
                             help_text = 'Separated by commas')
 
-    # Need to explictly save the related search result object
-    mesh_filter = forms.ChoiceField(widget=forms.Select(),
-                                    choices=([('', 'None'), ('Humans', 'Humans'),]),
+    mesh_filter = AutoCompleteSelectField(lookup_class=MeshTermLookup,
+                                    widget=AutoCompleteWidget,
                                     required=False,
                                     label='Filter',
-                                    initial="Humans")
+                                    help_text="Start entering a MeSH Term, e.g. Humans")
 
     class Meta:
         model = SearchCriteria
         fields = ['genes', 'mesh_filter' ]
-
 
     def clean_genes(self):
         data = self.cleaned_data['genes']
