@@ -48,7 +48,7 @@ def perform_search(search_result_stub_id):
     exposuremesh = search_result_stub.criteria.get_wcrf_input_variables('exposure')
     outcomemesh = search_result_stub.criteria.get_wcrf_input_variables('outcome')
     mediatormesh = search_result_stub.criteria.get_wcrf_input_variables('mediator')
-    mesh_filter = search_result_stub.mesh_filter # Previously hardcoded to Human then Humans
+    mesh_filter = search_result_stub.mesh_filter or "" # Previously hardcoded to Human then Humans
 
     #print "GENE", genelist
     #print "EXP", exposuremesh
