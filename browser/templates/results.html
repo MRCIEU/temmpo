@@ -32,7 +32,7 @@ var margin = {top: 1, right: 1, bottom: 6, left: 1},
     height = 960 - margin.top - margin.bottom;
 
 var formatNumber = d3.format(",.0f"),
-    format = function(d) { return formatNumber(d) + " TWh"; }, // TODO: Verify this TWh
+    format = function(d) { return formatNumber(d) + " abstracts"; }, // TODO: Verify this TWh
     color = d3.scale.category20();
 
 var svg = d3.select("#chart").append("svg")
