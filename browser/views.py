@@ -365,7 +365,7 @@ class CriteriaView(DetailView):
         context['exposures'] = "; ".join(self.object.get_wcrf_input_variables('exposure'))
         context['mediators'] = "; ".join(self.object.get_wcrf_input_variables('mediator'))
         context['outcomes'] = "; ".join(self.object.get_wcrf_input_variables('outcome'))
-        context['genes'] = "; ".join(self.object.get_wcrf_input_variables('gene'))
+        context['genes'] = ", ".join(self.object.get_wcrf_input_variables('gene'))
         context['url'] = reverse('edit_search', kwargs={'pk': self.object.id})
 
         return context
