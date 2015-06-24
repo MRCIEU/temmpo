@@ -21,18 +21,20 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
 </p>
 -->
 {% if search_result.mesh_filter %}
-  <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term</p>
+  <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and displaying the top 50 matches.</p>
 {% endif %}
 
 <p><a href="{{ csv_url }}">Download as CSV</a></p>
 <p id="chart"></p>
 <script>
+var threshold = 50;
+
 var margin = {top: 1, right: 1, bottom: 6, left: 1},
     width = 960 - margin.left - margin.right,
     height = 960 - margin.top - margin.bottom;
 
 var formatNumber = d3.format(",.0f"),
-    format = function(d) { return formatNumber(d) + " abstracts"; }, // TODO: Verify this TWh
+    format = function(d) { return formatNumber(d) + " abstracts"; },
     color = d3.scale.category20();
 
 var svg = d3.select("#chart").append("svg")
@@ -49,6 +51,22 @@ var sankey = d3.sankey()
 var path = sankey.link();
 
 d3.json("{{ json_url }}", function(matches) {
+
+  /* TMMA-106 Temporarily limit to the top 50 matches */
+  if (threshold != -1 && matches.links.length > threshold) {
+    // console.log("Limiting matches");
+    var links = matches.links;
+    links.sort(function(a, b) { return b.value - a.value; });
+    links = links.slice(0, threshold);
+    var top_targets = links.map(function(link){ 
+       return link.target;
+    });
+    var top_sources = links.map(function(link){ 
+       return link.source;
+    });
+    matches.links = matches.links.filter(function(link) { return link.target in top_targets || link.source in top_sources;});
+
+  }
 
   sankey
       .nodes(matches.nodes)
@@ -70,6 +88,7 @@ d3.json("{{ json_url }}", function(matches) {
       .data(matches.nodes)
     .enter().append("g")
       .attr("class", "node")
+      .attr("style", function(d) { return (d.value == 0) ? "display:none":"";})  /* Hide nodes that have no matches NB: This suppresses issue TMMA-5 and is required by TMMA-106 */
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
     .call(d3.behavior.drag()
       .origin(function(d) { return d; })
