@@ -1,3 +1,10 @@
+0.9    TMMA-5 Hide terms with no matches
+       TMMA-106 Limit to show only the top 50 matches
+       TMMA-105 Overide default password reset email
+       Update egg requirements
+       Reduce white space between header banner, page title, and with paragraphs
+       Update wording
+
 0.8    TMMA-30 Add link to download CSV of matches from results page
        TMMA-75 Enable term filtering, e.g. Human
        Install alternative autocomplete egg: django-selectable==0.9.0
