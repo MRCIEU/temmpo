@@ -1,3 +1,6 @@
+0.9.1  Bug fix matching terms that appear in mulitple places in the MesH Term tree
+       Use a compact header layout for results page
+
 0.9    TMMA-5 Hide terms with no matches
        TMMA-106 Limit to show only the top 50 matches
        TMMA-105 Overide default password reset email
