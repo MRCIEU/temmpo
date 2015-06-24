@@ -100,3 +100,7 @@ ul#tree-family li {
 h2, p {
   margin-bottom: 0.75em !important;
 }
+
+#result-header{
+  width:100%;
+}
