@@ -112,7 +112,6 @@ class SearchCriteria(models.Model):
     mediator_terms = models.ManyToManyField(MeshTerm,
         verbose_name="mediator MeSH terms", blank=True, null=True,
         help_text="Select one or more terms", related_name='sc_mediator')
-    # TODO: Decide comma or line delimited, could normalise to look up table as well
     genes = models.ManyToManyField(Gene, blank=True, null=True,
         related_name='sc_gene', help_text="Enter one or more gene symbol")
 
@@ -144,7 +143,7 @@ class SearchCriteria(models.Model):
             input_variables = self.genes.values_list('name', flat=True)
 
         if input_variables:
-            return input_variables.distinct()
+            return list(set(input_variables))
         else:
             return []
 
