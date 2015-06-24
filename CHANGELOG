@@ -2,7 +2,7 @@
        TMMA-106 Limit to show only the top 50 matches
        TMMA-105 Overide default password reset email
        Update egg requirements
-       Reduce white space between header banner, page title, and with paragraphs
+       TMMA-107 Reduce white space between header banner, page title, and with paragraphs
        Update wording
        Allow super user to view other users criteria and results
 

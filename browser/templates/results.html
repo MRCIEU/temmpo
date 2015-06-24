@@ -21,7 +21,9 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
 </p>
 -->
 {% if search_result.mesh_filter %}
-  <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and displaying the top 50 matches.</p>
+  <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.</p>
+{% else %}
+  <p>Limited to the top 50 matches.</p>
 {% endif %}
 
 <p><a href="{{ csv_url }}">Download as CSV</a></p>
