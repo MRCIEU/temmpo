@@ -4,6 +4,7 @@
        Update egg requirements
        Reduce white space between header banner, page title, and with paragraphs
        Update wording
+       Allow super user to view other users criteria and results
 
 0.8    TMMA-30 Add link to download CSV of matches from results page
        TMMA-75 Enable term filtering, e.g. Human

@@ -97,9 +97,9 @@ class TermSelectorAbstractUpdateView(UpdateView):
 
         # Prevent one user viewing data for another
         scid = int(kwargs['pk'])
-        if SearchCriteria.objects.filter(pk = scid).exists():
-            sccheck = SearchCriteria.objects.get(pk = scid)
-            if request.user.id != sccheck.upload.user.id:
+        if SearchCriteria.objects.filter(pk=scid).exists():
+            sccheck = SearchCriteria.objects.get(pk=scid)
+            if not request.user.is_superuser and request.user.id != sccheck.upload.user.id:
                 raise PermissionDenied
         else:
             raise Http404("Not found")
@@ -259,7 +259,7 @@ class FilterSelector(UpdateView):
         scid = int(kwargs['pk'])
         if SearchCriteria.objects.filter(pk = scid).exists():
             sccheck = SearchCriteria.objects.get(pk = scid)
-            if request.user.id != sccheck.upload.user.id:
+            if not request.user.is_superuser and request.user.id != sccheck.upload.user.id:
                 raise PermissionDenied
         else:
             raise Http404("Not found")
@@ -305,7 +305,7 @@ class ResultsView(TemplateView):
         self.id = int(kwargs['pk'])
         if SearchResult.objects.filter(pk=self.id).exists():
             self.search_result = SearchResult.objects.select_related('criteria__upload').get(pk=self.id)
-            if request.user.id != self.search_result.criteria.upload.user.id:
+            if not request.user.is_superuser and request.user.id != self.search_result.criteria.upload.user.id:
                 raise PermissionDenied
         else:
             raise Http404("Not found")
@@ -319,7 +319,7 @@ class ResultsView(TemplateView):
         # TODO: TMMA-30 Add tabular version of results table as per PDF
         json_filename = reverse('json_data', kwargs=kwargs)
         csv_filename = reverse('count_data', kwargs=kwargs)
-        context['search_result'] = self.search_result        
+        context['search_result'] = self.search_result
         context['json_url'] = json_filename
         context['csv_url'] = csv_filename
         return context
@@ -351,7 +351,7 @@ class CriteriaView(DetailView):
         criteria_id = int(kwargs['pk'])
         try:
             criteria = SearchCriteria.objects.get(pk=criteria_id)
-            if request.user.id != criteria.upload.user.id:
+            if not request.user.is_superuser and request.user.id != criteria.upload.user.id:
                 raise PermissionDenied
 
         except ObjectDoesNotExist:
@@ -384,7 +384,7 @@ class CountDataView(RedirectView):
         srid = int(kwargs['pk'])
         if SearchResult.objects.filter(pk = srid).exists():
             srcheck = SearchResult.objects.get(pk = srid)
-            if request.user.id != srcheck.criteria.upload.user.id:
+            if not request.user.is_superuser and request.user.id != srcheck.criteria.upload.user.id:
                 raise PermissionDenied
         else:
             raise Http404("Not found")
@@ -408,9 +408,9 @@ class AbstractDataView(RedirectView):
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
-        if SearchResult.objects.filter(pk = srid).exists():
-            srcheck = SearchResult.objects.get(pk = srid)
-            if request.user.id != srcheck.criteria.upload.user.id:
+        if SearchResult.objects.filter(pk=srid).exists():
+            srcheck = SearchResult.objects.get(pk=srid)
+            if not request.user.is_superuser and request.user.id != srcheck.criteria.upload.user.id:
                 raise PermissionDenied
         else:
             raise Http404("Not found")
@@ -436,7 +436,7 @@ class JSONDataView(RedirectView):
         srid = int(kwargs['pk'])
         if SearchResult.objects.filter(pk = srid).exists():
             srcheck = SearchResult.objects.get(pk = srid)
-            if request.user.id != srcheck.criteria.upload.user.id:
+            if not request.user.is_superuser and request.user.id != srcheck.criteria.upload.user.id:
                 raise PermissionDenied
         else:
             raise Http404("Not found")
