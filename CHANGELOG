@@ -1,3 +1,6 @@
+0.9.2  Bug fix usage of distinct
+       Ensure display commas separated genes fro easier copying pasting when partially reusing search criteria
+
 0.9.1  Bug fix matching terms that appear in mulitple places in the MesH Term tree
        Use a compact header layout for results page
 
