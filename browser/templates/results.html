@@ -1,8 +1,6 @@
-{% extends "onecolumn.html" %}
+{% extends "onecolumncompact.html" %}
 
 {% block title %}TeMMPo: Results{% endblock %}
-
-{% block section_title %}Results{% endblock %}
 
 {% block styles %}
 {% endblock %}
@@ -20,13 +18,23 @@
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 -->
-{% if search_result.mesh_filter %}
-  <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.</p>
-{% else %}
-  <p>Limited to the top 50 matches.</p>
-{% endif %}
-
-<p><a href="{{ csv_url }}">Download as CSV</a></p>
+<table id="result-header">
+  <tr>
+    <td>
+      <h2>Results</h2>
+    </td>
+    <td>
+      {% if search_result.mesh_filter %}
+        <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.</p>
+      {% else %}
+        <p>Limited to the top 50 matches.</p>
+      {% endif %}
+    </td>
+    <td>
+      <p><a href="{{ csv_url }}">Download as CSV</a></p>
+    </td>
+  </tr>
+</table>
 <p id="chart"></p>
 <script>
 var threshold = 50;
@@ -56,7 +64,8 @@ d3.json("{{ json_url }}", function(matches) {
 
   /* TMMA-106 Temporarily limit to the top 50 matches */
   if (threshold != -1 && matches.links.length > threshold) {
-    // console.log("Limiting matches");
+
+    console.log("Limiting matches to " + threshold + " instead of showing " + matches.links.length);
     var links = matches.links;
     links.sort(function(a, b) { return b.value - a.value; });
     links = links.slice(0, threshold);
