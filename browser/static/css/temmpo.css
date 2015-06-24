@@ -93,7 +93,10 @@ ul#tree-family li {
     margin: 0.5em 0em;
   }
 
-#main 
-{
+#main {
     padding: 1.5em 0;
+}
+
+h2, p {
+  margin-bottom: 0.75em !important;
 }
