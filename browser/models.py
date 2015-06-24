@@ -144,7 +144,7 @@ class SearchCriteria(models.Model):
             input_variables = self.genes.values_list('name', flat=True)
 
         if input_variables:
-            return input_variables
+            return input_variables.distinct()
         else:
             return []
 
