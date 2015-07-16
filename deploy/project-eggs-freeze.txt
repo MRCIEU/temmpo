@@ -13,6 +13,7 @@ ipython==3.0.0
 lxml==2.3.2
 oauth2==1.5.211
 oauthlib==0.7.2
+python-magic==0.4.6
 python-openid==2.2.5
 python-social-auth==0.2.1
 requests==2.5.1
