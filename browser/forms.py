@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class AbstractFileUploadForm(forms.ModelForm):
     abstracts_upload = forms.FileField(
         validators=[MimetypeValidator(mimetypes=('text/plain',)),
-                    SizeValidator(max_size=250)],
+                    SizeValidator(max_size=500)],
         help_text="Plain text (*.txt) ONLY")
 
     class Meta:
