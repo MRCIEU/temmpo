@@ -9,18 +9,20 @@ from selectable.forms import AutoCompleteWidget, AutoCompleteSelectField
 from browser.lookups import MeshTermLookup
 from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
 from browser.widgets import GeneTextarea
-from browser.validators import MimetypeValidator
+from browser.validators import MimetypeValidator, SizeValidator
 
 logger = logging.getLogger(__name__)
 
 
 class AbstractFileUploadForm(forms.ModelForm):
-    abstracts_upload = forms.FileField(validators=[MimetypeValidator(('text/plain',))],
+    abstracts_upload = forms.FileField(
+        validators=[MimetypeValidator(mimetypes=('text/plain',)),
+                    SizeValidator(max_size=250)],
         help_text="Plain text (*.txt) ONLY")
 
     class Meta:
         model = Upload
-        fields = ['abstracts_upload', ]
+        fields = ['abstracts_upload',]
 
 # TODO: Review possible usage of
 # http://django-mptt.github.io/django-mptt/forms.html
