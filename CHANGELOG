@@ -1,3 +1,5 @@
+0.9.5  Upgrade to Django 1.7.9 - run pip install Django==1.7.9
+
 0.9.4  Increase file upload limit
 
 0.9.3  TMMA-36 Validate file type & limit file size of abstract uploads
