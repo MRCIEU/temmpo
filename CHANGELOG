@@ -1,3 +1,5 @@
+0.9.6  TMMA-110 - Handle when text file uploaded is not in MEDLINE format with Medical Subject Headings (MeSH®)
+
 0.9.5  Upgrade to Django 1.7.9 - run pip install Django==1.7.9
 
 0.9.4  Increase file upload limit
@@ -7,12 +9,12 @@
 0.9.2  Bug fix usage of distinct
        Ensure display commas separated genes fro easier copying pasting when partially reusing search criteria
 
-0.9.1  Bug fix matching terms that appear in mulitple places in the MesH Term tree
+0.9.1  Bug fix matching terms that appear in multiple places in the MesH Term tree
        Use a compact header layout for results page
 
 0.9    TMMA-5 Hide terms with no matches
        TMMA-106 Limit to show only the top 50 matches
-       TMMA-105 Overide default password reset email
+       TMMA-105 Override default password reset email
        Update egg requirements
        TMMA-107 Reduce white space between header banner, page title, and with paragraphs
        Update wording
@@ -24,11 +26,11 @@
        Remove django-autocomplete-light
        Upgrade Django to 1.7.8  ../../bin/pip install Django==1.7.8
        Update base and dev egg requirements
-       Rename bloacks and url names to use Django naming comventions
+       Rename blocks and url names to use Django naming conventions
        TMMA-20 Wire up password reset and change forms
        Add more tests
        Batch add terms to avoid SQLlite limitations (TMMA-100 in progress)
-       Refactor termselector form/view validation
+       Refactor term selector form/view validation
        Ensure user cannot use the same terms for exposure, mediator and/or outcomes
        Show errors on term selector page
        Repopulate the bulk edit form field after errors
@@ -41,7 +43,7 @@
        Tidied urls
        Added search mesh term tree functionality
        Upgraded version of jstree library
-       Remove unsed files
+       Remove unused files
        Add functionality to bulk clear or replace mesh terms
        Removed unused form cleaning code
        Refactored form classes

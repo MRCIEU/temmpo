@@ -17,8 +17,9 @@ from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
 RESULT_ID = '1'
-TEST_FILE_PATH = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
-
+TEST_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
+TEST_PUBLINE_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
+TEST_DOC_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test.docx')
 
 class BrowsingTest(TestCase):
     """ Run simple tests for browsing the TeMMPo application
@@ -106,7 +107,7 @@ class BrowsingTest(TestCase):
         with the gene when the WEIGHTFILTER threshhold is zero
         """
 
-        test_file = open(TEST_FILE_PATH, 'r')
+        test_file = open(TEST_FILE, 'r')
         upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'))
         upload.save()
         test_file.close()
@@ -163,7 +164,7 @@ class BrowsingTest(TestCase):
         self._find_expected_content(path=search_path,
                                     msg="Upload a new text file")
 
-        with open(TEST_FILE_PATH, 'r') as upload:
+        with open(TEST_FILE, 'r') as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload},
                                         follow=True)
@@ -197,6 +198,26 @@ class BrowsingTest(TestCase):
 
         self._find_expected_content(path="/logout",
                                     msg="Sign in")
+
+    def test_file_upload_validation(self):
+        self._login_user()
+        search_path = reverse('search')
+
+        with open(TEST_PUBLINE_FILE, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload},
+                                        follow=True)
+
+            self.assertContains(response, "errorlist")
+            self.assertContains(response, "does not appear to be a MEDLINE formatted")
+
+        with open(TEST_DOC_FILE, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload},
+                                        follow=True)
+
+            self.assertContains(response, "errorlist")
+            self.assertContains(response, "is not an acceptable file type")
 
     # def test_results_archive(self):
     #     """

@@ -1,10 +1,14 @@
+# -*- coding: utf-8 -*-
 import logging
 import magic
+import re
 
 from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
+IDENTIFIER_PATTERN = re.compile("<\d+>")
+IDENTIFIER_LABEL_PATTERN = re.compile("Unique Identifier")
 
 class MimetypeValidator(object):
     # ref https://djangosnippets.org/snippets/3039/
@@ -34,5 +38,26 @@ class SizeValidator(object):
                 raise ValidationError('%s is too large. Please try to upload a file smaller than %sMB instead.' % (value, self.max_size))
             else:
                 return value
+        else:
+            raise ValidationError("Couldn't read the uploaded file.")
+
+
+class MEDLINEFormatValidator(object):
+    """ ref: http://www.nlm.nih.gov/pubs/factsheets/dif_med_pub.html """
+
+    def __call__(self, value):
+        if value:
+            # Very basic test if the file appears to be in teh correct format
+            # Test first line if <1> or "\<\d\>"
+            # Test second line equals: Unique Identifier
+            value.seek(0)
+            first_line = value.readline()
+            second_line = value.readline()
+
+            if IDENTIFIER_PATTERN.match(first_line) and IDENTIFIER_LABEL_PATTERN.match(second_line):
+                value.seek(0)
+                return value
+            else:
+                raise ValidationError('This file %s does not appear to be a MEDLINE formatted export of journal abstracts with MeSH® terms.' % value)
         else:
             raise ValidationError("Couldn't read the uploaded file.")

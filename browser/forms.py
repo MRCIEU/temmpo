@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import re
 
@@ -9,7 +10,7 @@ from selectable.forms import AutoCompleteWidget, AutoCompleteSelectField
 from browser.lookups import MeshTermLookup
 from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
 from browser.widgets import GeneTextarea
-from browser.validators import MimetypeValidator, SizeValidator
+from browser.validators import MimetypeValidator, SizeValidator, MEDLINEFormatValidator
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +18,9 @@ logger = logging.getLogger(__name__)
 class AbstractFileUploadForm(forms.ModelForm):
     abstracts_upload = forms.FileField(
         validators=[MimetypeValidator(mimetypes=('text/plain',)),
-                    SizeValidator(max_size=500)],
-        help_text="Plain text (*.txt) ONLY")
+                    SizeValidator(max_size=500),
+                    MEDLINEFormatValidator(),],
+        help_text="MEDLINE® formatted plain text files ONLY (*.txt)")
 
     class Meta:
         model = Upload
