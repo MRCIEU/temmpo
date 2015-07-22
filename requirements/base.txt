@@ -1,7 +1,7 @@
 # This is an implicit value, here for clarity
 --index-url https://pypi.python.org/simple/
 
-Django==1.7.8
+Django==1.7.9
 PyJWT==0.4.1
 argparse==1.2.1
 distribute==0.6.24
@@ -16,6 +16,7 @@ ipython==3.0.0
 lxml==2.3.2
 oauth2==1.5.211
 oauthlib==0.7.2
+python-magic==0.4.6
 python-openid==2.2.5
 python-social-auth==0.2.1
 requests==2.5.1
