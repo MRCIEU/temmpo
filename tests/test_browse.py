@@ -52,35 +52,36 @@ class BrowsingTest(TestCase):
         """ Test can view the home page
         """
 
-        self._find_expected_content(path="/", msg="About TeMMPo")
+        self._find_expected_content(path=reverse("home"), msg="About TeMMPo")
 
     def test_credits_page(self):
         """ Test can view the credits page
         """
 
-        self._find_expected_content(path="/credits/", msg="Credits")
+        self._find_expected_content(path=reverse("credits"), msg="Credits")
 
     def test_search_page(self):
         """ Test can view the search page
         """
-        self._find_expected_content(path="/search", msg="sign in to use this tool")
+        self._find_expected_content(path=reverse("search"), msg="sign in to use this tool")
         self._login_user()
-        self._find_expected_content(path="/search/", msg="Upload a new text file")
+        self._find_expected_content(path=reverse("search"), msg="Upload a new text file")
 
     def test_results_page(self):
         """ Test can view the results page
         """
-        self._find_expected_content(path="/results/"+RESULT_ID, msg="sign in to use this tool")
+        path = reverse('results', kwargs={'pk': RESULT_ID})
+        self._find_expected_content(path=path, msg="sign in to use this tool")
         self._login_user()
         # TODO add a mock search object
-        # self._find_expected_content(path="/results/"+RESULT_ID, msg='id="chart"')
+        # self._find_expected_content(path=path, msg='id="chart"')
 
     def test_results_listing_page(self):
         """ Test can view the results listing page
         """
-        self._find_expected_content(path="/results/", msg="sign in to use this tool")
+        self._find_expected_content(path=reverse("results_listing"), msg="sign in to use this tool")
         self._login_user()
-        self._find_expected_content(path="/results/", msg="My list")
+        self._find_expected_content(path=reverse("results_listing"), msg="My list")
 
     def test_matching(self):
         """
@@ -180,23 +181,32 @@ class BrowsingTest(TestCase):
     # Additional features
 
     def test_register_page(self):
-        """ Test can view the register page
+        """ Test can use the register page
         """
-        self._find_expected_content(path="/register",
-                                    msg_list=["Register", "Password (again)", ])
+        self._find_expected_content(path=reverse("registration_register"),
+                                    msg_list=["Register", "Password confirmation", ])
+
+        response = self.client.post(reverse("registration_register"),
+                                    {"username" : "testuser1",
+                                     "email" : "bob@example.com",
+                                     "password1": "THISISJUSTATEST",
+                                     "password2": "THISISJUSTATEST"},
+                                    follow=True)
+
+        self.assertContains(response, "You registration is complete.", msg_prefix=response.content)
 
     def test_login_page(self):
         """ Test can view the sign in page
         """
-        self._find_expected_content(path="/login", msg="Sign in")
+        self._find_expected_content(path="/login/", msg="Sign in")
 
     def test_logout_page(self):
         """ Test logging out redirects to sign in page
         """
-        response = self.client.get("/logout")
-        self.assertEqual(response.status_code, 301)
+        response = self.client.get("/logout/")
+        self.assertEqual(response.status_code, 302)
 
-        self._find_expected_content(path="/logout",
+        self._find_expected_content(path="/logout/",
                                     msg="Sign in")
 
     def test_file_upload_validation(self):

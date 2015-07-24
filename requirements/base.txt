@@ -9,7 +9,7 @@ django-ajax-upload-widget==0.5.5
 django-bft==0.2.0
 django-chunked-upload==1.0.3
 django-mptt==0.7.3
-django-registration-redux==1.1
+django-registration-redux==1.2
 django-selectable==0.9.0
 httplib2==0.9
 ipython==3.0.0
