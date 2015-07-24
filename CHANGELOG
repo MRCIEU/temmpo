@@ -1,4 +1,7 @@
-0.9.6  TMMA-110 - Handle when text file uploaded is not in MEDLINE format with Medical Subject Headings (MeSH®)
+0.9.7  TMMA-113 Bug fix activating registration profiles: can't compare offset-naive and offset-aware datetimes
+       Upgrade registration egg - run pip install django-registration-redux==1.2
+
+0.9.6  TMMA-110 Handle when text file uploaded is not in MEDLINE format with Medical Subject Headings (MeSH®)
 
 0.9.5  Upgrade to Django 1.7.9 - run pip install Django==1.7.9
 
