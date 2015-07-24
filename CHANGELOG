@@ -1,69 +1,71 @@
-0.9.7  TMMA-113 Bug fix activating registration profiles: can't compare offset-naive and offset-aware datetimes
-       Upgrade registration egg - run pip install django-registration-redux==1.2
+0.9.7   TMMA-113 Bug fix activating registration profiles: can't compare offset-naive and offset-aware datetimes
+        Upgrade registration egg and run migrations, e.g.
+        pip install django-registration-redux==1.2
+        python manage.py migrate
 
-0.9.6  TMMA-110 Handle when text file uploaded is not in MEDLINE format with Medical Subject Headings (MeSH®)
+0.9.6   TMMA-110 Handle when text file uploaded is not in MEDLINE format with Medical Subject Headings (MeSH®)
 
-0.9.5  Upgrade to Django 1.7.9 - run pip install Django==1.7.9
+0.9.5   Upgrade to Django 1.7.9 - run pip install Django==1.7.9
 
-0.9.4  Increase file upload limit
+0.9.4   Increase file upload limit
 
-0.9.3  TMMA-36 Validate file type & limit file size of abstract uploads
+0.9.3   TMMA-36 Validate file type & limit file size of abstract uploads
 
-0.9.2  Bug fix usage of distinct
-       Ensure display commas separated genes fro easier copying pasting when partially reusing search criteria
+0.9.2   Bug fix usage of distinct
+        Ensure display commas separated genes fro easier copying pasting when partially reusing search criteria
 
-0.9.1  Bug fix matching terms that appear in multiple places in the MesH Term tree
-       Use a compact header layout for results page
+0.9.1   Bug fix matching terms that appear in multiple places in the MesH Term tree
+        Use a compact header layout for results page
 
-0.9    TMMA-5 Hide terms with no matches
-       TMMA-106 Limit to show only the top 50 matches
-       TMMA-105 Override default password reset email
-       Update egg requirements
-       TMMA-107 Reduce white space between header banner, page title, and with paragraphs
-       Update wording
-       Allow super user to view other users criteria and results
+0.9     TMMA-5 Hide terms with no matches
+        TMMA-106 Limit to show only the top 50 matches
+        TMMA-105 Override default password reset email
+        Update egg requirements
+        TMMA-107 Reduce white space between header banner, page title, and with paragraphs
+        Update wording
+        Allow super user to view other users criteria and results
 
-0.8    TMMA-30 Add link to download CSV of matches from results page
-       TMMA-75 Enable term filtering, e.g. Human
-       Install alternative autocomplete egg: django-selectable==0.9.0
-       Remove django-autocomplete-light
-       Upgrade Django to 1.7.8  ../../bin/pip install Django==1.7.8
-       Update base and dev egg requirements
-       Rename blocks and url names to use Django naming conventions
-       TMMA-20 Wire up password reset and change forms
-       Add more tests
-       Batch add terms to avoid SQLlite limitations (TMMA-100 in progress)
-       Refactor term selector form/view validation
-       Ensure user cannot use the same terms for exposure, mediator and/or outcomes
-       Show errors on term selector page
-       Repopulate the bulk edit form field after errors
-       Bug fix requesting external content over http not https
-       Bug fix CSS
+0.8     TMMA-30 Add link to download CSV of matches from results page
+        TMMA-75 Enable term filtering, e.g. Human
+        Install alternative autocomplete egg: django-selectable==0.9.0
+        Remove django-autocomplete-light
+        Upgrade Django to 1.7.8  ../../bin/pip install Django==1.7.8
+        Update base and dev egg requirements
+        Rename blocks and url names to use Django naming conventions
+        TMMA-20 Wire up password reset and change forms
+        Add more tests
+        Batch add terms to avoid SQLlite limitations (TMMA-100 in progress)
+        Refactor term selector form/view validation
+        Ensure user cannot use the same terms for exposure, mediator and/or outcomes
+        Show errors on term selector page
+        Repopulate the bulk edit form field after errors
+        Bug fix requesting external content over http not https
+        Bug fix CSS
 
-0.7.1  Bug fix form refactoring and fix saving terms via the tree  
+0.7.1   Bug fix form refactoring and fix saving terms via the tree  
 
-0.7    Updated egg requirements
-       Tidied urls
-       Added search mesh term tree functionality
-       Upgraded version of jstree library
-       Remove unused files
-       Add functionality to bulk clear or replace mesh terms
-       Removed unused form cleaning code
-       Refactored form classes
-       Handle non unique mesh terms when using bulk edit input
-       Display terms separated by semi colons
+0.7     Updated egg requirements
+        Tidied urls
+        Added search mesh term tree functionality
+        Upgraded version of jstree library
+        Remove unused files
+        Add functionality to bulk clear or replace mesh terms
+        Removed unused form cleaning code
+        Refactored form classes
+        Handle non unique mesh terms when using bulk edit input
+        Display terms separated by semi colons
 
-0.6    Update wording on home page
+0.6     Update wording on home page
 
-0.5    Need to update Django MPTT egg (used with MeshTerm trees) - ../../bin/pip install --upgrade django-mptt --no-deps
+0.5     Need to update Django MPTT egg (used with MeshTerm trees) - ../../bin/pip install --upgrade django-mptt --no-deps
 
-0.4    
+0.4
 
-0.3    
+0.3
 
-0.2    Deployment changes
-       Bug fix Gene str name
-       Make configuring genes in search form optional
-       Ensure application can be served over www. sub domain
+0.2     Deployment changes
+        Bug fix Gene str name
+        Make configuring genes in search form optional
+        Ensure application can be served over www. sub domain
 
-0.1    Initial release
+0.1     Initial release
