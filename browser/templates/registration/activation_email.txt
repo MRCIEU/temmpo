@@ -1,5 +1,8 @@
-You have {{ expiration_days }} days to activate your account.
+You (or someone pretending to be you) have asked to register an account at
+{{site.domain}}.  If this wasn't you, please ignore this email
+and your address will be removed from our records.
 
-Click the link below to activate your account:
+To activate this account, please click the following link within the next
+{{ expiration_days }} days:
 
-http://{{ site }}{% url 'registration_activate' activation_key=activation_key %}
+http://{{site.domain}}{% url 'registration_activate' activation_key %}
