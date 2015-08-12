@@ -20,7 +20,7 @@ class AbstractFileUploadForm(forms.ModelForm):
         validators=[MimetypeValidator(mimetypes=('text/plain',)),
                     SizeValidator(max_size=500),
                     MEDLINEFormatValidator(),],
-        help_text="MEDLINE® formatted plain text files ONLY (*.txt)")
+        help_text="MEDLINE® formatted plain text files (*.txt) which include MeSH headers (MH)")
 
     class Meta:
         model = Upload
