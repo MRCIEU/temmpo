@@ -3,12 +3,13 @@ import logging
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib import messages
 
 from selectable.forms import AutoCompleteWidget, AutoCompleteSelectField
 
 from browser.lookups import MeshTermLookup
-from browser.models import SearchCriteria, Upload, SearchResult, MeshTerm, Gene
+from browser.models import SearchCriteria, Upload, MeshTerm, Gene
 from browser.widgets import GeneTextarea
 from browser.validators import MimetypeValidator, SizeValidator, MEDLINEFormatValidator
 
@@ -19,12 +20,13 @@ class AbstractFileUploadForm(forms.ModelForm):
     abstracts_upload = forms.FileField(
         validators=[MimetypeValidator(mimetypes=('text/plain',)),
                     SizeValidator(max_size=500),
-                    MEDLINEFormatValidator(),],
-        help_text="MEDLINE® formatted plain text files (*.txt) which include MeSH headers (MH)")
+                    MEDLINEFormatValidator(), ],
+        help_text="<br />MEDLINE® formatted plain text files (*.txt) which include MeSH headers (MH).  \
+                   <a href=\"" + settings.STATIC_URL + "text/example-file-upload.txt\">View an example file</a>.")
 
     class Meta:
         model = Upload
-        fields = ['abstracts_upload',]
+        fields = ['abstracts_upload', ]
 
 # TODO: Review possible usage of
 # http://django-mptt.github.io/django-mptt/forms.html
@@ -32,7 +34,7 @@ class AbstractFileUploadForm(forms.ModelForm):
 
 class TermSelectorForm(forms.ModelForm):
     term_names = forms.CharField(widget=forms.Textarea(),
-        required=False, label="Bulk replace terms")
+                                 required=False, label="Bulk replace terms")
     term_tree_ids = forms.CharField(widget=forms.HiddenInput, required=False)
     btn_submit = forms.CharField(widget=forms.HiddenInput)
 
@@ -65,7 +67,7 @@ class TermSelectorForm(forms.ModelForm):
         for name in mesh_term_names:
             mesh_terms = MeshTerm.objects.filter(term__iexact=name)
             if mesh_terms.count() == 0:
-                messages.add_message(self.request, messages.WARNING, '%s: could not be found' %  name)
+                messages.add_message(self.request, messages.WARNING, '%s: could not be found' % name)
                 # raise a validation error versus a message
             else:
                 for term in mesh_terms:
@@ -122,18 +124,18 @@ class TermSelectorForm(forms.ModelForm):
 class FilterForm(forms.ModelForm):
     genes = forms.CharField(widget=GeneTextarea,
                             required=False,
-                            label = 'Enter genes (optional)',
-                            help_text = 'Separated by commas')
+                            label='Enter genes (optional)',
+                            help_text='Separated by commas')
 
     mesh_filter = AutoCompleteSelectField(lookup_class=MeshTermLookup,
-                                    widget=AutoCompleteWidget,
-                                    required=False,
-                                    label='Filter',
-                                    help_text="Start entering a MeSH Term, e.g. Humans")
+                                          widget=AutoCompleteWidget,
+                                          required=False,
+                                          label='Filter',
+                                          help_text="Start entering a MeSH Term, e.g. Humans")
 
     class Meta:
         model = SearchCriteria
-        fields = ['genes', 'mesh_filter' ]
+        fields = ['genes', 'mesh_filter', ]
 
     def clean_genes(self):
         data = self.cleaned_data['genes']
@@ -142,9 +144,9 @@ class FilterForm(forms.ModelForm):
         gene_list = [x.strip() for x in data.split(',')]
         gene_list = [x for x in gene_list if x]
 
-        matched_genes = []
+        # matched_genes = []
         unmatched_genes = []
-        
+
         for ind_gene in gene_list:
             gene_ok = True
             if re.search(r'[^a-zA-z0-9\-]+', ind_gene):
@@ -155,14 +157,14 @@ class FilterForm(forms.ModelForm):
             if gene_ok:
                 if not Gene.objects.filter(name__iexact=ind_gene).exists():
                     # Can't find that gene so create it....
-                    # Unhappy about this but Tom's code accepts all genes 
-                    # rather than those from a controlled list as was 
+                    # Unhappy about this but Tom's code accepts all genes
+                    # rather than those from a controlled list as was
                     # originally the case here.
                     unmatched_genes.append(ind_gene)
-                    new_gene = Gene(name = ind_gene)
+                    new_gene = Gene(name=ind_gene)
                     new_gene.save()
                     print "Added gene: ", new_gene.name
-                    
+
 #                 else:
 #                     matched_genes.append(ind_gene)
 
