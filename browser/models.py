@@ -42,7 +42,7 @@ class Gene(models.Model):
 class MeshTerm(MPTTModel):
     """Pre-populated with MeSH terms from http://www.nlm.nih.gov/mesh/
 
-    FUTURE TODO: Generate JSON as a yearly task when mesh terms are updated, see 
+    FUTURE TODO: Generate JSON as a yearly task when mesh terms are updated, see
     management command import_mesh_terms.py
     """
     term = models.CharField(max_length=300)  # TODO: Confirm maximum length
@@ -104,18 +104,18 @@ class SearchCriteria(models.Model):
     # TODO: Review if need to denormalise term data and store in TextField for
     # performance reasons
     exposure_terms = models.ManyToManyField(MeshTerm,
-        verbose_name="exposure MeSH terms", blank=True, null=True,
+        verbose_name="exposure MeSH terms", blank=True,
         help_text="Select one or more terms", related_name='sc_exposure')
     outcome_terms = models.ManyToManyField(MeshTerm,
-        verbose_name="outcome MeSH terms", blank=True, null=True,
+        verbose_name="outcome MeSH terms", blank=True,
         help_text="Select one or more terms", related_name='sc_outcome')
     mediator_terms = models.ManyToManyField(MeshTerm,
-        verbose_name="mediator MeSH terms", blank=True, null=True,
+        verbose_name="mediator MeSH terms", blank=True,
         help_text="Select one or more terms", related_name='sc_mediator')
-    genes = models.ManyToManyField(Gene, blank=True, null=True,
+    genes = models.ManyToManyField(Gene, blank=True,
         related_name='sc_gene', help_text="Enter one or more gene symbol")
 
-    def get_form_codes(self, search_type = 'exposure'):
+    def get_form_codes(self, search_type='exposure'):
         form_ids = None
         if search_type == 'exposure':
             form_ids = self.exposure_terms.values_list('id', flat=True)
@@ -131,7 +131,7 @@ class SearchCriteria(models.Model):
         else:
             return []
 
-    def get_wcrf_input_variables(self, codename = 'exposure'):
+    def get_wcrf_input_variables(self, codename='exposure'):
         input_variables = None
         if codename == 'exposure':
             input_variables = self.exposure_terms.values_list('term', flat=True)
@@ -160,7 +160,7 @@ class SearchResult(models.Model):
 
     # Abstracting out mesh filter and results as more likely to change the filter
     # but use the same set of other search criteria
-    
+
     # Confirm maximum term length
     mesh_filter = models.CharField("MeSH filter", max_length=300, blank=True, null=True)
     results = models.FileField(blank=True, null=True,)  # JSON file for output
