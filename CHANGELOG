@@ -1,3 +1,11 @@
+1.0.0   TMMA-114 Add parsing of PubMed/MEDLINE files
+
+0.9.9   TMMA-55 Ugrade Django to 1.8.5 e.g.
+        pip install -U Django
+        python manage.py migrate
+
+0.9.8   TMMA-115 Extend help text for file uploads
+
 0.9.7   TMMA-113 Bug fix activating registration profiles: can't compare offset-naive and offset-aware datetimes
         Upgrade registration egg and run migrations, e.g.
         pip install django-registration-redux==1.2
