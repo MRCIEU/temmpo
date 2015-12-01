@@ -188,7 +188,7 @@ class BrowsingTest(TestCase):
         """ Test can use the register page
         """
         self._find_expected_content(path=reverse("registration_register"),
-                                    msg_list=["Register", "Password (again):", ])
+                                    msg_list=["Register", "Password confirmation", ])
 
         response = self.client.post(reverse("registration_register"),
                                     {"username": "testuser1",
