@@ -1,6 +1,7 @@
 0.9.9   TMMA-55 Ugrade Django to 1.8.x e.g.
         pip install Django==1.8.7
-        python manage.py migrate
+        ../../bin/python manage.py migrate
+        ../../bin/python manage.py collectstatic
 
 0.9.8   TMMA-115 Extend help text for file uploads
 
