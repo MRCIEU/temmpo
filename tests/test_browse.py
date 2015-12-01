@@ -1,6 +1,6 @@
 """ TeMMPo test suite - browsing expected url paths
 """
-import datetime
+# import datetime
 import logging
 import os
 
@@ -11,8 +11,8 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from browser.matching import perform_search
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
+# from browser.matching import perform_search
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload  # Gene,
 
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
@@ -20,6 +20,7 @@ RESULT_ID = '1'
 TEST_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
 TEST_PUBLINE_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
 TEST_DOC_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test.docx')
+
 
 class BrowsingTest(TestCase):
     """ Run simple tests for browsing the TeMMPo application
@@ -31,7 +32,9 @@ class BrowsingTest(TestCase):
         super(BrowsingTest, self).setUp()
         self.client = Client()
         self.user = User.objects.create_user(id=999,
-            username='may', email='may@example.com', password='12345#abc')
+                                             username='may',
+                                             email='may@example.com',
+                                             password='12345#abc')
 
     def _login_user(self):
         # self.client.logout()
@@ -44,9 +47,10 @@ class BrowsingTest(TestCase):
             msg_list = [msg, ]
 
         for text in msg_list:
-            self.assertContains(response, text,
-                msg_prefix="Expected %(msg)s at %(path)s" %
-                {'msg': text, 'path': path})
+            self.assertContains(response,
+                                text,
+                                msg_prefix="Expected %(msg)s at %(path)s" %
+                                {'msg': text, 'path': path})
 
     def test_home_page(self):
         """ Test can view the home page
@@ -101,10 +105,10 @@ class BrowsingTest(TestCase):
         gene: TRPC1
 
         citation file: test-abstract.txt
-        or 
+        or
         citation file: 13-53-45-22-39-12-citation_1-400.txt
 
-        Should find matches with both mediator term and gene only finds matches 
+        Should find matches with both mediator term and gene only finds matches
         with the gene when the WEIGHTFILTER threshhold is zero
         """
 
@@ -184,11 +188,11 @@ class BrowsingTest(TestCase):
         """ Test can use the register page
         """
         self._find_expected_content(path=reverse("registration_register"),
-                                    msg_list=["Register", "Password confirmation", ])
+                                    msg_list=["Register", "Password (again):", ])
 
         response = self.client.post(reverse("registration_register"),
-                                    {"username" : "testuser1",
-                                     "email" : "bob@example.com",
+                                    {"username": "testuser1",
+                                     "email": "bob@example.com",
                                      "password1": "THISISJUSTATEST",
                                      "password2": "THISISJUSTATEST"},
                                     follow=True)
