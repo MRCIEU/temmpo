@@ -7,9 +7,9 @@ from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
-MEDLINE_IDENTIFIER_PATTERN = re.compile("^<\d+>$")
-MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile("^Unique Identifier$")
-MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile("^MeSH Subject Headings$")
+OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile("^<\d+>")
+OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile("^Unique Identifier")
+OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile("^MeSH Subject Headings")
 
 PUBMED_IDENTIFIER_PATTERN = re.compile("^PMID- \d+")
 PUBMED_IDENTIFIER_MH_PATTERN = re.compile("^MH  -")
@@ -60,7 +60,7 @@ class OvidMedLineFormatValidator(object):
             second_line = value.readline()
             value.seek(0)
 
-            if has_medline_file_header(first_line, second_line) and has_medline_mesh_headings(value):
+            if has_ovid_medline_file_header(first_line, second_line) and has_ovid_medline_mesh_headings(value):
                 return value
             else:
                 raise ValidationError('This file %s does not appear to be a Ovid MEDLINE® formatted export of journal abstracts with MeSH Subject Headings.' % value)
@@ -89,12 +89,12 @@ class PubMedFormatValidator(object):
             raise ValidationError("Couldn't read the uploaded file.")
 
 
-def has_medline_file_header(first_line, second_line):
+def has_ovid_medline_file_header(first_line, second_line):
     # Very basic test if the file appears to be in the correct format
     # Test first line if <1> or "\<\d\>"
     # Test second line equals: Unique Identifier
-    return (MEDLINE_IDENTIFIER_PATTERN.match(first_line) and
-            MEDLINE_IDENTIFIER_LABEL_PATTERN.match(second_line))
+    return (OVID_MEDLINE_IDENTIFIER_PATTERN.match(first_line) and
+            OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN.match(second_line))
 
 
 def has_pubmed_file_header(first_line, second_line):
@@ -104,10 +104,10 @@ def has_pubmed_file_header(first_line, second_line):
             PUBMED_IDENTIFIER_PATTERN.match(second_line))
 
 
-def has_medline_mesh_headings(value):
+def has_ovid_medline_mesh_headings(value):
     """Check entire file for an instance of Mesh Subject Headings"""
     for line in value:
-        if MEDLINE_IDENTIFIER_MESH_PATTERN.match(line):
+        if OVID_MEDLINE_IDENTIFIER_MESH_PATTERN.match(line):
             return True
     return False
 
