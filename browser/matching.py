@@ -85,7 +85,7 @@ def perform_search(search_result_stub_id):
                                                   exposuremesh, identifiers,
                                                   edges, outcomemesh,
                                                   mediatormesh, mesh_filter,
-                                                  abstract_file_path, abstract_file_format)
+                                                  results_path, resultfilename, abstract_file_format)
     print "Counted edges"
 
     # Create results
@@ -272,7 +272,7 @@ def searchgene(texttosearch, searchstring):
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
-               results_file_path, file_format=OVID):
+               results_file_path, results_file_name, file_format=OVID):
 
     # Go through and count edges
     papercounter = 0
@@ -380,7 +380,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     # Output citation ids
     if citation_id:
-        resultfile = open('%s_abstracts.csv' % results_file_path, 'w')
+        resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
         resultfile.write(",\n".join(str(e) for e in citation_id))
         resultfile.write(",")
         resultfile.close()
