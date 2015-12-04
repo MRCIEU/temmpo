@@ -84,7 +84,7 @@ class PubMedFormatValidator(object):
             if has_pubmed_file_header(first_line, second_line) and has_pubmed_mh(value):
                 return value
             else:
-                raise ValidationError('This file %s does not appear to be PubMed/MEDLINE® formatted export of journal abstracts with MH (MeSH headers).' % value)
+                raise ValidationError('This file %s does not appear to be a PubMed/MEDLINE® formatted export of journal abstracts with MH (MeSH headers).' % value)
         else:
             raise ValidationError("Couldn't read the uploaded file.")
 

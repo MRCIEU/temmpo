@@ -75,7 +75,7 @@ def perform_search(search_result_stub_id):
     print "Done edges and identifiers"
 
     abstract_file_path = search_result_stub.criteria.upload.abstracts_upload.path
-    abstract_file_format = search_result_stub.criteria.upload.abstracts_upload.format
+    abstract_file_format = search_result_stub.criteria.upload.file_format
     citations = readcitations(file_path=abstract_file_path, file_format=abstract_file_format)
     print "Read citations"
 
@@ -279,51 +279,51 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
     citation_id = set()
 
     if file_format == OVID:
-        UNIQUE_ID = "Unique Identifier"
-        MESH_SUBJECT_HEADINGS = "MeSH Subject Headings"
-        ABSTRACT = "Abstract"
+        unique_id = "Unique Identifier"
+        mesh_subject_headings = "MeSH Subject Headings"
+        abstract = "Abstract"
 
     elif file_format == PUBMED:
-        UNIQUE_ID = "PMID"
-        MESH_SUBJECT_HEADINGS = "MH"
-        ABSTRACT = "AB"
+        unique_id = "PMID"
+        mesh_subject_headings = "MH"
+        abstract = "AB"
 
     for citation in citations:
         countthis = 0
         # TODO optimisation - check Abstract seciton exists sooner
-        if not mesh_filter or string.find(citation.fields[MESH_SUBJECT_HEADINGS], mesh_filter) > 0:
+        if not mesh_filter or string.find(citation.fields[mesh_subject_headings], mesh_filter) > 0:
             for gene in genelist:
                 try:
                     gene = synonymlookup[gene]
                     for genesyn in synonymlisting[gene]:
-                        if string.find(citation.fields[ABSTRACT], genesyn) > 0:
-                            citation_id.add(citation.fields["Unique Identifier"].strip())
-                            if searchgene(citation.fields[ABSTRACT], genesyn):
+                        if string.find(citation.fields[abstract], genesyn) > 0:
+                            citation_id.add(citation.fields[unique_id].strip())
+                            if searchgene(citation.fields[abstract], genesyn):
                                 countthis = 1
                                 for exposure in exposuremesh:
                                     exposurel = exposure.split(" AND ")
                                     if len(exposurel) == 2:
-                                        if string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[0]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[1]) > 0:
+                                        if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0:
                                             edges[gene][0][exposure] += 1
-                                            identifiers[gene][0][exposure].append(citation.fields[UNIQUE_ID])
+                                            identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                     elif len(exposurel) == 3:
-                                        if string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[0]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[1]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[2]) > 0:
+                                        if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[2]) > 0:
                                             edges[gene][0][exposure] += 1
-                                            identifiers[gene][0][exposure].append(citation.fields[UNIQUE_ID])
+                                            identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                     else:
-                                        if string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposure) > 0:
+                                        if string.find(citation.fields[mesh_subject_headings], exposure) > 0:
                                             edges[gene][0][exposure] += 1
-                                            identifiers[gene][0][exposure].append(citation.fields[UNIQUE_ID])
+                                            identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                 for outcome in outcomemesh:
                                     outcomel = outcome.split(" AND ")
                                     if len(outcomel) > 1:
-                                        if string.find(citation.fields[MESH_SUBJECT_HEADINGS], outcomel[0]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], outcomel[1]) > 0:
+                                        if string.find(citation.fields[mesh_subject_headings], outcomel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], outcomel[1]) > 0:
                                             edges[gene][1][outcome] += 1
-                                            identifiers[gene][1][outcome].append(citation.fields[UNIQUE_ID])
+                                            identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                     else:
-                                        if string.find(citation.fields[MESH_SUBJECT_HEADINGS], outcome) > 0:
+                                        if string.find(citation.fields[mesh_subject_headings], outcome) > 0:
                                             edges[gene][1][outcome] += 1
-                                            identifiers[gene][1][outcome].append(citation.fields[UNIQUE_ID])
+                                            identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                 break
                 except KeyError:
                     # Some citations have no Abstract section
@@ -337,35 +337,35 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
             for mediator in mediatormesh:
 
                 try:
-                    if string.find(citation.fields[MESH_SUBJECT_HEADINGS], mediator) > 0:
+                    if string.find(citation.fields[mesh_subject_headings], mediator) > 0:
                         countthis = 1
-                        citation_id.add(citation.fields[UNIQUE_ID].strip())
+                        citation_id.add(citation.fields[unique_id].strip())
                         for exposure in exposuremesh:
                             exposurel = exposure.split(" AND ")
                             if len(exposurel) == 2:
                                 # print "exposurel", exposurel
-                                if string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[0]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[1]) > 0:
+                                if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0:
                                     edges[mediator][0][exposure] += 1
-                                    identifiers[mediator][0][exposure].append(citation.fields[UNIQUE_ID])
+                                    identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             elif len(exposurel) == 3:
-                                if string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[0]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[1]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposurel[2]) > 0:
+                                if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[2]) > 0:
                                     edges[mediator][0][exposure] += 1
-                                    identifiers[mediator][0][exposure].append(citation.fields[UNIQUE_ID])
+                                    identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             else:
-                                if string.find(citation.fields[MESH_SUBJECT_HEADINGS], exposure) > 0:
+                                if string.find(citation.fields[mesh_subject_headings], exposure) > 0:
                                     edges[mediator][0][exposure] += 1
-                                    identifiers[mediator][0][exposure].append(citation.fields[UNIQUE_ID])
+                                    identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                         for outcome in outcomemesh:
                             # print "b"
                             outcomel = outcome.split(" AND ")
                             if len(outcomel) > 1:
-                                if string.find(citation.fields[MESH_SUBJECT_HEADINGS], outcomel[0]) > 0 and string.find(citation.fields[MESH_SUBJECT_HEADINGS], outcomel[1]) > 0:
+                                if string.find(citation.fields[mesh_subject_headings], outcomel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], outcomel[1]) > 0:
                                     edges[mediator][1][outcome] += 1
-                                    identifiers[mediator][1][outcome].append(citation.fields[UNIQUE_ID])
+                                    identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                             else:
-                                if string.find(citation.fields[MESH_SUBJECT_HEADINGS], outcome) > 0:
+                                if string.find(citation.fields[mesh_subject_headings], outcome) > 0:
                                     edges[mediator][1][outcome] += 1
-                                    identifiers[mediator][1][outcome].append(citation.fields[UNIQUE_ID])
+                                    identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                         break
                 except KeyError:
                     # Some citations have no Abstract section
