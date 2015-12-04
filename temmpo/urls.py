@@ -8,19 +8,21 @@ from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
                            CriteriaView, CountDataView, AbstractDataView,
                            JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
-                           MeshTermsAllAsJSON, MeshTermSearchJSON)
+                           MeshTermsAllAsJSON, MeshTermSearchJSON, SelectSearchTypeView,
+                           SearchPubMedView)
 
-urlpatterns = patterns('',
-
+urlpatterns = patterns(
+    '',
     # Django selectable
     url(r'^selectable/', include('selectable.urls')),
-
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
+    url(r'^select-search/$', SelectSearchTypeView.as_view(), name='select_search_type'),
     url(r'^search/$', SearchView.as_view(), name='search'),  # Upload new abstract set
-    url(r'^search/edit/(?P<pk>\d+)/$', SearchExisting.as_view(), name="edit_search"), # Create a new search based on an existing search criteria
-    url(r'^search/reuse/(?P<pk>\d+)/$', SearchExistingUpload.as_view(), name="reuse_upload"), # Create a new search based on previously uploaded set of abstracts
+    url(r'^search/pubmed/$', SearchPubMedView.as_view(), name='search_pubmed'),
+    url(r'^search/edit/(?P<pk>\d+)/$', SearchExisting.as_view(), name="edit_search"),  # Create a new search based on an existing search criteria
+    url(r'^search/reuse/(?P<pk>\d+)/$', SearchExistingUpload.as_view(), name="reuse_upload"),  # Create a new search based on previously uploaded set of abstracts
     url(r'^exposure/(?P<pk>\d+)/$', ExposureSelector.as_view(), name="exposure_selector"),
     url(r'^mediator/(?P<pk>\d+)/$', MediatorSelector.as_view(), name="mediator_selector"),
     url(r'^outcome/(?P<pk>\d+)/$', OutcomeSelector.as_view(), name="outcome_selector"),

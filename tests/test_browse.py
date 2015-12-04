@@ -219,7 +219,7 @@ class BrowsingTest(TestCase):
                                         follow=True)
 
             self.assertContains(response, "errorlist")
-            self.assertContains(response, "does not appear to be a MEDLINE formatted")
+            self.assertContains(response, "does not appear to be a MEDLINE or PubMed/MEDLINE formatted ")
 
         with open(TEST_DOC_FILE, 'r') as upload:
             response = self.client.post(search_path,

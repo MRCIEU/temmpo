@@ -3,7 +3,7 @@
     <nav id="nav">
         <a href="{% url 'home' %}" {% if active == "home" %}class="current-page-item"{% endif %}>Home</a>
         <a href="{% url 'credits' %}" {% if active == "credits" %}class="current-page-item"{% endif %} >Credits</a>
-        <a href="{% url 'search' %}" {% if active == "search" %}class="current-page-item"{% endif %}>Search</a>
+        <a href="{% url 'select_search_type' %}" {% if active == "search" %}class="current-page-item"{% endif %}>Search</a>
         {% if user.is_authenticated %}
         <a href="{% url 'results_listing' %}" {% if active == "results" %}class="current-page-item"{% endif %}>Results</a>
         <a href="{% url 'password_change' %}">Change password</a>

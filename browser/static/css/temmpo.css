@@ -104,3 +104,37 @@ h2, p {
 #result-header{
   width:100%;
 }
+
+.file-example pre
+{
+  font-family: Courier, monospace;
+  background: #f1f1f1;
+  padding: 0.5em 0.5em;
+}
+
+.file-example .outer
+{
+  overflow: none;
+  overflow-x: scroll;
+}
+
+.sentence-case
+{
+  text-transform:none;
+}
+
+.rmrl-read-more
+{
+  /*padding:0.5em 0.5em;*/
+}
+
+/*#reuse-uploads .read-more, #reuse-criteria .read-more, #reuse-uploads .read-less, #reuse-criteria .read-less*/
+.read-more, .read-less
+{
+  line-height:4em;
+}
+
+.file-example 
+{
+  margin-bottom:0.5em;
+}
