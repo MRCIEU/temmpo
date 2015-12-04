@@ -46,7 +46,6 @@ class SelectSearchTypeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SelectSearchTypeView, self).get_context_data(**kwargs)
         context['active'] = 'search'
-        context['form_action'] = reverse('search')
         context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
         context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
         return context
@@ -74,7 +73,7 @@ class SearchView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
         context['active'] = 'search'
-        context['form_action'] = reverse('search_pubmed')
+        context['form_action'] = reverse('search')
         context['file_type'] = "Ovid MEDLINE®"
         return context
 
@@ -94,6 +93,7 @@ class SearchPubMedView(SearchView):
     def get_context_data(self, **kwargs):
         context = super(SearchPubMedView, self).get_context_data(**kwargs)
         context['file_type'] = "PubMed MEDLINE®"
+        context['form_action'] = reverse('search_pubmed')
         return context
 
 
