@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 """ TeMMPo test suite - browsing expected url paths
 """
-import datetime
+# import datetime
 import logging
 import os
 
@@ -11,8 +12,8 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from browser.matching import perform_search
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
+# from browser.matching import perform_search
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID  # Gene,
 
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
@@ -20,6 +21,7 @@ RESULT_ID = '1'
 TEST_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
 TEST_PUBLINE_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
 TEST_DOC_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test.docx')
+
 
 class BrowsingTest(TestCase):
     """ Run simple tests for browsing the TeMMPo application
@@ -31,7 +33,7 @@ class BrowsingTest(TestCase):
         super(BrowsingTest, self).setUp()
         self.client = Client()
         self.user = User.objects.create_user(id=999,
-            username='may', email='may@example.com', password='12345#abc')
+                                             username='may', email='may@example.com', password='12345#abc')
 
     def _login_user(self):
         # self.client.logout()
@@ -45,8 +47,8 @@ class BrowsingTest(TestCase):
 
         for text in msg_list:
             self.assertContains(response, text,
-                msg_prefix="Expected %(msg)s at %(path)s" %
-                {'msg': text, 'path': path})
+                                msg_prefix="Expected %(msg)s at %(path)s" %
+                                {'msg': text, 'path': path})
 
     def test_home_page(self):
         """ Test can view the home page
@@ -101,15 +103,15 @@ class BrowsingTest(TestCase):
         gene: TRPC1
 
         citation file: test-abstract.txt
-        or 
+        or
         citation file: 13-53-45-22-39-12-citation_1-400.txt
 
-        Should find matches with both mediator term and gene only finds matches 
+        Should find matches with both mediator term and gene only finds matches
         with the gene when the WEIGHTFILTER threshhold is zero
         """
 
         test_file = open(TEST_FILE, 'r')
-        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'))
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
         upload.save()
         test_file.close()
 
@@ -167,7 +169,8 @@ class BrowsingTest(TestCase):
 
         with open(TEST_FILE, 'r') as upload:
             response = self.client.post(search_path,
-                                        {'abstracts_upload': upload},
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
                                         follow=True)
 
             self.assertContains(response, "Select exposures")
@@ -187,8 +190,8 @@ class BrowsingTest(TestCase):
                                     msg_list=["Register", "Password confirmation", ])
 
         response = self.client.post(reverse("registration_register"),
-                                    {"username" : "testuser1",
-                                     "email" : "bob@example.com",
+                                    {"username": "testuser1",
+                                     "email": "bob@example.com",
                                      "password1": "THISISJUSTATEST",
                                      "password2": "THISISJUSTATEST"},
                                     follow=True)
@@ -215,15 +218,16 @@ class BrowsingTest(TestCase):
 
         with open(TEST_PUBLINE_FILE, 'r') as upload:
             response = self.client.post(search_path,
-                                        {'abstracts_upload': upload},
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
                                         follow=True)
-
             self.assertContains(response, "errorlist")
-            self.assertContains(response, "does not appear to be a MEDLINE or PubMed/MEDLINE formatted ")
+            self.assertContains(response, "does not appear to be a Ovid MEDLINE® formatted")
 
         with open(TEST_DOC_FILE, 'r') as upload:
             response = self.client.post(search_path,
-                                        {'abstracts_upload': upload},
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
                                         follow=True)
 
             self.assertContains(response, "errorlist")
