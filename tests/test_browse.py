@@ -13,13 +13,13 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 # from browser.matching import perform_search
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID  # Gene,
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED  # Gene,
 
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
 RESULT_ID = '1'
 TEST_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
-TEST_PUBLINE_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
+TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
 TEST_DOC_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test.docx')
 
 
@@ -85,7 +85,7 @@ class BrowsingTest(TestCase):
         self._login_user()
         self._find_expected_content(path=reverse("results_listing"), msg="My list")
 
-    def test_matching(self):
+    def test_ovid_medline_matching(self):
         """
         Mesh terms
 
@@ -212,11 +212,11 @@ class BrowsingTest(TestCase):
         self._find_expected_content(path="/logout/",
                                     msg="Sign in")
 
-    def test_file_upload_validation(self):
+    def test_ovid_medline_file_upload_validation(self):
         self._login_user()
         search_path = reverse('search')
 
-        with open(TEST_PUBLINE_FILE, 'r') as upload:
+        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': OVID},
@@ -228,6 +228,28 @@ class BrowsingTest(TestCase):
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': OVID},
+                                        follow=True)
+
+            self.assertContains(response, "errorlist")
+            self.assertContains(response, "is not an acceptable file type")
+
+
+    def test_pubmed_medline_file_upload_validation(self):
+        self._login_user()
+        search_path = reverse('search_pubmed')
+
+        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': PUBMED},
+                                        follow=True)
+            self.assertContains(response, "errorlist")
+            self.assertContains(response, "does not appear to be a PubMed/MEDLINE® formatted")
+
+        with open(TEST_DOC_FILE, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': PUBMED},
                                         follow=True)
 
             self.assertContains(response, "errorlist")
