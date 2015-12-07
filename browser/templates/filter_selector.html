@@ -5,7 +5,14 @@
 {% block section_title %}Select genes and filter{% endblock %}
 
 {% block scripts %}{{ form.media.js }}{% endblock %}
-{% block styles %}{{ form.media.css }}{% endblock %}
+{% block styles %}
+{{ form.media.css }}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/breadcrumb.css">
+{% endblock %}
+
+{% block page_heading %}
+{% include 'includes/breadcrumb.html' %}
+{% endblock %}
 
 {% block section %}
     <form action="." method="post">
@@ -13,7 +20,8 @@
 
         {{ form.as_p }}
 
-        <p>Searches can take a long time so you will be emailed when yours has finished and data is available.</p>
+        <p>Searches can take a long time.</p>
+        <!--  so you will be emailed when yours has finished and data is available -->
         <button type="submit" class="button">Start search</button>
     </form>
 {% endblock %}
