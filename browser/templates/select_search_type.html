@@ -34,15 +34,19 @@
 </script>
 {% endblock %}
 
-{% block section_title %}Search{% endblock %}
+{% block section_title %}Upload abstracts to search{% endblock %}
+
+{% block page_heading %}
+{% include 'includes/breadcrumb.html' %}
+{% endblock %}
 
 {% block section %}
-<article id="example-a" class="file-example">
-<a href="{% url 'search' %}" class="button sentence-case sml-button">Upload OVID MEDLINE® formatted abstracts</a>
+<div id="example-a" class="file-example">
+<a href="{% url 'search_ovid_medline' %}" class="button sentence-case sml-button">Upload OVID MEDLINE® formatted abstracts</a>
 <p>&dash; with MeSH Subject Headings, see example below:</p>
 <div class="outer">
 <pre class="item">
-<1>
+&lt;1&gt;
 Unique Identifier
   23482392
 Record Owner
@@ -89,14 +93,14 @@ Date Created
 Year of Publication
   2013
 Link to the Ovid Full Text or citation
- http://ovidsp.ovid.com/ovidweb.cgi?T=JS&CSC=Y&NEWS=N&PAGE=fulltext&D=medl&AN=23482392
+ http://ovidsp.ovid.com/ovidweb.cgi?T=JS&amp;CSC=Y&amp;NEWS=N&amp;PAGE=fulltext&amp;D=medl&amp;AN=23482392
 Link to the External Link Resolver
- http://linkserver.bristol.ac.uk:9003/prod?sid=OVID:medline&id=pmid:23482392&id=doi:10.1093%2Fnar%2Fgkt161&issn=0305-1048&isbn=&volume=41&issue=9&spage=e101&pages=e101&date=2013&title=Nucleic+Acids+Research&atitle=Subpathway-GM%3A+identification+of+metabolic+subpathways+via+joint+power+of+interesting+genes+and+metabolites+and+their+topologies+within+pathways.&aulast=Li&pid=%3Cauthor%3ELi+C%3C%2Fauthor%3E%3CAN%3E23482392%3C%2FAN%3E%3CDT%3EJournal+Article%3C%2FDT%3E
+ http://linkserver.bristol.ac.uk:9003/prod?sid=OVID:medline&amp;id=pmid:23482392&amp;id=doi:10.1093%2Fnar%2Fgkt161&amp;issn=0305-1048&amp;isbn=&amp;volume=41&amp;issue=9&amp;spage=e101&amp;pages=e101&amp;date=2013&amp;title=Nucleic+Acids+Research&amp;atitle=Subpathway-GM%3A+identification+of+metabolic+subpathways+via+joint+power+of+interesting+genes+and+metabolites+and+their+topologies+within+pathways.&amp;aulast=Li&amp;pid=%3Cauthor%3ELi+C%3C%2Fauthor%3E%3CAN%3E23482392%3C%2FAN%3E%3CDT%3EJournal+Article%3C%2FDT%3E
 </pre>
 </div>
-</article>
+</div>
 
-<article id="example-b"  class="file-example">
+<div id="example-b"  class="file-example">
 <a  href="{% url 'search_pubmed' %}" class="button sentence-case sml-button">Upload PubMed MEDLINE® formatted abstracts (BETA)</a>
 <p>&dash; requires MH, see example below:</p>
 <div class="outer">
@@ -124,7 +128,7 @@ AB  - IMPORTANCE: The association of copy number variations (CNVs), differing nu
       phenotypes in the general population remains unclear. OBJECTIVE: To investigate
       the clinical features conferred by CNVs associated with known syndromes in adult 
       carriers without clinical preselection and to assess the genome-wide consequences
-      of rare CNVs (frequency </=0.05%; size >/=250 kilobase pairs [kb]) on carriers'
+      of rare CNVs (frequency &lt;/=0.05%; size >/=250 kilobase pairs [kb]) on carriers'
       educational attainment and intellectual disability prevalence in the general
       population. DESIGN, SETTING, AND PARTICIPANTS: The population biobank of Estonia 
       contains 52,000 participants enrolled from 2002 through 2010. General
@@ -142,7 +146,7 @@ AB  - IMPORTANCE: The association of copy number variations (CNVs), differing nu
       phenotypes, including cognitive and psychiatric problems, epilepsy, neuropathies,
       obesity, and congenital malformations are similar to those described for carriers
       of identical rearrangements ascertained in clinical cohorts. A genome-wide
-      evaluation of rare autosomal CNVs (frequency, </=0.05%; >/=250 kb) identified 831
+      evaluation of rare autosomal CNVs (frequency, &lt;/=0.05%; >/=250 kb) identified 831
       carriers (10.5%) of the screened general population. Eleven of 216 (5.1%)
       carriers of a deletion of at least 250 kb (odds ratio [OR], 3.16; 95% CI,
       1.51-5.98; P = 1.5e-03) and 6 of 102 (5.9%) carriers of a duplication of at least
@@ -314,11 +318,11 @@ PST - ppublish
 SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.
 </pre>
 </div>
-</article>
+</div>
 {% endblock %}
 
 {% block section_minor_title %}
-<h2>Reuse</h2>
+Reuse
 {% endblock %}
 
 {% block section_minor %}
