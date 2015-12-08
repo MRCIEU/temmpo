@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
 
-from browser.views import (HomeView, CreditsView, SearchView, ResultsView,
+from browser.views import (HomeView, CreditsView, SearchOvidMEDLINE, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
                            CriteriaView, CountDataView, AbstractDataView,
@@ -18,8 +18,8 @@ urlpatterns = patterns(
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
-    url(r'^select-search/$', SelectSearchTypeView.as_view(), name='select_search_type'),
-    url(r'^search/$', SearchView.as_view(), name='search'),  # Upload new abstract set
+    url(r'^search/$', SelectSearchTypeView.as_view(), name='search'),
+    url(r'^search/ovidmedline/$', SearchOvidMEDLINE.as_view(), name='search_ovid_medline'),  # Upload new abstract set
     url(r'^search/pubmed/$', SearchPubMedView.as_view(), name='search_pubmed'),
     url(r'^search/edit/(?P<pk>\d+)/$', SearchExisting.as_view(), name="edit_search"),  # Create a new search based on an existing search criteria
     url(r'^search/reuse/(?P<pk>\d+)/$', SearchExistingUpload.as_view(), name="reuse_upload"),  # Create a new search based on previously uploaded set of abstracts

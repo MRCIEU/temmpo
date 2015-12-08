@@ -5,10 +5,7 @@
 {% block section_title %}Select genes and filter{% endblock %}
 
 {% block scripts %}{{ form.media.js }}{% endblock %}
-{% block styles %}
-{{ form.media.css }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/breadcrumb.css">
-{% endblock %}
+{% block styles %}{{ form.media.css }}{% endblock %}
 
 {% block page_heading %}
 {% include 'includes/breadcrumb.html' %}

@@ -7,6 +7,10 @@
 
 {% block section_title %}Search {{ file_type }} formatted abstracts{% endblock %}
 
+{% block page_heading %}
+{% include 'includes/breadcrumb.html' %}
+{% endblock %}
+
 {% block section %}
 <p>
     Upload a new text file of medical journal abstracts.
@@ -16,4 +20,9 @@
     {{ form.as_p }}
     <button type="submit" class="button">Upload</button>
 </form>
+
+<div class="controls">
+	<hr />
+    <a href="{% url 'search' %}" class="button sml-button">Return to alternative search methods</a>
+</div>
 {% endblock %}

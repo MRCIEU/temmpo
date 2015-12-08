@@ -138,3 +138,25 @@ h2, p {
 {
   margin-bottom:0.5em;
 }
+
+#criteria th[scope=row]
+{
+  text-align:left;
+}
+
+#criteria td, #criteria th
+{
+  padding: 0.5em;
+  vertical-align: middle;
+}
+
+#footer-wrapper
+{
+padding:1em 0em;
+}
+
+#copyright
+{
+  margin-top:0em;
+  padding-top:1em;
+}
