@@ -192,6 +192,7 @@ def createedgelist(genelist, synonymlookup, exposuremesh, outcomemesh, mediatorm
         for outcome in outcomemesh:
             edges[mediator][1][outcome] = 0
             identifiers[mediator][1][outcome] = []
+
     return edges, identifiers
 
 
@@ -226,13 +227,14 @@ def _ovid_medline_readcitations(abstract_file_path):
         else:
             citations[counter].addfieldcontent(line.lstrip() + " ")
     infile.close()
-
     return citations
 
 
 def _pubmed_readcitations(abstract_file_path):
     """ Process PubMed MEDLINE formatted abstracts
         - code to parse file supplied by Benjamin Elsworth"""
+
+    # PubMed MesH term sub headings appear to be lower cased.  Plus any parenthese ()[] are replaced by spaces
     # Read the data in as a list of citations (citation class)
     citations = list()
 
@@ -254,12 +256,12 @@ def _pubmed_readcitations(abstract_file_path):
             if in_mesh == False:
                 citations[counter].addfield(line.split("-", 1)[0].strip())
             in_mesh = True
-            citations[counter].addfieldcontent("  " + line.split("-", 1)[1].strip() + "\n")
+            citations[counter].addfieldcontent(line.split("-", 1)[1].strip() + " ")
         elif line[0] != " ":
             citations[counter].addfield(line.split("-", 1)[0].strip())
-            citations[counter].addfieldcontent("  " + line.split("-", 1)[1].strip() + "\n")
+            citations[counter].addfieldcontent(line.split("-", 1)[1].strip() + " ")
         else:
-            citations[counter].addfieldcontent("  " + line.strip() + "\n")
+            citations[counter].addfieldcontent(line.strip() + " ")
     infile.close()
 
     return citations
@@ -268,6 +270,18 @@ def _pubmed_readcitations(abstract_file_path):
 def searchgene(texttosearch, searchstring):
     searchstringre = re.compile('[^A-Za-z]' + searchstring + '[^A-Za-z]')
     return searchstringre.search(texttosearch)
+
+
+def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
+    """ Return -1 for no matches > 0 for match found,
+        Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
+    # TODO Profile whether these comparisons should be replaced with regular expressions.
+    # TODO Move transformation outside of the matching function, as same term is compared many times
+    transformed_mesh_term = mesh_term.lower().replace('[', ' ').replace(']', ' ').replace('(', ' ').replace(')', ' ')
+    return string.find(pubmed_mesh_term_text.lower(), transformed_mesh_term)
+
+# TODO: Review changing to accept zero indexed matches - may have affected previous live searches
+# TODO: Could re-reun searches and email thoses where changes exist
 
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
@@ -282,46 +296,50 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         unique_id = "Unique Identifier"
         mesh_subject_headings = "MeSH Subject Headings"
         abstract = "Abstract"
+        matches = string.find
 
     elif file_format == PUBMED:
         unique_id = "PMID"
         mesh_subject_headings = "MH"
         abstract = "AB"
+        matches = pubmed_matching_function
 
     for citation in citations:
         countthis = 0
         # TODO optimisation - check Abstract seciton exists sooner
-        if not mesh_filter or string.find(citation.fields[mesh_subject_headings], mesh_filter) > 0:
+        # TODO: HIGH PRIORITY - > should be >= to capture any zero indexed matches
+        # https://docs.python.org/2/library/string.html#string.find
+        if not mesh_filter or matches(citation.fields[mesh_subject_headings], mesh_filter) > 0:
             for gene in genelist:
                 try:
                     gene = synonymlookup[gene]
                     for genesyn in synonymlisting[gene]:
-                        if string.find(citation.fields[abstract], genesyn) > 0:
+                        if matches(citation.fields[abstract], genesyn) > 0:
                             citation_id.add(citation.fields[unique_id].strip())
                             if searchgene(citation.fields[abstract], genesyn):
                                 countthis = 1
                                 for exposure in exposuremesh:
                                     exposurel = exposure.split(" AND ")
                                     if len(exposurel) == 2:
-                                        if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0:
+                                        if matches(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) > 0:
                                             edges[gene][0][exposure] += 1
                                             identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                     elif len(exposurel) == 3:
-                                        if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[2]) > 0:
+                                        if matches(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) > 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) > 0:
                                             edges[gene][0][exposure] += 1
                                             identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                     else:
-                                        if string.find(citation.fields[mesh_subject_headings], exposure) > 0:
+                                        if matches(citation.fields[mesh_subject_headings], exposure) > 0:
                                             edges[gene][0][exposure] += 1
                                             identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                 for outcome in outcomemesh:
                                     outcomel = outcome.split(" AND ")
                                     if len(outcomel) > 1:
-                                        if string.find(citation.fields[mesh_subject_headings], outcomel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], outcomel[1]) > 0:
+                                        if matches(citation.fields[mesh_subject_headings], outcomel[0]) > 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) > 0:
                                             edges[gene][1][outcome] += 1
                                             identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                     else:
-                                        if string.find(citation.fields[mesh_subject_headings], outcome) > 0:
+                                        if matches(citation.fields[mesh_subject_headings], outcome) > 0:
                                             edges[gene][1][outcome] += 1
                                             identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                 break
