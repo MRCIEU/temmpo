@@ -355,33 +355,33 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
             for mediator in mediatormesh:
 
                 try:
-                    if string.find(citation.fields[mesh_subject_headings], mediator) > 0:
+                    if matches(citation.fields[mesh_subject_headings], mediator) > 0:
                         countthis = 1
                         citation_id.add(citation.fields[unique_id].strip())
                         for exposure in exposuremesh:
                             exposurel = exposure.split(" AND ")
                             if len(exposurel) == 2:
                                 # print "exposurel", exposurel
-                                if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0:
+                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) > 0:
                                     edges[mediator][0][exposure] += 1
                                     identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             elif len(exposurel) == 3:
-                                if string.find(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[1]) > 0 and string.find(citation.fields[mesh_subject_headings], exposurel[2]) > 0:
+                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) > 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) > 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) > 0:
                                     edges[mediator][0][exposure] += 1
                                     identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             else:
-                                if string.find(citation.fields[mesh_subject_headings], exposure) > 0:
+                                if matches(citation.fields[mesh_subject_headings], exposure) > 0:
                                     edges[mediator][0][exposure] += 1
                                     identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                         for outcome in outcomemesh:
                             # print "b"
                             outcomel = outcome.split(" AND ")
                             if len(outcomel) > 1:
-                                if string.find(citation.fields[mesh_subject_headings], outcomel[0]) > 0 and string.find(citation.fields[mesh_subject_headings], outcomel[1]) > 0:
+                                if matches(citation.fields[mesh_subject_headings], outcomel[0]) > 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) > 0:
                                     edges[mediator][1][outcome] += 1
                                     identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                             else:
-                                if string.find(citation.fields[mesh_subject_headings], outcome) > 0:
+                                if matches(citation.fields[mesh_subject_headings], outcome) > 0:
                                     edges[mediator][1][outcome] += 1
                                     identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                         break
