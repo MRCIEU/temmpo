@@ -55,6 +55,14 @@ class MeshTerm(MPTTModel):
     def get_term_with_tree_number(self):
         return self.term + ";" + self.tree_number
 
+OVID = 'ovid'
+PUBMED = 'pubmed'
+
+ABSTRACT_FORMATS = (
+    (OVID, 'Ovid'),
+    (PUBMED, 'PubMed'),
+)
+
 
 @python_2_unicode_compatible
 class Upload(models.Model):
@@ -63,6 +71,7 @@ class Upload(models.Model):
     user = models.ForeignKey(User, null=False, blank=False,
                              related_name="uploads")
     abstracts_upload = models.FileField(upload_to=get_user_upload_location)
+    file_format = models.CharField(choices=ABSTRACT_FORMATS, max_length=6, default=OVID)
 
     def __str__(self):
         return self.filename

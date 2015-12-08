@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ TeMMPo test suite - browsing expected url paths
 """
 # import datetime
@@ -12,14 +13,16 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 # from browser.matching import perform_search
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload  # Gene,
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED  # Gene,
 
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
 RESULT_ID = '1'
 TEST_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
-TEST_PUBLINE_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
+TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
 TEST_DOC_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test.docx')
+TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed_result_100.txt')
+TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'ovid_result_100.txt')
 
 
 class BrowsingTest(TestCase):
@@ -68,8 +71,12 @@ class BrowsingTest(TestCase):
         """ Test can view the search page
         """
         self._find_expected_content(path=reverse("search"), msg="sign in to use this tool")
+        self._find_expected_content(path=reverse("search_pubmed"), msg="sign in to use this tool")
+        self._find_expected_content(path=reverse("search_ovid_medline"), msg="sign in to use this tool")
         self._login_user()
-        self._find_expected_content(path=reverse("search"), msg="Upload a new text file")
+        self._find_expected_content(path=reverse("search"), msg="Upload abstracts to search")
+        self._find_expected_content(path=reverse("search_pubmed"), msg=u"Search PubMed MEDLINE® formatted abstracts")
+        self._find_expected_content(path=reverse("search_ovid_medline"), msg=u"Search Ovid MEDLINE® formatted abstracts")
 
     def test_results_page(self):
         """ Test can view the results page
@@ -87,7 +94,7 @@ class BrowsingTest(TestCase):
         self._login_user()
         self._find_expected_content(path=reverse("results_listing"), msg="My list")
 
-    def test_matching(self):
+    def test_ovid_medline_matching(self):
         """
         Mesh terms
 
@@ -113,7 +120,7 @@ class BrowsingTest(TestCase):
         """
 
         test_file = open(TEST_FILE, 'r')
-        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'))
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
         upload.save()
         test_file.close()
 
@@ -158,29 +165,52 @@ class BrowsingTest(TestCase):
         self.assertTrue(search_result.has_completed)
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
-    def test_search_bulk_term_edit(self):
-
-        self._login_user()
-
-        search_path = reverse('search')
-        response = self.client.get(search_path)
-        # self.assertContains(response, "Upload a new text file", html=True)
-
-        self._find_expected_content(path=search_path,
-                                    msg="Upload a new text file")
-
-        with open(TEST_FILE, 'r') as upload:
-            response = self.client.post(search_path,
-                                        {'abstracts_upload': upload},
+    def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
+        """Upload file and tyy to bulk select mesh terms"""
+        with open(abstract_file_path, 'r') as upload:
+            response = self.client.post(search_url,
+                                        {'abstracts_upload': upload,
+                                         'file_format': file_format},
                                         follow=True)
 
+            self.assertNotContains(response, "Current exposure terms")
             self.assertContains(response, "Select exposures")
             self.assertContains(response, "Bulk edit")
-
-            response = self.client.post(search_path,
-                                        {'term_names': upload,
-                                         "btn_submit": ""},
+            search_criteria = SearchCriteria.objects.latest("created")
+            self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
+            exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
+            response = self.client.post(exposure_url,
+                                        {"term_names": "Genetic Markers;Serogroup; Penetrance",
+                                         "btn_submit": "replace"},
                                         follow=True)
+            search_criteria.refresh_from_db()
+            # NB: Only a limited set of mesh terms are avialable for testing, for speed purposes
+            self.assertEqual(search_criteria.exposure_terms.all().count(), 3)
+            self.assertContains(response, "Current exposure terms")
+            self.assertNotContains(response, " could not be found")
+
+    def test_ovid_search_bulk_term_edit(self):
+        self._login_user()
+        self._find_expected_content(path=reverse('search'),
+                                    msg="Upload abstracts to search")
+        self._find_expected_content(path=reverse("search_ovid_medline"),
+                                    msg=u"Search Ovid MEDLINE® formatted abstracts")
+        # Search Ovid MEDLINE® formatted abstracts
+        self._test_search_bulk_term_edit(abstract_file_path=TEST_OVID_MEDLINE_ABSTRACTS,
+                                         file_format=OVID,
+                                         search_url=reverse('search_ovid_medline'))
+
+    def test_pubmed_search_bulk_term_edit(self):
+        self._login_user()
+
+        self._find_expected_content(path=reverse('search'),
+                                    msg="Upload abstracts to search")
+        self._find_expected_content(path=reverse("search_pubmed"),
+                                    msg=u"Search PubMed MEDLINE® formatted abstracts")
+        # Search Ovid MEDLINE® formatted abstracts
+        self._test_search_bulk_term_edit(abstract_file_path=TEST_PUBMED_MEDLINE_ABSTRACTS,
+                                         file_format=PUBMED,
+                                         search_url=reverse('search_pubmed'))
 
     # Additional features
 
@@ -213,21 +243,43 @@ class BrowsingTest(TestCase):
         self._find_expected_content(path="/logout/",
                                     msg="Sign in")
 
-    def test_file_upload_validation(self):
+    def test_ovid_medline_file_upload_validation(self):
         self._login_user()
-        search_path = reverse('search')
+        search_path = reverse('search_ovid_medline')
 
-        with open(TEST_PUBLINE_FILE, 'r') as upload:
+        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
             response = self.client.post(search_path,
-                                        {'abstracts_upload': upload},
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
                                         follow=True)
-
             self.assertContains(response, "errorlist")
-            self.assertContains(response, "does not appear to be a MEDLINE formatted")
+            self.assertContains(response, "does not appear to be a Ovid MEDLINE® formatted")
 
         with open(TEST_DOC_FILE, 'r') as upload:
             response = self.client.post(search_path,
-                                        {'abstracts_upload': upload},
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
+                                        follow=True)
+
+            self.assertContains(response, "errorlist")
+            self.assertContains(response, "is not an acceptable file type")
+
+    def test_pubmed_medline_file_upload_validation(self):
+        self._login_user()
+        search_path = reverse('search_pubmed')
+
+        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': PUBMED},
+                                        follow=True)
+            self.assertContains(response, "errorlist")
+            self.assertContains(response, "does not appear to be a PubMed/MEDLINE® formatted")
+
+        with open(TEST_DOC_FILE, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': PUBMED},
                                         follow=True)
 
             self.assertContains(response, "errorlist")

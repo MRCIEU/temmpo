@@ -14,18 +14,11 @@
 {% endblock %}
 
 {% block page_heading %}
-{# TODO: TMMA-67 #}
-<!-- 
-<ul id="crumbs">
-  <li><a href="#">Exposure</a></li>
-  <li><a href="#">Mediator</a></li>
-  <li>Outcome</li>
-  <li>Genes &amp; filter</li>
-  <li>Search</li>
-</ul> -->
+{% include 'includes/breadcrumb.html' %}
 {% endblock %}
 
 {% block left_column %}
+
     <section>
       <h2>{{ form_title }}</h2>
       {% if messages %}

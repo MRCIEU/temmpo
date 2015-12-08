@@ -1,4 +1,5 @@
-import copy
+# -*- coding: utf-8 -*-
+# import copy
 import logging
 import math
 
@@ -14,8 +15,8 @@ from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
-from browser.forms import (AbstractFileUploadForm, TermSelectorForm, FilterForm)
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Gene, Upload
+from browser.forms import OvidMedLineFileUploadForm, PubMedFileUploadForm, TermSelectorForm, FilterForm
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload  # Gene,
 from browser.matching import perform_search
 
 logger = logging.getLogger(__name__)
@@ -39,8 +40,25 @@ class CreditsView(TemplateView):
         return context
 
 
-class SearchView(CreateView):
-    form_class = AbstractFileUploadForm
+class SelectSearchTypeView(TemplateView):
+    template_name = "select_search_type.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Ensure user logs in before viewing the search form
+        """
+        return super(SelectSearchTypeView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(SelectSearchTypeView, self).get_context_data(**kwargs)
+        context['active'] = 'search'
+        context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
+        context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
+        return context
+
+
+class SearchOvidMEDLINE(CreateView):
+    form_class = OvidMedLineFileUploadForm
     template_name = "search.html"
 
     def get_success_url(self):
@@ -56,13 +74,13 @@ class SearchView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the search form
         """
-        return super(SearchView, self).dispatch(request, *args, **kwargs)
+        return super(SearchOvidMEDLINE, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(SearchView, self).get_context_data(**kwargs)
+        context = super(SearchOvidMEDLINE, self).get_context_data(**kwargs)
         context['active'] = 'search'
-        context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
-        context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
+        context['form_action'] = reverse('search_ovid_medline')
+        context['file_type'] = "Ovid MEDLINE®"
         return context
 
     def get_initial(self):
@@ -72,7 +90,17 @@ class SearchView(CreateView):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
-        return super(SearchView, self).form_valid(form)
+        return super(SearchOvidMEDLINE, self).form_valid(form)
+
+
+class SearchPubMedView(SearchOvidMEDLINE):
+    form_class = PubMedFileUploadForm
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchPubMedView, self).get_context_data(**kwargs)
+        context['file_type'] = "PubMed MEDLINE®"
+        context['form_action'] = reverse('search_pubmed')
+        return context
 
 
 class TermSelectorAbstractUpdateView(UpdateView):
@@ -115,7 +143,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         context['active'] = 'search'
         context['type'] = self.type
         context['pre_selected_term_names'] = "; ".join(self.object.get_wcrf_input_variables(self.type))
-        context['json_url'] = reverse('mesh_terms_as_json_for_criteria', kwargs={'pk':self.object.id, 'type':self.type})
+        context['json_url'] = reverse('mesh_terms_as_json_for_criteria', kwargs={'pk': self.object.id, 'type': self.type})
         context['json_search_url'] = reverse("mesh_terms_search_json")
         context['pre_selected'] = ",".join(self.object.get_form_codes(self.type))
         return context
@@ -155,7 +183,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
     def set_terms(self, node_terms):
         # NB: Any selected nodes should have all children included in selected set
         self.object.exposure_terms.clear()
-        # TODO: Only slice to up assignment when db backend requires it 
+        # TODO: Only slice to up assignment when db backend requires it
         # - max 999 with sqlite; see: batch_size ; DatabaseOperations.max_batch_size
         # TODO: TMMA-100 SQL has a 999 param limit
         slices = int(math.ceil(len(node_terms) / 500.0))
@@ -213,6 +241,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
         for i in range(0, slices):
             self.object.outcome_terms.add(*node_terms[i * 500:((i + 1) * 500)])
 
+
 class SearchExistingUpload(RedirectView):
     permanent = False
 
@@ -257,8 +286,8 @@ class FilterSelector(UpdateView):
 
         # Prevent one user viewing data for another
         scid = int(kwargs['pk'])
-        if SearchCriteria.objects.filter(pk = scid).exists():
-            sccheck = SearchCriteria.objects.get(pk = scid)
+        if SearchCriteria.objects.filter(pk=scid).exists():
+            sccheck = SearchCriteria.objects.get(pk=scid)
             if not request.user.is_superuser and request.user.id != sccheck.upload.user.id:
                 raise PermissionDenied
         else:
@@ -338,6 +367,11 @@ class ResultsListingView(ListView):
     def get_queryset(self):
         return SearchResult.objects.filter(criteria__upload__user=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        context = super(ResultsListingView, self).get_context_data(**kwargs)
+        context['active'] = 'results'
+        return context
+
 
 class CriteriaView(DetailView):
     template_name = "criteria.html"
@@ -382,8 +416,8 @@ class CountDataView(RedirectView):
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
-        if SearchResult.objects.filter(pk = srid).exists():
-            srcheck = SearchResult.objects.get(pk = srid)
+        if SearchResult.objects.filter(pk=srid).exists():
+            srcheck = SearchResult.objects.get(pk=srid)
             if not request.user.is_superuser and request.user.id != srcheck.criteria.upload.user.id:
                 raise PermissionDenied
         else:
@@ -434,8 +468,8 @@ class JSONDataView(RedirectView):
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
-        if SearchResult.objects.filter(pk = srid).exists():
-            srcheck = SearchResult.objects.get(pk = srid)
+        if SearchResult.objects.filter(pk=srid).exists():
+            srcheck = SearchResult.objects.get(pk=srid)
             if not request.user.is_superuser and request.user.id != srcheck.criteria.upload.user.id:
                 raise PermissionDenied
         else:
@@ -453,7 +487,7 @@ class MeshTermsAsJSON(TemplateView):
 
     def node_to_dict(self, node):
         result = {
-            'id': "mtid_"+str(node.id),
+            'id': "mtid_" + str(node.id),
             'text': node.term,
         }
 
@@ -495,7 +529,7 @@ class MeshTermsAsJSON(TemplateView):
 
         if self.search_criteria_id:
             sc = get_object_or_404(SearchCriteria, id=self.search_criteria_id)
-            self.selected = getattr(sc, self.type+'_terms').all()
+            self.selected = getattr(sc, self.type + '_terms').all()
             for node in self.selected:
                 self.ancestor_ids.extend(node.get_ancestors().values_list("id", flat=True))
 
@@ -504,7 +538,6 @@ class MeshTermsAsJSON(TemplateView):
             dicts.append(self.node_to_dict(n))
 
         return JsonResponse(dicts, safe=False)
-
 
 
 class MeshTermsAllAsJSON(TemplateView):
@@ -556,7 +589,7 @@ class MeshTermSearchJSON(TemplateView):
             root_nodes = MeshTerm.objects.filter(term__istartswith=search_term)
             results = []
             for n in root_nodes:
-                results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  #self.node_to_dict_with_ancestors(n)
+                results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
 
         results = ["mtid_%d" % x for x in results]
         return JsonResponse(results, safe=False)

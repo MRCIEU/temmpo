@@ -9,27 +9,43 @@ from django.contrib import messages
 from selectable.forms import AutoCompleteWidget, AutoCompleteSelectField
 
 from browser.lookups import MeshTermLookup
-from browser.models import SearchCriteria, Upload, MeshTerm, Gene
+from browser.models import SearchCriteria, Upload, MeshTerm, Gene, OVID, PUBMED
 from browser.widgets import GeneTextarea
-from browser.validators import MimetypeValidator, SizeValidator, MEDLINEFormatValidator
+from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator
 
 logger = logging.getLogger(__name__)
 
+# TODO: Review possible usage of
+# http://django-mptt.github.io/django-mptt/forms.html
 
-class AbstractFileUploadForm(forms.ModelForm):
+
+class OvidMedLineFileUploadForm(forms.ModelForm):
+    file_format = forms.CharField(widget=forms.HiddenInput, initial=OVID)
     abstracts_upload = forms.FileField(
         validators=[MimetypeValidator(mimetypes=('text/plain',)),
                     SizeValidator(max_size=500),
-                    MEDLINEFormatValidator(), ],
-        help_text="<br />MEDLINE® formatted plain text files (*.txt) which include MeSH headers (MH).  \
-                   <a href=\"" + settings.STATIC_URL + "text/example-file-upload.txt\">View an example file</a>.")
+                    OvidMedLineFormatValidator(), ],
+        help_text="<br />Ovid MEDLINE® formatted plain text files (*.txt) which includes MeSH Subject Headings. \
+                   Example format: <a href=\"" + settings.STATIC_URL + "text/example-file-upload.txt\">with MeSH Subject \
+                   Headings</a>.")
 
     class Meta:
         model = Upload
-        fields = ['abstracts_upload', ]
+        fields = ['file_format', 'abstracts_upload', ]
 
-# TODO: Review possible usage of
-# http://django-mptt.github.io/django-mptt/forms.html
+
+class PubMedFileUploadForm(forms.ModelForm):
+    file_format = forms.CharField(widget=forms.HiddenInput, initial=PUBMED)
+    abstracts_upload = forms.FileField(
+        validators=[MimetypeValidator(mimetypes=('text/plain',)),
+                    SizeValidator(max_size=500),
+                    PubMedFormatValidator(), ],
+        help_text="<br />PubMed® formatted plain text files (*.txt) which includes MH (Mesh Headers). \
+                   Example format: <a href=\"" + settings.STATIC_URL + "text/example-file-upload-b.txt\">with MH (Mesh Headers)</a>.")
+
+    class Meta:
+        model = Upload
+        fields = ['file_format', 'abstracts_upload', ]
 
 
 class TermSelectorForm(forms.ModelForm):

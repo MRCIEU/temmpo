@@ -1,42 +1,28 @@
-{% extends "twocolumn1.html" %}
+{% extends "onecolumn.html" %}
 
-{% block title %}TeMMPo: Search{% endblock %}
+{% block title %}TeMMPo: Search {{ file_type }}{% endblock %}
 
 {% block scripts %}
 {% endblock %}
 
-{% block section_title %}Search{% endblock %}
+{% block section_title %}Search {{ file_type }} formatted abstracts{% endblock %}
 
-{% block section_minor %}
-
-<h3>Use previously uploaded files:</h3>
-<ul class="link-list">
-    {% for upload in uploads %}
-        <li><a href="{% url 'reuse_upload' pk=upload.id %}">{{ upload }}</a></li>
-    {% empty %}
-        <li>No previously uploaded abstracts.</li>
-    {% endfor %}
-</ul>
-<!-- TODO Need to paginate or collapse list at some point-->
-
-<h3>Reuse existing search criteria:</h3>
-<ul class="link-list">
-    {% for search in criteria %}
-        <li><a href="{% url 'criteria' pk=search.id %}">{{ search }}</a></li>
-    {% empty %}
-        <li>No saved search criteria.</li>
-    {% endfor %}
-</ul>
-<!-- TODO Need to paginate or collapse list at some point-->
+{% block page_heading %}
+{% include 'includes/breadcrumb.html' %}
 {% endblock %}
 
 {% block section %}
 <p>
     Upload a new text file of medical journal abstracts.
 </p>
-<form action="{% url 'search' %}" method="post" enctype="multipart/form-data">
+<form action="{{ form_action }}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="button">Upload</button>
 </form>
+
+<div class="controls">
+	<hr />
+    <a href="{% url 'search' %}" class="button sml-button">Return to alternative search methods</a>
+</div>
 {% endblock %}
