@@ -43,6 +43,12 @@ class CreditsView(TemplateView):
 class SelectSearchTypeView(TemplateView):
     template_name = "select_search_type.html"
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Ensure user logs in before viewing the search form
+        """
+        return super(SelectSearchTypeView, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(SelectSearchTypeView, self).get_context_data(**kwargs)
         context['active'] = 'search'
@@ -51,7 +57,7 @@ class SelectSearchTypeView(TemplateView):
         return context
 
 
-class SearchView(CreateView):
+class SearchOvidMEDLINE(CreateView):
     form_class = OvidMedLineFileUploadForm
     template_name = "search.html"
 
@@ -68,12 +74,12 @@ class SearchView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         """ Ensure user logs in before viewing the search form
         """
-        return super(SearchView, self).dispatch(request, *args, **kwargs)
+        return super(SearchOvidMEDLINE, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(SearchView, self).get_context_data(**kwargs)
+        context = super(SearchOvidMEDLINE, self).get_context_data(**kwargs)
         context['active'] = 'search'
-        context['form_action'] = reverse('search')
+        context['form_action'] = reverse('search_ovid_medline')
         context['file_type'] = "Ovid MEDLINE®"
         return context
 
@@ -84,10 +90,10 @@ class SearchView(CreateView):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
-        return super(SearchView, self).form_valid(form)
+        return super(SearchOvidMEDLINE, self).form_valid(form)
 
 
-class SearchPubMedView(SearchView):
+class SearchPubMedView(SearchOvidMEDLINE):
     form_class = PubMedFileUploadForm
 
     def get_context_data(self, **kwargs):
