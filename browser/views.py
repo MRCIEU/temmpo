@@ -367,6 +367,11 @@ class ResultsListingView(ListView):
     def get_queryset(self):
         return SearchResult.objects.filter(criteria__upload__user=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        context = super(ResultsListingView, self).get_context_data(**kwargs)
+        context['active'] = 'results'
+        return context
+
 
 class CriteriaView(DetailView):
     template_name = "criteria.html"
