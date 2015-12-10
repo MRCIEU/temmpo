@@ -1,3 +1,5 @@
+1.0 RC2 TMMA-122 Increase abstract file size limit
+
 1.0 RC1 TMMA-114 Add parsing of PubMed/MEDLINE files (BETA)
         TMMA-121 Bug fix string.find and zero indexed matches
         ../../bin/python manage.py migrate
