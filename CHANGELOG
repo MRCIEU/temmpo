@@ -1,4 +1,4 @@
-1.0     TMMA-102 Allow SECRET_KEY to be generated and the stored outside of the source tree.
+1.0     TMMA-102 Allow SECRET_KEY to be generated and stored outside of the source tree.
 
 1.0 RC3 TMMA-124 Bug fix citations with missing mesh headings
 
