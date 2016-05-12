@@ -40,14 +40,12 @@ pwd
 ln -s /usr/lib/python2.7/dist-packages/lxml lxml
 ln -s /usr/lib/python2.7/dist-packages/lxml-2.3.2.egg-info lxml-2.3.2.egg-info
 
-# TODO consider using linking to core version of Django on the VM
-
 # Load requirements
 echo "Install any new or updated eggs"
 cd $BASEPATH
 cd src/temmpo
 pwd
-../../bin/pip install -r deploy/project-eggs-freeze.txt
+../../bin/pip install -r requirements/base.txt
 
 # DB
 echo "Update database with any new migrations"
@@ -74,4 +72,4 @@ pwd
 
 echo "#### You may now wish to load the fixture data: genes.json and mesh-terms.json"
 
-echo "#### Run Apache graceful"
+echo "#### Restart Apache"

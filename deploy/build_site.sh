@@ -1,5 +1,12 @@
-# Build script for TeMMPo
-# Accept argument for VE - defaults to beta
+# Build script for TeMMPo - set up to suit the development environment setup.
+
+# Assumes the following:
+# pip and virtualenv are installed
+# Plus makes use of system installed lxml (/usr/lib/python2.7/dist-packages/lxml)
+# Tested with Python 2.7
+
+# Replace file system paths
+# Accept argument for virtualenv - defaults to beta
 MY_USER=$(whoami)
 BASEPATH="/usr/local/projects/tmma/lib/"$MY_USER
 VE="beta"
@@ -37,7 +44,7 @@ mkdir var/results
 echo "Clone repo"
 cd src
 pwd
-git clone git.ilrt.bris.ac.uk:/usr/local/projects/git/projects/temmpo
+git clone git@bitbucket.org:researchit/temmpo.git
 
 # Sym link in core libraries - in particular any that require compilation
 cd $BASEPATH
@@ -47,23 +54,16 @@ pwd
 ln -s /usr/lib/python2.7/dist-packages/lxml lxml
 ln -s /usr/lib/python2.7/dist-packages/lxml-2.3.2.egg-info lxml-2.3.2.egg-info
 
-# TODO consider using core version of Django on the box
-
 # Load requirements
 echo "Load requirements"
 cd $BASEPATH
 cd $VE
 cd src/temmpo
 pwd
-../../bin/pip install -r deploy/project-eggs-freeze.txt
-
-#bin/pip install django # Tested with 1.7.4
-#bin/pip install django-chunked-upload # Trialing
-#bin/pip install django-bft # Trialing
-#bin/pip install recaptcha-client
+../../bin/pip install -r requirements/base.txt
 
 # DB
-echo "Creating SQLite db"
+echo "Creating database"
 cd $BASEPATH
 cd $VE
 cd src/temmpo

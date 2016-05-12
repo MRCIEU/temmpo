@@ -1,5 +1,8 @@
-# Build script for TeMMPo
-# Accept argument for name of environment, i.e. dev, demo or prod should have matching settings file
+# Build script for TeMMPo when working with Apache
+# Tested with Django 1.7.4
+# Accept argument for name of environment, i.e. dev or prod 
+# Assumes there will be a matching settings file and requirements text file
+
 BASEPATH="/usr/local/projects/tmma/lib/"
 VE="prod"
 
@@ -38,7 +41,7 @@ mkdir var/results
 echo "Clone repo"
 cd src
 pwd
-git clone git.ilrt.bris.ac.uk:/usr/local/projects/git/projects/temmpo
+git clone git@bitbucket.org:researchit/temmpo.git
 
 # Sym link in core libraries - in particular any that require compilation
 cd $BASEPATH
@@ -48,23 +51,17 @@ pwd
 ln -s /usr/lib/python2.7/dist-packages/lxml lxml
 ln -s /usr/lib/python2.7/dist-packages/lxml-2.3.2.egg-info lxml-2.3.2.egg-info
 
-# TODO consider using core version of Django on the box
-
 # Load requirements
 echo "Load requirements"
 cd $BASEPATH
 cd $VE
 cd src/temmpo
 pwd
-../../bin/pip install -r deploy/project-eggs-freeze.txt
+../../bin/pip install -r requirements/base.txt
+../../bin/pip install -r requirements/$VE.txt
 
-#bin/pip install django # Tested with 1.7.4
-#bin/pip install django-chunked-upload # Trialing
-#bin/pip install django-bft # Trialing
-#bin/pip install recaptcha-client
-
-# TODO set up Apache stuff 
-echo "Append to django admin file"
+# Set up Apache stuff 
+echo "TODO: Append settings location to the end of the django admin file"
 # django-admin.py and mod_wsgi file
 
 # Append to end of django-admin.py
@@ -72,8 +69,8 @@ echo "Append to django admin file"
 # < sys.path.append('/usr/local/projects/tmma/lib/prod/src/temmpo/')
 # < os.environ["DJANGO_SETTINGS_MODULE"] = "temmpo.settings.prod"
 
-echo "TODO: Create wsgi file"
-echo "What about django.wsgi"
+echo "TODO: Now create a WSGI file"
+# TODO automate this step.
 # echo "Create WSGI file"
 # Create config file /usr/local/projects/tmma/apache/conf/conf.d/00_wsgi.conf
 
@@ -106,4 +103,3 @@ pwd
 # Create a super user
 echo "Create superuser"
 ../../bin/python manage.py createsuperuser --settings=temmpo.settings.$VE
-

@@ -1,7 +1,6 @@
 # Build script for TeMMPo
 # Accept argument for VE - defaults to beta
-# Accept argument for git user - defaults to beta
-# Requires Python 2.7 and virtualenv
+# Requires Python 2.7, pip, and virtualenv
 MY_USER=$(whoami)
 VE="beta"
 BASEPATH=$(pwd)
@@ -11,13 +10,6 @@ if [ -n "$1" ]; then
     VE=$1
     echo "Overriding the default virtual environment name with:"
     echo $VE
-fi
-
-# Allow override of git username
-if [ -n "$2" ]; then
-    MY_USER=$2
-    echo "Overriding the git username with:"
-    echo $MY_USER
 fi
 
 echo "Create virtual environment in this location:"
@@ -36,7 +28,7 @@ mkdir var/results
 echo "Clone repo"
 cd src
 pwd
-git clone "$MY_USER"@git.ilrt.bris.ac.uk:/usr/local/projects/git/projects/temmpo
+git clone git@bitbucket.org:researchit/temmpo.git
 
 # Load requirements
 echo "Load requirements"
@@ -44,10 +36,10 @@ cd $BASEPATH
 cd $VE
 cd src/temmpo
 pwd
-../../bin/pip install -r deploy/project-eggs-freeze.txt
+../../bin/pip install -r requirements/base.txt
 
 # DB
-echo "Creating SQLite db"
+echo "Creating SQLite database"
 ../../bin/python manage.py migrate
 
 # Create a super user

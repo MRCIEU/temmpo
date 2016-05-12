@@ -3,9 +3,10 @@ README
 Installation
 ------------
 
-TODO: Add notes re fabric commands to build environment
+See helper scripts in deploy/*
 
-See: deploy/*
+To create a site on the development server run the build_site.sh script 
+or use the local_build_site.sh if working on a desktop
 
 Set up database:
 
@@ -13,7 +14,7 @@ Set up database:
 cd src/temmpo
 ../../bin/python manage.py migrate
 
-# More specific migrations
+# More specific database migrations
 ../../bin/python manage.py migrate browser
 
 # Create a super user
@@ -23,7 +24,6 @@ Running tests:
 
 cd src/temmpo
  ../../bin/python manage.py test tests/ --settings=temmpo.settings.dev
-
 
 Deployment
 ----------
@@ -47,5 +47,4 @@ git pull
 ../../bin/python manage.py collectstatic --dry-run
 ../../bin/python manage.py collectstatic
 
-
-../../bin/python manage.py migrate browser	
+../../bin/python manage.py migrate browser
