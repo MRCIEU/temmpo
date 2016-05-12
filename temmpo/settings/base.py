@@ -41,7 +41,7 @@ except IOError:
     except IOError:
         raise Exception('Please create a file %s  with a secret key value.  See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key for more information.' % SECRET_FILE)
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: don't run with debug turned on in production!  See prod.py settings file to change this value.
 DEBUG = True
 TEMPLATE_DEBUG = True
 
@@ -191,7 +191,7 @@ LOGGING = {
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
-# TODO when moving to Oracle DB
+# TODO when moving to Oracle or MySQL
 # settings_file_name = 'temmpo_private_settings.py'
 # paths = (os.path.join(os.path.expanduser("~"), settings_file_name),
 #     os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','etc', settings_file_name)))
