@@ -62,4 +62,7 @@ db.sqlite3-journal
 .project
 .pydevproject
 org.eclipse.core.resources.prefs
+
+# TeMMPo specific
 browser/static/results/*
+temmpo/settings/secret.txt

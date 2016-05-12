@@ -10,22 +10,36 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from os import uname
+import random
+import string
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Dynamic config based on server host, vebuild and if dev, user name
-SERVER = uname()[1]
+SERVER = os.uname()[1]
 THIS_PATH = os.path.dirname(__file__)
 APP_ROOT = '/'.join(THIS_PATH.split('/')[0:-4])
 VEDIR = APP_ROOT.split('/')[-1]  # demo, alpha etc.
 
-ADMINS = (('Tessa Alexander', 'cmtsa@ilrt.org'),)
+ADMINS = (('Tessa Alexander', 'tessa.alexander+temmpo@bristol.ac.uk'),)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'fva(zwxn6)g6bk$46e=(_b-5&*y1%!jd*hrn+yke91g@i#%dj%'
+
+# Based on idea
+# https://gist.github.com/ndarville/3452907
+
+SECRET_FILE = os.path.join(THIS_PATH, 'secret.txt')
+try:
+    SECRET_KEY = open(SECRET_FILE).read().strip()
+except IOError:
+    try:
+        SECRET_KEY = ''.join([random.SystemRandom().choice("{}{}{}".format(string.ascii_letters, string.digits, string.punctuation)) for i in range(50)])
+        with open(SECRET_FILE, 'w') as secret_file:
+            secret_file.write(SECRET_KEY)
+    except IOError:
+        raise Exception('Please create a file %s  with a secret key value.  See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key for more information.' % SECRET_FILE)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
