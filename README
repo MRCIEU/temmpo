@@ -1,9 +1,8 @@
-README
+# README #
 
-About TeMMPo 
-------------
+## About TeMMPo ## 
 
- - https://www.temmpo.org.uk/
+*  https://www.temmpo.org.uk/
 
 TeMMPo (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of published evidence for specific mechanisms between an exposure and outcome. The tool identifies co-occurrence of MeSH headings in scientific publications to indicate papers that link an intermediate mechanism to either an exposure or an outcome.
 
@@ -11,8 +10,7 @@ TeMMPo is particularly useful when a specific lifestyle or dietary exposure is k
 
 This development was funded by the World Cancer Research Fund UK, the UK Medical Research Council and the University of Bristol.
 
-Installation
-------------
+## Installation ##
 
 See helper scripts in deploy/*
 
@@ -36,8 +34,7 @@ Running tests:
 cd src/temmpo
  ../../bin/python manage.py test tests/ --settings=temmpo.settings.dev
 
-Deployment
-----------
+## Deployment ##
 
 # Tag in git using fabric utilty function
 
