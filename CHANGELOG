@@ -10,6 +10,8 @@
         git branch --set-upstream master origin/master
         git pull
         ../../bin/pip install -r requirements/prod.txt
+        ../../bin/python manage.py migrate
+        ../../bin/python manage.py collectstatic
         sudo /usr/sbin/apache2ctl configtest
         sudo /usr/sbin/apache2ctl restart
 
