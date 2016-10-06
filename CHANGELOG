@@ -1,3 +1,18 @@
+1.1     TMMA-129 Upgrade Django to 1.8.15, plus upgrade oath2 and requests eggs.
+        Migrate repository to bitbucket.org
+
+        In project directory:
+
+        cd src/temmpo
+        git remote rm origin
+        git remote add origin git@bitbucket.org:researchit/temmpo.git
+        git pull
+        git branch --set-upstream master origin/master
+        git pull
+        ../../bin/pip install -r requirements/prod.txt
+        sudo /usr/sbin/apache2ctl configtest
+        sudo /usr/sbin/apache2ctl restart
+
 1.0     TMMA-102 Allow SECRET_KEY to be generated and stored outside of the source tree.
 
 1.0 RC3 TMMA-124 Bug fix citations with missing mesh headings
