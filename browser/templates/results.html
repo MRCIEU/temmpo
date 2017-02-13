@@ -5,13 +5,6 @@
 {% block styles %}
 {% endblock %}
 
-
-{% block scripts %}
-{# Chart related JS #}
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="{{ STATIC_URL}}js/sankey.js"></script>
-{% endblock %}
-
 {% block section %}
 <!--
 <p>
@@ -36,6 +29,13 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
   </tr>
 </table>
 <p id="chart"></p>
+{% endblock %}
+
+{% block scripts %}
+{# Chart related JS #}
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="{{ STATIC_URL}}js/sankey.js"></script>
+
 <script>
 var threshold = 50;
 
@@ -132,84 +132,4 @@ d3.json("{{ json_url }}", function(matches) {
   }
 });
 </script>
-<!--
-<div class="mediators-summary">
-<h3>Mediators</h3>
-
-<h4>Layout options</h4>
-<ol style="list-style:decimal">
-    <li>List all mediators in one table </li>
-    <li>Group by mediator in separate tables - list all on one page or allow user to select which mediator to view</li>
-    <li>Confirm: If count is split into Left and right match components</li>
-</ol>
-<hr />
-<h5>Layout 1</h5>
-<table class="results-breakdown dataTable display">
-  <thead>
-    <tr>
-      <th>Exposure</th>
-      <th>Mediator</th>
-      <th>Outcome</th>
-      <th>Match count</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for result in results %}
-    <tr>
-      <td>{{ result.exposure }}</td>
-      <td>{{ result.mediator }}</td>
-      <td>{{ result.outcome }}</td>
-      <td>{{ result.count }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<hr />
-<h5>Layout 2</h5>
-<table class="results-breakdown dataTable display">
-  <caption>Mediator: {{ results.0.mediator }}</caption>
-  <thead>
-    <tr>
-      <th>Exposure</th>
-      <th>Outcome</th>
-      <th>Match count</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for result in results|slice:":2"  %}
-    <tr>
-      <td>{{ result.exposure }}</td>
-      <td>{{ result.outcome }}</td>
-      <td>{{ result.count }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<hr />
-<h5>Layout 3</h5>
-<table class="results-breakdown dataTable display">
-  <caption>Mediator: {{ results.0.mediator }}</caption>
-  <thead>
-    <tr>
-      <th>Exposure</th>
-      <th>Left match count</th>
-      <th>Outcome</th>
-      <th>Right match count</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for result in results|slice:":2" %}
-    <tr>
-      <td>{{ result.exposure }}</td>
-      <td>{{ result.lcount }}</td>
-      <td>{{ result.outcome }}</td>
-      <td>{{ result.rcount }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-</div>
-{# TODO: Add collapsible form to create a new search based on changing the MeSH filter #}
--->
 {% endblock %}

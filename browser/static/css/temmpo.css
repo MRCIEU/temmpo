@@ -1,8 +1,8 @@
 /* Custom */
 
-/* Override HTMLUp setings */
+/* TODO: Review what needs to be overridden */
 
-h1,h2 {
+/*h1,h2 {
     text-transform: none;
 }
 
@@ -13,7 +13,7 @@ h1 {
 
 dd {
     line-height: 1.8em;
-}
+}*/
 
 /* Charts */
 
@@ -21,7 +21,7 @@ dd {
   height: 100%;
 }*/
 
-.node rect {
+/*.node rect {
   cursor: move;
   fill-opacity: .9;
   shape-rendering: crispEdges;
@@ -41,7 +41,7 @@ dd {
 .link:hover {
   stroke-opacity: .5;
 }
-
+*/
 /* Tree browser */
 
 /*#terms
@@ -50,7 +50,7 @@ dd {
 }*/
 
 
-.form-table th, td
+/*.form-table th, td
 {
   text-align: left;
   padding: 0.5em;
@@ -72,7 +72,7 @@ dd {
 }
 
 /* temp */
-.mediators-summary hr { margin-top: 2em; margin-bottom: 2em;}
+/*.mediators-summary hr { margin-top: 2em; margin-bottom: 2em;}
 .mediators-summary h5 { margin-top: 1em; margin-bottom: 1em;}
 
 #tree-family li
@@ -121,7 +121,7 @@ h2, p {
 .sentence-case
 {
   text-transform:none;
-}
+}*/
 
 .rmrl-read-more
 {
@@ -129,7 +129,7 @@ h2, p {
 }
 
 /*#reuse-uploads .read-more, #reuse-criteria .read-more, #reuse-uploads .read-less, #reuse-criteria .read-less*/
-.read-more, .read-less
+/*.read-more, .read-less
 {
   line-height:4em;
 }
@@ -159,4 +159,13 @@ padding:1em 0em;
 {
   margin-top:0em;
   padding-top:1em;
+}*/
+
+#home-page-figure img
+{
+    display: block;
+    margin-left: auto;
+    margin-right: auto
 }
+
+#copyright {padding-top:1em;}

@@ -7,12 +7,6 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/themes/default/style.min.css" />
 {% endblock %}
 
-
-{% block scripts %}
-<!-- jsTree -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/jstree.min.js"></script>
-{% endblock %}
-
 {% block page_heading %}
 {% include 'includes/breadcrumb.html' %}
 {% endblock %}
@@ -44,7 +38,7 @@
         <h3>Current {{ type }} terms</h3>
         <p>{{ pre_selected_term_names }}</p>
         {# TODO Improve mechanism for moving through workflow #}
-        <a href="{{ next_url }}" class="button">Select {{ next_type }}</a>
+        <a href="{{ next_url }}" class="btn btn-default">Select {{ next_type }}</a>
     </section>
     {% endif %}
 {% endblock %}
@@ -56,7 +50,7 @@
         {% csrf_token %}
         <label for="term_names">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
         <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
-        <button type="submit" name="btn_submit" value="replace" class="sml-button button">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
+        <button type="submit" name="btn_submit" value="replace" class="sml-button btn btn-default">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
     </form>
   </section>
 {% endblock %}
@@ -70,7 +64,7 @@
           <!-- Search -->
           <label for="search_term">Search</label>
           <input id="search_term" name="search_term" type="text" value="" />
-          <button type="submit" id="search_button" value="search" class="sml-button button">Search</button>
+          <button type="submit" id="search_button" value="search" class="sml-button btn btn-default">Search</button>
       </form>
 
       <form action="." method="post">
@@ -79,12 +73,18 @@
           {# Ajax version #}
           <div id="term_tree">
           </div>
-          <button type="submit" name="btn_submit" value="choose" class="sml-button button">Select these terms and choose more {{ type }} terms</button>
+          <button type="submit" name="btn_submit" value="choose" class="sml-button btn btn-default">Select these terms and choose more {{ type }} terms</button>
           
-          <button type="submit" name="btn_submit" value="progress" class="sml-button button">Select these terms and move on to select {{ next_type }}</button>
+          <button type="submit" name="btn_submit" value="progress" class="sml-button btn btn-default">Select these terms and move on to select {{ next_type }}</button>
 
           <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
       </form>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- jsTree -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/jstree.min.js"></script>
 
       <script type="text/javascript">
         $(function() {
@@ -106,7 +106,7 @@
           });
         });
 
-        // TODO: Preferably add visaul queue to when the search has completed
+        // TODO: Preferably add visual queue to when the search has completed
         // possibly hide control / show a spinner
         // Need to hide on complete of the .search event.        
         $( "document" ).ready(function () {

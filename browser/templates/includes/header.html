@@ -1,24 +1,38 @@
 <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{{ description }}">
 <meta name="keywords" content="{{ keywords }}">
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Ubuntu+Condensed">
-<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 
+<!-- TODO Confirm if still required or included elsewhere
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+ 
+ TODO: Confirm site functional - conver regarding the age of the jquery included in the theme 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+-->
 
-<script src="{{ STATIC_URL }}js/skel.min.js"></script>
-<script src="{{ STATIC_URL }}js/skel-layers.min.js"></script>
-<script src="{{ STATIC_URL }}js/init.js"></script>
+<!-- Bootstrap Core CSS -->
+<link href="{{ STATIC_URL }}sb-admin-2/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-<noscript>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/skel.css">
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style-desktop.css">
-</noscript>
+<!-- MetisMenu CSS -->
+<link href="{{ STATIC_URL }}sb-admin-2/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/breadcrumb.css">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/temmpo.css">
-<!--[if lte IE 9]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/ie9.css" /><![endif]-->
-<!--[if lte IE 8]><script src="{{ STATIC_URL }}js/html5shiv.js"></script><![endif]-->
+<!-- Custom CSS -->
+<link href="{{ STATIC_URL }}sb-admin-2/dist/css/sb-admin-2.css" rel="stylesheet">
+
+<!-- Morris Charts CSS -->
+<link href="{{ STATIC_URL }}sb-admin-2/vendor/morrisjs/morris.css" rel="stylesheet">
+
+<!-- Custom Fonts -->
+<link href="{{ STATIC_URL }}sb-admin-2/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- TeMMPo specific CSS -->
+<link href="{{ STATIC_URL }}css/temmpo.css" rel="stylesheet" type="text/css">
+<link href="{{ STATIC_URL }}css/breadcrumb.css" rel="stylesheet" type="text/css">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->

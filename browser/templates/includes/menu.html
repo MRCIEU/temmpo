@@ -1,16 +1,75 @@
-<header id="header">
-    <h1><a href="{% url 'home' %}" id="logo">TeMMPo</a></h1>
-    <nav id="nav">
-        <a href="{% url 'home' %}" {% if active == "home" %}class="current-page-item"{% endif %}>Home</a>
-        <a href="{% url 'credits' %}" {% if active == "credits" %}class="current-page-item"{% endif %} >Credits</a>
-        <a href="{% url 'search' %}" {% if active == "search" %}class="current-page-item"{% endif %}>Search</a>
-        {% if user.is_authenticated %}
-        <a href="{% url 'results_listing' %}" {% if active == "results" %}class="current-page-item"{% endif %}>Results</a>
-        <a href="{% url 'password_change' %}">Change password</a>
-        <a href="{% url 'logout' %}">Sign out</a>
-        {% else %}
-           <a href="{% url 'registration_register' %}" {% if active == "register" %}class="current-page-item"{% endif %}>Register</a>
-           <a href="{% url 'login' %}" {% if active == "login" %}class="current-page-item"{% endif %}>Sign in</a>
-        {% endif %}
-    </nav>
-</header>
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{% url 'home' %}">TeMMPo: Text Mining for Mechanism Prioritisation</a>
+    </div>
+    <!-- /.navbar-header -->
+
+    <ul class="nav navbar-top-links navbar-right">
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+
+            <ul class="dropdown-menu dropdown-user">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'password_change' %}"><i class="fa fa-user fa-fw"></i> Change password</a>
+                    <li class="divider"></li>
+                    <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i>Logout</a></li>
+                {% else %}
+                   <li><a href="{% url 'registration_register' %}"><i class="fa fa-wrench fa-fw"></i>Register</a></li>
+                   <li class="divider"></li>
+                   <li><a href="{% url 'login' %}"><i class="fa fa-sign-in fa-fw"></i>Login</a></li>
+                {% endif %}
+            </ul>
+            <!-- /.dropdown-user -->
+        </li>
+        <!-- /.dropdown -->
+    </ul>
+    <!-- /.navbar-top-links -->
+
+    <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="sidebar-search">
+                    <div class="input-group custom-search-form">
+                        <input type="text" class="form-control" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <!-- /input-group -->
+                </li>
+                <li {% if active == "home" %}class="active"{% endif %}>
+                    <a href="{% url 'home' %}"><i class="fa fa-home fa-fw"></i> Home</a>
+                </li>
+                <li {% if active == "credits" %}class="active"{% endif %}>
+                    <a href="{% url 'credits' %}"><i class="fa fa-files-o fa-fw"></i> Credits</a>
+                </li>
+                <li {% if active == "search" %}class="active"{% endif %}>
+                    <a href="{% url 'search' %}"><i class="fa fa-search fa-fw"></i> Search</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li {% if active == "results" %}class="active"{% endif %}><a href="{% url 'results_listing' %}"><i class="fa fa-bar-chart-o fa-fw"></i> Results</a></li>
+                    <li {% if active == "password_change" %}class="active"{% endif %}><a href="{% url 'password_change' %}"><i class="fa fa-user fa-fw"></i> Change password</a></li>
+                    <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i>Logout</a></li>
+
+                {% else %}
+
+                   <li {% if active == "register" %}class="active"{% endif %}><a href="{% url 'registration_register' %}"><i class="fa fa-wrench fa-fw"></i>Register</a></li>
+                   <li {% if active == "login" %}class="active"{% endif %}><a href="{% url 'login' %}"><i class="fa fa-sign-in fa-fw"></i>Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <!-- /.sidebar-collapse -->
+    </div>
+    <!-- /.navbar-static-side -->
+</nav>
