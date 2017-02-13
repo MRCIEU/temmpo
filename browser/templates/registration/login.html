@@ -8,22 +8,9 @@
 <p class="lead">
 You need to <a href="{% url 'registration_register' %}">register</a> or login to use this tool.
 </p>
-<form action="{% url 'login' %}" method="post" role="form">
+<form action="{% url 'login' %}" method="post">
     {% csrf_token %}
-
-    {# Include the hidden fields #}
-	{% for hidden in form.hidden_fields %}
-	{{ hidden }}
-	{% endfor %}
-	{# Include the visible fields #}
-	{% for field in form.visible_fields %}
-	    <div class="form-group">
-	        {{ field.errors }}
-	        {{ field.label_tag }} {{ field }}
-	        {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
-	    </div>
-	{% endfor %}
-
+	{% include 'includes/form.html' %}
     <p><button type="submit" class="btn btn-primary" >Login</button> <a href="{% url 'password_reset' %}" class="btn btn-default">Forgotten your password?</a> </p>
 </form>
 {% endblock %}
