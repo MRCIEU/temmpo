@@ -63,6 +63,12 @@ db.sqlite3-journal
 .pydevproject
 org.eclipse.core.resources.prefs
 
+# vagrant
+.vagrant
+
+# OS X
+.DS_Store
+
 # TeMMPo specific
 browser/static/results/*
 temmpo/settings/secret.txt

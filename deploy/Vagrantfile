@@ -11,38 +11,15 @@ Vagrant.configure("2") do |config|
   config.vm.define "django", primary: true do |django|
 
     # Run the Django setup
-    django.vm.provision "shell", inline: <<-SHELL
+    django.vm.provision "shell", path: "deploy-centos.sh"
 
-    sh /vagrant/deploy-centos.sh
-    
-    echo "Activate the virtualenv"
-    cd /var/local/temmpo/bin
-    source activate
-    cd /var/local/temmpo/src/temmpo/
-    # Create a dev installation
-    pip install -r requirements/dev.txt
-
-    sudo chown -R vagrant:vagrant /var/local/temmpo/
-
-    echo "Creating SQLite database"
-    python manage.py migrate
-
-    echo "Create superuser"
-    python manage.py createsuperuser --settings=temmpo.settings.dev
-
-    echo "Run tests"
-    python manage.py test --settings=temmpo.settings.dev
-
-    deactivate
-  SHELL
-
-    # django.vm.synced_folder ".", "/vagrant", disabled: true
-    # Try have Vagrafile file in deploy folder veruss symlinking from adjacent folder
-    django.vm.synced_folder "../", "/var/local/temmpo/src/temmpo", type: "sshfs", 
+    django.vm.synced_folder "../", "/srv/projects/temmpo/lib/dev/src/temmpo", type: "sshfs", 
        owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
+
+    django.vm.network "forwarded_port", guest: 59099, host: 59099
   end
 
-  # Disable mariadb until production migration from sqllite to central db service
+  # Disable MariaDB until production migration from SQLlite to central DB service
   config.vm.define "db", autostart: false do |db|
 
     db.vm.provision "shell", inline: <<-SHELL
