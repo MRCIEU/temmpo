@@ -1,0 +1,89 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# On os x needs later version of ruby, e.g. brew install ruby
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "centos/7"
+
+  # Django box
+  config.vm.define "django", primary: true do |django|
+
+    # Run the Django setup
+    django.vm.provision "shell", inline: <<-SHELL
+
+    sh /vagrant/deploy-centos.sh
+    
+    echo "Activate the virtualenv"
+    cd /var/local/temmpo/bin
+    source activate
+    cd /var/local/temmpo/src/temmpo/
+    # Create a dev installation
+    pip install -r requirements/dev.txt
+
+    sudo chown -R vagrant:vagrant /var/local/temmpo/
+
+    echo "Creating SQLite database"
+    python manage.py migrate
+
+    echo "Create superuser"
+    python manage.py createsuperuser --settings=temmpo.settings.dev
+
+    echo "Run tests"
+    python manage.py test --settings=temmpo.settings.dev
+
+    deactivate
+  SHELL
+
+    # django.vm.synced_folder ".", "/vagrant", disabled: true
+    # Try have Vagrafile file in deploy folder veruss symlinking from adjacent folder
+    django.vm.synced_folder "../", "/var/local/temmpo/src/temmpo", type: "sshfs", 
+       owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
+  end
+
+  # Disable mariadb until production migration from sqllite to central db service
+  config.vm.define "db", autostart: false do |db|
+
+    db.vm.provision "shell", inline: <<-SHELL
+
+      sudo timedatectl set-timezone Europe/London
+      sudo yum update
+
+      echo "Install dev utils"
+      sudo yum install -y unzip
+      sudo yum install -y nano
+
+      echo "Install essential tools & repos"
+      sudo yum install -y wget
+      wget -N https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      sudo rpm -ivh --replacepkgs epel-release-latest-7.noarch.rpm
+
+      # Install database seerver and client
+      sudo yum -y install mariadb-server mariadb
+
+      echo "Run services"
+      sudo systemctl start mariadb
+      sudo systemctl enable mariadb
+
+      echo "Allow external connections from mysql"
+      cat > allow-external-connections.cnf << CONF
+[mysqld]
+bind-address=0.0.0.0
+CONF
+      sudo mv allow-external-connections.cnf /etc/my.cnf.d/
+      sudo systemctl restart mariadb
+
+      # Take what is required for development set up from mysql_secure_installation
+      echo "Delete “anonymous” users, i.e. users with the empty string as user name"
+      cat > delete-anon-users.sql << SQL
+      DELETE FROM mysql.user WHERE User='';
+      FLUSH PRIVILEGES;
+SQL
+      mysql -u root < delete-anon-users.sql
+    SHELL
+
+    # db.vm.network "forwarded_port", guest: 3306, host: 3306 
+  end
+
+end

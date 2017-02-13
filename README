@@ -10,7 +10,18 @@ TeMMPo is particularly useful when a specific lifestyle or dietary exposure is k
 
 This development was funded by the World Cancer Research Fund UK, the UK Medical Research Council and the University of Bristol.
 
+## Development ##
+
+vagrant Centos development environment based on RIT default Vagrantfile templates as separate base includes.
+
+vagrant plugin install vagrant-sshfs
+git clone git@bitbucket.org:researchit/temmpo.git
+cd temmpo/deploy
+vagrant up
+
 ## Installation ##
+
+**TO BE REVIEWED**
 
 See helper scripts in deploy/*
 
