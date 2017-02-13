@@ -1,23 +1,29 @@
 {% extends "onecolumn.html" %}
 
-{% block title %}TeMMPo: Sign in{% endblock %}
+{% block title %}TeMMPo: Login{% endblock %}
 
-{% block section_title %}Sign in{% endblock %}
+{% block section_title %}Login{% endblock %}
 
 {% block section %}
-<p>
-You need to <a href="{% url 'registration_register' %}">register</a> or sign in to use this tool.
+<p class="lead">
+You need to <a href="{% url 'registration_register' %}">register</a> or login to use this tool.
 </p>
-<form action="{% url 'login' %}" method="post" >
+<form action="{% url 'login' %}" method="post" role="form">
     {% csrf_token %}
-    <table class="form-table">
-    {{ form.as_table }}
-    </table>
-    <button type="submit" class="button" >Sign in</button>
+
+    {# Include the hidden fields #}
+	{% for hidden in form.hidden_fields %}
+	{{ hidden }}
+	{% endfor %}
+	{# Include the visible fields #}
+	{% for field in form.visible_fields %}
+	    <div class="form-group">
+	        {{ field.errors }}
+	        {{ field.label_tag }} {{ field }}
+	        {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
+	    </div>
+	{% endfor %}
+
+    <p><button type="submit" class="btn btn-primary" >Login</button> <a href="{% url 'password_reset' %}" class="btn btn-default">Forgotten your password?</a> </p>
 </form>
-{% endblock %}
-{% block additional_content %}
-<section>
-	<p><a href="{% url 'password_reset' %}">Forgotten your password?</a></p>
-</section>
 {% endblock %}

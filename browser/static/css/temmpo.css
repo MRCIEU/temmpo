@@ -169,3 +169,8 @@ padding:1em 0em;
 }
 
 #copyright {padding-top:1em;}
+
+.errorlist, .warning
+{
+  color: #800000;
+}
