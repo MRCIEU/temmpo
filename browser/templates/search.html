@@ -12,13 +12,13 @@
 {% endblock %}
 
 {% block section %}
-<p>
+<p class="lead">
     Upload a new text file of medical journal abstracts.
 </p>
 <form action="{{ form_action }}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% include 'includes/form.html' %}
-    <button type="submit" class="btn btn-default">Upload</button>
+    <button type="submit" class="btn btn-primary">Upload</button>
 </form>
 
 <div class="controls">
