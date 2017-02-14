@@ -63,20 +63,18 @@ cd /srv/projects/temmpo/lib/dev/
 cd /srv/projects/temmpo/lib/
 chown --silent -R vagrant:vagrant dev
 
-
 echo "Creating SQLite database"
 cd /srv/projects/temmpo/lib/dev/src/temmpo
-../../bin/python manage.py migrate --settings=temmpo.settings.dev
-
-echo "MANUAL STEP: Still need to run - Create superuser"
-../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev
+sudo -u vagrant ../../bin/python manage.py migrate --settings=temmpo.settings.dev
 
 echo "Run tests"
-../../bin/python manage.py test --settings=temmpo.settings.dev
+sudo -u vagrant ../../bin/python manage.py test --settings=temmpo.settings.dev
 
-echo "Run dev server"
-../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
+echo "TODO: populate the mesh terms - import_mesh_terms import_genes"
 
+echo "## MANUAL STEP 1 Create superuser ##"
+echo "cd /srv/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev"
+
+echo "## MANUAL STEP 2 ## Run the dev server ##"
+echo "cd /srv/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev"
 echo "Open http://127.0.0.1:59099 in your local web browser"
-
-echo "TODO populate the mesh terms"
