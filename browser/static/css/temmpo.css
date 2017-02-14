@@ -182,3 +182,8 @@ padding:1em 0em;
 {
     margin-top:1em;
 }
+
+.breadcrumb>li+li:before
+{
+    content: "\21D2\00a0";
+}
