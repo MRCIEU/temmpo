@@ -12,41 +12,40 @@
 {% endblock %}
 
 {% block row %}
-    <section>
-      {% if messages %}
-      <ul class="errorlist">
-          {% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-          {% endfor %}
-      </ul>
-      {% endif %}
 
-      {% if form.non_field_errors %}
+    {% if messages %}
+        <ul class="errorlist">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if form.non_field_errors %}
         <p class="warning">The following terms have been already used as exposure, mediator, outcome or gene criteria:</p>
         <ul class="errorlist">
            {% for error in form.non_field_errors %}
            <li>{{ error }}</li>
            {% endfor %}
         </ul>
-      {% endif %}
-    </section>
+    {% endif %}
 
     {% if pre_selected_term_names %}
-    <section>
-        <h3>Current {{ type }} terms</h3>
-        <p>{{ pre_selected_term_names }}</p>
-        {# TODO Improve mechanism for moving through workflow #}
-        <a href="{{ next_url }}" class="btn btn-default">Select {{ next_type }}</a>
-    </section>
+      <section>
+          <h3>Current {{ type }} terms</h3>
+          <p>{{ pre_selected_term_names }}</p>
+          {# TODO Improve mechanism for moving through workflow #}
+          <a href="{{ next_url }}" class="btn btn-default">Select {{ next_type }}</a>
+      </section>
     {% endif %}
+
 {% endblock %}
 
 {% block section_title %}{{ form_title }}{% endblock %}
 
-{# TODO: Update for new theme - #}
 {% block left_column %}
   <section>
-    <h3>Bulk edit</h3>
+    <h2>Bulk edit</h2>
     <form action="." method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -59,7 +58,7 @@
 {% endblock %}
 
 {% block right_column %}
-      <h3>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h3>
+      <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
 
       <form action="." method="post" id="search_form">
           <!-- Search -->
@@ -67,7 +66,9 @@
             <label for="search_term" class="control-label">Search</label>
             <input id="search_term" name="search_term" type="text" value="" />
           </div>
-          <button type="submit" id="search_button" value="search" class="btn btn-primary btn-small">Search</button>
+          <div class="form-group">
+            <button type="submit" id="search_button" value="search" class="btn btn-primary btn-small">Search</button>
+          </div>
       </form>
 
       <form action="." method="post">
@@ -76,9 +77,14 @@
           {# Ajax version #}
           <div id="term_tree">
           </div>
-          <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-small">Select these terms and choose more {{ type }} terms</button>
-          
-          <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-small">Select these terms and move on to select {{ next_type }}</button>
+
+          <div class="form-group">
+            <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-small">Select these terms and choose more {{ type }} terms</button>
+          </div>
+
+          <div class="form-group">
+              <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-small">Select these terms and move on to select {{ next_type }}</button>
+          </div>
 
           <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
       </form>
