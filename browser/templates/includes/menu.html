@@ -48,23 +48,23 @@
                     </div>
                     <!-- /input-group -->
                 </li>
-                <li {% if active == "home" %}class="active"{% endif %}>
-                    <a href="{% url 'home' %}"><i class="fa fa-home fa-fw"></i> Home</a>
+                <li>
+                    <a href="{% url 'home' %}" {% if active == "home" %}class="active"{% endif %}><i class="fa fa-home fa-fw"></i> Home</a>
                 </li>
-                <li {% if active == "credits" %}class="active"{% endif %}>
-                    <a href="{% url 'credits' %}"><i class="fa fa-files-o fa-fw"></i> Credits</a>
+                <li>
+                    <a href="{% url 'credits' %}" {% if active == "credits" %}class="active"{% endif %}><i class="fa fa-files-o fa-fw"></i> Credits</a>
                 </li>
-                <li {% if active == "search" %}class="active"{% endif %}>
-                    <a href="{% url 'search' %}"><i class="fa fa-search fa-fw"></i> Search</a>
+                <li>
+                    <a href="{% url 'search' %}" {% if active == "search" %}class="active"{% endif %}><i class="fa fa-search fa-fw"></i> Search</a>
                 </li>
                 {% if user.is_authenticated %}
-                    <li {% if active == "results" %}class="active"{% endif %}><a href="{% url 'results_listing' %}"><i class="fa fa-bar-chart-o fa-fw"></i> Results</a></li>
+                    <li><a href="{% url 'results_listing' %}" {% if active == "results" %}class="active"{% endif %}><i class="fa fa-bar-chart-o fa-fw"></i> Results</a></li>
                     <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i>Logout</a></li>
 
                 {% else %}
 
-                   <li {% if active == "register" %}class="active"{% endif %}><a href="{% url 'registration_register' %}"><i class="fa fa-wrench fa-fw"></i>Register</a></li>
-                   <li {% if active == "login" %}class="active"{% endif %}><a href="{% url 'login' %}"><i class="fa fa-sign-in fa-fw"></i>Login</a></li>
+                   <li><a href="{% url 'registration_register' %}"  {% if active == "register" %}class="active"{% endif %}><i class="fa fa-wrench fa-fw"></i>Register</a></li>
+                   <li><a href="{% url 'login' %}" {% if active == "login" %}class="active"{% endif %}><i class="fa fa-sign-in fa-fw"></i>Login</a></li>
                 {% endif %}
             </ul>
         </div>
