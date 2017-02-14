@@ -299,6 +299,7 @@ class FilterSelector(UpdateView):
         context = super(FilterSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select a filter'
         context['active'] = 'search'
+        context['type'] = 'filter'
         return context
 
     def form_valid(self, form):
