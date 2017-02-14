@@ -59,7 +59,6 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li {% if active == "results" %}class="active"{% endif %}><a href="{% url 'results_listing' %}"><i class="fa fa-bar-chart-o fa-fw"></i> Results</a></li>
-                    <li {% if active == "password_change" %}class="active"{% endif %}><a href="{% url 'password_change' %}"><i class="fa fa-user fa-fw"></i> Change password</a></li>
                     <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i>Logout</a></li>
 
                 {% else %}

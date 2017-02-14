@@ -15,7 +15,7 @@
     <form action="." method="post">
         {% csrf_token %}
 
-        {{ form.as_p }}
+        {% include 'includes/form.html' %}
 
         <p>Searches can take a long time.</p>
         <!--  so you will be emailed when yours has finished and data is available -->
