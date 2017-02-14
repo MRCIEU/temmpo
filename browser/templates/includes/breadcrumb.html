@@ -1,16 +1,16 @@
 <div id="breadcrumb">
 	<ol class="breadcrumb">
-		<li class="breadcrumb-item {% if active == "search" %} active{% endif %}"><a href="{% url 'search' %}" data-toggle="tab">Abstracts</a></li>
+		<li {% if active == "search" %} active{% endif %}"><a href="{% url 'search' %}">Abstracts</a></li>
 		{% if object %}
-		      <li class="breadcrumb-item"><a data-toggle="tab" href="{% url 'exposure_selector' object.id %}">Exposures</a></li>
-		      <li class="breadcrumb-item"><a data-toggle="tab" href="{% url 'mediator_selector' object.id %}">Mediators</a></li>
-		      <li class="breadcrumb-item"><a data-toggle="tab" href="{% url 'outcome_selector' object.id %}">Outcomes</a></li>
-		      <li class="breadcrumb-item"><a data-toggle="tab" href="{% url 'filter_selector' object.id %}">Genes &amp; Filter</a></li>
+		      <li><a href="{% url 'exposure_selector' object.id %}">Exposures</a></li>
+		      <li><a href="{% url 'mediator_selector' object.id %}">Mediators</a></li>
+		      <li><a href="{% url 'outcome_selector' object.id %}">Outcomes</a></li>
+		      <li><a href="{% url 'filter_selector' object.id %}">Genes &amp; Filter</a></li>
 		{% else %}
-		      <li class="breadcrumb-item">Exposures</li>
-		      <li class="breadcrumb-item">Mediators</li>
-		      <li class="breadcrumb-item">Outcomes</li>
-		      <li class="breadcrumb-item">Genes &amp; Filter</li>
+		      <li>Exposures</li>
+		      <li>Mediators</li>
+		      <li>Outcomes</li>
+		      <li>Genes &amp; Filter</li>
 		{% endif %}
 	</ol>
 </div>
