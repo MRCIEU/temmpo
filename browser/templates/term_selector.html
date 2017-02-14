@@ -1,4 +1,4 @@
-{% extends "threecolumn.html" %}
+{% extends "tworowscolumns.html" %}
 
 {% block title %}TeMMPo: Select {{ type }} MeSH® terms{% endblock %}
 
@@ -8,12 +8,11 @@
 {% endblock %}
 
 {% block page_heading %}
-{% include 'includes/breadcrumb.html' %}
-{% enblock %}
+    {% include 'includes/breadcrumb.html' %}
+{% endblock %}
 
-{% block left_column %}
+{% block row %}
     <section>
-      <h2>{{ form_title }}</h2>
       {% if messages %}
       <ul class="errorlist">
           {% for message in messages %}
@@ -42,28 +41,33 @@
     {% endif %}
 {% endblock %}
 
-{% block middle_column %}
+{% block section_title %}{{ form_title }}{% endblock %}
+
+{# TODO: Update for new theme - #}
+{% block left_column %}
   <section>
     <h3>Bulk edit</h3>
     <form action="." method="post">
         {% csrf_token %}
-        <label for="term_names">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
-        <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
-        <button type="submit" name="btn_submit" value="replace" class="sml-button btn btn-default">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
+        <div class="form-group">
+          <label for="term_names" class="control-label">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
+          <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
+        </div>
+        <button type="submit" name="btn_submit" value="replace" class="btn btn-primary btn-small">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
     </form>
   </section>
 {% endblock %}
 
 {% block right_column %}
-    {# if selected_tree_root_node #}
       <h3>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h3>
-
 
       <form action="." method="post" id="search_form">
           <!-- Search -->
-          <label for="search_term">Search</label>
-          <input id="search_term" name="search_term" type="text" value="" />
-          <button type="submit" id="search_button" value="search" class="sml-button btn btn-default">Search</button>
+          <div class="form-group"> {# TODO: Update for new theme - confirm if styles are clashing with tree #}
+            <label for="search_term" class="control-label">Search</label>
+            <input id="search_term" name="search_term" type="text" value="" />
+          </div>
+          <button type="submit" id="search_button" value="search" class="btn btn-primary btn-small">Search</button>
       </form>
 
       <form action="." method="post">
@@ -72,9 +76,9 @@
           {# Ajax version #}
           <div id="term_tree">
           </div>
-          <button type="submit" name="btn_submit" value="choose" class="sml-button btn btn-default">Select these terms and choose more {{ type }} terms</button>
+          <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-small">Select these terms and choose more {{ type }} terms</button>
           
-          <button type="submit" name="btn_submit" value="progress" class="sml-button btn btn-default">Select these terms and move on to select {{ next_type }}</button>
+          <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-small">Select these terms and move on to select {{ next_type }}</button>
 
           <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
       </form>
