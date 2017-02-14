@@ -168,9 +168,17 @@ padding:1em 0em;
     margin-right: auto
 }
 
-#copyright {padding-top:1em;}
+#copyright 
+{
+    padding-top:1em;
+}
 
 .errorlist, .warning
 {
   color: #800000;
+}
+
+#breadcrumb 
+{
+    margin-top:1em;
 }
