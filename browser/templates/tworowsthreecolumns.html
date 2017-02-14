@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        {% include 'includes/header.html' %}
+        {% block styles %}{% endblock %}
+    </head>
+
+    <div id="wrapper">
+
+        {% include 'includes/menu.html' %}
+
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">{% block section_title %}{% endblock %}</h1>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% block page_heading %}{% endblock %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% block row %}{% endblock %}
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        {% block left_column %}{% endblock %}
+                    </div>
+                    <!-- /.col-lg-4 -->
+
+                    <div class="col-lg-4">
+                        {% block middle_column %}{% endblock %}
+                    </div>
+                    <!-- /.col-lg-4 -->
+
+                    <div class="col-lg-4">
+                        {% block right_column %}{% endblock %}
+                    </div>
+                    <!-- /.col-lg-4 -->
+
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% include 'includes/footer.html' %}
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    {% include 'includes/javascript.html' %}
+
+</body>
+
+</html>
