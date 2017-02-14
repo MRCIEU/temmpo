@@ -14,11 +14,11 @@
 {% block section %}
     <form action="." method="post">
         {% csrf_token %}
-
         {% include 'includes/form.html' %}
-
-        <p>Searches can take a long time.</p>
-        <!--  so you will be emailed when yours has finished and data is available -->
-        <button type="submit" class="btn btn-default">Start search</button>
+        <div class="form-group">
+            <p class="help-block">Searches can take a long time.</p>
+        </div>
+        {# so you will be emailed when yours has finished and data is available #}
+        <button type="submit" class="btn btn-primary">Start search</button>
     </form>
 {% endblock %}

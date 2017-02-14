@@ -35,7 +35,7 @@
           <h3>Current {{ type }} terms</h3>
           <p>{{ pre_selected_term_names }}</p>
           {# TODO Improve mechanism for moving through workflow #}
-          <a href="{{ next_url }}" class="btn btn-default">Select {{ next_type }}</a>
+          <a href="{{ next_url }}" class="btn btn-primary">Select {{ next_type }}</a>
       </section>
     {% endif %}
 
@@ -52,7 +52,7 @@
           <label for="term_names" class="control-label">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
           <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
         </div>
-        <button type="submit" name="btn_submit" value="replace" class="btn btn-primary btn-small">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
+        <button type="submit" name="btn_submit" value="replace" class="btn btn-primary btn-sm btn-outline">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
     </form>
   </section>
 {% endblock %}
@@ -67,7 +67,7 @@
             <input id="search_term" name="search_term" type="text" value="" />
           </div>
           <div class="form-group">
-            <button type="submit" id="search_button" value="search" class="btn btn-primary btn-small">Search</button>
+            <button type="submit" id="search_button" value="search" class="btn btn-primary btn-sm btn-outline">Search</button>
           </div>
       </form>
 
@@ -79,11 +79,11 @@
           </div>
 
           <div class="form-group">
-            <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-small">Select these terms and choose more {{ type }} terms</button>
+            <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-sm btn-outline">Select these terms and choose more {{ type }} terms</button>
           </div>
 
           <div class="form-group">
-              <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-small">Select these terms and move on to select {{ next_type }}</button>
+              <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-sm btn-outline">Select these terms and move on to select {{ next_type }}</button>
           </div>
 
           <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />

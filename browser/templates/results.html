@@ -5,29 +5,28 @@
 {% block styles %}
 {% endblock %}
 
+{% block section_title %}
+Results
+{% endblock %}
+
+{% block page_heading %}
+
+      {% if search_result.mesh_filter %}
+        <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.</p>
+      {% else %}
+        <p>Limited to the top 50 matches.</p>
+      {% endif %}
+
+      <div class="form-group"><a href="{{ csv_url }}" class="btn btn-outline btn-primary">Download as CSV</a></div>
+
+{% endblock %}
+
 {% block section %}
 <!--
 <p>
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 -->
-<table id="result-header">{# TODO: Update for new theme #}
-  <tr>
-    <td>
-      <h2>Results</h2>
-    </td>
-    <td>
-      {% if search_result.mesh_filter %}
-        <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.</p>
-      {% else %}
-        <p>Limited to the top 50 matches.</p>
-      {% endif %}
-    </td>
-    <td>
-      <p><a href="{{ csv_url }}">Download as CSV</a></p>
-    </td>
-  </tr>
-</table>
 <p id="chart"></p>
 {% endblock %}
 
