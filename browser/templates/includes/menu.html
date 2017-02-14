@@ -63,10 +63,13 @@
 
                 {% else %}
 
-                   <li><a href="{% url 'registration_register' %}"  {% if active == "register" %}class="active"{% endif %}><i class="fa fa-wrench fa-fw"></i>Register</a></li>
+                   <li><a href="{% url 'registration_register' %}" {% if active == "register" %}class="active"{% endif %}><i class="fa fa-wrench fa-fw"></i>Register</a></li>
                    <li><a href="{% url 'login' %}" {% if active == "login" %}class="active"{% endif %}><i class="fa fa-sign-in fa-fw"></i>Login</a></li>
                 {% endif %}
             </ul>
+
+            <a href="{% url 'home' %}"><img width="99%" style="max-width:434px" src="{{ STATIC_URL }}images/temmpo-logo-cropped.jpg" alt="TeMMPo logo" class="center-block img-responsive" /></a>
+
         </div>
         <!-- /.sidebar-collapse -->
     </div>
