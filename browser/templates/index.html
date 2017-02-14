@@ -7,50 +7,51 @@
         {% block styles %}{% endblock %}
     </head>
 
-    <div id="wrapper">
+    <body>
+        <div id="wrapper">
 
-        {% include 'includes/menu.html' %}
+            {% include 'includes/menu.html' %}
 
-        <!-- Page Content -->
-        <div id="page-wrapper">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h1 class="page-header">{% block section_title %}{% endblock %}</h1>
-                    </div>
-                </div>
-                <!-- /.col-lg-12 -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        {% block page_heading %}{% endblock %}
-                    </div>
-                </div>
-                <!-- /.col-lg-12 -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        {% block section %}{% endblock %}
-
-                        {% block additional_content %}{% endblock %}
+            <!-- Page Content -->
+            <div id="page-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1 class="page-header">{% block section_title %}{% endblock %}</h1>
+                        </div>
                     </div>
                     <!-- /.col-lg-12 -->
-                </div>
-                <!-- /.row -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        {% include 'includes/footer.html' %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% block page_heading %}{% endblock %}
+                        </div>
                     </div>
                     <!-- /.col-lg-12 -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% block section %}{% endblock %}
+
+                            {% block additional_content %}{% endblock %}
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% include 'includes/footer.html' %}
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <!-- /.row -->
                 </div>
-                <!-- /.row -->
+                <!-- /.container-fluid -->
             </div>
-            <!-- /.container-fluid -->
+            <!-- /#page-wrapper -->
         </div>
-        <!-- /#page-wrapper -->
-    </div>
-    <!-- /#wrapper -->
+        <!-- /#wrapper -->
 
-    {% include 'includes/javascript.html' %}
+        {% include 'includes/javascript.html' %}
 
-</body>
+    </body>
 
 </html>
