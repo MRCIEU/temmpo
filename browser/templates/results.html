@@ -17,7 +17,9 @@ Results
         <p>Limited to the top 50 matches.</p>
       {% endif %}
 
-      <div class="form-group"><a href="{{ csv_url }}" class="btn btn-outline btn-primary">Download as CSV</a></div>
+      <div class="form-group">
+        <a href="{{ csv_url }}" class="btn btn-outline btn-primary">Download as CSV</a> <!-- a href="{# criteria_url #}" class="btn btn-outline btn-primary">Search criteria</a -->
+      </div>
 
 {% endblock %}
 
@@ -32,15 +34,17 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
 
 {% block scripts %}
 {# Chart related JS #}
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 <script src="{{ STATIC_URL}}js/sankey.js"></script>
 
 <script>
 var threshold = 50;
+var availableHeight = 960;
+var availableWidth = $("#chart").width();
 
 var margin = {top: 1, right: 1, bottom: 6, left: 1},
-    width = 960 - margin.left - margin.right,
-    height = 960 - margin.top - margin.bottom;
+    width = availableWidth - margin.left - margin.right,
+    height = availableHeight - margin.top - margin.bottom;
 
 var formatNumber = d3.format(",.0f"),
     format = function(d) { return formatNumber(d) + " abstracts"; },
@@ -131,4 +135,5 @@ d3.json("{{ json_url }}", function(matches) {
   }
 });
 </script>
+
 {% endblock %}
