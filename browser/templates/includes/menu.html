@@ -13,6 +13,7 @@
 
     <ul class="nav navbar-top-links navbar-right">
         <li class="dropdown">
+            {# TODO Need to review drop down location when in mobile view port, as only one item this is off screen, could move all items to left hand menu #}
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
             </a>
@@ -37,17 +38,6 @@
     <div class="navbar-default sidebar" role="navigation">
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">
-                <li class="sidebar-search">
-                    <div class="input-group custom-search-form">
-                        <input type="text" class="form-control" placeholder="Search...">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </span>
-                    </div>
-                    <!-- /input-group -->
-                </li>
                 <li>
                     <a href="{% url 'home' %}" {% if active == "home" %}class="active"{% endif %}><i class="fa fa-home fa-fw"></i> Home</a>
                 </li>
