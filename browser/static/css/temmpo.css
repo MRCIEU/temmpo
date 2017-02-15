@@ -21,7 +21,7 @@ dd {
   height: 100%;
 }*/
 
-/*.node rect {
+.node rect {
   cursor: move;
   fill-opacity: .9;
   shape-rendering: crispEdges;
@@ -41,7 +41,7 @@ dd {
 .link:hover {
   stroke-opacity: .5;
 }
-*/
+
 /* Tree browser */
 
 /*#terms
