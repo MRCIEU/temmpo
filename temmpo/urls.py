@@ -9,7 +9,7 @@ from browser.views import (HomeView, CreditsView, SearchOvidMEDLINE, ResultsView
                            CriteriaView, CountDataView, AbstractDataView,
                            JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
                            MeshTermsAllAsJSON, MeshTermSearchJSON, SelectSearchTypeView,
-                           SearchPubMedView)
+                           SearchPubMedView, ReuseSearchView)
 
 urlpatterns = patterns(
     '',
@@ -19,6 +19,7 @@ urlpatterns = patterns(
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
     url(r'^search/$', SelectSearchTypeView.as_view(), name='search'),
+    url(r'^search/select/$', ReuseSearchView.as_view(), name='reuse_search'),
     url(r'^search/ovidmedline/$', SearchOvidMEDLINE.as_view(), name='search_ovid_medline'),
     url(r'^search/pubmed/$', SearchPubMedView.as_view(), name='search_pubmed'),
     url(r'^search/edit/(?P<pk>\d+)/$', SearchExisting.as_view(), name="edit_search"),  # Create a new search based on an existing search criteria

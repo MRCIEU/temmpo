@@ -21,7 +21,15 @@
                     <a href="{% url 'credits' %}" {% if active == "credits" %}class="active"{% endif %}><i class="fa fa-files-o fa-fw"></i> Credits</a>
                 </li>
                 <li>
-                    <a href="{% url 'search' %}" {% if active == "search" %}class="active"{% endif %}><i class="fa fa-search fa-fw"></i> Search</a>
+                    <a href="#" {% if active == "search" %}class="active"{% endif %}><i class="fa fa-search fa-fw"></i> Search <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse">
+                        <li>
+                            <a href="{% url 'search' %}">Upload abstracts</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'reuse_search' %}">Reuse existing search</a>
+                        </li>
+                    </ul>
                 </li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'results_listing' %}" {% if active == "results" %}class="active"{% endif %}><i class="fa fa-bar-chart-o fa-fw"></i> Results</a></li>

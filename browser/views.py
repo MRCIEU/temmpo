@@ -52,6 +52,21 @@ class SelectSearchTypeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SelectSearchTypeView, self).get_context_data(**kwargs)
         context['active'] = 'search'
+        return context
+
+
+class ReuseSearchView(TemplateView):
+    template_name = "reuse_search.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Ensure user logs in before viewing the reuse search list
+        """
+        return super(ReuseSearchView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ReuseSearchView, self).get_context_data(**kwargs)
+        context['active'] = 'search'
         context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
         context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
         return context
