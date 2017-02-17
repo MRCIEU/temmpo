@@ -10,17 +10,15 @@ Results
 {% endblock %}
 
 {% block page_heading %}
-
+<p>
       {% if search_result.mesh_filter %}
-        <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.</p>
+        Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.
       {% else %}
-        <p>Limited to the top 50 matches.</p>
+        Limited to the top 50 matches.
       {% endif %}
 
-      <div class="form-group">
-        <a href="{{ csv_url }}" class="btn btn-outline btn-primary">Download as CSV</a> <!-- a href="{# criteria_url #}" class="btn btn-outline btn-primary">Search criteria</a -->
-      </div>
-
+      <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
+</p>
 {% endblock %}
 
 {% block section %}
@@ -134,6 +132,7 @@ d3.json("{{ json_url }}", function(matches) {
     link.attr("d", path);
   }
 });
+
 </script>
 
 {% endblock %}

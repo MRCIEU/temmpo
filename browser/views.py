@@ -352,6 +352,7 @@ class ResultsView(TemplateView):
         context['search_result'] = self.search_result
         context['json_url'] = json_filename
         context['csv_url'] = csv_filename
+        context['criteria_url'] = reverse('criteria', kwargs={'pk': self.search_result.criteria.id})
         return context
 
 
@@ -401,7 +402,8 @@ class CriteriaView(DetailView):
         context['mediators'] = "; ".join(self.object.get_wcrf_input_variables('mediator'))
         context['outcomes'] = "; ".join(self.object.get_wcrf_input_variables('outcome'))
         context['genes'] = ", ".join(self.object.get_wcrf_input_variables('gene'))
-        context['url'] = reverse('edit_search', kwargs={'pk': self.object.id})
+        context['reuse_criteria_url'] = reverse('edit_search', kwargs={'pk': self.object.id})
+        context['reuse_abstract_url'] = reverse('reuse_upload', kwargs={'pk': self.object.upload.id})
 
         return context
 
