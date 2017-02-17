@@ -187,3 +187,8 @@ padding:1em 0em;
 {
     content: "\21D2\00a0";
 }
+
+.page-header
+{
+  margin-top: 30px !important;
+}
