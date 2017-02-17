@@ -32,17 +32,17 @@
                 </div>
                 <!-- /.col-lg-12 -->
                 <div class="row">
-                    <div class="col-lg-4">
+                    <div class="col-lg-{% block left_width %}4{% endblock %}">
                         {% block left_column %}{% endblock %}
                     </div>
                     <!-- /.col-lg-4 -->
 
-                    <div class="col-lg-4">
+                    <div class="col-lg-{% block middle_width %}4{% endblock %}">
                         {% block middle_column %}{% endblock %}
                     </div>
                     <!-- /.col-lg-4 -->
 
-                    <div class="col-lg-4">
+                    <div class="col-lg-{% block right_width %}4{% endblock %}">
                         {% block right_column %}{% endblock %}
                     </div>
                     <!-- /.col-lg-4 -->

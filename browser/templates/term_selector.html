@@ -1,4 +1,4 @@
-{% extends "tworowscolumns.html" %}
+{% extends "tworowsthreecolumns.html" %}
 
 {% block title %}TeMMPo: Select {{ type }} MeSH® terms{% endblock %}
 
@@ -11,8 +11,16 @@
     {% include 'includes/breadcrumb.html' %}
 {% endblock %}
 
-{% block row %}
+{% block section_title %}{{ form_title }}{% endblock %}
 
+{% block left_width %}3{% endblock %}
+{% block middle_width %}2{% endblock %}
+{% block right_width %}7{% endblock %}
+
+{% block row %}
+{% if pre_selected_term_names %}<a href="{{ next_url }}" class="btn btn-primary">Now select {{ next_type }} &nbsp;<span class="fa fa-angle-double-right">&nbsp;</span></a>{% endif %}
+{% endblock %}
+{% block left_column %}
     {% if messages %}
         <ul class="errorlist">
             {% for message in messages %}
@@ -30,20 +38,16 @@
         </ul>
     {% endif %}
 
-    {% if pre_selected_term_names %}
+    {# if pre_selected_term_names #}
       <section>
-          <h3>Current {{ type }} terms</h3>
+          <h2>Current {{ type }} terms</h2>
           <p>{{ pre_selected_term_names }}</p>
-          {# TODO Improve mechanism for moving through workflow #}
-          <a href="{{ next_url }}" class="btn btn-primary">Select {{ next_type }}</a>
       </section>
-    {% endif %}
+    {# endif #}
 
 {% endblock %}
 
-{% block section_title %}{{ form_title }}{% endblock %}
-
-{% block left_column %}
+{% block middle_column %}
   <section>
     <h2>Bulk edit</h2>
     <form action="." method="post">
@@ -60,9 +64,24 @@
 {% block right_column %}
       <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
 
+      <form action="." method="post" id="select_child_nodes">
+          <!-- Search -->
+          <div class="form-group">
+            <label for="on">Select descendent MeSH® terms</label>
+            <label for="on" class="radio-inline">
+                <input id="on" value="down" type="radio" name="childnodes">
+                Yes
+            </label>
+            <label for="off" class="radio-inline">
+              <input id="off" value="undetermined" type="radio" name="childnodes" checked>
+              No
+            </label>
+          </div>
+      </form>
+
       <form action="." method="post" id="search_form">
           <!-- Search -->
-          <div class="form-group"> {# TODO: Update for new theme - confirm if styles are clashing with tree #}
+          <div class="form-group">
             <label for="search_term" class="control-label">Search</label>
             <input id="search_term" name="search_term" type="text" value="" />
           </div>
@@ -97,6 +116,11 @@
 
       <script type="text/javascript">
         $(function() {
+
+          $('#term_tree').on("init.jstree", function (e, data) {
+              data.instance.settings.checkbox.cascade = '';
+          })
+
           $("#term_tree").jstree({
             "plugins" : [ "checkbox", "search"],
             "core" : {
@@ -111,17 +135,31 @@
                 "ajax" : {
                   "url" : "{{ json_search_url }}"
                 }
-              }
+            },
+            /* Add a radio button toggle to select child nodes or not - default to not */
+            "checkbox" : { 
+              "three_state" : false,
+              "cascade" : "down"
+            }
           });
         });
 
-        // TODO: Preferably add visual queue to when the search has completed
+        // TODO: Preferably add visual cue to when the search has completed
         // possibly hide control / show a spinner
-        // Need to hide on complete of the .search event.        
+        // Need to hide on complete of the .search event.
         $( "document" ).ready(function () {
               $('#search_form').submit(function (event) {
                   var v = $('#search_term').val();
                   $('#term_tree').jstree(true).search(v);
+                  event.preventDefault();
+              });
+
+              /* Allow user to toggle whether or not child terms are selected as well */
+              $('#select_child_nodes input').change(function (event) {
+                  var v = $('#select_child_nodes input:checked').val();
+                  console.log(v);
+                  $('#term_tree').jstree(true).settings.checkbox.cascade = v;
+
                   event.preventDefault();
               });
         });
