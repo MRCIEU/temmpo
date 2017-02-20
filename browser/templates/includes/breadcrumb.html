@@ -1,16 +1,44 @@
+{# Should not be able to return to the Abstract upload page #}
+{# Should not be able to skip any steps #}
 <div id="breadcrumb">
-    <ul class="crumbs">
-      <li class="first"><span></span><a style="z-index:9;" href="#">Abstracts</a></li>
-      {% if object %}
-	      <li><a style="z-index:8;" href="{% url 'exposure_selector' object.id %}">Exposures</a></li>
-	      <li><a  style="z-index:7;" href="{% url 'mediator_selector' object.id %}">Mediators</a></li>
-	      <li><a  style="z-index:6;" href="{% url 'outcome_selector' object.id %}">Outcomes</a></li>
-	      <li class="last"><a  style="z-index:5;" href="{% url 'filter_selector' object.id %}">Genes &amp; Filter</a></li>
-      {% else %}
-	      <li><a style="z-index:8;" href="#">Exposures</a></li>
-	      <li><a  style="z-index:7;" href="#">Mediators</a></li>
-	      <li><a  style="z-index:6;" href="#">Outcomes</a></li>
-	      <li class="last"><a  style="z-index:5;" href="#">Genes &amp; Filter</a></li>
-      {% endif %}
-    </ul>
+    <ol class="breadcrumb">
+        <li>Abstracts</li>
+        {% if object %}
+              {% if type == "exposure" %}
+                <li class="active">Exposures</li>
+              {% else %}
+                <li><a href="{% url 'exposure_selector' object.id %}">Exposures</a></li>
+              {% endif %}
+
+              {% if type == "mediator" %}
+                <li class="active">Mediators</li>
+              {% elif object.exposure_terms.count %}
+                <li><a href="{% url 'mediator_selector' object.id %}">Mediators</a></li>
+              {% else %}
+                <li>Mediators</li>
+              {% endif %}
+
+              {% if type == "outcome" %}
+                <li class="active">Outcomes</li>
+              {% elif object.mediator_terms.count %}
+                <li><a href="{% url 'outcome_selector' object.id %}">Outcomes</a></li>
+              {% else %}
+                <li>Outcomes</li>
+              {% endif %}
+
+              {% if type == "filter" %}
+                <li class="active">Genes &amp; Filter</li>
+              {% elif object.outcome_terms.count %}
+                <li><a href="{% url 'filter_selector' object.id %}">Genes &amp; Filter</a></li>
+              {% else %}
+                <li>Genes &amp; Filter</li>
+              {% endif %}
+
+        {% else %}
+              <li>Exposures</li>
+              <li>Mediators</li>
+              <li>Outcomes</li>
+              <li>Genes &amp; Filter</li>
+        {% endif %}
+    </ol>
 </div>

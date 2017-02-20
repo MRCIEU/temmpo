@@ -1,0 +1,51 @@
+{% extends "tworowscolumns.html" %}
+
+{% block title %}TeMMPo: Reuse a previous search{% endblock %}
+
+{% block section_title %}Reuse a previous search{% endblock %}
+
+{% block page_heading %}
+{% include 'includes/breadcrumb.html' %}
+{% endblock %}
+
+{% block row %}
+<p class="lead">Reuse an existing upload or search criteria.</p>
+{% endblock %}
+
+{% block left_column %}
+
+  <div class="panel panel-default">
+      <div class="panel-heading">
+          Files
+      </div>
+      <div class="panel-body">
+        <ul class="link-list" id="reuse-uploads">
+            {% for upload in uploads %}
+                <li class="item"><a href="{% url 'reuse_upload' pk=upload.id %}">{{ upload|truncatechars:70 }}</a></li>
+            {% empty %}
+                <li>No previously uploaded abstracts.</li>
+            {% endfor %}
+        </ul>
+      </div>
+  </div>
+  {# TODO Need to paginate or collapse list at some point #}
+{% endblock %}
+
+{% block right_column %}
+
+  <div class="panel panel-default">
+      <div class="panel-heading">
+          Search criteria
+      </div>
+      <div class="panel-body">
+        <ul class="link-list" id="reuse-criteria">
+            {% for search in criteria %}
+                <li class="item"><a href="{% url 'criteria' pk=search.id %}">{{ search|truncatechars:70 }}</a></li>
+            {% empty %}
+                <li>No saved search criteria.</li>
+            {% endfor %}
+        </ul>
+      </div>
+  </div>
+  {# TODO  Need to paginate or collapse list at some point #}
+{% endblock %}

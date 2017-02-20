@@ -1,38 +1,6 @@
-{% extends "twocolumn1.html" %}
+{% extends "tworowscolumns.html" %}
 
 {% block title %}TeMMPo: Search{% endblock %}
-
-{% block scripts %}
-<script src="{{ STATIC_URL}}js/readmore-readless-0.1.4/js/jquery.readmore-readless.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        // // Initialize the plugin with no custom options
-        $("#example-a").readMoreReadLess({
-            itemInSummary: 1,
-            readMoreText: 'Show more ...',
-            readLessText: 'Show less ...',
-        });
-
-        $("#example-b").readMoreReadLess({
-            itemInSummary: 1,
-            readMoreText: 'Show more ...',
-            readLessText: 'Show less ...',
-        });
-
-        $("#reuse-criteria").readMoreReadLess({
-            itemInSummary: 5,
-            readMoreText: 'Show more ...',
-            readLessText: 'Show less ...',
-        });
-
-        $("#reuse-uploads").readMoreReadLess({
-            itemInSummary: 5,
-            readMoreText: 'Show more ...',
-            readLessText: 'Show less ...',
-        });
-    });
-</script>
-{% endblock %}
 
 {% block section_title %}Upload abstracts to search{% endblock %}
 
@@ -40,21 +8,34 @@
 {% include 'includes/breadcrumb.html' %}
 {% endblock %}
 
-{% block section %}
-<div id="example-a" class="file-example">
-<a href="{% url 'search_ovid_medline' %}" class="button sentence-case sml-button">Upload OVID MEDLINE® formatted abstracts</a>
-<p>&dash; with MeSH Subject Headings, see example below:</p>
-<div class="outer">
-<pre class="item">
-&lt;1&gt;
+{% block row %}
+<p class="lead">Upload your abstracts in either OVID MEDLINE&reg; or PubMed MEDLINE&reg; format.</p>
+{% endblock %}
+
+{% block left_column %} 
+<h2>OVID MEDLINE&reg;</h2>
+
+<div class="form-group">
+  <a href="{% url 'search_ovid_medline' %}" class="btn btn-primary">Upload OVID MEDLINE&reg; formatted abstracts</a>
+</div>
+
+<div class="panel-group" id="accordion-ovid-medline">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion-ovid-medline" href="#collapseOne">View an example OVID MEDLINE&reg; file</a>
+            </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p>&dash; Includes &quot;MeSH Subject Headings&quot;</p>
+        <pre>&lt;1&gt;
 Unique Identifier
   23482392
 Record Owner
   From MEDLINE, a database of the U.S. National Library of Medicine.
 Status
   MEDLINE
-</pre>
-<pre  class="item">
 Authors
   Li C.  Han J.  Yao Q.  Zou C.  Xu Y.  Zhang C.  Shang D.  Zhou L.  Zou C.  Sun Z.  Li J.  Zhang Y.  Yang H.  Gao X.  Li X.
 Authors Full Name
@@ -80,8 +61,6 @@ MeSH Subject Headings
     Prostatic Neoplasms/me [Metabolism]
     Prostatic Neoplasms/pa [Pathology]
     *Transcriptome
-</pre>
-<pre  class="item">
 Abstract
   Various 'omics' technologies, including microarrays and gas chromatography mass spectrometry, can be used to identify hundreds of interesting genes, proteins and metabolites, such as differential genes, proteins and metabolites associated with diseases. Identifying metabolic pathways has become an invaluable aid to understanding the genes and metabolites associated with studying conditions. However, the classical methods used to identify pathways fail to accurately consider joint power of interesting gene/metabolite and the key regions impacted by them within metabolic pathways. In this study, we propose a powerful analytical method referred to as Subpathway-GM for the identification of metabolic subpathways. This provides a more accurate level of pathway analysis by integrating information from genes and metabolites, and their positions and cascade regions within the given pathway. We analyzed two colorectal cancer and one metastatic prostate cancer data sets and demonstrated that Subpathway-GM was able to identify disease-relevant subpathways whose corresponding entire pathways might be ignored using classical entire pathway identification methods. Further analysis indicated that the power of a joint genes/metabolites and subpathway strategy based on their topologies may play a key role in reliably recalling disease-relevant subpathways and finding novel subpathways.
 Registry Number/Name of Substance
@@ -95,17 +74,34 @@ Year of Publication
 Link to the Ovid Full Text or citation
  http://ovidsp.ovid.com/ovidweb.cgi?T=JS&amp;CSC=Y&amp;NEWS=N&amp;PAGE=fulltext&amp;D=medl&amp;AN=23482392
 Link to the External Link Resolver
- http://linkserver.bristol.ac.uk:9003/prod?sid=OVID:medline&amp;id=pmid:23482392&amp;id=doi:10.1093%2Fnar%2Fgkt161&amp;issn=0305-1048&amp;isbn=&amp;volume=41&amp;issue=9&amp;spage=e101&amp;pages=e101&amp;date=2013&amp;title=Nucleic+Acids+Research&amp;atitle=Subpathway-GM%3A+identification+of+metabolic+subpathways+via+joint+power+of+interesting+genes+and+metabolites+and+their+topologies+within+pathways.&amp;aulast=Li&amp;pid=%3Cauthor%3ELi+C%3C%2Fauthor%3E%3CAN%3E23482392%3C%2FAN%3E%3CDT%3EJournal+Article%3C%2FDT%3E
-</pre>
+ http://linkserver.bristol.ac.uk:9003/prod?sid=OVID:medline&amp;id=pmid:23482392&amp;id=doi:10.1093%2Fnar%2Fgkt161&amp;issn=0305-1048&amp;isbn=&amp;volume=41&amp;issue=9&amp;spage=e101&amp;pages=e101&amp;date=2013&amp;title=Nucleic+Acids+Research&amp;atitle=Subpathway-GM%3A+identification+of+metabolic+subpathways+via+joint+power+of+interesting+genes+and+metabolites+and+their+topologies+within+pathways.&amp;aulast=Li&amp;pid=%3Cauthor%3ELi+C%3C%2Fauthor%3E%3CAN%3E23482392%3C%2FAN%3E%3CDT%3EJournal+Article%3C%2FDT%3E</pre>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
+<!-- / #accordion-ovid-medline -->
 
-<div id="example-b"  class="file-example">
-<a  href="{% url 'search_pubmed' %}" class="button sentence-case sml-button">Upload PubMed MEDLINE® formatted abstracts (BETA)</a>
-<p>&dash; requires MH, see example below:</p>
-<div class="outer">
-<pre  class="item">
-PMID- 26010633
+{% endblock %}
+
+
+{% block right_column %}
+<h2>PubMed MEDLINE&reg;</h2>
+<div class="form-group">
+  <a  href="{% url 'search_pubmed' %}" class="btn btn-primary">Upload PubMed MEDLINE&reg; formatted abstracts (BETA)</a>
+</div>
+<!-- / .form-group -->
+
+<div class="panel-group" id="accordion-pubmed">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion-pubmed" href="#collapsePubMed">View an example PubMed MEDLINE&reg; file</a>
+            </h4>
+        </div>
+        <div id="collapsePubMed" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p>&dash; Includes &quot;MH&quot;</p>
+        <pre>PMID- 26010633
 OWN - NLM
 STAT- MEDLINE
 DA  - 20150527
@@ -115,8 +111,6 @@ IS  - 1538-3598 (Electronic)
 IS  - 0098-7484 (Linking)
 VI  - 313
 IP  - 20
-</pre>
-<pre class="item">
 DP  - 2015 May 26
 TI  - Copy number variations and cognitive phenotypes in unselected populations.
 PG  - 2044-54
@@ -315,34 +309,11 @@ CRDT- 2015/05/27 06:00
 AID - 2297168 [pii]
 AID - 10.1001/jama.2015.4845 [doi]
 PST - ppublish
-SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.
-</pre>
+SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
-{% endblock %}
+<!-- / #accordion-pubmed -->
 
-{% block section_minor_title %}
-Reuse
-{% endblock %}
-
-{% block section_minor %}
-<h3>Use previously uploaded files:</h3>
-<ul class="link-list" id="reuse-uploads">
-    {% for upload in uploads %}
-        <li class="item"><a href="{% url 'reuse_upload' pk=upload.id %}">{{ upload|truncatechars:60 }}</a></li>
-    {% empty %}
-        <li>No previously uploaded abstracts.</li>
-    {% endfor %}
-</ul>
-<!-- TODO Need to paginate or collapse list at some point -->
-
-<h3>Reuse existing search criteria:</h3>
-<ul class="link-list" id="reuse-criteria">
-    {% for search in criteria %}
-        <li class="item"><a href="{% url 'criteria' pk=search.id %}">{{ search|truncatechars:60 }}</a></li>
-    {% empty %}
-        <li>No saved search criteria.</li>
-    {% endfor %}
-</ul>
-<!-- TODO Need to paginate or collapse list at some point -->
 {% endblock %}

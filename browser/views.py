@@ -52,6 +52,21 @@ class SelectSearchTypeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SelectSearchTypeView, self).get_context_data(**kwargs)
         context['active'] = 'search'
+        return context
+
+
+class ReuseSearchView(TemplateView):
+    template_name = "reuse_search.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Ensure user logs in before viewing the reuse search list
+        """
+        return super(ReuseSearchView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ReuseSearchView, self).get_context_data(**kwargs)
+        context['active'] = 'search'
         context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
         context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
         return context
@@ -299,6 +314,7 @@ class FilterSelector(UpdateView):
         context = super(FilterSelector, self).get_context_data(**kwargs)
         context['form_title'] = 'Select a filter'
         context['active'] = 'search'
+        context['type'] = 'filter'
         return context
 
     def form_valid(self, form):
@@ -351,6 +367,7 @@ class ResultsView(TemplateView):
         context['search_result'] = self.search_result
         context['json_url'] = json_filename
         context['csv_url'] = csv_filename
+        context['criteria_url'] = reverse('criteria', kwargs={'pk': self.search_result.criteria.id})
         return context
 
 
@@ -400,7 +417,8 @@ class CriteriaView(DetailView):
         context['mediators'] = "; ".join(self.object.get_wcrf_input_variables('mediator'))
         context['outcomes'] = "; ".join(self.object.get_wcrf_input_variables('outcome'))
         context['genes'] = ", ".join(self.object.get_wcrf_input_variables('gene'))
-        context['url'] = reverse('edit_search', kwargs={'pk': self.object.id})
+        context['reuse_criteria_url'] = reverse('edit_search', kwargs={'pk': self.object.id})
+        context['reuse_abstract_url'] = reverse('reuse_upload', kwargs={'pk': self.object.upload.id})
 
         return context
 

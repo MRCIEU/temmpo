@@ -5,39 +5,38 @@
 {% block section_title %}Search criteria{% endblock %}
 
 {% block section %}
-<table id="criteria" class="dataTable display">
+<table id="criteria" class="table">
     <caption>Criteria</caption>
     <thead>
         <tr>
-        	<th scope="col" class="dt-left">Reference</th>
+            <th scope="col" class="dt-left">Reference</th>
             <th scope="col" class="dt-left">Values</th>
         </tr>
     </thead>
      <tbody>
         <tr>
-        	<th scope="row" class="dt-left">Exposures</th>
+            <th scope="row" class="dt-left">Exposures</th>
             <td>{{ exposures }}</td>
         </tr>
         <tr>
-        	<th scope="row" class="dt-left">Mediators</th>
+            <th scope="row" class="dt-left">Mediators</th>
             <td>{{ mediators }}</td>
         </tr>
         <tr>
-        	<th scope="row" class="dt-left">Outcomes</th>
+            <th scope="row" class="dt-left">Outcomes</th>
             <td>{{ outcomes }}</td>
         </tr>
         <tr>
-        	<th scope="row" class="dt-left">Genes</th>
+            <th scope="row" class="dt-left">Genes</th>
             <td>{{ genes }}</td>
         </tr>
         <tr>
             <th scope="row" class="dt-left">Abstract</th>
-            <td>{{ object.upload }}</td>
+            <td>{{ object.upload }} </td>
         </tr>
      </tbody>
 </table>
 
 <hr />
-<a href="{{ url }}" class="button">Reuse search criteria</a>
-
+<a href="{{ reuse_criteria_url }}" class="btn btn-primary">Reuse search criteria</a> <a href="{{ reuse_abstract_url }}" class="btn btn-default">Reuse abstracts only</a>
 {% endblock %}

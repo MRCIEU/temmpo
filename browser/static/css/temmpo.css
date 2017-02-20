@@ -1,26 +1,5 @@
 /* Custom */
 
-/* Override HTMLUp setings */
-
-h1,h2 {
-    text-transform: none;
-}
-
-h1 {
-  font-size : 210%;
-  padding-left : 5px;
-}
-
-dd {
-    line-height: 1.8em;
-}
-
-/* Charts */
-
-/*#chart {
-  height: 100%;
-}*/
-
 .node rect {
   cursor: move;
   fill-opacity: .9;
@@ -42,28 +21,16 @@ dd {
   stroke-opacity: .5;
 }
 
-/* Tree browser */
-
-/*#terms
+#home-page-figure img
 {
-    width:75%;
-}*/
-
-
-.form-table th, td
-{
-  text-align: left;
-  padding: 0.5em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto
 }
 
-.form-table th
+#copyright 
 {
-  vertical-align: middle;
-}
-
-.form-table
-{
-  margin-bottom: 1em;
+    padding-top:1em;
 }
 
 .errorlist, .warning
@@ -71,92 +38,17 @@ dd {
   color: #800000;
 }
 
-/* temp */
-.mediators-summary hr { margin-top: 2em; margin-bottom: 2em;}
-.mediators-summary h5 { margin-top: 1em; margin-bottom: 1em;}
-
-#tree-family li
+#breadcrumb 
 {
-  padding:1em !important;
-  margin:1em !important;
-  line-height:1em !important;
-  margin-bottom : 10px;
+    margin-top:1em;
 }
 
-ul#tree-family li {
-   margin-bottom : 8px;
-}
-
-.sml-button {
-    font-size: 90%;
-    padding: 5px 15px 5px 15px;
-    margin: 0.5em 0em;
-  }
-
-#main {
-    padding: 1.5em 0;
-}
-
-h2, p {
-  margin-bottom: 0.75em !important;
-}
-
-#result-header{
-  width:100%;
-}
-
-.file-example pre
+.breadcrumb>li+li:before
 {
-  font-family: Courier, monospace;
-  background: #f1f1f1;
-  padding: 0.5em 0.5em;
+    content: "\21D2\00a0";
 }
 
-.file-example .outer
+.page-header
 {
-  overflow: none;
-  overflow-x: scroll;
-}
-
-.sentence-case
-{
-  text-transform:none;
-}
-
-.rmrl-read-more
-{
-  /*padding:0.5em 0.5em;*/
-}
-
-/*#reuse-uploads .read-more, #reuse-criteria .read-more, #reuse-uploads .read-less, #reuse-criteria .read-less*/
-.read-more, .read-less
-{
-  line-height:4em;
-}
-
-.file-example 
-{
-  margin-bottom:0.5em;
-}
-
-#criteria th[scope=row]
-{
-  text-align:left;
-}
-
-#criteria td, #criteria th
-{
-  padding: 0.5em;
-  vertical-align: middle;
-}
-
-#footer-wrapper
-{
-padding:1em 0em;
-}
-
-#copyright
-{
-  margin-top:0em;
-  padding-top:1em;
+  margin-top: 30px !important;
 }

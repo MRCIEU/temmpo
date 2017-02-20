@@ -12,17 +12,17 @@
 {% endblock %}
 
 {% block section %}
-<p>
+<p class="lead">
     Upload a new text file of medical journal abstracts.
 </p>
 <form action="{{ form_action }}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="button">Upload</button>
+    {% include 'includes/form.html' %}
+    <button type="submit" class="btn btn-primary">Upload</button>
 </form>
 
 <div class="controls">
 	<hr />
-    <a href="{% url 'search' %}" class="button sml-button">Return to alternative search methods</a>
+    <a href="{% url 'search' %}" class="btn btn-default sml-button">Return to alternative search methods</a>
 </div>
 {% endblock %}

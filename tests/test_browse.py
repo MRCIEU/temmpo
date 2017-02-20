@@ -70,9 +70,9 @@ class BrowsingTest(TestCase):
     def test_search_page(self):
         """ Test can view the search page
         """
-        self._find_expected_content(path=reverse("search"), msg="sign in to use this tool")
-        self._find_expected_content(path=reverse("search_pubmed"), msg="sign in to use this tool")
-        self._find_expected_content(path=reverse("search_ovid_medline"), msg="sign in to use this tool")
+        self._find_expected_content(path=reverse("search"), msg="login to use this tool")
+        self._find_expected_content(path=reverse("search_pubmed"), msg="login to use this tool")
+        self._find_expected_content(path=reverse("search_ovid_medline"), msg="login to use this tool")
         self._login_user()
         self._find_expected_content(path=reverse("search"), msg="Upload abstracts to search")
         self._find_expected_content(path=reverse("search_pubmed"), msg=u"Search PubMed MEDLINE® formatted abstracts")
@@ -82,7 +82,7 @@ class BrowsingTest(TestCase):
         """ Test can view the results page
         """
         path = reverse('results', kwargs={'pk': RESULT_ID})
-        self._find_expected_content(path=path, msg="sign in to use this tool")
+        self._find_expected_content(path=path, msg="login to use this tool")
         self._login_user()
         # TODO add a mock search object
         # self._find_expected_content(path=path, msg='id="chart"')
@@ -90,7 +90,7 @@ class BrowsingTest(TestCase):
     def test_results_listing_page(self):
         """ Test can view the results listing page
         """
-        self._find_expected_content(path=reverse("results_listing"), msg="sign in to use this tool")
+        self._find_expected_content(path=reverse("results_listing"), msg="login to use this tool")
         self._login_user()
         self._find_expected_content(path=reverse("results_listing"), msg="My list")
 
@@ -232,7 +232,7 @@ class BrowsingTest(TestCase):
     def test_login_page(self):
         """ Test can view the sign in page
         """
-        self._find_expected_content(path="/login/", msg="Sign in")
+        self._find_expected_content(path="/login/", msg="Login")
 
     def test_logout_page(self):
         """ Test logging out redirects to sign in page
@@ -241,7 +241,7 @@ class BrowsingTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
         self._find_expected_content(path="/logout/",
-                                    msg="Sign in")
+                                    msg="Login")
 
     def test_ovid_medline_file_upload_validation(self):
         self._login_user()

@@ -5,11 +5,20 @@
 {% block styles %}
 {% endblock %}
 
+{% block section_title %}
+Results
+{% endblock %}
 
-{% block scripts %}
-{# Chart related JS #}
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="{{ STATIC_URL}}js/sankey.js"></script>
+{% block page_heading %}
+<p>
+      {% if search_result.mesh_filter %}
+        Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.
+      {% else %}
+        Limited to the top 50 matches.
+      {% endif %}
+
+      <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
+</p>
 {% endblock %}
 
 {% block section %}
@@ -18,30 +27,22 @@
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 -->
-<table id="result-header">
-  <tr>
-    <td>
-      <h2>Results</h2>
-    </td>
-    <td>
-      {% if search_result.mesh_filter %}
-        <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.</p>
-      {% else %}
-        <p>Limited to the top 50 matches.</p>
-      {% endif %}
-    </td>
-    <td>
-      <p><a href="{{ csv_url }}">Download as CSV</a></p>
-    </td>
-  </tr>
-</table>
 <p id="chart"></p>
+{% endblock %}
+
+{% block scripts %}
+{# Chart related JS #}
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+<script src="{{ STATIC_URL}}js/sankey.js"></script>
+
 <script>
 var threshold = 50;
+var availableHeight = 960;
+var availableWidth = $("#chart").width();
 
 var margin = {top: 1, right: 1, bottom: 6, left: 1},
-    width = 960 - margin.left - margin.right,
-    height = 960 - margin.top - margin.bottom;
+    width = availableWidth - margin.left - margin.right,
+    height = availableHeight - margin.top - margin.bottom;
 
 var formatNumber = d3.format(",.0f"),
     format = function(d) { return formatNumber(d) + " abstracts"; },
@@ -131,85 +132,7 @@ d3.json("{{ json_url }}", function(matches) {
     link.attr("d", path);
   }
 });
+
 </script>
-<!--
-<div class="mediators-summary">
-<h3>Mediators</h3>
 
-<h4>Layout options</h4>
-<ol style="list-style:decimal">
-    <li>List all mediators in one table </li>
-    <li>Group by mediator in separate tables - list all on one page or allow user to select which mediator to view</li>
-    <li>Confirm: If count is split into Left and right match components</li>
-</ol>
-<hr />
-<h5>Layout 1</h5>
-<table class="results-breakdown dataTable display">
-  <thead>
-    <tr>
-      <th>Exposure</th>
-      <th>Mediator</th>
-      <th>Outcome</th>
-      <th>Match count</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for result in results %}
-    <tr>
-      <td>{{ result.exposure }}</td>
-      <td>{{ result.mediator }}</td>
-      <td>{{ result.outcome }}</td>
-      <td>{{ result.count }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<hr />
-<h5>Layout 2</h5>
-<table class="results-breakdown dataTable display">
-  <caption>Mediator: {{ results.0.mediator }}</caption>
-  <thead>
-    <tr>
-      <th>Exposure</th>
-      <th>Outcome</th>
-      <th>Match count</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for result in results|slice:":2"  %}
-    <tr>
-      <td>{{ result.exposure }}</td>
-      <td>{{ result.outcome }}</td>
-      <td>{{ result.count }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<hr />
-<h5>Layout 3</h5>
-<table class="results-breakdown dataTable display">
-  <caption>Mediator: {{ results.0.mediator }}</caption>
-  <thead>
-    <tr>
-      <th>Exposure</th>
-      <th>Left match count</th>
-      <th>Outcome</th>
-      <th>Right match count</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for result in results|slice:":2" %}
-    <tr>
-      <td>{{ result.exposure }}</td>
-      <td>{{ result.lcount }}</td>
-      <td>{{ result.outcome }}</td>
-      <td>{{ result.rcount }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-</div>
-{# TODO: Add collapsible form to create a new search based on changing the MeSH filter #}
--->
 {% endblock %}

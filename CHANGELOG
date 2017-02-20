@@ -1,3 +1,11 @@
+1.2     TMMA-138 Change of styling (CSS) and addition of logo
+        git fetch --all
+        git checkout prod_stable
+        git pull
+        ../../bin/python manage.py collectstatic
+        sudo /usr/sbin/apache2ctl configtest
+        sudo /usr/sbin/apache2ctl restart
+
 1.1     TMMA-129 Upgrade Django to 1.8.15, plus upgrade oath2 and requests eggs.
         Migrate repository to bitbucket.org
 
