@@ -49,8 +49,8 @@ cd src/temmpo
 
 # Tag in git using fabric utilty function
 
-# Tag release, e.g. version 0.4
-fab taggit:master,0.4,temmpo
+# Tag release, e.g. version 1.2
+fab taggit:master,1.2,temmpo
 
 # Move/update prod_stable branch 
 fab taggit:master,prod_stable,temmpo

@@ -1,5 +1,7 @@
-1.2 RC1 TMMA-138 Change of styling (CSS) and addition of logo
-
+1.2     TMMA-138 Change of styling (CSS) and addition of logo
+        git fetch --all
+        git checkout prod_stable
+        git pull
         ../../bin/python manage.py collectstatic
         sudo /usr/sbin/apache2ctl configtest
         sudo /usr/sbin/apache2ctl restart
