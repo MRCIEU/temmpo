@@ -4,14 +4,14 @@
 
 {% block section_title %}About TeMMPo{% endblock %}
 {% block section %}
-<p>TeMMPo (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of published evidence for specific mechanisms between an exposure and outcome. The tool identifies co-occurrence of <a href="http://www.nlm.nih.gov/mesh/">MeSH</a> headings in scientific publications to indicate papers that link an intermediate mechanism to either an exposure or an outcome. </p>
+<p>TeMMPo (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of literature suggesting specific mechanisms between an exposure and outcome. The tool counts co-occurrence of mechanistic <a href="http://www.nlm.nih.gov/mesh/">MeSH</a> terms between an article set related to exposure, and an article set related to outcome. These mechanistic MeSH terms that co-occur with both exposure and outcome in the literature are quantified according to how often they occur in each article set. </p>
 
 <figure id="home-page-figure">
-<img src="{{ STATIC_URL}}images/fig1.png" alt="Exposure - Intermediate - Outcome" class="center-block img-responsive" />
+<img src="{{ STATIC_URL}}images/temmpovenn.png" height="200" alt="Exposure - Intermediate - Outcome" class="img-fluid" />
 </figure>
 
-<p>TeMMPo is particularly useful when a specific lifestyle or dietary exposure is known to associate with a disease outcome, but little is known about the underlying mechanisms. Understanding these mechanisms may help develop interventions, sub-classify disease or establish evidence for causality. TeMMPo quantifies the body of published literature to establish which mechanisms have been researched the most, enabling these mechanisms to be subjected to systematic review.</p>
-
+<p>TeMMPo is particularly useful when a specific lifestyle or dietary exposure is known to associate with a disease outcome, but little is known about which underlying mechanisms have been most investigated in the scientific literature.</p>
+<p>TeMMPo was developed to support the <a href="http://www.wcrf.org/int/research-we-fund/continuous-update-project-cup">WCRF Continuous Update Projet (CUP)</a> by enabling prioritisation of mechanisms for systematic review in the CUP.
 <hr />
 
 <p>This development was funded by the <a href="https://www.wcrf-uk.org/">World Cancer Research Fund UK</a>, the <a href="https://www.mrc.ac.uk/">UK Medical Research Council</a> and the <a href="http://www.bristol.ac.uk">University of Bristol</a>.</p>
