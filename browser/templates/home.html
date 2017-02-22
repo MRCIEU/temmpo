@@ -4,7 +4,8 @@
 
 {% block section_title %}About TeMMPo{% endblock %}
 {% block section %}
-<p>TeMMPo (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of literature suggesting specific mechanisms between an exposure and outcome. The tool counts co-occurrence of mechanistic <a href="http://www.nlm.nih.gov/mesh/">MeSH</a> terms between an article set related to exposure, and an article set related to outcome. These mechanistic MeSH terms that co-occur with both exposure and outcome in the literature are quantified according to how often they occur in each article set. </p>
+<p>TeMMPo (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of literature suggesting specific mechanisms between an exposure and outcome. The tool counts co-occurrence of mechanistic <a href="http://www.nlm.nih.gov/mesh/">MeSH</a> terms between with exposure terms and outcome terms in a set of articles. </p>
+<p>The mechanistic MeSH terms that co-occur with both exposure and outcome in the literature (potentially in separate articles) are quantified according to how often they occur in conjunction with the exposure and the outcome. TeMMPo prioritises those mechanistic terms which have a relatively balanced and substantial link (in terms of number of articles) with both exposure and outcome. </p>
 
 <figure id="home-page-figure">
 <img src="{{ STATIC_URL}}images/temmpovenn.png" height="200" alt="Exposure - Intermediate - Outcome" class="img-fluid" />

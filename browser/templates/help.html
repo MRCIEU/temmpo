@@ -7,7 +7,7 @@
 {% block section %}
 
 <ul class="nav nav-pills">
-	<li role="presentation"><a href="#about">About TeMMPo <span class="glyphicon glyphicon-info-sign" /></a></li>
+	<li role="presentation"><a href="#overview">Overview <span class="glyphicon glyphicon-info-sign" /></a></li>
 	<li role="presentation"><a href="#upload">Upload articles <span class="glyphicon glyphicon-cloud-upload" /></a></li>
 	<li role="presentation"><a href="#exposures">Specify exposures <span class="glyphicon glyphicon-align-left" /></a></li>
 	<li role="presentation"><a href="#mechanisms">Specify mechanisms <span class="glyphicon glyphicon-align-center" /></a></li>
@@ -18,7 +18,7 @@
 </ul>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title"><a name="about">About TeMMPo</a></h3>
+    <h3 class="panel-title"><a name="overview">Overview</a></h3>
   </div>
   <div class="panel-body">
 	<p>TeMMPo is a Django web application that expect a file of abstracts representing the articles linking exposure to outcome. It then expects you to specify MeSH terms for the exposure, MeSH terms for candidate mechanisms and MeSH terms for outcomes. This page describes each of these in more detail.</p>
@@ -320,8 +320,8 @@
 				SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
             </div>
         </div>
-    </div>
-</div>
+		    </div>
+		</div>
 <!-- / #accordion-pubmed -->
 
   </div>
@@ -375,7 +375,8 @@
     <h3 class="panel-title"><a name="genefilter">Genes and filter</a></h3>
   </div>
   <div class="panel-body">
-		<p>The genes and filter lets you enter gene names (or any text word)</p>
+		<p>The genes and filter lets you enter gene names (or any text words) as potential mechanistic terms. This expands the functionality of TeMMPo to enable mechanistic terms other than MeSH terms - this is particularly relevant for terms such as gene names (which are not represented in MeSH). </p>
+		<p>An additional overall MeSH filter can also be applied in this section. This enables the user to restrict the articles used in the counting process. </p>
 </div>
 </div>
 
@@ -384,7 +385,15 @@
     <h3 class="panel-title"><a name="navigate">Navigate results</a></h3>
   </div>
   <div class="panel-body">
-		<p></p>
+		<p>Once your analysis is complete you are presented with a table of results. If this is your first analysis only one row will show. The results table contains:</p>
+		<ul>
+			<li>View search criteria: allows you to see which terms were selected. This is useful for reproducibility, allowing you too view a record of the analytial paramaters. In addition, you can copy and edit any of the lists and enter them into the text box on any of the MeSH selection pages</li>
+			<li>Visualisations: this provides a Sankey visualisation of the highest priority mechanisms (full results can be downloaded)</li>
+			<li>Score data: contains the full set of results as a csv file. For each mechanism the columns contain: mechanism MeSH term, number of articles linking that mechanism to exposure, number of articles linking that mechanism to outcome and priority score (see below)</li>
+			<li>Abstract IDs: a csv file containing the abstract IDs used in analysis.</li>
+		</ul>
+		<p>The priority score is a weighted ratio of the number of abstracts linking the mechanims to exposure (<code>EM</code>) and outcome (<code>MO</code>), calculated as:</p>
+			 <code>score = max(EM,MO) / min(EM,MO) x (EM + MO)</code>
 </div>
 </div>
 
@@ -393,7 +402,9 @@
     <h3 class="panel-title"><a name="reuse">Re-use searches/abstracts</a></h3>
   </div>
   <div class="panel-body">
-		<p></p>
+		<p>Select "Search Criteria" from the results table, or selecting "Reuse existing search" from the "Search" menu enables you to reuse either a set of abstracts you have uploaded previously or a set of search criteria (or both).</p>
+		<p>Reusing search criteria will repeat a previous analysis (on the same set of abstracts), but allowing you to edit all of the MeSH terms used.</p>
+		<p>Reusing abstracts only will allow you to define an entirely new search on an existing set of articles.</p>
 </div>
 </div>
 {% endblock %}
