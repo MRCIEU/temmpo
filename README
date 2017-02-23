@@ -19,6 +19,8 @@ git clone git@bitbucket.org:researchit/temmpo.git
 cd temmpo/deploy
 vagrant up
 
+cd /srv/projects/temmpo/lib/dev/src/temmpo/ && ../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
+
 ## Installation ##
 
 **TO BE REVIEWED**
