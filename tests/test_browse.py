@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" TeMMPo test suite - browsing expected url paths
+""" TeMMPo test suite
 """
 # import datetime
 import logging
@@ -116,7 +116,7 @@ class BrowsingTest(TestCase):
         citation file: 13-53-45-22-39-12-citation_1-400.txt
 
         Should find matches with both mediator term and gene only finds matches
-        with the gene when the WEIGHTFILTER threshhold is zero
+        with the gene when the WEIGHTFILTER thresh hold is zero
         """
 
         test_file = open(TEST_FILE, 'r')
@@ -147,7 +147,7 @@ class BrowsingTest(TestCase):
 
         # Run the search, by posting filter and gene selection form
         # TODO post mesh filter data
-        # TODO split into separare tests - unit and integration
+        # TODO split into separate tests - unit and integration
         self._login_user()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
         response = self.client.post(path, {'genes': 'TRPC1'}, follow=True)
@@ -166,14 +166,13 @@ class BrowsingTest(TestCase):
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
     def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
-        """Upload file and tyy to bulk select mesh terms"""
+        """Upload file and try to bulk select mesh terms"""
         with open(abstract_file_path, 'r') as upload:
             response = self.client.post(search_url,
                                         {'abstracts_upload': upload,
                                          'file_format': file_format},
                                         follow=True)
 
-            self.assertNotContains(response, "Current exposure terms")
             self.assertContains(response, "Select exposures")
             self.assertContains(response, "Bulk edit")
             search_criteria = SearchCriteria.objects.latest("created")
@@ -184,9 +183,8 @@ class BrowsingTest(TestCase):
                                          "btn_submit": "replace"},
                                         follow=True)
             search_criteria.refresh_from_db()
-            # NB: Only a limited set of mesh terms are avialable for testing, for speed purposes
+            # NB: Only a limited set of mesh terms are available for testing, for speed purposes
             self.assertEqual(search_criteria.exposure_terms.all().count(), 3)
-            self.assertContains(response, "Current exposure terms")
             self.assertNotContains(response, " could not be found")
 
     def test_ovid_search_bulk_term_edit(self):
