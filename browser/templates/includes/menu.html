@@ -27,10 +27,10 @@
                     <a href="#" {% if active == "search" %}class="active"{% endif %}><i class="fa fa-search fa-fw"></i> Search <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
                         <li>
-                            <a href="{% url 'search' %}">Upload abstracts</a>
+                            <a href="{% url 'search' %}"><i class="glyphicon glyphicon-cloud-upload"></i> Upload abstracts</a>
                         </li>
                         <li>
-                            <a href="{% url 'reuse_search' %}">Reuse existing search</a>
+                            <a href="{% url 'reuse_search' %}"><i class="glyphicon glyphicon-repeat"></i> Reuse existing search</a>
                         </li>
                     </ul>
                 </li>
