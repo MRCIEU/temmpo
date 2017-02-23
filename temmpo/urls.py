@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
 
-from browser.views import (HomeView, CreditsView, SearchOvidMEDLINE, ResultsView,
+from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
                            CriteriaView, CountDataView, AbstractDataView,
@@ -18,6 +18,7 @@ urlpatterns = patterns(
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
+    url(r'^help/$', HelpView.as_view(), name='help'),
     url(r'^search/$', SelectSearchTypeView.as_view(), name='search'),
     url(r'^search/select/$', ReuseSearchView.as_view(), name='reuse_search'),
     url(r'^search/ovidmedline/$', SearchOvidMEDLINE.as_view(), name='search_ovid_medline'),

@@ -39,6 +39,13 @@ class CreditsView(TemplateView):
         context['active'] = 'credits'
         return context
 
+class HelpView(TemplateView):
+    template_name = "help.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(HelpView, self).get_context_data(**kwargs)
+        context['active'] = 'help'
+        return context
 
 class SelectSearchTypeView(TemplateView):
     template_name = "select_search_type.html"

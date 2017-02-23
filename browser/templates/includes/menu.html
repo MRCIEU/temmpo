@@ -21,6 +21,9 @@
                     <a href="{% url 'credits' %}" {% if active == "credits" %}class="active"{% endif %}><i class="fa fa-files-o fa-fw"></i> Credits</a>
                 </li>
                 <li>
+                    <a href="{% url 'help' %}" {% if active == "help" %}class="active"{% endif %}><i class="fa fa-files-o fa-fw"></i> Help</a>
+                </li>
+                <li>
                     <a href="#" {% if active == "search" %}class="active"{% endif %}><i class="fa fa-search fa-fw"></i> Search <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
                         <li>
