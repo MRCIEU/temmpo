@@ -12,39 +12,34 @@ This development was funded by the World Cancer Research Fund UK, the UK Medical
 
 ## Development ##
 
-Vagrant Centos development environment.
+We are using Vagrant for our Centos development environment.  It requires an additional plugin to mount the development source code cloned on your local machine.
+
+# Set up development environment
 
 vagrant plugin install vagrant-sshfs
 git clone git@bitbucket.org:researchit/temmpo.git
+
 cd temmpo/deploy
 vagrant up
+vagrant ssh
 
-cd /srv/projects/temmpo/lib/dev/src/temmpo/ && ../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
+# Activate virtualenv
+cd /srv/projects/temmpo/lib/dev/bin && source activate
 
-## Installation ##
+# Move to source directory
+cd /srv/projects/temmpo/lib/dev/src/temmpo
 
-**TO BE REVIEWED**
-
-See helper scripts in deploy/*
-
-To create a site on the development server run the build_site.sh script 
-or use the local_build_site.sh if working on a desktop
-
-Set up database:
-
-# Run migrations to set up the database structure
-cd src/temmpo
-../../bin/python manage.py migrate
-
-# More specific database migrations
-../../bin/python manage.py migrate browser
+# Set up database tables and run any migrations
+python manage.py migrate
 
 # Create a super user
- ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev
+python manage.py createsuperuser --settings=temmpo.settings.dev
 
-Running tests:
+# Running tests:
+python manage.py test tests/ --settings=temmpo.settings.dev
 
-cd /srv/projects/temmpo/lib/dev/src/temmpo/ && ../../bin/python manage.py test tests/ --settings=temmpo.settings.dev
+# Run the development server
+python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ## Deployment ##
 
@@ -68,3 +63,12 @@ git pull
 ../../bin/python manage.py collectstatic
 
 ../../bin/python manage.py migrate browser
+
+## Installation ##
+
+**TO BE REVIEWED**
+
+See helper scripts in deploy/*
+
+To create a site on the development server run the build_site.sh script 
+or use the local_build_site.sh if working on a desktop
