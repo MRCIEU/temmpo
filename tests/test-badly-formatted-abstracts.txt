@@ -1,0 +1,1941 @@
+PMID- 27430704
+OWN - NLM
+STAT- PubMed-not-MEDLINE
+DA  - 20160719
+LR  - 20161214
+IS  - 0529-5807 (Print)
+IS  - 0529-5807 (Linking)
+VI  - 45
+IP  - 7
+DP  - 2016 Jul 08
+TI  - [New classification system of prostate cancer based on Gleason score].
+PG  - 495-7
+LID - 10.3760/cma.j.issn.0529-5807.2016.07.020 [doi]
+FAU - Hua, H J
+AU  - Hua HJ
+FAU - Zhang, Z H
+AU  - Zhang ZH
+LA  - chi
+PT  - Journal Article
+PL  - China
+TA  - Zhonghua Bing Li Xue Za Zhi
+JT  - Zhonghua bing li xue za zhi = Chinese journal of pathology
+JID - 0005331
+SB  - IM
+EDAT- 2016/07/20 06:00
+MHDA- 2016/07/20 06:01
+CRDT- 2016/07/20 06:00
+PST - ppublish
+SO  - Zhonghua Bing Li Xue Za Zhi. 2016 Jul 8;45(7):495-7. doi:
+      10.3760/cma.j.issn.0529-5807.2016.07.020.
+
+PMID- 27430689
+OWN - NLM
+STAT- In-Process
+DA  - 20160719
+LR  - 20161213
+IS  - 0529-5807 (Print)
+IS  - 0529-5807 (Linking)
+VI  - 45
+IP  - 7
+DP  - 2016 Jul 08
+TI  - [Association between polymorphism in Vav3 genes and risk of primary prostatic
+      cancer in Chinese Han population].
+PG  - 451-6
+LID - 10.3760/cma.j.issn.0529-5807.2016.07.005 [doi]
+AB  - OBJECTIVE: To study the associations between genetic variations of Vav3 gene and 
+      prostate cancer susceptibility. METHODS: Data were collected in a hospital-based 
+      and case-control study of 1 015 prostate cancer cases and 1 068 cancer-free
+      controls collecting from a period of time between 2008 and 2012. Based on the
+      online database, NCBI dbSNP (http: //www.ncbi.nlm.nih.gov/projects/SNP) and
+      SNPinfo (http: //snpinfo.niehs.nih.gov/snpfunc.htm). Functional single nucleotide
+      polymorphisms (SNPs) of Vav3 were screened and genotyped, and assessed their
+      associations with risk of prostate cancer by using logistic regression analysis. 
+      Furthermore, the associations between SNPs of Vav3 and some clinicopathological
+      parameters were evaluated. RESULTS: Among the two SNPs investigated, only Vav3
+      rs12410676 G>A was associated with decreased prostate cancer risk [additive
+      model, OR=0.80 (0.69-0.93), P=0.003; dominant model, OR=0.81 (0.68-0.97),
+      P=0.022; recessive model, OR=0.54 (0.36-0.82), P=0.004]. The combined effect of
+      Vav3 rs8676 G>A and rs12410676 G>A was found as a decreased prostate cancer risk 
+      along with the increased variant alleles (P<0.05). Specifically, participants
+      carrying Vav3 rs12410676 AA/AG genotypes were more likely to be at lower prostate
+      cancer risk, compared with participants carrying GG genotypes, in groups of
+      BMI</=25 kg/m(2,) smoking, Gleason>7(4+ 3), and higher invasive prostate cancer. 
+      Finally, some positive findings were evidently significant with false positive
+      report probability values at different prior probability levels (0.25, 0.1 and
+      0.01). CONCLUSION: Vav3 SNPs may contribute to the risk of prostate cancer in
+      Eastern Chinese men, but the effect is weak and needs further validation by
+      larger, multicenter and ethnic-based studies.
+FAU - Liu, M
+AU  - Liu M
+AD  - Department of Pathology, First Affiliated Hospital, Xinjiang Medical University, 
+      Urumqi 830054, China.
+FAU - Miao, N
+AU  - Miao N
+FAU - Zhu, Y
+AU  - Zhu Y
+FAU - Gu, C Y
+AU  - Gu CY
+FAU - Shi, X L
+AU  - Shi XL
+FAU - Cui, W L
+AU  - Cui WL
+FAU - Zhang, W
+AU  - Zhang W
+FAU - Li, Q X
+AU  - Li QX
+LA  - chi
+PT  - English Abstract
+PT  - Journal Article
+PL  - China
+TA  - Zhonghua Bing Li Xue Za Zhi
+JT  - Zhonghua bing li xue za zhi = Chinese journal of pathology
+JID - 0005331
+SB  - IM
+EDAT- 2016/07/20 06:00
+MHDA- 2016/07/20 06:00
+CRDT- 2016/07/20 06:00
+PST - ppublish
+SO  - Zhonghua Bing Li Xue Za Zhi. 2016 Jul 8;45(7):451-6. doi:
+      10.3760/cma.j.issn.0529-5807.2016.07.005.
+
+PMID- 27430688
+OWN - NLM
+STAT- In-Process
+DA  - 20160719
+LR  - 20161213
+IS  - 0529-5807 (Print)
+IS  - 0529-5807 (Linking)
+VI  - 45
+IP  - 7
+DP  - 2016 Jul 08
+TI  - [Patients with prostatic cancer undergoing radical prostatectomy after single
+      positive core biopsy: a clinicopathologic analysis of 62 cases].
+PG  - 446-50
+LID - 10.3760/cma.j.issn.0529-5807.2016.07.004 [doi]
+AB  - OBJECTIVE: To evaluate the clinical and pathological features of patients with
+      prostate cancer who had only one positive biopsy core and underwent radical
+      prostatectomy (RP). METHODS: A total of 62 patients with prostate cancer who had 
+      only one positive biopsy core and underwent RP were enrolled. The
+      clinicopathological features of the biopsy and RP were analyzed. Those factors
+      that may cause discordance of Gleason score (GS) and influence pathological T
+      (pT) stage on RP were further evaluated. RESULTS: Out of the 62 patients,
+      40(64.5%) had pT stage >/=pT2c. The positive surgical margins, extraprostatic
+      extension and seminal vesicle invasion were found in 17.7%(11/62), 9.7%(6/62) and
+      3.2%(2/62) of patients, respectively. Compared to GS of RP, that of biopsy
+      specimens was concordant in 39 (62.9%), higher in 6 (9.7%), and lower in 17
+      (27.4%) patients. There was no significant correlation between GS discordance and
+      age, preoperative PSA level, FPSA/TPSA or maximum percentage of cancer per core
+      (P>0.05). The maximum percentage of cancer per core (chi(2)=6.670 7, P=0.009 8)
+      and biopsy GS (chi(2)=4.020 0, P=0.045 0) were significantly related to the pT
+      stage on RP. CONCLUSIONS: Single positive core prostate cancer at biopsy should
+      not be considered as a low-risk disease. Although the preoperative
+      clinicopathological factors cannot predict lower GS on biopsy, the maximum
+      percentage of cancer per core and GS on biopsy are of significance to the pT
+      stage on RP.
+FAU - Du, S J
+AU  - Du SJ
+AD  - Department of Pathology, School of Basic Medical Science, Peking University
+      Health Science Center; Department of Pathology, the Third Hospital of Peking
+      University, Beijing 100191, China.
+FAU - He, H Y
+AU  - He HY
+LA  - chi
+PT  - English Abstract
+PT  - Journal Article
+PL  - China
+TA  - Zhonghua Bing Li Xue Za Zhi
+JT  - Zhonghua bing li xue za zhi = Chinese journal of pathology
+JID - 0005331
+SB  - IM
+EDAT- 2016/07/20 06:00
+MHDA- 2016/07/20 06:00
+CRDT- 2016/07/20 06:00
+PST - ppublish
+SO  - Zhonghua Bing Li Xue Za Zhi. 2016 Jul 8;45(7):446-50. doi:
+      10.3760/cma.j.issn.0529-5807.2016.07.004.
+
+PMID- 27154188
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160708
+LR  - 20160708
+IS  - 1528-0020 (Electronic)
+IS  - 0006-4971 (Linking)
+VI  - 128
+IP  - 1
+DP  - 2016 Jul 07
+TI  - Metastasis: new functional implications of platelets and megakaryocytes.
+PG  - 24-31
+LID - 10.1182/blood-2016-01-636399 [doi]
+AB  - Platelets are essential components of hemostasis. Due to a plethora of factors
+      released on activation, platelet functions are also connected to tumor growth,
+      notably by acting on angiogenesis. It is now well recognized that major roles of 
+      platelets in the poor outcome of cancer patients occurs during hematogenous
+      dissemination of cancer cells. In this review, we describe recent insights into
+      the molecular mechanisms supporting the prometastatic activity of platelets.
+      Platelets have been shown to promote survival of circulating tumor cells (CTCs)
+      in the bloodstream by conferring resistance to the shear stress and attack from
+      natural killer cells. Recently, platelets were found to promote and/or maintain
+      the state of epithelial to mesenchymal transition on CTCs through platelet
+      secretion of transforming growth factor beta in response to CTC activation. At a 
+      later stage in the metastatic process, platelets promote extravasation and
+      establishment of metastatic cells in distant organs as observed in bone. This
+      particular environment is also the site of hematopoiesis, megakaryocytopoiesis,
+      and platelet production. Increasing the number of megakaryocytes (MKs) in the
+      bone marrow results in a high bone mass phenotype and inhibits skeletal
+      metastasis formation of prostate cancer cells. As a result of their specific
+      location in vascular niches in the bone marrow, MK activity might contribute to
+      the "seed and soil" suitability between CTCs and bone. In conclusion, recent
+      findings have made a great advance in our knowledge on how platelets contribute
+      to the metastatic dissemination of cancer cells and that may support the
+      development of new antimetastasis therapies.
+CI  - (c) 2016 by The American Society of Hematology.
+FAU - Leblanc, Raphael
+AU  - Leblanc R
+AUID- ORCID: http://orcid.org/0000-0002-1976-9587
+AD  - INSERM, Unite Mixte de Recherche (UMR) 1068, Institut Paoli-Calmettes, Marseille,
+      France; Universite Aix-Marseille, Marseille, France; and.
+FAU - Peyruchaud, Olivier
+AU  - Peyruchaud O
+AD  - INSERM, UMR 1033, Universite Claude Bernard Lyon 1, Faculte de Medecine Lyon Est,
+      Lyon, France.
+LA  - eng
+PT  - Journal Article
+PT  - Review
+DEP - 20160506
+PL  - United States
+TA  - Blood
+JT  - Blood
+JID - 7603509
+SB  - AIM
+SB  - IM
+EDAT- 2016/05/08 06:00
+MHDA- 2016/05/08 06:00
+CRDT- 2016/05/08 06:00
+PHST- 2016/01/23 [received]
+PHST- 2016/05/02 [accepted]
+AID - blood-2016-01-636399 [pii]
+AID - 10.1182/blood-2016-01-636399 [doi]
+PST - ppublish
+SO  - Blood. 2016 Jul 7;128(1):24-31. doi: 10.1182/blood-2016-01-636399. Epub 2016 May 
+      6.
+
+PMID- 27388750
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160708
+LR  - 20160712
+IS  - 1471-2407 (Electronic)
+IS  - 1471-2407 (Linking)
+VI  - 16
+DP  - 2016 Jul 07
+TI  - A cost effective analysis of fixed-dose combination of dutasteride and tamsulosin
+      compared with dutasteride monotherapy for benign prostatic hyperplasia in
+      Nigeria: a middle income perspective; using an interactive Markov model.
+PG  - 405
+LID - 10.1186/s12885-016-2431-x [doi]
+AB  - BACKGROUND: The number of Nigerian men presenting with benign prostatic
+      hyperplasia is on the rise because of increase awareness about the ailment. With 
+      the renewed effort by the national health insurance scheme to cover the informal 
+      sector, it becomes imperative to determine the cost implication for managing
+      Benign Prostatic Hyperplasia (BPH) and the cost effective drug combination to be 
+      adopted. The objective of this study is to estimate cost effective analysis (CEA)
+      of fixed -dose combination of dutasteride and tamsulosin compared with
+      dutasteride monotherapy from the health service provider perspective design.
+      METHODS: An interactive Markov's model was used to generate incremental cost per 
+      QALY and incremental cost per life years gained. 2.9 million Men who were 50
+      years of age were fed into the model. The outcome measures included: costs of
+      drug treatment, consultation, acute urinary retention (AUR), transurethral
+      resection of prostate (TURP), hospitalisation post TURP, and quality adjusted
+      life years (QALYs), incremental cost per life years gained, and incremental cost 
+      per QALY gained. RESULTS: Fixed-dose combination of dutasteride and tamsulosin
+      (FDCT) produced an Incremental cost-effectiveness ratios of US$1481.92 per
+      Quality adjusted for life-years saved. CONCLUSION: Universal FDCT provision for
+      Nigeria has major economic implications. This study in the context of its
+      limitations has demonstrated the cost effectiveness of FDCT for the long term
+      treatment of patients with moderate to severe BPH from the perspective of a
+      developing country. Currently, there are few studies available to give economic
+      data evidence to policy makers in Nigeria which is applicable to developing
+      countries with similar economies. As such, the findings in this study will be
+      relevant to policy makers in these countries.
+FAU - Udeh, Emeka I
+AU  - Udeh EI
+AD  - Department of Surgery, Faculty of medicine, College of Medicine, University of
+      Nigeria Enugu campus, Enugu, Nigeria. emeka.udeh@unn.edu.ng.
+FAU - Ofoha, Chimaobi G
+AU  - Ofoha CG
+AD  - Division of Urology, Department of Surgery, Jos University Teaching Hospital,
+      Jos, Nigeria.
+FAU - Adewole, David A
+AU  - Adewole DA
+AD  - Department of Community Medicine, Bowen University/Bowen University Teaching
+      Hospital, Iwo/Ogbomoso, Nigeria.
+FAU - Nnabugwu, Ikenna I
+AU  - Nnabugwu II
+AD  - Department of Surgery, University of Nigeria Teaching Hospital Ituku-Ozalla
+      Enugu, Enugu, Nigeria.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - England
+TA  - BMC Cancer
+JT  - BMC cancer
+JID - 100967800
+SB  - IM
+PMC - PMC4936011
+OID - NLM: PMC4936011
+OTO - NOTNLM
+OT  - Benign prostatic hyperplasia
+OT  - Cost effectiveness analysis
+OT  - Dutasteride monotherapy
+OT  - Fixed dose combination of dutasteride- tamsulosin
+OT  - Nigerian men
+EDAT- 2016/07/09 06:00
+MHDA- 2016/07/09 06:00
+CRDT- 2016/07/09 06:00
+PHST- 2015/07/08 [received]
+PHST- 2016/06/27 [accepted]
+AID - 10.1186/s12885-016-2431-x [doi]
+AID - 10.1186/s12885-016-2431-x [pii]
+PST - epublish
+SO  - BMC Cancer. 2016 Jul 7;16:405. doi: 10.1186/s12885-016-2431-x.
+
+PMID- 27386844
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160708
+LR  - 20160712
+IS  - 1471-2407 (Electronic)
+IS  - 1471-2407 (Linking)
+VI  - 16
+DP  - 2016 Jul 07
+TI  - Metabolic syndrome is associated with advanced prostate cancer in patients
+      treated with radical retropubic prostatectomy: results from a multicentre
+      prospective study.
+PG  - 407
+LID - 10.1186/s12885-016-2442-7 [doi]
+AB  - BACKGROUND: Prostate cancer (PCa) is the most common non-skin cancer in USA and
+      the second leading cause of cancer death in Western Countries. Despite the high
+      mortality associated with PCa, the only established risk factors are age, race
+      and family history. A possible association between metabolic syndrome (MetS) and 
+      PCa was firstly described in 2004 and several subsequent studies in biopsy
+      cohorts have shown conflicting results. Aim of our multicentre prospective study 
+      was to investigate the association between MetS and PCa in men undergoing radical
+      prostatectomy (RP). METHODS: From January 2012 to June 2015, 349 consecutive men 
+      undergoing RP for PCa at three centres in Italy were enrolled into a prospective 
+      database. Body Mass Index (BMI) as well as waist circumference was measured
+      before RP. Blood samples were also collected and tested for total PSA, fasting
+      glucose, triglycerides and HDLs. Blood pressure was also recorded. We evaluated
+      the association between MetS, defined according to Adult Treatment Panel III, PCa
+      stage (advanced stage defined as pT >/= 3 or N1) and grade (high grade defined as
+      Gleason Score >/= 4 + 3) using logistic regression analyses. RESULTS: Median age 
+      and preoperative PSA levels were 66 years (IQR: 61-69) and 7 ng/ml (IQR: 5-10),
+      respectively. Median BMI was 26.12 kg/m(2) (IQR 24-29) with 56 (16 %) obese (BMI 
+      >/= 30 kg/m(2)) patients and 87 (25 %) patients with MetS. At pathological
+      evaluation, advanced PCa and high-grade disease were present in 126 (36 %) and
+      145 (41.5 %) patients, respectively. MetS was significantly associated with
+      advanced PCa (45/87, 51 % vs 81/262, 31 %; p = 0.008) and high-grade disease
+      (47/87, 54 % vs 98/262, 37 %; p = 0.001). On multivariable analysis, MetS was an 
+      independent predictor of pathological stage >/= pT3a or N1 (OR: 2.227; CI:
+      1.273-3.893; p = 0.005) and Gleason score >/= 4 + 3 (OR: 2.007, CI: 1.175-3.428; 
+      p = 0.011). CONCLUSIONS: We firstly demonstrated in a European radical retropubic
+      prostatectomy cohort study that MetS is associated with an increased risk of
+      high-grade and advanced prostate cancer. Further studies with long term follow-up
+      should evaluate the impact of Mets on PCa survival.
+FAU - De Nunzio, Cosimo
+AU  - De Nunzio C
+AD  - Department of Urology, "Sant'Andrea" Hospital, "La Sapienza" University, Rome,
+      Italy. cosimodenunzio@virgilio.it.
+FAU - Simone, Giuseppe
+AU  - Simone G
+AD  - Department of Urology, "Regina Elena" National Cancer Institute, Rome, Italy.
+AD  - Department of Urology, "San Giovanni Bosco" Hospital, Turin, Italy.
+FAU - Brassetti, Aldo
+AU  - Brassetti A
+AD  - Department of Urology, "Sant'Andrea" Hospital, "La Sapienza" University, Rome,
+      Italy.
+FAU - Mastroianni, Riccardo
+AU  - Mastroianni R
+AD  - Department of Urology, "Regina Elena" National Cancer Institute, Rome, Italy.
+FAU - Collura, Devis
+AU  - Collura D
+AD  - Department of Urology, "Regina Elena" National Cancer Institute, Rome, Italy.
+AD  - Department of Urology, "San Giovanni Bosco" Hospital, Turin, Italy.
+FAU - Muto, Giovanni
+AU  - Muto G
+AD  - Department of Urology, "Regina Elena" National Cancer Institute, Rome, Italy.
+AD  - Department of Urology, "San Giovanni Bosco" Hospital, Turin, Italy.
+FAU - Gallucci, Michele
+AU  - Gallucci M
+AD  - Department of Urology, "Regina Elena" National Cancer Institute, Rome, Italy.
+FAU - Tubaro, Andrea
+AU  - Tubaro A
+AD  - Department of Urology, "Sant'Andrea" Hospital, "La Sapienza" University, Rome,
+      Italy.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - England
+TA  - BMC Cancer
+JT  - BMC cancer
+JID - 100967800
+SB  - IM
+PMC - PMC4936238
+OID - NLM: PMC4936238
+OTO - NOTNLM
+OT  - High grade
+OT  - Metabolic syndrome
+OT  - Prostate
+OT  - Prostate cancer
+EDAT- 2016/07/09 06:00
+MHDA- 2016/07/09 06:00
+CRDT- 2016/07/09 06:00
+PHST- 2015/12/18 [received]
+PHST- 2016/06/24 [accepted]
+AID - 10.1186/s12885-016-2442-7 [doi]
+AID - 10.1186/s12885-016-2442-7 [pii]
+PST - epublish
+SO  - BMC Cancer. 2016 Jul 7;16:407. doi: 10.1186/s12885-016-2442-7.
+
+PMID- 27388357
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160708
+LR  - 20160804
+IS  - 2044-6055 (Electronic)
+IS  - 2044-6055 (Linking)
+VI  - 6
+IP  - 7
+DP  - 2016 Jul 07
+TI  - Rationale and design of Diabetes Prevention with active Vitamin D (DPVD): a
+      randomised, double-blind, placebo-controlled study.
+PG  - e011183
+LID - 10.1136/bmjopen-2016-011183 [doi]
+AB  - INTRODUCTION: Recent research suggests that vitamin D deficiency may cause both
+      bone diseases and a range of non-skeletal diseases. However, most of these data
+      come from observational studies, and clinical trial data on the effects of
+      vitamin D supplementation on individuals with pre-diabetes are scarce and
+      inconsistent. The aim of the Diabetes Prevention with active Vitamin D (DPVD)
+      study is to assess the effect of eldecalcitol, active vitamin D analogue, on the 
+      incidence of type 2 diabetes among individuals with pre-diabetes. METHODS AND
+      ANALYSIS: DPVD is an ongoing, prospective, multicentre, randomised, double-blind 
+      and placebo-controlled outcome study in individuals with impaired glucose
+      tolerance. Participants, men and women aged >/=30 years, will be randomised to
+      receive eldecalcitol or placebo. They will also be given a brief (5-10 min long) 
+      talk about appropriate calorie intake from diet and exercise at each 12-week
+      visit. The primary end point is the cumulative incidence of type 2 diabetes.
+      Secondary endpoint is the number of participants who achieve normoglycaemia at
+      48, 96 and 144 weeks. Follow-up is estimated to span 144 weeks. ETHICS AND
+      DISSEMINATION: All protocols and an informed consent form comply with the Ethics 
+      Guideline for Clinical Research (Japan Ministry of Health, Labour and Welfare).
+      The study protocol has been approved by the Institutional Review Board at Kokura 
+      Medical Association and University of Occupational and Environmental Health. The 
+      study will be implemented in line with the CONSORT statement. TRIAL REGISTRATION 
+      NUMBER: UMIN000010758; Pre-results.
+CI  - Published by the BMJ Publishing Group Limited. For permission to use (where not
+      already granted under a licence) please go to
+      http://www.bmj.com/company/products-services/rights-and-licensing/
+FAU - Kawahara, Tetsuya
+AU  - Kawahara T
+AD  - Department of Internal Medicine, Kokura Medical Association Health Testing
+      Center, Kitakyushu, Japan.
+FAU - Suzuki, Gen
+AU  - Suzuki G
+AD  - Department of Internal Medicine, International University of Health and Welfare
+      Clinic, Ohtawara, Japan.
+FAU - Inazu, Tetsuya
+AU  - Inazu T
+AD  - Department of Pharmacy, College of Pharmaceutical Sciences, Ritsumeikan
+      University, Kusatsu, Japan.
+FAU - Mizuno, Shoichi
+AU  - Mizuno S
+AD  - Department of Epidemiology, Radiation Effects Association, Tokyo, Japan.
+FAU - Kasagi, Fumiyoshi
+AU  - Kasagi F
+AD  - Department of Epidemiology, Radiation Effects Association, Tokyo, Japan.
+FAU - Okada, Yosuke
+AU  - Okada Y
+AD  - First Department of Internal Medicine, University of Occupational and
+      Environmental Health, Kitakyushu, Japan.
+FAU - Tanaka, Yoshiya
+AU  - Tanaka Y
+AD  - First Department of Internal Medicine, University of Occupational and
+      Environmental Health, Kitakyushu, Japan.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - England
+TA  - BMJ Open
+JT  - BMJ open
+JID - 101552874
+SB  - IM
+PMC - PMC4947789
+OID - NLM: PMC4947789
+OTO - NOTNLM
+OT  - CLINICAL PHARMACOLOGY
+OT  - DIABETES & ENDOCRINOLOGY
+EDAT- 2016/07/09 06:00
+MHDA- 2016/07/09 06:00
+CRDT- 2016/07/09 06:00
+AID - bmjopen-2016-011183 [pii]
+AID - 10.1136/bmjopen-2016-011183 [doi]
+PST - epublish
+SO  - BMJ Open. 2016 Jul 7;6(7):e011183. doi: 10.1136/bmjopen-2016-011183.
+
+PMID- 27399780
+OWN - NLM
+STAT- PubMed-not-MEDLINE
+DA  - 20160712
+DCOM- 20160712
+LR  - 20161215
+IS  - 2072-6694 (Linking)
+VI  - 8
+IP  - 7
+DP  - 2016 Jul 07
+TI  - A Perspective of Immunotherapy for Prostate Cancer.
+LID - 10.3390/cancers8070064 [doi]
+LID - E64 [pii]
+AB  - In cancer patients, the immune system is often altered with an excess of
+      inhibitory factors, such as immunosuppressive cytokines, produced by regulatory T
+      cells (Treg) or myeloid-derived suppressor cells (MDSC). The manipulation of the 
+      immune system has emerged as one of new promising therapies for cancer treatment,
+      and also represents an attractive strategy to control prostate cancer (PCa).
+      Therapeutic cancer vaccines and immune checkpoint inhibitors have been the most
+      investigated in clinical trials. Many trials are ongoing to define the effects of
+      immune therapy with established treatments: androgen deprivation therapy (ADT)
+      and chemotherapy (CT) or radiotherapy (RT). This article discusses some of these 
+      approaches in the context of future treatments for PCa.
+FAU - Silvestri, Ida
+AU  - Silvestri I
+AD  - Department of Molecular Medicine, Sapienza University of Rome, Rome 00161, Italy.
+      ida.silvestri@uniroma1.it.
+FAU - Cattarino, Susanna
+AU  - Cattarino S
+AD  - Department of Urology, Sapienza University of Rome, Rome 00161, Italy.
+      susanna.cattarino@uniroma1.it.
+FAU - Giantulli, Sabrina
+AU  - Giantulli S
+AD  - Department of Molecular Medicine, Sapienza University of Rome, Rome 00161, Italy.
+      sabrinagiantulli@alice.it.
+FAU - Nazzari, Cristina
+AU  - Nazzari C
+AD  - Department of Public Health hand Infectious Diseases, "Sapienza" University of
+      Rome, Rome 00185, Italy. cristina.nazzari@uniroma1.it.
+FAU - Collalti, Giulia
+AU  - Collalti G
+AD  - Medicine of Systems, Rheumatology, Allergology and Clinical Immunology,
+      Translational Medicine of the University Tor Vergata, Rome 00133, Italy.
+      giulia.collalti86@gmail.com.
+FAU - Sciarra, Alessandro
+AU  - Sciarra A
+AD  - Department of Urology, Sapienza University of Rome, Rome 00161, Italy.
+      sciarra.md@libero.it.
+LA  - eng
+PT  - Journal Article
+PT  - Review
+DEP - 20160707
+PL  - Switzerland
+TA  - Cancers (Basel)
+JT  - Cancers
+JID - 101526829
+PMC - PMC4963806
+OID - NLM: PMC4963806
+OTO - NOTNLM
+OT  - dendritic cells
+OT  - immune system
+OT  - immune therapy
+OT  - myeloid-derived suppressor cells
+OT  - prostate cancer
+OT  - regulatory T cells
+OT  - tumor associated macrophages
+EDAT- 2016/07/12 06:00
+MHDA- 2016/07/12 06:01
+CRDT- 2016/07/12 06:00
+PHST- 2016/04/28 [received]
+PHST- 2016/06/27 [revised]
+PHST- 2016/07/01 [accepted]
+AID - cancers8070064 [pii]
+AID - 10.3390/cancers8070064 [doi]
+PST - epublish
+SO  - Cancers (Basel). 2016 Jul 7;8(7). pii: E64. doi: 10.3390/cancers8070064.
+
+PMID- 27284641
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160623
+LR  - 20160623
+IS  - 1364-548X (Electronic)
+IS  - 1359-7345 (Linking)
+VI  - 52
+IP  - 53
+DP  - 2016 Jul 07
+TI  - Synthesis of models of the BC ring systems of MPC1001 and MPC1001F.
+PG  - 8271-4
+LID - 10.1039/c6cc04169h [doi]
+AB  - Piperazinedione 13, representing the BC rings of the anti-prostate cancer fungal 
+      metabolite MPC1001, was prepared by a route in which a sulfur-stabilized
+      carbanion derived from 22 cyclizes onto the terminal ester of the pendant chain
+      attached to N(1). Another model, 14, was synthesized by cyclization of an
+      alpha-ketoamide nitrogen onto an ester; 14 represents the BC rings of MPC1001F.
+FAU - Dong, Shuai
+AU  - Dong S
+AD  - Shaanxi Key Laboratory of Natural Products & Chemical Biology, College of
+      Science, Northwest A&F University, Yangling 712100, Shaanxi, P. R. China.
+      jinminggao@nwsuaf.edu.cn.
+FAU - Indukuri, Kiran
+AU  - Indukuri K
+FAU - Clive, Derrick L J
+AU  - Clive DL
+FAU - Gao, Jin-Ming
+AU  - Gao JM
+LA  - eng
+PT  - Journal Article
+DEP - 20160610
+PL  - England
+TA  - Chem Commun (Camb)
+JT  - Chemical communications (Cambridge, England)
+JID - 9610838
+SB  - IM
+EDAT- 2016/06/11 06:00
+MHDA- 2016/06/11 06:00
+CRDT- 2016/06/11 06:00
+AID - 10.1039/c6cc04169h [doi]
+PST - ppublish
+SO  - Chem Commun (Camb). 2016 Jul 7;52(53):8271-4. doi: 10.1039/c6cc04169h. Epub 2016 
+      Jun 10.
+
+PMID- 27313313
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160708
+LR  - 20161019
+IS  - 1555-905X (Electronic)
+IS  - 1555-9041 (Linking)
+VI  - 11
+IP  - 7
+DP  - 2016 Jul 07
+TI  - Genetic, Environmental, and Disease-Associated Correlates of Vitamin D Status in 
+      Children with CKD.
+PG  - 1145-53
+LID - 10.2215/CJN.10210915 [doi]
+AB  - BACKGROUND AND OBJECTIVES: Vitamin D deficiency is endemic in children with CKD. 
+      We sought to investigate the association of genetic disposition, environmental
+      factors, vitamin D supplementation, and renal function on vitamin D status in
+      children with CKD. DESIGN, SETTING, PARTICIPANTS, & MEASUREMENTS: Serum
+      25-hydroxy-vitamin D, 1,25-dihydroxy-vitamin D, and 24,25-dihydroxy-vitamin D
+      concentrations were measured cross-sectionally in 500 children from 12 European
+      countries with CKD stages 3-5. All patients were participants of the
+      Cardiovascular Comorbidity in Children with Chronic Kidney Disease Study, had CKD
+      stage 3-5, and were age 6-18 years old. Patients were genotyped for
+      single-nucleotide polymorphisms in the genes encoding 25-hydroxylase, vitamin D
+      binding protein, 7-dehydrocholesterol reductase, and 24-hydroxylase. Associations
+      of genetic status, season, local solar radiation, oral vitamin D supplementation,
+      and disease-associated factors with vitamin D status were assessed. RESULTS: Two 
+      thirds of patients were vitamin D deficient (25-hydroxy-vitamin D <16 ng/ml).
+      25-Hydroxy-vitamin D concentrations varied with season and were twofold higher in
+      vitamin D-supplemented patients (21.6 [14.1] versus 10.4 [10.1] ng/ml; P<0.001). 
+      Glomerulopathy, albuminuria, and girls were associated with lower
+      25-hydroxy-vitamin D levels. 24,25-dihydroxy-vitamin D levels were closely
+      correlated with 25-hydroxy-vitamin D and 1,25-dihydroxy-vitamin D (r=0.87 and
+      r=0.55; both P<0.001). 24,25-dihydroxy-vitamin D concentrations were higher with 
+      higher c-terminal fibroblast growth factor 23 and inversely correlated with
+      intact parathyroid hormone. Whereas 25-hydroxy-vitamin D levels were independent 
+      of renal function, 24,25-dihydroxy-vitamin D levels were lower with lower eGFR.
+      Vitamin D deficiency was more prevalent in Turkey than in other European regions 
+      independent of supplementation status and disease-related factors.
+      Single-nucleotide polymorphisms in the vitamin D binding protein gene were
+      independently associated with lower 25-hydroxy-vitamin D and higher
+      24,25-dihydroxy-vitamin D. CONCLUSIONS: Disease-related factors and vitamin D
+      supplementation are the main correlates of vitamin D status in children with CKD.
+      Variants in the vitamin D binding protein showed weak associations with the
+      vitamin D status.
+CI  - Copyright (c) 2016 by the American Society of Nephrology.
+FAU - Doyon, Anke
+AU  - Doyon A
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material. anke.doyon@med.uni-heidelberg.de.
+FAU - Schmiedchen, Bettina
+AU  - Schmiedchen B
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Sander, Anja
+AU  - Sander A
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Bayazit, Aysun
+AU  - Bayazit A
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Duzova, Ali
+AU  - Duzova A
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Canpolat, Nur
+AU  - Canpolat N
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Thurn, Daniela
+AU  - Thurn D
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Azukaitis, Karolis
+AU  - Azukaitis K
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Anarat, Ali
+AU  - Anarat A
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Bacchetta, Justine
+AU  - Bacchetta J
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Mir, Sevgi
+AU  - Mir S
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Shroff, Rukshana
+AU  - Shroff R
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Yilmaz, Ebru
+AU  - Yilmaz E
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Candan, Cengiz
+AU  - Candan C
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Kemper, Markus
+AU  - Kemper M
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Fischbach, Michel
+AU  - Fischbach M
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Cortina, Gerard
+AU  - Cortina G
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Klaus, Gunter
+AU  - Klaus G
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Wuttke, Matthias
+AU  - Wuttke M
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Kottgen, Anna
+AU  - Kottgen A
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Melk, Anette
+AU  - Melk A
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Querfeld, Uwe
+AU  - Querfeld U
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+FAU - Schaefer, Franz
+AU  - Schaefer F
+AD  - Due to the number of contributing authors, the affiliations are provided in the
+      Supplemental Material.
+CN  - 4C Study Consortium
+LA  - eng
+GR  - R01 DK082394/DK/NIDDK NIH HHS/United States
+PT  - Journal Article
+DEP - 20160616
+PL  - United States
+TA  - Clin J Am Soc Nephrol
+JT  - Clinical journal of the American Society of Nephrology : CJASN
+JID - 101271570
+SB  - IM
+PMC - PMC4934841
+OID - NLM: PMC4934841 [Available on 07/07/17]
+OTO - NOTNLM
+OT  - 25-hydroxyvitamin D
+OT  - Child
+OT  - Humans
+OT  - Polymorphism, Single Nucleotide
+OT  - Renal Insufficiency, Chronic
+OT  - Vitamin D
+OT  - albuminuria
+OT  - chronic kidney disease
+OT  - vitamin D deficiency
+OT  - vitamin d supplementation
+EDAT- 2016/06/18 06:00
+MHDA- 2016/06/18 06:00
+CRDT- 2016/06/18 06:00
+PMCR- 2017/07/07
+PHST- 2015/09/23 [received]
+PHST- 2016/03/17 [accepted]
+AID - CJN.10210915 [pii]
+AID - 10.2215/CJN.10210915 [doi]
+PST - ppublish
+SO  - Clin J Am Soc Nephrol. 2016 Jul 7;11(7):1145-53. doi: 10.2215/CJN.10210915. Epub 
+      2016 Jun 16.
+
+PMID- 26912549
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160708
+LR  - 20160720
+IS  - 1555-905X (Electronic)
+IS  - 1555-9041 (Linking)
+VI  - 11
+IP  - 7
+DP  - 2016 Jul 07
+TI  - Bone Disease after Kidney Transplantation.
+PG  - 1282-96
+LID - 10.2215/CJN.11371015 [doi]
+AB  - Bone and mineral disorders occur frequently in kidney transplant recipients and
+      are associated with a high risk of fracture, morbidity, and mortality. There is a
+      broad spectrum of often overlapping bone diseases seen after transplantation,
+      including osteoporosis as well as persisting high- or low-turnover bone disease. 
+      The pathophysiology underlying bone disorders after transplantation results from 
+      a complex interplay of factors, including preexisting renal osteodystrophy and
+      bone loss related to a variety of causes, such as immunosuppression and
+      alterations in the parathyroid hormone-vitamin D-fibroblast growth factor 23 axis
+      as well as changes in mineral metabolism. Management is complex, because
+      noninvasive tools, such as imaging and bone biomarkers, do not have sufficient
+      sensitivity and specificity to detect these abnormalities in bone structure and
+      function, whereas bone biopsy is not a widely available diagnostic tool. In this 
+      review, we focus on recent data that highlight improvements in our understanding 
+      of the prevalence, pathophysiology, and diagnostic and therapeutic strategies of 
+      mineral and bone disorders in kidney transplant recipients.
+CI  - Copyright (c) 2016 by the American Society of Nephrology.
+FAU - Bouquegneau, Antoine
+AU  - Bouquegneau A
+AD  - Department of Nephrology, Dialysis, and Transplantation, Centre Hospitalier
+      Universitaire de Liege, Liege, Belgium;
+FAU - Salam, Syrazah
+AU  - Salam S
+AD  - Sheffield Kidney Institute, Northern General Hospital, Sheffield, United Kingdom;
+      and.
+FAU - Delanaye, Pierre
+AU  - Delanaye P
+AD  - Department of Nephrology, Dialysis, and Transplantation, Centre Hospitalier
+      Universitaire de Liege, Liege, Belgium;
+FAU - Eastell, Richard
+AU  - Eastell R
+AD  - Academic Unit of Bone Metabolism, Metabolic Bone Centre, Northern General
+      Hospital, Sheffield, United Kingdom.
+FAU - Khwaja, Arif
+AU  - Khwaja A
+AD  - Sheffield Kidney Institute, Northern General Hospital, Sheffield, United Kingdom;
+      and arif.khwaja@sth.nhs.uk.
+LA  - eng
+PT  - Journal Article
+DEP - 20160215
+PL  - United States
+TA  - Clin J Am Soc Nephrol
+JT  - Clinical journal of the American Society of Nephrology : CJASN
+JID - 101271570
+SB  - IM
+PMC - PMC4934848
+OID - NLM: PMC4934848 [Available on 07/07/17]
+OTO - NOTNLM
+OT  - Bone Diseases
+OT  - Metabolic
+OT  - Osteoporosis
+OT  - Vitamin D
+OT  - fibroblast growth factor 23
+OT  - fracture
+OT  - glucocorticoids
+OT  - kidney transplantation
+OT  - mineral metabolism
+OT  - parathyroid hormone
+OT  - renal osteodystrophy
+EDAT- 2016/02/26 06:00
+MHDA- 2016/02/26 06:00
+CRDT- 2016/02/26 06:00
+PMCR- 2017/07/07
+AID - CJN.11371015 [pii]
+AID - 10.2215/CJN.11371015 [doi]
+PST - ppublish
+SO  - Clin J Am Soc Nephrol. 2016 Jul 7;11(7):1282-96. doi: 10.2215/CJN.11371015. Epub 
+      2016 Feb 15.
+
+PMID- 27462143
+OWN - NLM
+STAT- In-Process
+DA  - 20160727
+LR  - 20161219
+IS  - 1177-8881 (Electronic)
+IS  - 1177-8881 (Linking)
+VI  - 10
+DP  - 2016
+TI  - Effect of N-methyl deuteration on metabolism and pharmacokinetics of
+      enzalutamide.
+PG  - 2181-91
+LID - 10.2147/DDDT.S111352 [doi]
+AB  - BACKGROUND: The replacement of hydrogen with deuterium invokes a kinetic isotope 
+      effect. Thus, this method is an attractive way to slow down the metabolic rate
+      and modulate pharmacokinetics. PURPOSE: Enzalutamide (ENT) acts as a competitive 
+      inhibitor of the androgen receptor and has been approved for the treatment of
+      metastatic castration-resistant prostate cancer by the US Food and Drug
+      Administration in 2012. To attenuate the N-demethylation pathway, hydrogen atoms 
+      of the N-CH3 moiety were replaced by the relatively stable isotope deuterium,
+      which showed similar pharmacological activities but exhibited favorable
+      pharmacokinetic properties. METHODS: We estimated in vitro and in vivo
+      pharmacokinetic parameters for ENT and its deuterated analog (d3-ENT). For in
+      vitro studies, intrinsic primary isotope effects (K H/K D) were determined by the
+      ratio of intrinsic clearance (CLint) obtained for ENT and d3-ENT. The CLint
+      values were obtained by the substrate depletion method. For in vivo studies, ENT 
+      and d3-ENT were orally given to male Sprague Dawley rats separately and
+      simultaneously to assess the disposition and metabolism of them. We also
+      investigated the main metabolic pathway of ENT by comparing the rate of oxidation
+      and hydrolysis in vitro. RESULTS: The in vitro CLint (maximum velocity/Michaelis 
+      constant [V max/K m]) of d3-ENT in rat and human liver microsomes were 49.7% and 
+      72.9% lower than those of the non-deuterated compound, corresponding to the K H/K
+      D value of ~2. The maximum observed plasma concentration, C max, and area under
+      the plasma concentration -time curve from time zero to the last measurable
+      sampling time point (AUC0-t) were 35% and 102% higher than those of ENT when
+      orally administered to rats (10 mg/kg). The exposure of the N-demethyl metabolite
+      M2 was eightfold lower, whereas that of the amide hydrolysis metabolite M1 and
+      other minor metabolites was unchanged. The observed hydrolysis rate of M2 was at 
+      least ten times higher than that of ENT and d3-ENT in rat plasma. CONCLUSION: ENT
+      was mainly metabolized through the "parent-->M2-->M1" pathway based on in vitro
+      and in vivo elimination behavior. The observed in vitro deuterium isotope effect 
+      translated into increased exposure of the deuterated analog in rats. Once the
+      carbon-hydrogen was replaced with carbon-deuterium (C-D) bonds, the major
+      metabolic pathway was retarded because of the relatively stable C-D bonds. The
+      systemic exposure to d3-ENT can increase in humans, so the dose requirements can 
+      be reduced appropriately.
+FAU - Jiang, Jinfang
+AU  - Jiang J
+AD  - State Key Laboratory of Drug Research, Shanghai Institute of Materia Medica,
+      Chinese Academy of Sciences, Shanghai; University of Chinese Academy of Sciences,
+      Beijing.
+FAU - Pang, Xuehai
+AU  - Pang X
+AD  - University of Chinese Academy of Sciences, Beijing; Chengdu Institute of Organic 
+      Chemistry, Chinese Academy of Sciences.
+FAU - Li, Liang
+AU  - Li L
+AD  - State Key Laboratory of Drug Research, Shanghai Institute of Materia Medica,
+      Chinese Academy of Sciences, Shanghai; University of Chinese Academy of Sciences,
+      Beijing.
+FAU - Dai, Xiaojian
+AU  - Dai X
+AD  - State Key Laboratory of Drug Research, Shanghai Institute of Materia Medica,
+      Chinese Academy of Sciences, Shanghai; University of Chinese Academy of Sciences,
+      Beijing.
+FAU - Diao, Xingxing
+AU  - Diao X
+AD  - State Key Laboratory of Drug Research, Shanghai Institute of Materia Medica,
+      Chinese Academy of Sciences, Shanghai.
+FAU - Chen, Xiaoyan
+AU  - Chen X
+AD  - State Key Laboratory of Drug Research, Shanghai Institute of Materia Medica,
+      Chinese Academy of Sciences, Shanghai; University of Chinese Academy of Sciences,
+      Beijing.
+FAU - Zhong, Dafang
+AU  - Zhong D
+AD  - State Key Laboratory of Drug Research, Shanghai Institute of Materia Medica,
+      Chinese Academy of Sciences, Shanghai; University of Chinese Academy of Sciences,
+      Beijing.
+FAU - Wang, Yingwei
+AU  - Wang Y
+AD  - University of Chinese Academy of Sciences, Beijing; Chengdu Institute of Organic 
+      Chemistry, Chinese Academy of Sciences.
+FAU - Chen, Yuanwei
+AU  - Chen Y
+AD  - University of Chinese Academy of Sciences, Beijing; Chengdu Institute of Organic 
+      Chemistry, Chinese Academy of Sciences; Hinova Pharmaceuticals Inc, Chengdu,
+      People's Republic of China.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - New Zealand
+TA  - Drug Des Devel Ther
+JT  - Drug design, development and therapy
+JID - 101475745
+SB  - IM
+PMC - PMC4939996
+OID - NLM: PMC4939996
+OTO - NOTNLM
+OT  - N-methyl deuteration
+OT  - deuterium kinetic isotope effect
+OT  - enzalutamide
+OT  - pharmacokinetics
+EDAT- 2016/07/28 06:00
+MHDA- 2016/07/28 06:00
+CRDT- 2016/07/28 06:00
+AID - 10.2147/DDDT.S111352 [doi]
+AID - dddt-10-2181 [pii]
+PST - epublish
+SO  - Drug Des Devel Ther. 2016 Jul 7;10:2181-91. doi: 10.2147/DDDT.S111352.
+      eCollection 2016.
+
+id: 27457557 Error occurred: PMID 27457557 is a duplicate of PMID 27399688
+
+id: 27409602 Error occurred: PMID 27409602 is a duplicate of PMID 27399688
+
+PMID- 27399688
+OWN - NLM
+STAT- In-Process
+DA  - 20160712
+LR  - 20161219
+IS  - 1422-0067 (Electronic)
+IS  - 1422-0067 (Linking)
+VI  - 17
+IP  - 7
+DP  - 2016 Jul 07
+TI  - Synthesis and Evaluation of Tricarbonyl (99m)Tc-Labeled
+      2-(4-Chloro)phenyl-imidazo[1,2-a]pyridine Analogs as Novel SPECT Imaging
+      Radiotracer for TSPO-Rich Cancer.
+LID - 10.3390/ijms17071085 [doi]
+LID - E1085 [pii]
+AB  - The 18-kDa translocator protein (TSPO) levels are associated with brain, breast, 
+      and prostate cancer progression and have emerged as viable targets for cancer
+      therapy and imaging. In order to develop highly selective and active ligands with
+      a high affinity for TSPO, imidazopyridine-based TSPO ligand (CB256, 3) was
+      prepared as the precursor. (99m)Tc- and Re-CB256 (1 and 2, respectively) were
+      synthesized in high radiochemical yield (74.5% +/- 6.4%, decay-corrected, n = 5) 
+      and chemical yield (65.6%) by the incorporation of the
+      [(99m)Tc(CO)(3)(H(2)O)(3)](+) and (NEt(4))(2)[Re(CO)(3)Br(3)] followed by HPLC
+      separation. Radio-ligand 1 was shown to be stable (>99%) when incubated in human 
+      serum for 4 h at 37 degrees C with a relatively low lipophilicity (logD = 2.15
+      +/- 0.02). The rhenium-185 and -187 complex 2 exhibited a moderate affinity (Ki =
+      159.3 +/- 8.7 nM) for TSPO, whereas its cytotoxicity evaluated on TSPO-rich tumor
+      cell lines was lower than that observed for the precursor. In vitro uptake
+      studies of 1 in C6 and U87-MG cells for 60 min was found to be 9.84% +/- 0.17%
+      and 7.87% +/- 0.23% ID, respectively. Our results indicated that (99m)Tc-CB256
+      can be considered as a potential new TSPO-rich cancer SPECT imaging agent and
+      provides the foundation for further in vivo evaluation.
+FAU - Choi, Ji Young
+AU  - Choi JY
+AD  - Department of Nuclear Medicine, Seoul National University College of Medicine,
+      Seoul National University Bundang Hospital, Seongnam 13620, Korea.
+      cjy0929@snu.ac.kr.
+AD  - Department of Transdisciplinary Studies, Graduate School of Convergence Science
+      and Technology, Seoul National University, Seoul 16229, Korea. cjy0929@snu.ac.kr.
+FAU - Iacobazzi, Rosa Maria
+AU  - Iacobazzi RM
+AD  - Department of Pharmacy-Drug Sciences, University of Bari "Aldo Moro", Bari 70125,
+      Italy. rosamaria.iacobazzi@uniba.it.
+AD  - Istituto Tumori IRCCS "Giovanni Paolo II", Flacco, St. 65, Bari 70124, Italy.
+      rosamaria.iacobazzi@uniba.it.
+FAU - Perrone, Mara
+AU  - Perrone M
+AD  - Department of Pharmacy-Drug Sciences, University of Bari "Aldo Moro", Bari 70125,
+      Italy. mara.perrone@uniba.it.
+FAU - Margiotta, Nicola
+AU  - Margiotta N
+AD  - Department of Chemistry, University of Bari "Aldo Moro", Bari 70125, Italy.
+      nicola.margiotta@uniba.it.
+FAU - Cutrignelli, Annalisa
+AU  - Cutrignelli A
+AD  - Department of Pharmacy-Drug Sciences, University of Bari "Aldo Moro", Bari 70125,
+      Italy. annalisa.cutrignelli@uniba.it.
+FAU - Jung, Jae Ho
+AU  - Jung JH
+AD  - Department of Nuclear Medicine, Seoul National University College of Medicine,
+      Seoul National University Bundang Hospital, Seongnam 13620, Korea.
+      jaehoboa@paran.com.
+FAU - Park, Do Dam
+AU  - Park do D
+AD  - Department of Nuclear Medicine, Seoul National University College of Medicine,
+      Seoul National University Bundang Hospital, Seongnam 13620, Korea.
+      ddp2194@naver.com.
+FAU - Moon, Byung Seok
+AU  - Moon BS
+AD  - Department of Nuclear Medicine, Seoul National University College of Medicine,
+      Seoul National University Bundang Hospital, Seongnam 13620, Korea.
+      bsmoon@snu.ac.kr.
+FAU - Denora, Nunzio
+AU  - Denora N
+AD  - Department of Pharmacy-Drug Sciences, University of Bari "Aldo Moro", Bari 70125,
+      Italy. nunzio.denora@uniba.it.
+FAU - Kim, Sang Eun
+AU  - Kim SE
+AD  - Department of Nuclear Medicine, Seoul National University College of Medicine,
+      Seoul National University Bundang Hospital, Seongnam 13620, Korea. kse@snu.ac.kr.
+AD  - Department of Transdisciplinary Studies, Graduate School of Convergence Science
+      and Technology, Seoul National University, Seoul 16229, Korea. kse@snu.ac.kr.
+AD  - Center for Nanomolecular Imaging and Innovative Drug Development, Advanced
+      Institutes of Convergence Technology, Suwon 16229, Korea. kse@snu.ac.kr.
+FAU - Lee, Byung Chul
+AU  - Lee BC
+AD  - Department of Nuclear Medicine, Seoul National University College of Medicine,
+      Seoul National University Bundang Hospital, Seongnam 13620, Korea.
+      leebc@snu.ac.kr.
+AD  - Center for Nanomolecular Imaging and Innovative Drug Development, Advanced
+      Institutes of Convergence Technology, Suwon 16229, Korea. leebc@snu.ac.kr.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - Switzerland
+TA  - Int J Mol Sci
+JT  - International journal of molecular sciences
+JID - 101092791
+SB  - IM
+PMC - PMC4964461
+OTO - NOTNLM
+OT  - 99mTc(CO)3
+OT  - SPECT
+OT  - TSPO
+OT  - TSPO-rich tumors
+OT  - Tricarbonyltechnetium-99m
+OT  - translocator protein
+EDAT- 2016/07/12 06:00
+MHDA- 2016/07/12 06:00
+CRDT- 2016/07/12 06:00
+PHST- 2016/06/04 [received]
+PHST- 2016/07/01 [revised]
+PHST- 2016/07/01 [accepted]
+AID - ijms17071085 [pii]
+AID - 10.3390/ijms17071085 [doi]
+PST - epublish
+SO  - Int J Mol Sci. 2016 Jul 7;17(7). pii: E1085. doi: 10.3390/ijms17071085.
+
+PMID- 27399684
+OWN - NLM
+STAT- In-Process
+DA  - 20160712
+LR  - 20161219
+IS  - 1422-0067 (Electronic)
+IS  - 1422-0067 (Linking)
+VI  - 17
+IP  - 7
+DP  - 2016 Jul 07
+TI  - Anti-Cancer Effect of Lambertianic Acid by Inhibiting the AR in LNCaP Cells.
+LID - 10.3390/ijms17071066 [doi]
+LID - E1066 [pii]
+AB  - Lambertianic acid (LA) is known to have anti-allergic and antibacterial effects. 
+      However, the anticancer activities and mechanism of action of LA have not been
+      investigated. Therefore, the anticancer effects and mechanism of LA are
+      investigated in this study. LA decreased not only AR protein levels, but also
+      cellular and secretory levels of PSA. Furthermore, LA inhibited nuclear
+      translocation of the AR induced by mibolerone. LA suppressed cell proliferation
+      by inducing G(1) arrest, downregulating CDK4/6 and cyclin D1 and activating p53
+      and its downstream molecules, p21 and p27. LA induced apoptosis and the
+      expression of related proteins, including cleaved caspase-9 and -3, c-PARP and
+      BAX, and inhibited BCl-2. The role of AR in LA-induced apoptosis was assessed by 
+      using siRNA. Collectively, these findings suggest that LA exerts the anticancer
+      effect by inhibiting AR and is a valuable therapeutic agent in prostate cancer
+      treatment.
+FAU - Lee, Myoung-Sun
+AU  - Lee MS
+AD  - Department of Cancer Preventive Material Development, Graduate School, Kyung Hee 
+      University, 1 Hoegi-dong, Dongdaemun-gu, Seoul 130-701, Korea. lmsms14@naver.com.
+FAU - Lee, Seon-Ok
+AU  - Lee SO
+AD  - Department of Cancer Preventive Material Development, Graduate School, Kyung Hee 
+      University, 1 Hoegi-dong, Dongdaemun-gu, Seoul 130-701, Korea. lso4595@naver.com.
+FAU - Kim, Sung-Hoon
+AU  - Kim SH
+AD  - Department of Cancer Preventive Material Development, Graduate School, Kyung Hee 
+      University, 1 Hoegi-dong, Dongdaemun-gu, Seoul 130-701, Korea.
+      sungkim7@khu.ac.kr.
+FAU - Lee, Eun-Ok
+AU  - Lee EO
+AD  - Department of Cancer Preventive Material Development, Graduate School, Kyung Hee 
+      University, 1 Hoegi-dong, Dongdaemun-gu, Seoul 130-701, Korea. leook@khu.ac.kr.
+FAU - Lee, Hyo-Jeong
+AU  - Lee HJ
+AD  - Department of Cancer Preventive Material Development, Graduate School, Kyung Hee 
+      University, 1 Hoegi-dong, Dongdaemun-gu, Seoul 130-701, Korea.
+      strong79@khu.ac.kr.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - Switzerland
+TA  - Int J Mol Sci
+JT  - International journal of molecular sciences
+JID - 101092791
+SB  - IM
+PMC - PMC4964442
+OID - NLM: PMC4964442
+OTO - NOTNLM
+OT  - LNCaP
+OT  - androgen receptor
+OT  - anticancer
+OT  - lambertianic acid
+EDAT- 2016/07/12 06:00
+MHDA- 2016/07/12 06:00
+CRDT- 2016/07/12 06:00
+PHST- 2016/04/08 [received]
+PHST- 2016/06/21 [revised]
+PHST- 2016/06/28 [accepted]
+AID - ijms17071066 [pii]
+AID - 10.3390/ijms17071066 [doi]
+PST - epublish
+SO  - Int J Mol Sci. 2016 Jul 7;17(7). pii: E1066. doi: 10.3390/ijms17071066.
+
+PMID- 27547390
+OWN - NLM
+STAT- PubMed-not-MEDLINE
+DA  - 20160822
+DCOM- 20160822
+LR  - 20160824
+IS  - 2048-6790 (Linking)
+VI  - 5
+DP  - 2016
+TI  - Validation of a food-frequency questionnaire for assessing vitamin intake of
+      Japanese women in early and late pregnancy with and without nausea and vomiting.
+PG  - e27
+LID - 10.1017/jns.2016.14 [doi]
+AB  - Maternal vitamin intake during pregnancy is crucial for pregnancy outcomes and
+      the child's subsequent health. However, there are few valid instruments for
+      assessing vitamin intake that address the effects of nausea and vomiting during
+      pregnancy (NVP). This study aimed to investigate the validity of a FFQ concerning
+      vitamin intake during early and late pregnancy with and without NVP. The
+      participants comprised 200 Japanese pregnant women who completed the FFQ and from
+      whom blood samples were taken in early and late pregnancy. Energy-adjusted
+      dietary vitamin intakes (vitamin C, folate, vitamin B6, vitamin B12, vitamin A,
+      vitamin E and vitamin D) from FFQ were compared with their blood concentrations. 
+      A subgroup of women with NVP was investigated. In early pregnancy, significant
+      correlations between FFQ and biomarkers were observed for vitamin C (r 0.27),
+      folate (r 0.18) and vitamin D (r 0.26) in women with NVP and for vitamin A (r
+      0.18), vitamin B12 (r 0.24) and vitamin D (r 0.23) in women without NVP. No
+      significant correlations were observed in either group for vitamins B6 or E. In
+      late pregnancy, similar significant associations were observed for vitamin C (r
+      0.27), folate (r 0.22), vitamin B6 (r 0.18), vitamin B12 (r 0.27) and vitamin A
+      (r 0.15); coefficients were higher among women without NVP. Our study
+      demonstrates that the FFQ is a useful tool for assessing intake of several
+      important vitamins in early and late pregnancy regardless of NVP status.
+FAU - Jwa, Seung Chik
+AU  - Jwa SC
+AD  - Department of Social Medicine, National Research Institute for Child Health and
+      Development, National Center for Child Health and Development, 2-10-1 Okura,
+      Setagaya-ku, Tokyo 157-8535, Japan; Center of Maternal-Fetal, Neonatal and
+      Reproductive Medicine, National Center for Child Health and Development, 2-10-1
+      Okura, Setagaya-ku, Tokyo 157-8535, Japan.
+FAU - Ogawa, Kohei
+AU  - Ogawa K
+AD  - Department of Social Medicine, National Research Institute for Child Health and
+      Development, National Center for Child Health and Development, 2-10-1 Okura,
+      Setagaya-ku, Tokyo 157-8535, Japan; Center of Maternal-Fetal, Neonatal and
+      Reproductive Medicine, National Center for Child Health and Development, 2-10-1
+      Okura, Setagaya-ku, Tokyo 157-8535, Japan.
+FAU - Kobayashi, Minatsu
+AU  - Kobayashi M
+AD  - Department of Food Science , Otsuma Women's University , 12 Sanban-cho ,
+      Chiyoda-ku , Tokyo 102-8357 , Japan.
+FAU - Morisaki, Naho
+AU  - Morisaki N
+AD  - Department of Social Medicine , National Research Institute for Child Health and 
+      Development , National Center for Child Health and Development , 2-10-1 Okura ,
+      Setagaya-ku , Tokyo 157-8535 , Japan.
+FAU - Sago, Haruhiko
+AU  - Sago H
+AD  - Center of Maternal-Fetal , Neonatal and Reproductive Medicine , National Center
+      for Child Health and Development , 2-10-1 Okura , Setagaya-ku , Tokyo 157-8535 , 
+      Japan.
+FAU - Fujiwara, Takeo
+AU  - Fujiwara T
+AD  - Department of Social Medicine, National Research Institute for Child Health and
+      Development, National Center for Child Health and Development, 2-10-1 Okura,
+      Setagaya-ku, Tokyo 157-8535, Japan; Department of Global Health Promotion, Tokyo 
+      Medical and Dental University, 1-5-45, Yushima, Bunkyo-ku, Tokyo 113-8519, Japan.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - England
+TA  - J Nutr Sci
+JT  - Journal of nutritional science
+JID - 101590587
+PMC - PMC4976112
+OID - NLM: PMC4976112
+OTO - NOTNLM
+OT  - 25(OH)D, 25-hydroxyvitamin D
+OT  - FFQ1, first FFQ between 5 and 15 weeks of gestation
+OT  - FFQ2, second FFQ between 22 and 35 weeks of gestation
+OT  - Food-frequency questionnaires
+OT  - NCCHD, National Center for Child Health and Development
+OT  - NVP (+), participants who reported their dietary intake was reduced by NVP
+OT  - NVP (-), participants whose food consumption had not decreased
+OT  - NVP, nausea and vomiting during pregnancy
+OT  - Nausea
+OT  - Pregnancy
+OT  - Validation
+OT  - Vitamins
+OT  - Vomiting
+EDAT- 2016/08/23 06:00
+MHDA- 2016/08/23 06:01
+CRDT- 2016/08/23 06:00
+PHST- 2016/01/13 [received]
+PHST- 2016/03/21 [accepted]
+AID - 10.1017/jns.2016.14 [doi]
+AID - 00014 [pii]
+PST - epublish
+SO  - J Nutr Sci. 2016 Jul 7;5:e27. doi: 10.1017/jns.2016.14. eCollection 2016.
+
+PMID- 27203598
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160707
+LR  - 20161025
+IS  - 1520-5207 (Electronic)
+IS  - 1520-5207 (Linking)
+VI  - 120
+IP  - 26
+DP  - 2016 Jul 07
+TI  - Rab11 and Lysotracker Markers Reveal Correlation between Endosomal Pathways and
+      Transfection Efficiency of Surface-Functionalized Cationic Liposome-DNA
+      Nanoparticles.
+PG  - 6439-53
+LID - 10.1021/acs.jpcb.6b04441 [doi]
+AB  - Cationic liposomes (CLs) are widely studied as carriers of DNA and
+      short-interfering RNA for gene delivery and silencing, and related clinical
+      trials are ongoing. Optimization of transfection efficiency (TE) requires
+      understanding of CL-nucleic acid nanoparticle (NP) interactions with cells, NP
+      endosomal pathways, endosomal escape, and events leading to release of active
+      nucleic acid from the lipid carrier. Here, we studied endosomal pathways and TE
+      of surface-functionalized CL-DNA NPs in PC-3 prostate cancer cells displaying
+      overexpressed integrin and neuropilin-1 receptors. The NPs contained
+      RGD-PEG-lipid or RPARPAR-PEG-lipid, targeting integrin, and neuropilin-1
+      receptors, respectively, or control PEG-lipid. Fluorescence colocalization using 
+      Rab11-GFP and Lysotracker enabled simultaneous colocalization of NPs with
+      recycling endosome (Rab11) and late endosome/lysosome (Rab7/Lysotracker) pathways
+      at increasing mole fractions of pentavalent MVL5 (+5 e) at low (10 mol %), high
+      (50 mol %), and very high (70 mol %) membrane charge density (sigmaM). For these 
+      cationic NPs (lipid/DNA molar charge ratio, rhochg = 5), the influence of
+      membrane charge density on pathway selection and transfection efficiency is
+      similar for both peptide-PEG NPs, although, quantitatively, the effect is larger 
+      for RGD-PEG compared to RPARPAR-PEG NPs. At low sigmaM, peptide-PEG NPs show
+      preference for the recycling endosome over the late endosome/lysosome pathway.
+      Increases in sigmaM, from low to high, lead to decreases in colocalization with
+      recycling endosomes and simultaneous increases in colocalization with the late
+      endosome/lysosome pathway. Combining colocalization and functional TE data at low
+      and high sigmaM shows that higher TE correlates with a larger fraction of NPs
+      colocalized with the late endosome/lysosome pathway while lower TE correlates
+      with a larger fraction of NPs colocalized with the Rab11 recycling pathway. The
+      findings lead to a hypothesis that increases in sigmaM, leading to enhanced late 
+      endosome/lysosome pathway selection and higher TE, result from increased
+      nonspecific electrostatic attractions between NPs and endosome luminal membranes,
+      and conversely, enhanced recycling pathway for NPs and lower TE are due to weaker
+      attractions. Surprisingly, at very high sigmaM, the inverse relation between the 
+      two pathways observed at low and high sigmaM breaks down, pointing to a more
+      complex NP pathway behavior.
+FAU - Majzoub, Ramsey N
+AU  - Majzoub RN
+FAU - Wonder, Emily
+AU  - Wonder E
+FAU - Ewert, Kai K
+AU  - Ewert KK
+FAU - Kotamraju, Venkata Ramana
+AU  - Kotamraju VR
+AD  - Cancer Research Center, Sanford Burnham Prebys Medical Discovery Institute , La
+      Jolla, California 92037, United States.
+FAU - Teesalu, Tambet
+AU  - Teesalu T
+AD  - Cancer Research Center, Sanford Burnham Prebys Medical Discovery Institute , La
+      Jolla, California 92037, United States.
+AD  - Laboratory of Cancer Biology, Institute of Biomedicine and Translational
+      Medicine, University of Tartu , Tartu 50411, Estonia.
+FAU - Safinya, Cyrus R
+AU  - Safinya CR
+LA  - eng
+GR  - P30 CA030199/CA/NCI NIH HHS/United States
+GR  - R01 GM059288/GM/NIGMS NIH HHS/United States
+PT  - Journal Article
+DEP - 20160603
+PL  - United States
+TA  - J Phys Chem B
+JT  - The journal of physical chemistry. B
+JID - 101157530
+SB  - IM
+PMC - PMC4936928
+MID - NIHMS794162
+OID - NLM: NIHMS794162 [Available on 07/07/17]
+OID - NLM: PMC4936928 [Available on 07/07/17]
+EDAT- 2016/05/21 06:00
+MHDA- 2016/05/21 06:00
+CRDT- 2016/05/21 06:00
+PMCR- 2017/07/07
+AID - 10.1021/acs.jpcb.6b04441 [doi]
+PST - ppublish
+SO  - J Phys Chem B. 2016 Jul 7;120(26):6439-53. doi: 10.1021/acs.jpcb.6b04441. Epub
+      2016 Jun 3.
+
+PMID- 27189335
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160623
+LR  - 20160623
+IS  - 1473-0189 (Electronic)
+IS  - 1473-0189 (Linking)
+VI  - 16
+IP  - 13
+DP  - 2016 Jul 07
+TI  - Efficient analysis of a small number of cancer cells at the single-cell level
+      using an electroactive double-well array.
+PG  - 2440-9
+LID - 10.1039/c6lc00241b [doi]
+AB  - Analysis of the intracellular materials of a small number of cancer cells at the 
+      single-cell level is important to improve our understanding of cellular
+      heterogeneity in rare cells. To analyze an extremely small number of cancer cells
+      (less than hundreds of cells), an efficient system is required in order to
+      analyze target cells with minimal sample loss. Here, we present a novel approach 
+      utilizing an advanced electroactive double-well array (EdWA) for on-chip analysis
+      of a small number of cancer cells at the single-cell level with minimal loss of
+      target cells. The EdWA consisted of cell-sized trap-wells for deterministic
+      single-cell trapping using dielectrophoresis and high aspect ratio reaction-wells
+      for confining the cell lysates extracted by lysing trapped single cells via
+      electroporation. We demonstrated a highly efficient single-cell arraying (a cell 
+      capture efficiency of 96 +/- 3%) by trapping diluted human prostate cancer cells 
+      (PC3 cells). On-chip single-cell analysis was performed by measuring the
+      intracellular beta-galactosidase (beta-gal) activity after lysing the trapped
+      single cells inside a tightly enclosed EdWA in the presence of a fluorogenic
+      enzyme substrate. The PC3 cells showed large cell-to-cell variations in beta-gal 
+      activity although they were cultured under the same conditions in a culture dish.
+      This simple and effective system has great potential for high throughput
+      single-cell analysis of rare cells.
+FAU - Kim, Soo Hyeon
+AU  - Kim SH
+AD  - Institute of Industrial Science, The University of Tokyo, Japan.
+      shkim@iis.u-tokyo.ac.jp tfujii@iis.u-tokyo.ac.jp.
+FAU - Fujii, Teruo
+AU  - Fujii T
+LA  - eng
+PT  - Journal Article
+DEP - 20160518
+PL  - England
+TA  - Lab Chip
+JT  - Lab on a chip
+JID - 101128948
+SB  - IM
+EDAT- 2016/05/18 06:00
+MHDA- 2016/05/18 06:00
+CRDT- 2016/05/19 06:00
+AID - 10.1039/c6lc00241b [doi]
+PST - ppublish
+SO  - Lab Chip. 2016 Jul 7;16(13):2440-9. doi: 10.1039/c6lc00241b. Epub 2016 May 18.
+
+PMID- 27399727
+OWN - NLM
+STAT- In-Process
+DA  - 20160712
+LR  - 20161219
+IS  - 1660-3397 (Electronic)
+IS  - 1660-3397 (Linking)
+VI  - 14
+IP  - 7
+DP  - 2016 Jul 07
+TI  - Anticancer Effect of Fucoidan on DU-145 Prostate Cancer Cells through Inhibition 
+      of PI3K/Akt and MAPK Pathway Expression.
+LID - 10.3390/md14070126 [doi]
+LID - E126 [pii]
+AB  - In this study, we showed that PI3K/Akt signaling mediates fucoidan's anticancer
+      effects on prostate cancer cells, including suppression of proliferation.
+      Fucoidan significantly decreased viability of DU-145 cancer cells in a
+      concentration-dependent manner as shown by MTT
+      [3-(4,5-dimethylthiazol-2-yl)-2,5-diphenyltetrazolium bromide] assay. The drug
+      also significantly increased chromatin condensation, which indicates apoptosis,
+      in a concentration-dependent manner as shown by DAPI
+      (4',6-diamidino-2-phenylindole) staining. Fucoidan increased expression of Bax,
+      cleaved poly-ADP ribose polymerase and cleaved caspase-9, and decreased of the
+      Bcl-2, p-Akt, p-PI3K, p-P38, and p-ERK in a concentration-dependent manner. In
+      vivo, fucoidan (at 5 and 10 mg/kg) significantly decreased tumor volume, and
+      increased apoptosis as assessed by the TUNEL (terminal deoxynucleotidyl
+      transferase dUTP nick end labeling) assay, confirming the tumor inhibitory
+      effect. The drug also increased expression of p-Akt and p-ERK as shown by
+      immunohistochemistry staining. Therefore, fucoidan may be a promising cancer
+      preventive medicine due to its growth inhibitory effects and induction of
+      apoptosis in human prostate cancer cells.
+FAU - Choo, Gang-Sik
+AU  - Choo GS
+AD  - Department of Companion and Laboratory Animal Science, Kongju National
+      University, Yesan 340-702, Korea. chu_0602@naver.com.
+FAU - Lee, Hae-Nim
+AU  - Lee HN
+AD  - Department of Companion and Laboratory Animal Science, Kongju National
+      University, Yesan 340-702, Korea. lhn2726@naver.com.
+FAU - Shin, Seong-Ah
+AU  - Shin SA
+AD  - Department of Companion and Laboratory Animal Science, Kongju National
+      University, Yesan 340-702, Korea. shinsaya@naver.com.
+FAU - Kim, Hyeong-Jin
+AU  - Kim HJ
+AD  - Department of Companion and Laboratory Animal Science, Kongju National
+      University, Yesan 340-702, Korea. tigershout@kongju.ac.kr.
+FAU - Jung, Ji-Youn
+AU  - Jung JY
+AD  - Department of Companion and Laboratory Animal Science, Kongju National
+      University, Yesan 340-702, Korea. wangza@kongju.ac.kr.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - Switzerland
+TA  - Mar Drugs
+JT  - Marine drugs
+JID - 101213729
+SB  - IM
+PMC - PMC4962016
+OID - NLM: PMC4962016
+OTO - NOTNLM
+OT  - Akt
+OT  - apoptosis
+OT  - fucoidan
+OT  - human prostate cancer
+OT  - mitogen-activated protein kinases
+OT  - phosphoinositide 3-kinase
+EDAT- 2016/07/12 06:00
+MHDA- 2016/07/12 06:00
+CRDT- 2016/07/12 06:00
+PHST- 2016/05/20 [received]
+PHST- 2016/06/18 [revised]
+PHST- 2016/06/29 [accepted]
+AID - md14070126 [pii]
+AID - 10.3390/md14070126 [doi]
+PST - epublish
+SO  - Mar Drugs. 2016 Jul 7;14(7). pii: E126. doi: 10.3390/md14070126.
+
+PMID- 26961235
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160624
+LR  - 20161025
+IS  - 2040-3372 (Electronic)
+IS  - 2040-3364 (Linking)
+VI  - 8
+IP  - 25
+DP  - 2016 Jul 07
+TI  - Prostate-specific membrane antigen targeted protein contrast agents for molecular
+      imaging of prostate cancer by MRI.
+PG  - 12668-82
+LID - 10.1039/c5nr09071g [doi]
+AB  - Prostate-specific membrane antigen (PSMA) is one of the most specific cell
+      surface markers for prostate cancer diagnosis and targeted treatment. However,
+      achieving molecular imaging using non-invasive MRI with high resolution has yet
+      to be achieved due to the lack of contrast agents with significantly improved
+      relaxivity for sensitivity, targeting capabilities and metal selectivity. We have
+      previously reported our creation of a novel class of protein Gd(3+) contrast
+      agents, ProCA32, which displayed significantly improved relaxivity while
+      exhibiting strong Gd(3+) binding selectivity over physiological metal ions. In
+      this study, we report our effort in further developing biomarker-targeted protein
+      MRI contrast agents for molecular imaging of PSMA. Among three PSMA targeted
+      contrast agents engineered with addition of different molecular recognition
+      sequences, ProCA32.PSMA exhibits a binding affinity of 1.1 +/- 0.1 muM for PSMA
+      while the metal binding affinity is maintained at 0.9 +/- 0.1 x 10(-22) M. In
+      addition, ProCA32.PSMA exhibits r1 of 27.6 mM(-1) s(-1) and r2 of 37.9 mM(-1)
+      s(-1) per Gd (55.2 and 75.8 mM(-1) s(-1) per molecule r1 and r2, respectively) at
+      1.4 T. At 7 T, ProCA32.PSMA also has r2 of 94.0 mM(-1) s(-1) per Gd (188.0 mM(-1)
+      s(-1) per molecule) and r1 of 18.6 mM(-1) s(-1) per Gd (37.2 mM(-1) s(-1) per
+      molecule). This contrast capability enables the first MRI enhancement dependent
+      on PSMA expression levels in tumor bearing mice using both T1 and T2-weighted MRI
+      at 7 T. Further development of these PSMA-targeted contrast agents are expected
+      to be used for the precision imaging of prostate cancer at an early stage and to 
+      monitor disease progression and staging, as well as determine the effect of
+      therapeutic treatment by non-invasive evaluation of the PSMA level using MRI.
+FAU - Pu, Fan
+AU  - Pu F
+AD  - Departments of Chemistry, Center for Diagnostics & Therapeutics, Georgia State
+      University, Atlanta, GA 30303, USA. jenny@gsu.edu.
+FAU - Salarian, Mani
+AU  - Salarian M
+FAU - Xue, Shenghui
+AU  - Xue S
+FAU - Qiao, Jingjuan
+AU  - Qiao J
+FAU - Feng, Jie
+AU  - Feng J
+FAU - Tan, Shanshan
+AU  - Tan S
+FAU - Patel, Anvi
+AU  - Patel A
+FAU - Li, Xin
+AU  - Li X
+FAU - Mamouni, Kenza
+AU  - Mamouni K
+FAU - Hekmatyar, Khan
+AU  - Hekmatyar K
+FAU - Zou, Juan
+AU  - Zou J
+FAU - Wu, Daqing
+AU  - Wu D
+FAU - Yang, Jenny J
+AU  - Yang JJ
+LA  - eng
+GR  - R21 CA164612/CA/NCI NIH HHS/United States
+GR  - R41 CA186498/CA/NCI NIH HHS/United States
+PT  - Journal Article
+DEP - 20160310
+PL  - England
+TA  - Nanoscale
+JT  - Nanoscale
+JID - 101525249
+SB  - IM
+EDAT- 2016/03/11 06:00
+MHDA- 2016/03/11 06:00
+CRDT- 2016/03/11 06:00
+AID - 10.1039/c5nr09071g [doi]
+PST - ppublish
+SO  - Nanoscale. 2016 Jul 7;8(25):12668-82. doi: 10.1039/c5nr09071g. Epub 2016 Mar 10.
+
+PMID- 27462171
+OWN - NLM
+STAT- PubMed-not-MEDLINE
+DA  - 20160727
+DCOM- 20160727
+LR  - 20160729
+IS  - 1178-6930 (Linking)
+VI  - 9
+DP  - 2016
+TI  - Polymorphism in IGFBP3 gene is associated with prostate cancer risk: an updated
+      meta-analysis.
+PG  - 4163-71
+LID - 10.2147/OTT.S102452 [doi]
+AB  - OBJECTIVE: Insulin-like growth factor-binding protein-3 (IGFBP3) is the major
+      protein that binds with insulin-like growth factor-1 (IGF-1) and is considered to
+      be involved in the development and progression of various cancers. We aimed to
+      examine the association between prostate cancer (PCa) and the IGFBP3 gene-202A/C 
+      polymorphism. METHODS: A comprehensive search within PubMed, EMBASE, and Cochrane
+      Library was conducted to identify all case-control studies up to October 30,
+      2015, for a meta-analysis. Pooled odds ratios (ORs) and the 95% confidence
+      intervals (CIs) were calculated using the fixed or random effects model. RESULTS:
+      Eighteen studies including 10,538 cases and 10,078 controls were identified.
+      Overall, the CC genotype of IGFBP3-202A/C polymorphism was associated with
+      increased risk of PCa in homozygote comparison (CC vs AA - OR =1.16, 95% CI:
+      1.08-1.25) and in recessive model (CC vs AA+AC - OR =1.11, 95% CI: 1.04-1.17). In
+      dominant model, the CC/AC genotypes also implicated an increased risk of PCa
+      (CC+AC vs AA - OR =1.11, 95% CI: 1.05-1.19). The C allele of IGFBP3-202A/C
+      polymorphism was the risk allele for PCa relative to the A allele (OR =1.09, 95% 
+      CI: 1.05-1.14). Further stratification analysis revealed that the association
+      between -202A/C polymorphism and PCa risk among Caucasians, but not in other
+      ethnicities, was statistically significant (recessive model, OR =1.10, 95% CI:
+      1.02-1.19). In addition, the IGFBP3-202A/C polymorphism was associated with PCa
+      risk in both population-based and hospital-based studies in homozygote
+      comparison, recessive model, and allele model. CONCLUSION: Our meta-analysis
+      indicates that the IGFBP3-202A/C polymorphism is associated with the risk of PCa,
+      particularly in Caucasians, with the C allele being the risk allele for PCa.
+FAU - Qie, Yunkai
+AU  - Qie Y
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+FAU - Nian, Xuewu
+AU  - Nian X
+AD  - Department of Urology, Tianjin Nankai Hospital, Tianjin, People's Republic of
+      China.
+FAU - Liu, Xuesen
+AU  - Liu X
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+FAU - Hu, Hailong
+AU  - Hu H
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+FAU - Zhang, Changwen
+AU  - Zhang C
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+FAU - Xie, Linguo
+AU  - Xie L
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+FAU - Han, Ruifa
+AU  - Han R
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+FAU - Wu, Changli
+AU  - Wu C
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+FAU - Xu, Yong
+AU  - Xu Y
+AD  - Department of Urology, The Second Hospital of Tianjin Medical University, Tianjin
+      Institute of Urology.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - New Zealand
+TA  - Onco Targets Ther
+JT  - OncoTargets and therapy
+JID - 101514322
+PMC - PMC4940022
+OID - NLM: PMC4940022
+OTO - NOTNLM
+OT  - IGFBP3
+OT  - meta-analysis
+OT  - polymorphism
+OT  - prostate cancer
+EDAT- 2016/07/28 06:00
+MHDA- 2016/07/28 06:01
+CRDT- 2016/07/28 06:00
+AID - 10.2147/OTT.S102452 [doi]
+AID - ott-9-4163 [pii]
+PST - epublish
+SO  - Onco Targets Ther. 2016 Jul 7;9:4163-71. doi: 10.2147/OTT.S102452. eCollection
+      2016.
+
+PMID- 27462169
+OWN - NLM
+STAT- PubMed-not-MEDLINE
+DA  - 20160727
+DCOM- 20160727
+LR  - 20160729
+IS  - 1178-6930 (Linking)
+VI  - 9
+DP  - 2016
+TI  - Blood oxygenation level-dependent magnetic resonance imaging during carbogen
+      breathing: differentiation between prostate cancer and benign prostate
+      hyperplasia and correlation with vessel maturity.
+PG  - 4143-50
+LID - 10.2147/OTT.S105480 [doi]
+AB  - OBJECTIVE: The aim of this study was to investigate whether the blood oxygenation
+      level-dependent (BOLD) contrast magnetic resonance imaging (MRI) can evaluate
+      tumor maturity and preoperatively differentiate prostate cancer (PCa) from benign
+      prostate hyperplasia (BPH). PATIENTS AND METHODS: BOLD MRI based on transverse
+      relaxation time*-weighted echo planar imaging was performed to assess PCa (19)
+      and BPH (22) responses to carbogen (95% O2 and 5% CO2). The average signal values
+      of PCa and BPH before and after carbogen breathing and the relative increased
+      signal values were computed, respectively. The endothelial-cell marker, CD31, and
+      the pericyte marker, alpha-smooth muscle actin (mature vessels), were detected
+      with immunofluorescence, and were assessed by microvessel density (MVD) and
+      microvessel pericyte density (MPD). The microvessel pericyte coverage index (MPI)
+      was used to evaluate the degree of vascular maturity. The changed signal from
+      BOLD MRI was correlated with MVD, MPD, and MPI. RESULTS: After inhaling carbogen,
+      both PCa and BPH showed an increased signal, but a lower slope was found in PCa
+      than that in BPH (P<0.05). PCa had a higher MPD and MVD but a lower MPI than BPH.
+      The increased signal intensity was positively correlated with MPI in PCa and that
+      in BPH (r=0.616, P=0.011; r=0.658, P=0.002); however, there was no correlation
+      between the increased signal intensity and MPD or MVD in PCa than that in BPH
+      (P>0.05). CONCLUSION: Our results confirmed that the increased signal values
+      induced by BOLD MRI well differentiated PCa from BPH and had a positive
+      correlation with vessel maturity in both of them. BOLD MRI can be utilized as a
+      surrogate marker for the noninvasive assessment of the degree of vessel maturity.
+FAU - Di, Ningning
+AU  - Di N
+AD  - Department of Radiology, Affiliated Huashan Hospital of Fudan University,
+      Shanghai; Department of Radiology, Binzhou Medical University Affiliated
+      Hospital, Binzhou.
+FAU - Mao, Ning
+AU  - Mao N
+AD  - Department of Radiology, Yantai Yuhangding Hospital, Yantai.
+FAU - Cheng, Wenna
+AU  - Cheng W
+AD  - Department of Pharmacy, Binzhou Medical University Affiliated Hospital, Binzhou.
+FAU - Pang, Haopeng
+AU  - Pang H
+AD  - Department of Radiology, Affiliated Huashan Hospital of Fudan University,
+      Shanghai.
+FAU - Ren, Yan
+AU  - Ren Y
+AD  - Department of Radiology, Affiliated Huashan Hospital of Fudan University,
+      Shanghai.
+FAU - Wang, Ning
+AU  - Wang N
+AD  - Department of Radiology, Binzhou Medical University Affiliated Hospital, Binzhou.
+FAU - Liu, Xinjiang
+AU  - Liu X
+AD  - Department of Radiology, Binzhou Medical University Affiliated Hospital, Binzhou.
+FAU - Wang, Bin
+AU  - Wang B
+AD  - Department of Medical Imaging and Nuclear Medicine, Binzhou Medical University,
+      Yantai, People's Republic of China.
+LA  - eng
+PT  - Journal Article
+DEP - 20160707
+PL  - New Zealand
+TA  - Onco Targets Ther
+JT  - OncoTargets and therapy
+JID - 101514322
+PMC - PMC4939976
+OID - NLM: PMC4939976
+OTO - NOTNLM
+OT  - BOLD
+OT  - benign prostate hyperplasia
+OT  - magnetic resonance imaging
+OT  - prostate carcinoma
+OT  - vessel maturity
+EDAT- 2016/07/28 06:00
+MHDA- 2016/07/28 06:01
+CRDT- 2016/07/28 06:00
+AID - 10.2147/OTT.S105480 [doi]
+AID - ott-9-4143 [pii]
+PST - epublish
+SO  - Onco Targets Ther. 2016 Jul 7;9:4143-50. doi: 10.2147/OTT.S105480. eCollection
+      2016.
+
+PMID- 26640143
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160707
+LR  - 20160707
+IS  - 1476-5594 (Electronic)
+IS  - 0950-9232 (Linking)
+VI  - 35
+IP  - 27
+DP  - 2016 Jul 07
+TI  - The transcribed-ultraconserved regions in prostate and gastric cancer: DNA
+      hypermethylation and microRNA-associated regulation.
+PG  - 3598-606
+LID - 10.1038/onc.2015.445 [doi]
+AB  - The transcribed-ultraconserved regions (T-UCRs) are a novel class of non-coding
+      RNAs, which are absolutely conserved (100%) between the orthologous regions of
+      the human, rat and mouse genomes. Previous studies have described that several
+      T-UCRs show differential expressions in cancers and might be involved in cancer
+      development. We investigated the transcriptional levels of representative 26
+      T-UCRs and determined the regions that were differently expressed in prostate
+      cancer (PCa) and gastric cancer (GC). A quantitative reverse
+      transcription-polymerase chain reaction analysis revealed the downregulation of
+      Uc.158+A expression by a DNA methylation-associated mechanism, which was restored
+      by 5-Aza-dC (5-aza-2'-deoxycytidine) treatment. Bisulfite genomic sequencing
+      using cell lines and tissue samples demonstrated cancer-specific CpG
+      hypermethylation in both GC and PCa. However, Uc.416+A was only overexpressed in 
+      GC and we identified an miR-153 binding site in the possible regulatory region of
+      Uc.416+A using online databases. Along with a forced expression or knockdown of
+      miR-153 in MKN-74 GC cells, the transcriptional levels of Uc.416+A were
+      significantly disturbed. A luciferase reporter gene assay supported the direct
+      regulation of Uc.416+A expression by miR-153. Furthermore, Uc.416+A was
+      associated with cell growth through the regulation of IGFBP6 (insulin-like growth
+      factor-binding protein 6) in GC. These findings suggest an oncogenic role of
+      Uc.416+A in GC, which suggests that our approach would provide new insights into 
+      functional studies of T-UCRs in cancer biology.
+FAU - Goto, K
+AU  - Goto K
+AD  - Department of Molecular Pathology, Hiroshima University Institute of Biomedical
+      and Health Sciences, Hiroshima, Japan.
+AD  - Department of Urology, Hiroshima University Institute of Biomedical and Health
+      Sciences, Hiroshima, Japan.
+FAU - Ishikawa, S
+AU  - Ishikawa S
+AD  - School of Medicine, Hiroshima University, Hiroshima, Japan.
+FAU - Honma, R
+AU  - Honma R
+AD  - School of Medicine, Hiroshima University, Hiroshima, Japan.
+FAU - Tanimoto, K
+AU  - Tanimoto K
+AD  - Department of Radiation Medicine, Hiroshima University Research Institute for
+      Radiation Biology and Medicine, Hiroshima Japan.
+FAU - Sakamoto, N
+AU  - Sakamoto N
+AD  - Department of Molecular Pathology, Hiroshima University Institute of Biomedical
+      and Health Sciences, Hiroshima, Japan.
+FAU - Sentani, K
+AU  - Sentani K
+AD  - Department of Molecular Pathology, Hiroshima University Institute of Biomedical
+      and Health Sciences, Hiroshima, Japan.
+FAU - Oue, N
+AU  - Oue N
+AD  - Department of Molecular Pathology, Hiroshima University Institute of Biomedical
+      and Health Sciences, Hiroshima, Japan.
+FAU - Teishima, J
+AU  - Teishima J
+AD  - Department of Urology, Hiroshima University Institute of Biomedical and Health
+      Sciences, Hiroshima, Japan.
+FAU - Matsubara, A
+AU  - Matsubara A
+AD  - Department of Urology, Hiroshima University Institute of Biomedical and Health
+      Sciences, Hiroshima, Japan.
+FAU - Yasui, W
+AU  - Yasui W
+AD  - Department of Molecular Pathology, Hiroshima University Institute of Biomedical
+      and Health Sciences, Hiroshima, Japan.
+LA  - eng
+PT  - Journal Article
+DEP - 20151207
+PL  - England
+TA  - Oncogene
+JT  - Oncogene
+JID - 8711562
+SB  - IM
+EDAT- 2015/12/08 06:00
+MHDA- 2015/12/08 06:00
+CRDT- 2015/12/08 06:00
+PHST- 2015/05/08 [received]
+PHST- 2015/09/18 [revised]
+PHST- 2015/10/05 [accepted]
+AID - onc2015445 [pii]
+AID - 10.1038/onc.2015.445 [doi]
+PST - ppublish
+SO  - Oncogene. 2016 Jul 7;35(27):3598-606. doi: 10.1038/onc.2015.445. Epub 2015 Dec 7.
+
+PMID- 26522727
+OWN - NLM
+STAT- In-Data-Review
+DA  - 20160707
+LR  - 20161025
+IS  - 1476-5594 (Electronic)
+IS  - 0950-9232 (Linking)
+VI  - 35
+IP  - 27
+DP  - 2016 Jul 07
+TI  - Loss of ATF3 promotes hormone-induced prostate carcinogenesis and the emergence
+      of CK5(+)CK8(+) epithelial cells.
+PG  - 3555-64
+LID - 10.1038/onc.2015.417 [doi]
+AB  - Steroid sex hormones can induce prostate carcinogenesis, and are thought to
+      contribute to the development of prostate cancer during aging. However, the
+      mechanism for hormone-induced prostate carcinogenesis remains elusive. Here, we
+      report that activating transcription factor 3 (ATF3)-a broad stress
+      sensor-suppressed hormone-induced prostate carcinogenesis in mice. Although
+      implantation of testosterone and estradiol (T+E2) pellets for 2 months in
+      wild-type mice rarely induced prostatic intraepithelial neoplasia (PIN) in dorsal
+      prostates (one out of eight mice), the loss of ATF3 led to the appearance of not 
+      only PIN but also invasive lesions in almost all examined animals. The enhanced
+      carcinogenic effects of hormones on ATF3-deficient prostates did not appear to be
+      caused by a change in estrogen signaling, but were more likely a consequence of
+      elevated androgen signaling that stimulated differentiation of prostatic basal
+      cells into transformation-preferable luminal cells. Indeed, we found that
+      hormone-induced lesions in ATF3-knockout mice often contained cells with both
+      basal and luminal characteristics, such as p63(+) cells (a basal-cell marker)
+      showing luminal-like morphology, or cells double-stained with basal (CK5(+)) and 
+      luminal (CK8(+)) markers. Consistent with these findings, low ATF3 expression was
+      found to be a poor prognostic marker for prostate cancer in a cohort of 245
+      patients. Our results thus support that ATF3 is a tumor suppressor in prostate
+      cancer.
+FAU - Wang, Z
+AU  - Wang Z
+AD  - GRU Cancer Center, Georgia Regents University, Augusta, GA, USA.
+AD  - Center for Cell Biology and Cancer Research, Albany Medical College, Albany, NY, 
+      USA.
+FAU - Kim, J
+AU  - Kim J
+AD  - Department of Statistics, Sungkyunkwan University, Seoul, South Korea.
+FAU - Teng, Y
+AU  - Teng Y
+AD  - GRU Cancer Center, Georgia Regents University, Augusta, GA, USA.
+FAU - Ding, H-F
+AU  - Ding HF
+AD  - GRU Cancer Center, Georgia Regents University, Augusta, GA, USA.
+AD  - Department of Pathology, Medical College of Georgia, Georgia Regents University, 
+      Augusta, GA, USA.
+FAU - Zhang, J
+AU  - Zhang J
+AD  - Department of Radiation Oncology, School of Medicine, Case Western Reserve
+      University, Cleveland, OH, USA.
+FAU - Hai, T
+AU  - Hai T
+AD  - Department of Biological Chemistry and Pharmacology, Ohio State University,
+      Columbus, OH, USA.
+FAU - Cowell, J K
+AU  - Cowell JK
+AD  - GRU Cancer Center, Georgia Regents University, Augusta, GA, USA.
+FAU - Yan, C
+AU  - Yan C
+AD  - GRU Cancer Center, Georgia Regents University, Augusta, GA, USA.
+AD  - Center for Cell Biology and Cancer Research, Albany Medical College, Albany, NY, 
+      USA.
+AD  - Department of Biochemistry and Molecular Biology, Medical College of Georgia,
+      Georgia Regents University, Augusta, GA, USA.
+LA  - eng
+GR  - R01 CA139107/CA/NCI NIH HHS/United States
+GR  - R01 CA164006/CA/NCI NIH HHS/United States
+PT  - Journal Article
+DEP - 20151102
+PL  - England
+TA  - Oncogene
+JT  - Oncogene
+JID - 8711562
+SB  - IM
+PMC - PMC4853303
+MID - NIHMS728571
+OID - NLM: NIHMS728571
+OID - NLM: PMC4853303
+EDAT- 2015/11/03 06:00
+MHDA- 2015/11/03 06:00
+CRDT- 2015/11/03 06:00
+PHST- 2015/05/27 [received]
+PHST- 2015/09/28 [revised]
+PHST- 2015/10/05 [accepted]
+AID - onc2015417 [pii]
+AID - 10.1038/onc.2015.417 [doi]
+PST - ppublish
+SO  - Oncogene. 2016 Jul 7;35(27):3555-64. doi: 10.1038/onc.2015.417. Epub 2015 Nov 2.
