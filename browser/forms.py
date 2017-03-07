@@ -26,8 +26,8 @@ class OvidMedLineFileUploadForm(forms.ModelForm):
                     SizeValidator(max_size=1000),
                     OvidMedLineFormatValidator(), ],
         help_text="<br />Ovid MEDLINE® formatted plain text files (*.txt) which includes MeSH Subject Headings. \
-                   Example format: <a href=\"" + settings.STATIC_URL + "text/example-file-upload.txt\">with MeSH Subject \
-                   Headings</a>.")
+                   Example format <a href=\"" + settings.STATIC_URL + "text/example-file-upload.txt\">with MeSH Subject \
+                   Headings</a>. Maximum upload file size: 1000 MB.")
 
     class Meta:
         model = Upload
@@ -41,7 +41,8 @@ class PubMedFileUploadForm(forms.ModelForm):
                     SizeValidator(max_size=1000),
                     PubMedFormatValidator(), ],
         help_text="<br />PubMed® formatted plain text files (*.txt) which includes MH (Mesh Headers). \
-                   Example format: <a href=\"" + settings.STATIC_URL + "text/example-file-upload-b.txt\">with MH (Mesh Headers)</a>.")
+                   Example format <a href=\"" + settings.STATIC_URL + "text/example-file-upload-b.txt\">with MH (Mesh Headers)</a>. \
+                   Maximum upload file size: 1000 MB.")
 
     class Meta:
         model = Upload
