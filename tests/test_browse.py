@@ -12,7 +12,7 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-# from browser.matching import perform_search
+from browser.matching import _pubmed_readcitations  # perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED  # Gene,
 
 logger = logging.getLogger(__name__)
@@ -23,6 +23,7 @@ TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(settings.APP_ROOT, 'src', 'tem
 TEST_DOC_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test.docx')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'ovid_result_100.txt')
+TEST_BADLY_FORMATTED_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-badly-formatted-abstracts.txt')
 
 
 class BrowsingTest(TestCase):
@@ -282,6 +283,11 @@ class BrowsingTest(TestCase):
 
             self.assertContains(response, "errorlist")
             self.assertContains(response, "is not an acceptable file type")
+
+    def test__pubmed_readcitations_parsing_bug(self):
+        citations = _pubmed_readcitations(TEST_BADLY_FORMATTED_FILE)
+        self.assertEqual(type(citations), list)
+        self.assertEqual(len(citations), 23)
 
     # def test_results_archive(self):
     #     """

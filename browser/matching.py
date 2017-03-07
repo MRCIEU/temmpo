@@ -9,8 +9,8 @@ from django.conf import settings
 
 from browser.models import SearchResult, Gene, OVID, PUBMED
 
+ERROR_TEXT = "Error occurred"
 
-# TODO handle reading in the new format for matching = maybe time to convert files to JSON structures or represented in the DB - id, mesh headers,
 
 class citation:
 
@@ -234,7 +234,7 @@ def _pubmed_readcitations(abstract_file_path):
     """ Process PubMed MEDLINE formatted abstracts
         - code to parse file supplied by Benjamin Elsworth"""
 
-    # PubMed MesH term sub headings appear to be lower cased.  Plus any parenthese ()[] are replaced by spaces
+    # PubMed MesH term sub headings appear to be lower cased.  Plus any parentheses ()[] are replaced by spaces
     # Read the data in as a list of citations (citation class)
     citations = list()
 
@@ -243,7 +243,7 @@ def _pubmed_readcitations(abstract_file_path):
     for line in infile:
         line = line.strip("\r\n")
         # print "line = "+line
-        if len(line) == 0:
+        if len(line) == 0 or ERROR_TEXT in line:
             nothing = 0
         elif line[0:4] == "PMID":
             in_mesh = False
