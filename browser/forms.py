@@ -11,7 +11,7 @@ from selectable.forms import AutoCompleteWidget, AutoCompleteSelectField
 from browser.lookups import MeshTermLookup
 from browser.models import SearchCriteria, Upload, MeshTerm, Gene, OVID, PUBMED
 from browser.widgets import GeneTextarea
-from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator
+from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator, MeshTermLimiter
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +51,9 @@ class PubMedFileUploadForm(forms.ModelForm):
 
 class TermSelectorForm(forms.ModelForm):
     term_names = forms.CharField(widget=forms.Textarea(),
-                                 required=False, label="Bulk replace terms")
-    term_tree_ids = forms.CharField(widget=forms.HiddenInput, required=False)
+                                 required=False, label="Bulk replace terms",
+                                 validators=[MeshTermLimiter(max_terms=999, separator=';'), ])
+    term_tree_ids = forms.CharField(widget=forms.HiddenInput, required=False, validators=[MeshTermLimiter(max_terms=999, separator=','), ])
     btn_submit = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
@@ -64,18 +65,19 @@ class TermSelectorForm(forms.ModelForm):
         self.type = kwargs.pop('type', None)
         super(TermSelectorForm, self).__init__(*args, **kwargs)
 
-    def _select_child_nodes_by_id(self, mesh_term_ids):
-        # TODO: TMMA-100 SQL has a 999 param limit
-        mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
-        child_term_ids = []
-        for mesh_term in mesh_terms:
-            if not mesh_term.is_leaf_node():
-                child_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))
+    # No longer require this belt and braces functionality, since implementing
+    # def _select_child_nodes_by_id(self, mesh_term_ids):
+    #     # TODO: TMMA-100 SQL has a 999 parameter limit
+    #     mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
+    #     child_term_ids = []
+    #     for mesh_term in mesh_terms:
+    #         if not mesh_term.is_leaf_node():
+    #             child_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))
 
-        mesh_term_ids.extend(child_term_ids)
-        # Deduplicate ids
-        mesh_term_ids = list(set(mesh_term_ids))
-        return mesh_term_ids
+    #     mesh_term_ids.extend(child_term_ids)
+    #     # De-duplicate ids
+    #     mesh_term_ids = list(set(mesh_term_ids))
+    #     return mesh_term_ids
 
     def _select_child_nodes_by_name(self, mesh_term_names):
         mesh_term_ids = []
@@ -93,7 +95,7 @@ class TermSelectorForm(forms.ModelForm):
                         mesh_term_ids.extend(term.get_descendants().values_list('id', flat=True))
 
         mesh_term_ids.extend(child_term_ids)
-        # Deduplicate ids
+        # De-duplicate ids
         mesh_term_ids = list(set(mesh_term_ids))
         return mesh_term_ids
 
@@ -107,8 +109,9 @@ class TermSelectorForm(forms.ModelForm):
         elif 'term_tree_ids' in self.cleaned_data:
             mesh_term_ids = self.cleaned_data['term_tree_ids'].split(',')
             mesh_term_ids = [int(x[5:]) for x in mesh_term_ids if len(x) > 5]
+            # Disabled for TMMA-164 Allow user to chose whether or not tree sub items are selected
             # Ensure all child nodes are selected
-            mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
+            # mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
 
         if mesh_term_ids:
             duplicates = []

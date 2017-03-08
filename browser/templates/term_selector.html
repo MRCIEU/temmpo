@@ -21,6 +21,7 @@
 {% if pre_selected_term_names %}<a href="{{ next_url }}" class="btn btn-primary">Now select {{ next_type }} &nbsp;<span class="fa fa-angle-double-right">&nbsp;</span></a>{% endif %}
 {% endblock %}
 {% block left_column %}
+
     {% if messages %}
         <ul class="errorlist">
             {% for message in messages %}
@@ -28,6 +29,14 @@
             {% endfor %}
         </ul>
     {% endif %}
+
+    {% for error in form.term_names.errors %}
+        <p class="errorlist">{{ error }}</p>
+    {% endfor %}
+
+    {% for error in form.term_tree_ids.errors %}
+        <p class="errorlist">{{ error }}</p>
+    {% endfor %}
 
     {% if form.non_field_errors %}
         <p class="warning">The following terms have been already used as exposure, mediator, outcome or gene criteria:</p>

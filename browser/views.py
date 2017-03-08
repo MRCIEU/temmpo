@@ -233,7 +233,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
     def set_terms(self, node_terms):
         # NB: Any selected nodes should have all children included in selected set
         self.object.mediator_terms.clear()
-        # Split up assignment - max 9999 with sql
+        # Split up assignment - maximum 999 with SQLite
         slices = int(math.ceil(len(node_terms) / 500.0))
         for i in range(0, slices):
             self.object.mediator_terms.add(*node_terms[i * 500:((i + 1) * 500)])

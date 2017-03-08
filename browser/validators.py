@@ -47,6 +47,24 @@ class SizeValidator(object):
             raise ValidationError("Couldn't read the uploaded file.")
 
 
+class MeshTermLimiter(object):
+
+    def __init__(self, max_terms=999, separator=';'):
+        print "Initialise validator"
+        self.max_terms = max_terms
+        self.separator = separator
+
+    def __call__(self, value):
+        print "Validate"
+        print value
+        terms = value.split(self.separator)
+
+        if (len(terms) < self.max_terms):
+            return value
+        else:
+            raise ValidationError('At present you cannot select more than %s MeSH® terms at once.' % self.max_terms)
+
+
 class OvidMedLineFormatValidator(object):
     """ ref: http://www.nlm.nih.gov/pubs/factsheets/dif_med_pub.html
         ref: http://www.ncbi.nlm.nih.gov/books/NBK3827/#pubmedhelp.MeSH_Terms_MH
