@@ -18,7 +18,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SERVER = os.uname()[1]
 THIS_PATH = os.path.dirname(__file__)
 APP_ROOT = '/'.join(THIS_PATH.split('/')[0:-4])
-VEDIR = APP_ROOT.split('/')[-1]  # demo, alpha etc.
 
 ADMINS = (('Tessa Alexander', 'tessa.alexander+temmpo@bristol.ac.uk'),)
 
@@ -116,7 +115,7 @@ SHORT_DATE_FORMAT = 'd/m/Y'
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 MEDIA_ROOT = "%s/%s" % (APP_ROOT, 'var')
-STATIC_ROOT = "%s/%s" % (APP_ROOT, 'static')
+STATIC_ROOT = "%s/%s" % (APP_ROOT, 'static')  # Centos /srv/projects/temmpo/var/www-static & Debian /usr/local/projects/temmpo/var/www-static
 
 RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 
