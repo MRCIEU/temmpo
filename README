@@ -51,6 +51,16 @@ fab taggit:master,1.3,temmpo
 # Move/update prod_stable branch 
 fab taggit:master,prod_stable,temmpo
 
+## Deployment helper functions
+
+# Example deploy feature branch to development server
+fab deploy:host="tmma-dev.ilrt.bris.ac.uk",env="dev",branch="demo_stable",merge_from="TMMA-155"
+fab deploy:host="tmma-dev.ilrt.bris.ac.uk",env="dev",branch="demo_stable",merge_from="TMMA-155" -i /srv/projects/tmma/.ssh/id_rsa.pub -u tmma
+
+# Example deploy to production and tag master with a numeric version number
+fab deploy:host="tmma.ilrt.bris.ac.uk",env="prod",branch="prod_stable",tag=1.4,merge_from="master" -i /srv/projects/tmma/.ssh/id_rsa.pub -u tmma
+
+
 # On Debian production environment, e.g.
 cd /usr/local/projects/tmma/lib/prod/src/temmpo
 
