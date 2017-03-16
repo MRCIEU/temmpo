@@ -11,4 +11,5 @@ pipelines:
         script: # Modify the commands below to build your repository.
           - pip install -r requirements/test.txt
           - python manage.py test
+          - find . -name results_1__topresults_abstracts.csv
           - pip --version
