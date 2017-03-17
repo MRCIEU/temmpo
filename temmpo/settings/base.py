@@ -204,3 +204,5 @@ LOGGING = {
 # else:
 #     print("Warning: Expected to find a local private settings override file in one of these locations")
 #     print(paths)
+
+MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM = 999

@@ -49,14 +49,11 @@ class SizeValidator(object):
 
 class MeshTermLimiter(object):
 
-    def __init__(self, max_terms=999, separator=';'):
-        print "Initialise validator"
+    def __init__(self, max_terms, separator=';'):
         self.max_terms = max_terms
         self.separator = separator
 
     def __call__(self, value):
-        print "Validate"
-        print value
         terms = value.split(self.separator)
 
         if (len(terms) < self.max_terms):

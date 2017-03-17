@@ -171,9 +171,6 @@ class TermSelectorAbstractUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        """Auto select any children of selected nodes
-        """
-
         if form.is_valid():
             cleaned_data = form.cleaned_data
 
@@ -203,6 +200,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         return context
 
     def set_terms(self, node_terms):
+        print "set_terms %s" % node_terms
         # NB: Any selected nodes should have all children included in selected set
         self.object.exposure_terms.clear()
         # TODO: Only slice to up assignment when db backend requires it

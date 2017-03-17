@@ -284,7 +284,7 @@ class BrowsingTest(TestCase):
             self.assertContains(response, "errorlist")
             self.assertContains(response, "is not an acceptable file type")
 
-    def test__pubmed_readcitations_parsing_bug(self):
+    def test_pubmed_readcitations_parsing_bug(self):
         citations = _pubmed_readcitations(TEST_BADLY_FORMATTED_FILE)
         self.assertEqual(type(citations), list)
         self.assertEqual(len(citations), 23)
@@ -296,5 +296,41 @@ class BrowsingTest(TestCase):
     #     self._find_expected_content(path="/results/%s/archive" %
     #                                 RESULT_HASH, msg="Download")
 
-# def test_gene_input # Can it handle new genes, unexpected spaces and other
-# characters
+    # def test_gene_input # Can it handle new genes, unexpected spaces and other
+    # characters
+
+    def test_limiting_number_of_mesh_terms(self):
+        """NB: The Mesh Term limit has been lowered to 5 vs 999 for test purposes in the test settings file"""
+        self._login_user()
+        self._find_expected_content(path=reverse('search'),
+                                    msg="Upload abstracts to search")
+        self._find_expected_content(path=reverse("search_pubmed"),
+                                    msg=u"Search PubMed MEDLINE® formatted abstracts")
+
+        with open(TEST_PUBMED_MEDLINE_ABSTRACTS, 'r') as upload:
+            self.client.post(reverse('search_pubmed'),
+                             {'abstracts_upload': upload,
+                             'file_format': PUBMED},
+                             follow=True)
+            search_criteria = SearchCriteria.objects.latest("created")
+            self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
+            self._assert_term_limits("Phenotype; Gene-Environment Interaction; Ecotype; Apoptosis; Genetic Pleiotropy; Caseins; Yogurt; Margarine; Milk Proteins; Cultured Milk Products; Ice Cream", search_criteria, expect_warning=True)
+            self._assert_term_limits("Phenotype; Gene-Environment Interaction; Ecotype; Apoptosis; Genetic Pleiotropy", search_criteria, expect_warning=True)
+            self._assert_term_limits("Phenotype; Gene-Environment Interaction; Ecotype; Apoptosis", search_criteria, expect_warning=False)
+
+    def _assert_term_limits(self, terms, search_criteria, expect_warning=True):
+        self.assertEqual(search_criteria.exposure_terms.count(), 0)
+        exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(exposure_url,
+                                    {"term_names": terms,
+                                     "btn_submit": "replace"},
+                                    follow=True)
+        search_criteria.refresh_from_db()
+        term_count = len(terms.split(";"))
+
+        if expect_warning:
+            self.assertEqual(search_criteria.exposure_terms.count(), 0, msg="These terms were found [%s] instead of 0" % search_criteria.exposure_terms.values_list('term', flat=True))
+            self.assertContains(response, "At present you cannot select more than %s MeSH" % settings.MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM)
+        else:
+            self.assertEqual(search_criteria.exposure_terms.count(), term_count, msg="These terms were found [%s] instead of %s" % (search_criteria.exposure_terms.values_list('term', flat=True), term_count))
+            self.assertNotContains(response, "At present you cannot select more than %s MeSH" % settings.MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM)

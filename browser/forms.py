@@ -52,8 +52,8 @@ class PubMedFileUploadForm(forms.ModelForm):
 class TermSelectorForm(forms.ModelForm):
     term_names = forms.CharField(widget=forms.Textarea(),
                                  required=False, label="Bulk replace terms",
-                                 validators=[MeshTermLimiter(max_terms=999, separator=';'), ])
-    term_tree_ids = forms.CharField(widget=forms.HiddenInput, required=False, validators=[MeshTermLimiter(max_terms=999, separator=','), ])
+                                 validators=[MeshTermLimiter(max_terms=settings.MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM, separator=';'), ])
+    term_tree_ids = forms.CharField(widget=forms.HiddenInput, required=False, validators=[MeshTermLimiter(max_terms=settings.MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM, separator=','), ])
     btn_submit = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
@@ -67,7 +67,7 @@ class TermSelectorForm(forms.ModelForm):
 
     # No longer require this belt and braces functionality, since implementing
     # def _select_child_nodes_by_id(self, mesh_term_ids):
-    #     # TODO: TMMA-100 SQL has a 999 parameter limit
+    #     # TODO: TMMA-100 SQL has a 999 parameter limit (settings.MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM)
     #     mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
     #     child_term_ids = []
     #     for mesh_term in mesh_terms:
@@ -104,7 +104,10 @@ class TermSelectorForm(forms.ModelForm):
         if self.cleaned_data['btn_submit'] == "replace" and 'term_names' in self.cleaned_data:
             mesh_terms = self.cleaned_data['term_names'].split(';')
             mesh_terms = [x.strip() for x in mesh_terms if x.strip()]
-            mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
+            mesh_term_ids = MeshTerm.objects.filter(term__in=mesh_terms).values_list('id', flat=True)
+            # Disabled for TMMA-164 Allow user to chose whether or not tree sub items are selected
+            # Ensure all child nodes are selected
+            # mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
 
         elif 'term_tree_ids' in self.cleaned_data:
             mesh_term_ids = self.cleaned_data['term_tree_ids'].split(',')
@@ -134,7 +137,7 @@ class TermSelectorForm(forms.ModelForm):
             if not duplicates:
                 self.cleaned_data['mesh_term_ids'] = mesh_term_ids
             else:
-                # TODO: TMMA-100 SQL has a 999 param limit
+                # TODO: TMMA-100 SQL has a settings.MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM param limit
                 duplicates = list(MeshTerm.objects.filter(id__in=duplicates).values_list("term", flat=True).distinct())
                 raise forms.ValidationError(duplicates, code='duplicates')
 
