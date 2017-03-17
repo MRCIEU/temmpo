@@ -17,5 +17,8 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 
-DEV_APPS = ['debug_toolbar', 'template_timings_panel',]
+DEV_APPS = ['debug_toolbar', 'template_timings_panel', ]
 # INSTALLED_APPS.extend(DEV_APPS)
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/srv/projects/temmpo/lib/dev/var/email'
