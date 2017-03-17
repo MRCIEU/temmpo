@@ -1,0 +1,3 @@
+from base import *
+
+MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM = 5

@@ -38,7 +38,7 @@ python manage.py createsuperuser --settings=temmpo.settings.dev
 # Running tests:
 cd /srv/projects/temmpo/lib/dev/bin && source activate
 cd /srv/projects/temmpo/lib/dev/src/temmpo
-python manage.py test tests/ --settings=temmpo.settings.dev
+python manage.py test tests/ --settings=temmpo.settings.test
 
 # Run the development server
 cd /srv/projects/temmpo/lib/dev/bin && source activate
