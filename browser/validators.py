@@ -57,10 +57,8 @@ class MeshTermLimiter(object):
         terms = value.split(self.separator)
 
         if (len(terms) <= self.max_terms):
-            print "PASS"
             return value
         else:
-            print "FAIL %s terms sent" % len(terms)
             raise ValidationError('At present you cannot select more than %s MeSH® terms at once.' % self.max_terms)
 
 
