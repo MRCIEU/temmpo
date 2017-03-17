@@ -12,4 +12,4 @@ pipelines:
           - pip install -r requirements/test.txt
           - mkdir -p /opt/atlassian/pipelines/var/results
           - mkdir -p /opt/atlassian/pipelines/var/abstracts
-          - python manage.py test
+          - python manage.py test --settings=temmpo.settings.test
