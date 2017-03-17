@@ -314,17 +314,29 @@ class BrowsingTest(TestCase):
                              follow=True)
             search_criteria = SearchCriteria.objects.latest("created")
             self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
-            self._assert_term_limits("Phenotype; Gene-Environment Interaction; Ecotype; Apoptosis; Genetic Pleiotropy; Caseins; Yogurt; Margarine; Milk Proteins; Cultured Milk Products; Ice Cream", search_criteria, expect_warning=True)
-            self._assert_term_limits("Phenotype; Gene-Environment Interaction; Ecotype; Apoptosis; Genetic Pleiotropy", search_criteria, expect_warning=True)
-            self._assert_term_limits("Phenotype; Gene-Environment Interaction; Ecotype; Apoptosis", search_criteria, expect_warning=False)
+            self._assert_term_limit_by_name("Phenotype;Gene-Environment Interaction;Ecotype;Apoptosis;Genetic Pleiotropy;Vertebrates", search_criteria, expect_warning=True)
+            self._assert_term_limit_by_name("Phenotype;Gene-Environment Interaction;Ecotype;Apoptosis;Genetic Pleiotropy", search_criteria, expect_warning=False)
+            self._assert_term_limit_by_name("Phenotype;Gene-Environment Interaction;Ecotype;Apoptosis", search_criteria, expect_warning=False)
+            self._assert_term_limit_by_id("Phenotype;Gene-Environment Interaction;Ecotype;Apoptosis;Genetic Pleiotropy;Vertebrates", search_criteria, expect_warning=True)
+            self._assert_term_limit_by_id("Phenotype;Gene-Environment Interaction;Ecotype;Apoptosis;Genetic Pleiotropy", search_criteria, expect_warning=False)
+            self._assert_term_limit_by_id("Phenotype;Gene-Environment Interaction;Ecotype;Apoptosis", search_criteria, expect_warning=False)
 
-    def _assert_term_limits(self, terms, search_criteria, expect_warning=True):
+    def _assert_term_limit_by_id(self, terms, search_criteria, expect_warning):
+        term_ids = ",".join(["mtid_" + str(x) for x in MeshTerm.objects.filter(term__in=terms.split(';')).values_list("id", flat=True)])
+        form_data = {"term_tree_ids": term_ids,
+                     "btn_submit": "choose"}
+        self._assert_term_limits(terms, search_criteria, form_data, expect_warning)
+
+    def _assert_term_limit_by_name(self, terms, search_criteria, expect_warning):
+        form_data = {"term_names": terms,
+                     "btn_submit": "replace"}
+        self._assert_term_limits(terms, search_criteria, form_data, expect_warning)
+
+    def _assert_term_limits(self, terms, search_criteria, form_data, expect_warning):
+        """Ascertain whether warnings were shown and data not saved where applicable"""
         self.assertEqual(search_criteria.exposure_terms.count(), 0)
         exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
-        response = self.client.post(exposure_url,
-                                    {"term_names": terms,
-                                     "btn_submit": "replace"},
-                                    follow=True)
+        response = self.client.post(exposure_url, form_data, follow=True)
         search_criteria.refresh_from_db()
         term_count = len(terms.split(";"))
 
@@ -334,3 +346,5 @@ class BrowsingTest(TestCase):
         else:
             self.assertEqual(search_criteria.exposure_terms.count(), term_count, msg="These terms were found [%s] instead of %s" % (search_criteria.exposure_terms.values_list('term', flat=True), term_count))
             self.assertNotContains(response, "At present you cannot select more than %s MeSH" % settings.MAXIMUM_MESH_TERMS_PER_SEARCH_PARAM)
+            # Reset terms
+            search_criteria.exposure_terms.clear()

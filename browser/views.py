@@ -39,6 +39,7 @@ class CreditsView(TemplateView):
         context['active'] = 'credits'
         return context
 
+
 class HelpView(TemplateView):
     template_name = "help.html"
 
@@ -46,6 +47,7 @@ class HelpView(TemplateView):
         context = super(HelpView, self).get_context_data(**kwargs)
         context['active'] = 'help'
         return context
+
 
 class SelectSearchTypeView(TemplateView):
     template_name = "select_search_type.html"
@@ -200,7 +202,6 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
         return context
 
     def set_terms(self, node_terms):
-        print "set_terms %s" % node_terms
         # NB: Any selected nodes should have all children included in selected set
         self.object.exposure_terms.clear()
         # TODO: Only slice to up assignment when db backend requires it
