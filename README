@@ -36,9 +36,13 @@ python manage.py migrate
 python manage.py createsuperuser --settings=temmpo.settings.dev
 
 # Running tests:
+cd /srv/projects/temmpo/lib/dev/bin && source activate
+cd /srv/projects/temmpo/lib/dev/src/temmpo
 python manage.py test tests/ --settings=temmpo.settings.dev
 
 # Run the development server
+cd /srv/projects/temmpo/lib/dev/bin && source activate
+cd /srv/projects/temmpo/lib/dev/src/temmpo
 python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ## Deployment ##
