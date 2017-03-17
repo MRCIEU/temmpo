@@ -1,6 +1,7 @@
-import re
 import datetime
 import math
+import os
+import re
 import string
 import sys
 
@@ -144,7 +145,8 @@ def generate_synonyms2():
 
 def generate_synonyms():
     # Create a dictionary of synoynms
-    full_path = "%s%s%s" % (settings.APP_ROOT, '/src/temmpo/browser/static/data-files/', 'Homo_sapiens.gene_info')
+    base_dir = os.path.dirname(__file__)
+    full_path = "%s%s%s" % (base_dir, '/static/data-files/', 'Homo_sapiens.gene_info')
     genefile = open(full_path, 'r')
     synonymlookup = dict()
     # synonymresults = dict()

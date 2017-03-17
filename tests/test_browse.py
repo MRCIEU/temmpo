@@ -18,12 +18,14 @@ from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID,
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
 RESULT_ID = '1'
-TEST_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-abstract.txt')
-TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed-abstract.txt')
-TEST_DOC_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test.docx')
-TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'pubmed_result_100.txt')
-TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'ovid_result_100.txt')
-TEST_BADLY_FORMATTED_FILE = os.path.join(settings.APP_ROOT, 'src', 'temmpo', 'tests', 'test-badly-formatted-abstracts.txt')
+
+BASE_DIR = os.path.dirname(__file__)
+TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
+TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'pubmed-abstract.txt')
+TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
+TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
+TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
+TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
 
 
 class BrowsingTest(TestCase):
