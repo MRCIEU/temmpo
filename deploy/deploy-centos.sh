@@ -48,6 +48,7 @@ mkdir -p /srv/projects/temmpo/lib/dev/var/abstracts
 
 echo "Load base application requirements"
 cd /srv/projects/temmpo/lib/dev/
+./bin/pip install -U pip==9.0.1
 ./bin/pip install -r src/temmpo/requirements/dev.txt
 
 # # contexts that are required for application to run behind Apache
