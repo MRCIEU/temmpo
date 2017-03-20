@@ -48,7 +48,7 @@ mkdir -p /srv/projects/temmpo/lib/dev/var/abstracts
 
 echo "Load base application requirements"
 cd /srv/projects/temmpo/lib/dev/
-./bin/pip install -r src/temmpo/requirements/centos-dev.txt
+./bin/pip install -r src/temmpo/requirements/dev.txt
 
 # # contexts that are required for application to run behind Apache
 # # TODO: review if semanage should be used instead
