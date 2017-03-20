@@ -66,6 +66,9 @@ org.eclipse.core.resources.prefs
 # vagrant
 .vagrant
 
+# OS X
+.DS_Store
+
 # TeMMPo specific
 browser/static/results/*
 temmpo/settings/secret.txt
@@ -74,6 +77,3 @@ temmpo/settings/secret.txt
 docker-compose.yml
 Dockerfile
 requirements.txt
-
-# OS X
-.DS_Store
