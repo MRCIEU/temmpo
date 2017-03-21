@@ -17,7 +17,6 @@ oauth2==1.9.0.post1
 oauthlib==2.0.2
 python-magic==0.4.13
 python-openid==2.2.5
-python-social-auth==0.3.6 # TODO: Review usage under a deprecation notice https://pypi.python.org/pypi/python-social-auth
 requests==2.13.0
 requests-oauthlib==0.8.0
 six==1.10.0
