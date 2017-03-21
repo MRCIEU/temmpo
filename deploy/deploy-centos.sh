@@ -5,7 +5,6 @@ sudo yum -y update
 sudo yum -y install python-devel
 sudo yum -y install python-wheel
 sudo yum -y install python-magic
-
 sudo yum -y install python-virtualenv
 sudo yum -y install libxml2-python
 sudo yum -y install libxml2-devel
@@ -13,20 +12,25 @@ sudo yum -y install libxslt-python
 sudo yum -y install libxslt-devel
 sudo yum -y install python-lxml
 
+# install fabric for deployment scripts
+sudo yum -y install fabric
+
 # install gcc
 sudo yum -y install gcc gcc-c++
-
-# mariadb dev stuff
-sudo yum -y install mariadb-devel
 
 # dev tools
 sudo yum -y install git
 sudo yum -y install nano
+sudo yum -y install wget
+# mariadb dev stuff
+sudo yum -y install mariadb-devel
 
 # Web server setup
 sudo yum -y install httpd 
-sudo yum -y install mod_wsgi 
-# sudo yum -y install cronolog  # TODO: Add to production Centos puppet config
+sudo yum -y install mod_wsgi
+
+# Confirm install list
+yum list installed 
 
 # Python application dependencies
 
