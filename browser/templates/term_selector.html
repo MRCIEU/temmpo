@@ -91,16 +91,14 @@
       <form action="." method="post">
           {% csrf_token %}
           <!-- Select child nodes -->
+          <!-- TOD: Not keeping previous value in form for select child nodes  -->
           <div class="form-group">
-            <label for="on">Select descendent MeSH® terms</label>
-            <label for="on" class="radio-inline">
-                <input id="on" value="down" type="radio" name="childnodes">
-                Yes
-            </label>
-            <label for="off" class="radio-inline">
-              <input id="off" value="undetermined" type="radio" name="childnodes" checked>
-              No
-            </label>
+            <label for="id_include_child_nodes_0">Select descendent MeSH® terms</label>
+
+            {% for input in form.include_child_nodes %}
+                {{ input }}
+            {% endfor %}
+
           </div>
 
           <!-- js tree -->
@@ -166,8 +164,8 @@
               });
 
               /* Allow user to toggle whether or not child terms are selected as well */
-              $('input[name="childnodes"]').change(function (event) {
-                  var v = $('input[name="childnodes"]:checked').val();
+              $('input[name="include_child_nodes"]').change(function (event) {
+                  var v = $('input[name="include_child_nodes"]:checked').val();
                   console.log(v);
                   $('#term_tree').jstree(true).settings.checkbox.cascade = v;
 
