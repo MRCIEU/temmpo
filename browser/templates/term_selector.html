@@ -74,18 +74,7 @@
       <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
 
       <form action="." method="post" id="select_child_nodes">
-          <!-- Search -->
-          <div class="form-group">
-            <label for="on">Select descendent MeSH® terms</label>
-            <label for="on" class="radio-inline">
-                <input id="on" value="down" type="radio" name="childnodes">
-                Yes
-            </label>
-            <label for="off" class="radio-inline">
-              <input id="off" value="undetermined" type="radio" name="childnodes" checked>
-              No
-            </label>
-          </div>
+
       </form>
 
       <form action="." method="post" id="search_form">
@@ -101,6 +90,19 @@
 
       <form action="." method="post">
           {% csrf_token %}
+          <!-- Select child nodes -->
+          <div class="form-group">
+            <label for="on">Select descendent MeSH® terms</label>
+            <label for="on" class="radio-inline">
+                <input id="on" value="down" type="radio" name="childnodes">
+                Yes
+            </label>
+            <label for="off" class="radio-inline">
+              <input id="off" value="undetermined" type="radio" name="childnodes" checked>
+              No
+            </label>
+          </div>
+
           <!-- js tree -->
           {# Ajax version #}
           <div id="term_tree">
@@ -164,8 +166,8 @@
               });
 
               /* Allow user to toggle whether or not child terms are selected as well */
-              $('#select_child_nodes input').change(function (event) {
-                  var v = $('#select_child_nodes input:checked').val();
+              $('input[name="childnodes"]').change(function (event) {
+                  var v = $('input[name="childnodes"]:checked').val();
                   console.log(v);
                   $('#term_tree').jstree(true).settings.checkbox.cascade = v;
 
