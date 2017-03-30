@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
     # Run the Django setup
     django.vm.provision "shell", path: "deploy-centos.sh"
 
-    django.vm.synced_folder "../", "/srv/projects/temmpo/lib/dev/src/temmpo", type: "sshfs", 
+    django.vm.synced_folder "../", "/usr/local/projects/temmpo/lib/dev/src/temmpo", type: "sshfs", 
        owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
 
     django.vm.network "forwarded_port", guest: 59099, host: 59099
