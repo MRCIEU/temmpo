@@ -69,9 +69,11 @@ APACHE_CONF
 
 cd /usr/local/projects/temmpo/lib/
 sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
-sudo chown vagrant:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
-sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/var
+sudo chown vagrant:apache /usr/local/projects/temmpo/etc/apache/conf.d
+sudo chown -R vagrant:apache /usr/local/projects/temmpo/var
+sudo chmod -R g+w /usr/local/projects/temmpo/var/log
 sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
+sudo chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
 
 echo "Copy a deployment key to allow fabric script testing"
 cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
