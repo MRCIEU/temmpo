@@ -1,5 +1,5 @@
 echo "Build script for TeMMPo"
-
+sudo timedatectl set-timezone Europe/London
 sudo yum -y install epel-release
 sudo yum -y update
 sudo yum -y install python-devel
@@ -41,11 +41,37 @@ mkdir -p /usr/local/projects/temmpo/etc/ssl
 mkdir -p /usr/local/projects/temmpo/var/log/httpd
 mkdir -p /usr/local/projects/temmpo/var/www
 
-echo "TODO: add basic Apache config normally managed by Puppet"
+echo "Add basic catch all Apache config normally managed by Puppet"
+cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
+WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
+
+<VirtualHost *:*>
+  ServerName www.temmpo.org.uk
+  ServerAlias temmpo.org.uk
+  ServerAlias dev.temmpo.org.uk
+  ServerAlias vagrant.temmpo.org.uk
+
+  ## Vhost docroot
+  DocumentRoot "/usr/local/projects/temmpo/var/www"
+
+  ## Directories, there should at least be a declaration for /usr/local/projects/temmpo/var/www
+
+  <Directory "/usr/local/projects/temmpo/var/www">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Require all granted
+  </Directory>
+
+  ## Load additional static includes
+  IncludeOptional "/usr/local/projects/temmpo/etc/apache/conf.d/*.conf"
+</VirtualHost>
+APACHE_CONF
+
 cd /usr/local/projects/temmpo/lib/
 sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
 sudo chown vagrant:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/var
+sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
 
 echo "Copy a deployment key to allow fabric script testing"
 cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/

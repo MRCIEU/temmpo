@@ -149,7 +149,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
-            'filename': '%s/var/log/debug.log' % PROJECT_ROOT,
+            'filename': '%s/var/log/django.log' % PROJECT_ROOT,
             'maxBytes': 1024 * 1024 * 10,
         },
         'syslog': {
