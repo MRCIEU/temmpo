@@ -15,7 +15,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Dynamic config based on server host, vebuild and if dev, user name
 SERVER = os.uname()[1]
 THIS_PATH = os.path.dirname(__file__)
-APP_ROOT = '/'.join(THIS_PATH.split('/')[0:-4])
+PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
 ADMINS = (('Tessa Alexander', 'tessa.alexander+temmpo@bristol.ac.uk'),)
 
@@ -106,8 +106,8 @@ SHORT_DATE_FORMAT = 'd/m/Y'
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
-MEDIA_ROOT = "%s/var" % APP_ROOT
-STATIC_ROOT = "%s/var/www/static" % APP_ROOT  # e.g. /usr/local/projects/temmpo/lib/dev/var/www/static
+MEDIA_ROOT = "%s/var" % PROJECT_ROOT
+STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/lib/dev/var/www/static
 
 RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 
@@ -149,7 +149,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
-            'filename': '%s/var/log/debug.log' % APP_ROOT,
+            'filename': '%s/var/log/debug.log' % PROJECT_ROOT,
             'maxBytes': 1024 * 1024 * 10,
         },
         'syslog': {
