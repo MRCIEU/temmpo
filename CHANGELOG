@@ -1,3 +1,9 @@
+2.0     TMMA-130 Migrate project to be hosted on a Centos OS VM
+                 Streamline and update third party eggs used
+        TMMA-169 Added a deploy method
+        TMMA-155 Bug fix abstract files with errors
+        TMMA-165 Replace logo with one provided by original designers
+        
 1.3     Merge documentation changes made by Tom Gaunt
         git fetch --all
         git checkout prod_stable

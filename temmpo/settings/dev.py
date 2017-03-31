@@ -21,4 +21,4 @@ DEV_APPS = ['debug_toolbar', 'template_timings_panel', ]
 # INSTALLED_APPS.extend(DEV_APPS)
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/srv/projects/temmpo/lib/dev/var/email'
+EMAIL_FILE_PATH = '/usr/local/projects/temmpo/lib/dev/var/email'

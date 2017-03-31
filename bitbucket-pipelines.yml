@@ -6,6 +6,7 @@ pipelines:
         script:
           - pip install -U pip==9.0.1
           - pip install -r requirements/base.txt
-          - mkdir -p /opt/atlassian/pipelines/var/results
-          - mkdir -p /opt/atlassian/pipelines/var/abstracts
+          - mkdir -p /opt/var/results
+          - mkdir -p /opt/var/abstracts
+          - mkdir -p /opt/var/log
           - python manage.py test
