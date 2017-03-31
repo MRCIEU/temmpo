@@ -5,6 +5,7 @@ sudo yum -y update
 sudo yum -y install python-devel
 sudo yum -y install python-wheel
 sudo yum -y install python-magic
+sudo yum -y install python-pip
 sudo yum -y install python-virtualenv
 sudo yum -y install libxml2-python
 sudo yum -y install libxml2-devel

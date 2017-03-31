@@ -122,11 +122,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-            caller('./bin/pip install -r src/temmpo/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
-
-        # NB: TODO: If not an installable egg, explicitly add to python path in WSGI file instead.
-        caller('./bib/pip install -e src/temmpo')
+            # NB: TODO: Temmpo is not an installable egg, revify explicitly added to python path in WSGI file instead.
 
         # private_settings_sym_link = '%stemmpo/temmpo/private_settings.py' % src_dir
         # if not _is_link_local(private_settings_sym_link, use_local_mode):
@@ -139,7 +137,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if migrate_db:
         with change_dir(PROJECT_ROOT + 'lib/' + env):
-            caller('./bin/python src/temmpo/temmpo/manage.py migrate --noinput --settings=temmpo.settings.%s')
+            caller('./bin/python src/temmpo/manage.py migrate --noinput --settings=temmpo.settings.%s' % env)
 
     if configure_apache:
         collect_static(env, use_local_mode)
