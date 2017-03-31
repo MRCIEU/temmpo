@@ -100,8 +100,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     # Create application specific directories
-    caller('mkdir -p %svar/results' % venv_dir)
-    caller('mkdir -p %svar/abstracts' % venv_dir)
+    caller('mkdir -p %svar/results' % PROJECT_ROOT)
+    caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
         caller('virtualenv %s' % env)
@@ -131,9 +131,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         #     caller('ln -s %s.settings/private_settings.py %s' % (PROJECT_ROOT, private_settings_sym_link))
 
     # Set up logging
-    if not _exists_local(venv_dir + 'var/log/django.log', use_local_mode):
-        caller('mkdir -p ' + venv_dir + 'var/log/')
-        caller('touch %sdjango.log' % venv_dir)
+    if not _exists_local(PROJECT_ROOT + 'var/log/django.log', use_local_mode):
+        caller('mkdir -p ' + PROJECT_ROOT + 'var/log/')
+        caller('touch %svar/log/django.log' % PROJECT_ROOT)
 
     if migrate_db:
         with change_dir(PROJECT_ROOT + 'lib/' + env):
@@ -177,9 +177,9 @@ def setup_apache(env="dev", use_local_mode=False):
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
-    venv_dir = PROJECT_ROOT + "lib/" + env
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
     src_dir = venv_dir + "src/"
-    var_dir = venv_dir + 'var/'
+    var_dir = PROJECT_ROOT + 'var/'
     static_dir = PROJECT_ROOT + 'var/www/static'
 
     apache_conf_file = PROJECT_ROOT + 'etc/apache/conf.d/temmpo.conf'
@@ -235,7 +235,7 @@ def setup_apache(env="dev", use_local_mode=False):
     caller("wget 127.0.0.1")
     caller("rm index.html")
     with change_dir(venv_dir):
-        caller("./bin/python ../src/temmpo/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
+        caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
 
 
 def collect_static(env="dev", use_local_mode=False):
@@ -249,4 +249,4 @@ def collect_static(env="dev", use_local_mode=False):
     venv_dir = PROJECT_ROOT + "lib/" + env
 
     with change_dir(venv_dir):
-        caller('./bin/python ../src/temmpo/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
+        caller('./bin/python src/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
