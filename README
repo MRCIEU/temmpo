@@ -104,3 +104,15 @@ git clone git@bitbucket.org:researchit/temmpo.git temmpo
 fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk
 
 
+# Testing deployment on TMMA-130 branch on produciton host
+ssh ci-p0.rit.bris.ac.uk
+sudo -i -u temmpo
+mkdir -p /srv/projects/temmpo/lib/git
+cd /srv/projects/temmpo/lib/git
+git clone git@bitbucket.org:researchit/temmpo.git temmpo
+cd /srv/projects/temmpo/lib/git/temmpo
+git fetch --all
+git checkout TMMA-130
+fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+# TODO Need to add a deployment key for temmpo on prod server and on bitbucket repo
