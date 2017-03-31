@@ -76,21 +76,19 @@ git pull
 
 ## Installation ##
 
-**TO BE REVIEWED**
-
-See helper scripts in deploy/*
-
 # Installing a Vagrant development build
 
+cd deploy
 vagrant up
 vagrant ssh
 fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 # Installing a Vagrant Apache build # TODO finish testing
 
+cd deploy
 vagrant up apache
 vagrant ssh apache
-fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/fabfile.py
+fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 
 ## Installing a production build remotely, e.g. from the CI server # TODO Test
 
@@ -98,7 +96,7 @@ fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=None,mi
 mkdir -p /usr/local/projects/temmpo/lib/git
 git clone git@bitbucket.org:researchit/temmpo.git temmpo
 
-fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=None,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk
+fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk
 
 
 ## Remotely installing an apache vagrant build broken # TODO Test
@@ -107,4 +105,4 @@ fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=None,m
 # (permissions bug on Vagrant)- don't change the key, dev after all
 
 vagrant up apache
-fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=None,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222

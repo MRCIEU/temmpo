@@ -227,7 +227,7 @@ def setup_apache(env="dev", use_local_mode=False):
     caller('chcon -R -t httpd_sys_script_exec_t %slib/python2.7/' % venv_dir)
     caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
-    caller('chcon -R -t httpd_sys_rw_content_t %sdjango.log' % var_dir)
+    caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
 
     caller("sudo /sbin/apachectl configtest")
     caller("sudo /sbin/apachectl restart")

@@ -1,4 +1,4 @@
-	echo "Build script for TeMMPo"
+echo "Build script for TeMMPo"
 
 sudo yum -y install epel-release
 sudo yum -y update
@@ -43,10 +43,14 @@ mkdir -p /usr/local/projects/temmpo/var/www
 
 echo "TODO: add basic Apache config normally managed by Puppet"
 cd /usr/local/projects/temmpo/lib/
-sudo chown --silent -R vagrant:vagrant dev
+sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
 sudo chown vagrant:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
-sudo chown vagrant:vagrant /usr/local/projects/temmpo/var
+sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/var
 
+echo "Copy a deployment key to allow fabric script testing"
+cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
+sudo chown -R vagrant:vagrant /home/vagrant/.ssh/
+sudo chmod 700 /home/vagrant/.ssh/*
 
 echo "## How to create/update the database"
 echo "cd /srv/projects/temmpo/lib/dev/src/temmpo"
