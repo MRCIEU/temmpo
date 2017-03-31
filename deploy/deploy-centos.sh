@@ -13,9 +13,6 @@ sudo yum -y install libxslt-python
 sudo yum -y install libxslt-devel
 sudo yum -y install python-lxml
 
-# install fabric for deployment scripts
-sudo pip install fabric==1.13.1
-
 # install gcc
 sudo yum -y install gcc gcc-c++
 
@@ -30,8 +27,12 @@ sudo yum -y install mariadb-devel
 sudo yum -y install httpd 
 sudo yum -y install mod_wsgi
 
+# install fabric for deployment scripts
+sudo pip install fabric==1.13.1
+
 # Confirm install list
 yum list installed 
+pip freeze
 
 echo "Create directories normally managed by Puppet"
 mkdir -p /usr/local/projects/temmpo/lib/
@@ -42,7 +43,9 @@ mkdir -p /usr/local/projects/temmpo/var/www
 
 echo "TODO: add basic Apache config normally managed by Puppet"
 cd /usr/local/projects/temmpo/lib/
-chown --silent -R vagrant:vagrant dev
+sudo chown --silent -R vagrant:vagrant dev
+sudo chown vagrant:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
+sudo chown vagrant:vagrant /usr/local/projects/temmpo/var
 
 
 echo "## How to create/update the database"
