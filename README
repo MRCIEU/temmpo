@@ -83,12 +83,17 @@ vagrant up
 vagrant ssh
 fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-# Installing a Vagrant Apache build # TODO finish testing
+# Installing a Vagrant Apache build
 
 cd deploy
 vagrant up apache
 vagrant ssh apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
+
+## Installing a Vagrant Apache build remotely
+
+vagrant up apache
+fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
 
 ## Installing a production build remotely, e.g. from the CI server # TODO Test
 
@@ -99,10 +104,3 @@ git clone git@bitbucket.org:researchit/temmpo.git temmpo
 fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk
 
 
-## Remotely installing an apache vagrant build broken # TODO Test
-
-## TODO asking for passkey on mac, try setting   config.ssh.insert_key = false
-# (permissions bug on Vagrant)- don't change the key, dev after all
-
-vagrant up apache
-fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
