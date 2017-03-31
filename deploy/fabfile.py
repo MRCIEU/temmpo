@@ -124,8 +124,6 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
-            # NB: TODO: Temmpo is not an installable egg, revify explicitly added to python path in WSGI file instead.
-
         # private_settings_sym_link = '%stemmpo/temmpo/private_settings.py' % src_dir
         # if not _is_link_local(private_settings_sym_link, use_local_mode):
         #     caller('ln -s %s.settings/private_settings.py %s' % (PROJECT_ROOT, private_settings_sym_link))
