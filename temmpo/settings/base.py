@@ -107,7 +107,7 @@ SHORT_DATE_FORMAT = 'd/m/Y'
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 MEDIA_ROOT = "%s/var" % PROJECT_ROOT
-STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/lib/dev/var/www/static
+STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/var/www/static
 
 RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 
