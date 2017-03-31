@@ -8,4 +8,5 @@ pipelines:
           - pip install -r requirements/base.txt
           - mkdir -p /opt/atlassian/pipelines/var/results
           - mkdir -p /opt/atlassian/pipelines/var/abstracts
+          - mkdir -p /opt/var/log
           - python manage.py test
