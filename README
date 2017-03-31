@@ -36,7 +36,7 @@ python manage.py migrate
 python manage.py createsuperuser --settings=temmpo.settings.dev
 
 # Running tests:
-python manage.py test tests/ --settings=temmpo.settings.dev
+python manage.py test --settings=temmpo.settings.dev
 
 # Run the development server
 python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
@@ -80,19 +80,31 @@ git pull
 
 See helper scripts in deploy/*
 
-# Export repo so you have access to the fabfile, for example on the CI server
+# Installing a Vagrant development build
+
+vagrant up
+vagrant ssh
+fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+
+# Installing a Vagrant Apache build # TODO finish testing
+
+vagrant up apache
+vagrant ssh apache
+fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/fabfile.py
+
+## Installing a production build remotely, e.g. from the CI server # TODO Test
+
+# Export repo so you have access to the fabfile
 mkdir -p /usr/local/projects/temmpo/lib/git
 git clone git@bitbucket.org:researchit/temmpo.git temmpo
 
-# Installing on the same VM
-fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=None,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk
 
-# Installing on a remote VM
-## Vagrant builds
-fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
 
-## Productions builds from the CI server
-fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=None,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk
+## Remotely installing an apache vagrant build broken # TODO Test
 
-To create a site on the development server run the build_site.sh script 
-or use the local_build_site.sh if working on a desktop
+## TODO asking for passkey on mac, try setting   config.ssh.insert_key = false
+# (permissions bug on Vagrant)- don't change the key, dev after all
+
+vagrant up apache
+fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=None,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
