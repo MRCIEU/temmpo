@@ -145,7 +145,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
 
 def deploy(host="localhost", env="dev", branch="master", tag=None, merge_from=None):
-    """NB: env = dev|prod.  Optionally tag and merge the release """
+    """TODO: Needs testing NB: env = dev|prod.  Optionally tag and merge the release """
 
     if tag:
         taggit(gfrom="master", gto=tag, egg='temmpo')
