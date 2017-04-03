@@ -95,16 +95,27 @@ fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,
 vagrant up apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
 
-## Installing a production build remotely, e.g. from the CI server # TODO Test
 
-# Export repo so you have access to the fabfile
-mkdir -p /usr/local/projects/temmpo/lib/git
+## Installing a production build remotely, e.g. from the CI server
+
+ssh ci-p0.rit.bris.ac.uk
+sudo -i -u temmpo
+
+# ONE OFF
+mkdir -p /srv/projects/temmpo/lib/git
+cd /srv/projects/temmpo/lib/git
 git clone git@bitbucket.org:researchit/temmpo.git temmpo
 
-fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk
+# EACH TIME
+cd /srv/projects/temmpo/lib/git/temmpo
+git fetch --all
+git checkout prod_stable
+git pull
+
+fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 
-# Testing deployment on TMMA-130 branch on produciton host
+## Testing deployment on a development, e.g. TMMA-130, branch on production host
 ssh ci-p0.rit.bris.ac.uk
 sudo -i -u temmpo
 mkdir -p /srv/projects/temmpo/lib/git
@@ -113,6 +124,5 @@ git clone git@bitbucket.org:researchit/temmpo.git temmpo
 cd /srv/projects/temmpo/lib/git/temmpo
 git fetch --all
 git checkout TMMA-130
+git pull
 fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
-
-# TODO Need to add a deployment key for temmpo on prod server and on bitbucket repo
