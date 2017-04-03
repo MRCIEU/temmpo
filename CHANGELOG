@@ -1,8 +1,9 @@
-2.0     TMMA-130 Migrate project to be hosted on a Centos OS VM
+2.0     TMMA-130 Migrate project to be hosted on a Centos OS VM with SELinux enabled.
                  Streamline and update third party eggs used
-        TMMA-169 Added a Fabric deploy method
-        TMMA-155 Bug fix abstract files with errors
+        TMMA-169 Added a Fabric deploy script
+        TMMA-155 Bug fix parsing abstract files with errors
         TMMA-165 Replace logo with one provided by original designers
+        TMMA-191 Address Django security warnings
         
 1.3     Merge documentation changes made by Tom Gaunt
         git fetch --all
@@ -48,7 +49,7 @@
         ../../bin/python manage.py migrate
         ../../bin/python manage.py collectstatic
 
-0.9.9   TMMA-55 Ugrade Django to 1.8.x e.g.
+0.9.9   TMMA-55 Upgrade Django to 1.8.x e.g.
         pip install Django==1.8.7
         ../../bin/python manage.py migrate
         ../../bin/python manage.py collectstatic
