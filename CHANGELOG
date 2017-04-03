@@ -1,10 +1,11 @@
 2.0     TMMA-130 Migrate project to be hosted on a Centos OS VM with SELinux enabled.
                  Streamline and update third party eggs used
-        TMMA-169 Added a Fabric deploy script
         TMMA-155 Bug fix parsing abstract files with errors
         TMMA-165 Replace logo with one provided by original designers
-        TMMA-191 Address Django security warnings
+        TMMA-169 Added a Fabric deploy script
+        TMMA-167 Add file size limits help text
         TMMA-170 Added Bitbucket Pipelines' Continuous Integration test runner definition file
+        TMMA-191 Address Django security warnings
 
 1.3.1   Add maintenance page
 
