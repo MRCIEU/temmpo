@@ -40,6 +40,7 @@ mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d
 mkdir -p /usr/local/projects/temmpo/etc/ssl
 mkdir -p /usr/local/projects/temmpo/var/log/httpd
 mkdir -p /usr/local/projects/temmpo/var/www
+mkdir -p /usr/local/projects/temmpo/var/data
 
 echo "Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
