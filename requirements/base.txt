@@ -8,7 +8,7 @@ click==6.7                # via pip-tools
 django-mptt==0.8.7
 django-registration-redux==1.4
 django-selectable==0.9.0
-django==1.8.17
+django==1.8.18
 first==2.0.1              # via pip-tools
 lxml==3.7.3
 pip-tools==1.8.1rc3

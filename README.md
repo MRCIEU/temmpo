@@ -25,12 +25,12 @@ vagrant ssh
 
 # Activate virtualenv
 ```
-cd /srv/projects/temmpo/lib/dev/bin && source activate
+cd /usr/local/projects/temmpo/lib/dev/bin && source activate
 ```
 
 # Move to source directory
 ```
-cd /srv/projects/temmpo/lib/dev/src/temmpo
+cd /usr/local/projects/temmpo/lib/dev/src/temmpo
 ```
 
 # Set up database tables and run any migrations
@@ -56,9 +56,9 @@ python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 # Tag in git using fabric utility function
 
-# Tag release, e.g. version 2.2
+# Tag release, e.g. version 2.2.0
 ```
-fab taggit:master,2.2,temmpo
+fab taggit:master,2.2.0,temmpo
 ```
 # Move/update prod_stable branch 
 ```
