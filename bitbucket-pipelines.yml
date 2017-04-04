@@ -8,5 +8,7 @@ pipelines:
           - pip install -r requirements/base.txt
           - mkdir -p /opt/var/results
           - mkdir -p /opt/var/abstracts
+          - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - python manage.py test
+          - find / -name db.sqlite3
