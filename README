@@ -107,6 +107,7 @@ cd /srv/projects/temmpo/lib/git
 git clone git@bitbucket.org:researchit/temmpo.git temmpo
 
 # TAG BUILD (needs to be run as user with commit rights on the temmpo repo - ie. not temmpo)
+git fetch --all
 git checkout master
 git pull
 fab taggit:master,2.0,temmpo -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
@@ -118,7 +119,7 @@ git fetch --all
 git checkout prod_stable
 git pull
 
-fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 
 ## Testing deployment on a development, e.g. TMMA-130, branch on production host
@@ -131,4 +132,4 @@ cd /srv/projects/temmpo/lib/git/temmpo
 git fetch --all
 git checkout TMMA-130
 git pull
-fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=prod -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py

@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'temmpo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': PROJECT_ROOT + '/var/db.sqlite3',
+        'NAME': PROJECT_ROOT + '/var/data/db.sqlite3',
     }
 }
 
