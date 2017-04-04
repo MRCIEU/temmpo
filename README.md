@@ -1,6 +1,6 @@
 # README #
 
-## About TeMMPo ## 
+## About TeMMPo ##
 
 *  https://www.temmpo.org.uk/
 
@@ -96,7 +96,7 @@ vagrant up apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
 
 
-##Â Installing a production build remotely, e.g. from the CI server
+## Installing a production build remotely, e.g. from the CI server
 
 ssh ci-p0.rit.bris.ac.uk
 sudo -i -u temmpo
