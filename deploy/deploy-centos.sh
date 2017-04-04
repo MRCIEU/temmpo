@@ -1,11 +1,11 @@
 echo "Build script for TeMMPo"
-
+sudo timedatectl set-timezone Europe/London
 sudo yum -y install epel-release
 sudo yum -y update
 sudo yum -y install python-devel
 sudo yum -y install python-wheel
 sudo yum -y install python-magic
-
+sudo yum -y install python-pip
 sudo yum -y install python-virtualenv
 sudo yum -y install libxml2-python
 sudo yum -y install libxml2-devel
@@ -16,65 +16,86 @@ sudo yum -y install python-lxml
 # install gcc
 sudo yum -y install gcc gcc-c++
 
-# mariadb dev stuff
-sudo yum -y install mariadb-devel
-
 # dev tools
 sudo yum -y install git
 sudo yum -y install nano
+sudo yum -y install wget
+# mariadb dev stuff
+sudo yum -y install mariadb-devel
 
 # Web server setup
 sudo yum -y install httpd 
-sudo yum -y install mod_wsgi 
-# sudo yum -y install cronolog  # TODO: Add to production Centos puppet config
+sudo yum -y install mod_wsgi
 
-# Python application dependencies
+# install fabric for deployment scripts
+sudo pip install fabric==1.13.1
 
-echo "Create virtual environment in this location:"
-mkdir -p /srv/projects/temmpo/lib/
-cd /srv/projects/temmpo/lib/
-# Ensure use Python 2.7 is used
-virtualenv --system-site-packages -p /usr/bin/python2 dev
-cd dev
-ls -l
-echo "Create required sub directories"
-mkdir -p /srv/projects/temmpo/etc
-# TODO: Non vagrant build need to create and clone the repo in the src directory
-# mkdir -p src
-# cd src 
-# git clone git@bitbucket.org:researchit/temmpo.git
-mkdir -p /srv/projects/temmpo/lib/dev/var/results
-mkdir -p /srv/projects/temmpo/lib/dev/var/abstracts
+# Confirm install list
+yum list installed 
+pip freeze
 
-echo "Load base application requirements"
-cd /srv/projects/temmpo/lib/dev/
-./bin/pip install -r src/temmpo/requirements/centos-dev.txt
+echo "Create directories normally managed by Puppet"
+mkdir -p /usr/local/projects/temmpo/lib/
+mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d
+mkdir -p /usr/local/projects/temmpo/etc/ssl
+mkdir -p /usr/local/projects/temmpo/var/log/httpd
+mkdir -p /usr/local/projects/temmpo/var/www
 
-# # contexts that are required for application to run behind Apache
-# # TODO: review if semanage should be used instead
-# # https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security-Enhanced_Linux/sect-Security-Enhanced_Linux-SELinux_Contexts_Labeling_Files-Persistent_Changes_semanage_fcontext.html#sect-Security-Enhanced_Linux-SELinux_Contexts_Labeling_Files-Persistent_Changes_semanage_fcontext
-# sudo chcon -R -t httpd_sys_rw_content_t /var/local/temmpo/logs
-# sudo chcon -R -t httpd_sys_rw_content_t /var/local/temmpo/var
-# sudo chcon -R -t httpd_sys_script_exec_t /var/local/temmpo/lib/python2.7/site-packages/
+echo "Add basic catch all Apache config normally managed by Puppet"
+cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
+WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
-# # Production exceptions - clone prod stable
-# # NB: Would require requirements/prod.txt
+<VirtualHost *:*>
+  ServerName www.temmpo.org.uk
+  ServerAlias temmpo.org.uk
+  ServerAlias dev.temmpo.org.uk
+  ServerAlias vagrant.temmpo.org.uk
 
-cd /srv/projects/temmpo/lib/
-chown --silent -R vagrant:vagrant dev
+  ## Vhost docroot
+  DocumentRoot "/usr/local/projects/temmpo/var/www"
 
-echo "Creating SQLite database"
-cd /srv/projects/temmpo/lib/dev/src/temmpo
-sudo -u vagrant ../../bin/python manage.py migrate --settings=temmpo.settings.dev
+  ## Directories, there should at least be a declaration for /usr/local/projects/temmpo/var/www
 
-echo "Run tests"
-sudo -u vagrant ../../bin/python manage.py test --settings=temmpo.settings.dev
+  <Directory "/usr/local/projects/temmpo/var/www">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Require all granted
+  </Directory>
 
-echo "TODO: populate the mesh terms - import_mesh_terms import_genes"
+  ## Load additional static includes
+  IncludeOptional "/usr/local/projects/temmpo/etc/apache/conf.d/*.conf"
+</VirtualHost>
+APACHE_CONF
 
-echo "## MANUAL STEP 1 Create superuser ##"
-echo "cd /srv/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev"
+cd /usr/local/projects/temmpo/lib/
+sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
+sudo chown vagrant:apache /usr/local/projects/temmpo/etc/apache/conf.d
+sudo chown -R vagrant:apache /usr/local/projects/temmpo/var
+sudo chmod -R g+w /usr/local/projects/temmpo/var/log
+sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
+sudo chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
 
-echo "## MANUAL STEP 2 ## Run the dev server ##"
-echo "cd /srv/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev"
-echo "Open http://127.0.0.1:59099 in your local web browser"
+echo "Copy a deployment key to allow fabric script testing"
+cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
+sudo chown -R vagrant:vagrant /home/vagrant/.ssh/
+sudo chmod 700 /home/vagrant/.ssh/*
+
+echo "## How to create/update the database"
+echo "cd /srv/projects/temmpo/lib/dev/src/temmpo"
+echo "../../bin/python manage.py migrate --settings=temmpo.settings.dev"
+
+echo "## How to run the test suite"
+echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py test --settings=temmpo.settings.dev"
+
+echo "## Populate with all the mesh terms (NB: This takes a very long time - alternatively load test fixtures mesh-terms-test-only.json)"
+echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py import_mesh_terms"
+
+echo "## Populate with the full genes list (NB: This takes a very long time - alternatively load test fixtures genes-test-only.json)"
+echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py import_genes"
+
+echo "## How to create superuser"
+echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev"
+
+echo "## How to run the dev server"
+echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev"
+echo "## Open http://127.0.0.1:59099 in your web browser"

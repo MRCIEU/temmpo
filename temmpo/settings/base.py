@@ -7,8 +7,6 @@ https://docs.djangoproject.com/en/1.8/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import random
 import string
@@ -17,15 +15,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Dynamic config based on server host, vebuild and if dev, user name
 SERVER = os.uname()[1]
 THIS_PATH = os.path.dirname(__file__)
-APP_ROOT = '/'.join(THIS_PATH.split('/')[0:-4])
+PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
 ADMINS = (('Tessa Alexander', 'tessa.alexander+temmpo@bristol.ac.uk'),)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-
 # Based on idea
 # https://gist.github.com/ndarville/3452907
 
@@ -48,9 +42,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '137.222.16.18',
                  '.ilrt.bris.ac.uk', '.ilrt.bristol.ac.uk',
                  '.epi.bris.ac.uk', '.epi.bristol.ac.uk',
                  '.bris.ac.uk', '.bristol.ac.uk', 'temmpo.org.uk',
-                 'www.temmpo.org.uk', ]
-
-APACHE = False
+                 'www.temmpo.org.uk', '137.222.0.181', ]
 
 # Application definition
 
@@ -64,7 +56,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'selectable', ]  # 'oraclepool',
+THIRD_PARTY_APPS = ['registration', 'mptt', 'selectable', ]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -77,6 +69,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'temmpo.urls'
@@ -90,7 +83,7 @@ WSGI_APPLICATION = 'temmpo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': PROJECT_ROOT + '/var/db.sqlite3',
     }
 }
 
@@ -114,8 +107,8 @@ SHORT_DATE_FORMAT = 'd/m/Y'
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
-MEDIA_ROOT = "%s/%s" % (APP_ROOT, 'var')
-STATIC_ROOT = "%s/%s" % (APP_ROOT, 'static')  # Centos /srv/projects/temmpo/var/www-static & Debian /usr/local/projects/temmpo/var/www-static
+MEDIA_ROOT = "%s/var" % PROJECT_ROOT
+STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/var/www/static
 
 RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 
@@ -157,7 +150,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
-            'filename': '%s/debug.log' % APP_ROOT,
+            'filename': '%s/var/log/django.log' % PROJECT_ROOT,
             'maxBytes': 1024 * 1024 * 10,
         },
         'syslog': {
@@ -191,7 +184,7 @@ LOGGING = {
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
-# TODO when moving to Oracle or MySQL
+# TODO when moving to MySQL
 # settings_file_name = 'temmpo_private_settings.py'
 # paths = (os.path.join(os.path.expanduser("~"), settings_file_name),
 #     os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','etc', settings_file_name)))
