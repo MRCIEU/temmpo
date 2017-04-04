@@ -52,19 +52,6 @@ python manage.py test --settings=temmpo.settings.dev
 python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 ```
 
-## Deployment
-
-# Tag in git using fabric utility function
-
-# Tag release, e.g. version 2.2.0
-```
-fab taggit:master,2.2.0,temmpo
-```
-# Move/update prod_stable branch 
-```
-fab taggit:master,prod_stable,temmpo
-```
-
 ## Installation
 
 # Installing a Vagrant development build
@@ -109,7 +96,7 @@ git clone git@bitbucket.org:researchit/temmpo.git temmpo
 git fetch --all
 git checkout master
 git pull
-fab taggit:master,2.3,temmpo -f deploy/fabfile.py
+fab taggit:master,2.2.0,temmpo -f deploy/fabfile.py
 fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
 ```
 

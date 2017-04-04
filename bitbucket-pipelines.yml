@@ -11,4 +11,3 @@ pipelines:
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - python manage.py test
-          - find / -name db.sqlite3
