@@ -46,7 +46,6 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-@hosts('localhost')
 def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
     """fab:master,0.9,egg Create a tag or move a branch
         Example create a tag and move it to stable...
@@ -68,22 +67,22 @@ def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
     except:
         print 'Merging branch %s to branch %s' % (gto, gfrom)
         action = 'merge'
-    with cd(GIT_DIR + egg):
-        run('git pull')
+    with lcd(GIT_DIR + egg):
+        local('git pull')
         if action == 'merge':
             # make sure this is up to date branches before merging
-            run('git checkout %s' % gfrom)
-            run('git pull')
-            run('git checkout %s' % gto)
-            run('git pull')
-            run('git merge -m "merge for release tagging" %s' % gfrom)
-            run('git push')
+            local('git checkout %s' % gfrom)
+            local('git pull')
+            local('git checkout %s' % gto)
+            local('git pull')
+            local('git merge -m "merge for release tagging" %s' % gfrom)
+            local('git push')
         else:
-            run('git checkout %s' % gfrom)
-            run('git tag -a %s -m "%s"' % (gto, msg))
-            run('git push origin %s' % gto)
+            local('git checkout %s' % gfrom)
+            local('git tag -a %s -m "%s"' % (gto, msg))
+            local('git push origin %s' % gto)
         # Reset local git repo to master
-        run('git checkout master')
+        local('git checkout master')
 
 
 def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"):
@@ -190,6 +189,11 @@ def setup_apache(env="dev", use_local_mode=False):
     # WSGIApplicationGroup %%{GLOBAL}
     # WSGIDaemonProcess temmpo
     # WSGIProcessGroup temmpo
+
+    RewriteEngine On
+    RewriteCond %{DOCUMENT_ROOT}/_MAINTENANCE_ -f
+    RewriteCond %{REQUEST_URI} !/static/maintenance/maintenance.html
+    RewriteRule ^(.+) /static/maintenance/maintenance.html [R,L]
 
     <Directory /usr/local/projects/temmpo/lib/%(env)s/src/temmpo>
         Require all granted

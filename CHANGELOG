@@ -1,3 +1,6 @@
+2.2     Add Apache configuration for maintenance mode
+        Allow taggit fabric method to be run locally without password prompts for localhost
+
 2.1     TMMA-196 Resolve issue with permissions in var directory
 
 2.0     TMMA-130 Migrate project to be hosted on a Centos OS VM with SELinux enabled.
