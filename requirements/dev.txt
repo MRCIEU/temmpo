@@ -13,7 +13,7 @@ django-debug-toolbar==1.7
 django-mptt==0.8.7
 django-registration-redux==1.4
 django-selectable==0.9.0
-django==1.8.17
+django==1.8.18
 enum34==1.1.6             # via traitlets
 first==2.0.1
 ipython-genutils==0.2.0   # via traitlets
