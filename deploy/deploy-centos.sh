@@ -41,6 +41,9 @@ mkdir -p /usr/local/projects/temmpo/etc/ssl
 mkdir -p /usr/local/projects/temmpo/var/log/httpd
 mkdir -p /usr/local/projects/temmpo/var/www
 mkdir -p /usr/local/projects/temmpo/var/data
+mkdir -p /usr/local/projects/temmpo/var/abstracts
+mkdir -p /usr/local/projects/temmpo/var/results
+touch /usr/local/projects/temmpo/var/log/django.log
 
 echo "Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
@@ -70,9 +73,13 @@ APACHE_CONF
 
 cd /usr/local/projects/temmpo/lib/
 sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
-sudo chown vagrant:apache /usr/local/projects/temmpo/etc/apache/conf.d
-sudo chown -R vagrant:apache /usr/local/projects/temmpo/var
-sudo chmod -R g+w /usr/local/projects/temmpo/var/log
+sudo chown apache:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
+sudo chown vagrant:vagrant /usr/local/projects/temmpo/var
+sudo chown apache:vagrant /usr/local/projects/temmpo/var/abstracts
+sudo chown apache:vagrant /usr/local/projects/temmpo/var/results
+sudo chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
+sudo chmod g+xw /usr/local/projects/temmpo/var/log
+sudo chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
 
