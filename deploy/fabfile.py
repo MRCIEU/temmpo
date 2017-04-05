@@ -141,8 +141,19 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         setup_apache(env, use_local_mode)
 
 
-def deploy(host="localhost", env="dev", branch="master", tag=None, merge_from=None):
-    """TODO: Needs testing NB: env = dev|prod.  Optionally tag and merge the release """
+def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
+    """NB: env = dev|prod.  Optionally tag and merge the release
+    TODO: Tagging and merging branches needs testing"""
+
+    # Convert any string command line arguments to boolean values, where required.
+    using_apache = (str(using_apache).lower() == 'true')
+    migrate_db = (str(migrate_db).lower() == 'true')
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    use_pip_sync = (str(use_pip_sync).lower() == 'true')
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     if tag:
         taggit(gfrom="master", gto=tag, egg='temmpo')
@@ -152,19 +163,24 @@ def deploy(host="localhost", env="dev", branch="master", tag=None, merge_from=No
 
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
-    with settings(host_string=host, warn_only=True):
-        with cd(src_dir):
-            run('git fetch --all')
-            run('git checkout %s' % branch)
-            run('git pull')
-            run('../../bin/python manage.py migrate --settings=temmpo.settings.%s')
-            run('../../bin/python manage.py collectstatic --noinput --settings=temmpo.settings.%s')
-            out = run('/usr/sbin/apache2ctl configtest', shell=False, pty=True)
-            if out.find('Syntax OK') > -1:
-                run('sudo /usr/sbin/apache2ctl restart')
+    with cd(src_dir):
+        caller('git fetch --all')
+        caller('git fetch origin %s' % branch)
+        caller('git checkout %s' % branch)
+        caller('git pull origin %s' % branch)
 
-    with cd("/tmp"):
-        run('wget http://%s' % host)
+    with change_dir(venv_dir):
+        if use_pip_sync:
+            caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
+        else:
+            caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
+
+        if migrate_db:
+            caller('./bin/python src/temmpo/manage.py migrate --settings=temmpo.settings.%s' % env)
+
+        if using_apache:
+            collect_static(env, use_local_mode)
+            restart_apache(env, use_local_mode, run_checks=True)
 
 
 def setup_apache(env="dev", use_local_mode=False):
@@ -231,13 +247,7 @@ def setup_apache(env="dev", use_local_mode=False):
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
     caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
 
-    caller("sudo /sbin/apachectl configtest")
-    caller("sudo /sbin/apachectl restart")
-    caller("sudo /sbin/apachectl status")
-    caller("wget 127.0.0.1")
-    caller("rm index.html")
-    with change_dir(venv_dir):
-        caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
+    restart_apache(env, use_local_mode, run_checks=True)
 
 
 def collect_static(env="dev", use_local_mode=False):
@@ -252,3 +262,22 @@ def collect_static(env="dev", use_local_mode=False):
 
     with change_dir(venv_dir):
         caller('./bin/python src/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
+
+
+def restart_apache(env="dev", use_local_mode=False, run_checks=True):
+
+    # Convert any string command line arguments to boolean values, where required.
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    run_checks = (str(run_checks).lower() == 'true')
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    caller("sudo /sbin/apachectl configtest")
+    caller("sudo /sbin/apachectl restart")
+    caller("sudo /sbin/apachectl status")
+    if run_checks:
+        caller("wget 127.0.0.1")
+        caller("rm index.html")
+        with change_dir(venv_dir):
+            caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
