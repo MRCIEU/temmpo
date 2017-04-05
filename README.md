@@ -123,3 +123,12 @@ git checkout TMMA-130
 git pull
 fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 ```
+
+## Deploy prod_stable branch to Vagrant Apache build
+fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+
+## Deploy master branch to Vagrant Apache build
+fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+
+## TODO TEST tagging and merging - will need an SSH key with commit right sto the repo:
+#### fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
