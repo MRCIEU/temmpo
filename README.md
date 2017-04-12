@@ -71,7 +71,7 @@ vagrant ssh apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 ```
 
-## Installing a Vagrant Apache build remotely
+## Installing a Vagrant Apache build remotely.  Requires Python 2.7+ and Fabric 1.7+
 ```
 vagrant up apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
@@ -129,6 +129,9 @@ fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_loca
 
 ## Deploy master branch to Vagrant Apache build
 fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+
+## Redeploy a Vagrant Django VM on a development branch locally
+fab deploy:env=dev,branch=TMMA-175,using_apache=False,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
 
 ## TODO TEST tagging and merging - will need an SSH key with commit right sto the repo:
 #### fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
