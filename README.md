@@ -45,7 +45,7 @@ python manage.py createsuperuser --settings=temmpo.settings.dev
 
 # Running tests:
 ```
-python manage.py test --settings=temmpo.settings.dev
+python manage.py test --settings=temmpo.settings.test
 ```
 # Run the development server
 ```
@@ -54,16 +54,24 @@ python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ## Installation
 
-# Installing a Vagrant development build
+### Installing a Vagrant development build
 
 ```
 cd deploy
 vagrant up
 vagrant ssh
-fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 ```
 
-# Installing a Vagrant Apache build
+### Installing a Vagrant development build remotely.  Requires Python 2.7+ and Fabric 1.7+
+```
+cd deploy
+vagrant up
+fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=dev -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+vagrant ssh
+```
+
+### Installing a Vagrant Apache build
 ```
 cd deploy
 vagrant up apache
@@ -71,13 +79,13 @@ vagrant ssh apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 ```
 
-## Installing a Vagrant Apache build remotely.  Requires Python 2.7+ and Fabric 1.7+
+### Installing a Vagrant Apache build remotely.  Requires Python 2.7+ and Fabric 1.7+
 ```
 vagrant up apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
 ```
 
-## Installing a production build remotely, e.g. from the CI server
+### Installing a production build remotely, e.g. from the CI server
 ```
 ssh ci-p0.rit.bris.ac.uk
 sudo -i -u temmpo
@@ -136,7 +144,7 @@ fab deploy:env=dev,branch=TMMA-175,using_apache=False,migrate_db=True,use_local_
 ## TODO TEST tagging and merging - will need an SSH key with commit right sto the repo:
 #### fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
 
-## Symlink existin dev sqllite installations
+## Symlink existing dev sqllite installations
 
 ### Dev locally
 fab sym_link_private_settings:dev,false -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222

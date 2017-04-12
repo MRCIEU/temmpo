@@ -8,6 +8,7 @@ PROJECT_ROOT = "/usr/local/projects/temmpo/"
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
 PIP_VERSION = '9.0.1'
+# SETUPTOOLS_VERSION = '34.4.1'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
@@ -122,6 +123,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
+            # caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
         sym_link_private_settings(env, use_local_mode)

@@ -37,6 +37,8 @@ sudo yum -y install clamav
 # install fabric for deployment scripts
 sudo pip install fabric==1.13.1
 
+# sudo pip install pip==9.0.1
+
 # Confirm install list
 yum list installed 
 pip freeze
@@ -63,6 +65,8 @@ sudo chown apache:vagrant /usr/local/projects/temmpo/var/www
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/data
+sudo chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
+sudo chmod -R g+xw /usr/local/projects/temmpo/var/results
 sudo chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
@@ -139,7 +143,7 @@ DATABASES = {
     'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': '/usr/local/projects/temmpo/var/data/db.sqlite3',
-    }
+    },
 }
 
 # Prepare for database mitgration

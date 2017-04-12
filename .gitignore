@@ -55,7 +55,7 @@ docs/_build/
 target/
 
 # Data
-db.sqlite3
+*.sqlite3
 db.sqlite3-journal
 
 # PyDev projects
