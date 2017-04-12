@@ -135,3 +135,11 @@ fab deploy:env=dev,branch=TMMA-175,using_apache=False,migrate_db=True,use_local_
 
 ## TODO TEST tagging and merging - will need an SSH key with commit right sto the repo:
 #### fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+
+## Symlink existin dev sqllite installations
+
+### Dev locally
+fab sym_link_private_settings:dev,false -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+
+### Prod from CI server
+fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
