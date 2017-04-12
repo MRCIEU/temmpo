@@ -10,4 +10,5 @@ pipelines:
           - mkdir -p /opt/var/abstracts
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
+          - ln -s ./temmpo/settings/bitbucket_pipelines_private_settings.py ./temmpo/settings/private_settings.py
           - python manage.py test
