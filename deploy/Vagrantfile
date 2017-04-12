@@ -21,6 +21,7 @@ Vagrant.configure("2") do |config|
        owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
 
     django.vm.network "forwarded_port", guest: 59099, host: 59099
+    django.vm.network "private_network", ip: "192.168.50.72"
   end
 
   # Apache/Django box
@@ -33,6 +34,7 @@ Vagrant.configure("2") do |config|
        owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
 
     apache.vm.network "forwarded_port", guest: 80, host: 8800
+    apache.vm.network "private_network", ip: "192.168.50.71"
   end
 
   # Disable MariaDB until production migration from SQLlite to central DB service
@@ -66,17 +68,11 @@ bind-address=0.0.0.0
 CONF
       sudo mv allow-external-connections.cnf /etc/my.cnf.d/
       sudo systemctl restart mariadb
-
-      # Take what is required for development set up from mysql_secure_installation
-      echo "Delete “anonymous” users, i.e. users with the empty string as user name"
-      cat > delete-anon-users.sql << SQL
-      DELETE FROM mysql.user WHERE User='';
-      FLUSH PRIVILEGES;
-SQL
-      mysql -u root < delete-anon-users.sql
+      mysql -u root < /vagrant/db-setup.sql
     SHELL
 
-    # db.vm.network "forwarded_port", guest: 3306, host: 3306 
+      db.vm.network "forwarded_port", guest: 3306, host: 4407
+      db.vm.network "private_network", ip: "192.168.50.70"
   end
 
 end
