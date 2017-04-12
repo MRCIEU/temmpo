@@ -62,6 +62,7 @@ sudo chown apache:vagrant /usr/local/projects/temmpo/var/results
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/www
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/log
+sudo chmod -R g+xw /usr/local/projects/temmpo/var/data
 sudo chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
