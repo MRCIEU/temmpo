@@ -69,6 +69,7 @@ org.eclipse.core.resources.prefs
 # TeMMPo specific
 browser/static/results/*
 temmpo/settings/secret.txt
+temmpo/settings/private_settings.py
 
 # Docker configuration
 docker-compose.yml

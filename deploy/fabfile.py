@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 
 from fabric.api import *
@@ -86,7 +87,7 @@ def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
 
 
 def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"):
-    """NB: env = dev|prod"""
+    """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
     clone_repo = (str(clone_repo).lower() == 'true')
@@ -123,9 +124,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
-        # private_settings_sym_link = '%stemmpo/temmpo/private_settings.py' % src_dir
-        # if not _is_link_local(private_settings_sym_link, use_local_mode):
-        #     caller('ln -s %s.settings/private_settings.py %s' % (PROJECT_ROOT, private_settings_sym_link))
+        sym_link_private_settings(env, use_local_mode)
 
     # Set up logging
     if not _exists_local(PROJECT_ROOT + 'var/log/django.log', use_local_mode):
@@ -142,7 +141,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
 
 def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
-    """NB: env = dev|prod.  Optionally tag and merge the release
+    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"
     TODO: Tagging and merging branches needs testing"""
 
     # Convert any string command line arguments to boolean values, where required.
@@ -184,7 +183,7 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
 
 
 def setup_apache(env="dev", use_local_mode=False):
-    # Convert any string command line arguments to boolean values, where required.
+    # env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
     # Allow function to be run locally or remotely
@@ -265,7 +264,7 @@ def collect_static(env="dev", use_local_mode=False):
 
 
 def restart_apache(env="dev", use_local_mode=False, run_checks=True):
-
+    """ env="dev", use_local_mode=False, run_checks=True"""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     run_checks = (str(run_checks).lower() == 'true')
@@ -281,3 +280,29 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
         caller("rm index.html")
         with change_dir(venv_dir):
             caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
+
+
+def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False):
+    """env="dev", use_local_mode=False"""
+    # TODO test
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    oputput_file = "/usr/local/projects/temmpo/var/data/export-db-%s.sql" % datetime.now().isofomat()
+
+    with change_dir(venv_dir):
+        # Export data
+        caller(".output %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite" % (oputput_file, env))
+        caller(".dump | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite" % env)
+        # Import data
+        caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql" % (oputput_file, env))
+
+
+def sym_link_private_settings(env="dev", use_local_mode=False):
+    """env="dev", use_local_mode=False"""
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+
+    private_settings_sym_link = '%slib/%s/src/temmpo/temmpo/settings/private_settings.py' % (PROJECT_ROOT, env)
+    if not _is_link_local(private_settings_sym_link, use_local_mode):
+        caller('ln -s %s.settings/private_settings.py %s' % (PROJECT_ROOT, private_settings_sym_link))

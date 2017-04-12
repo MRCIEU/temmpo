@@ -76,17 +76,6 @@ ROOT_URLCONF = 'temmpo.urls'
 
 WSGI_APPLICATION = 'temmpo.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': PROJECT_ROOT + '/var/data/db.sqlite3',
-    }
-}
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -184,15 +173,7 @@ LOGGING = {
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
-# TODO when moving to MySQL
-# settings_file_name = 'temmpo_private_settings.py'
-# paths = (os.path.join(os.path.expanduser("~"), settings_file_name),
-#     os.path.normpath(os.path.join(BASE_DIR, '..', '..','..','etc', settings_file_name)))
-
-# for path in paths:
-#     if os.path.exists(path):
-#         execfile(path)
-#         break
-# else:
-#     print("Warning: Expected to find a local private settings override file in one of these locations")
-#     print(paths)
+try:
+    from temmpo.settings.private_settings import *
+except ImportError:
+    print("No private settings where found in the expected location /usr/local/projects/temmpo/.settings/private_settings.py or symlinked into the temmpo/temmpo/settings/ directory")
