@@ -44,7 +44,7 @@ CONF
       mysql -u root < /vagrant/db-setup.sql
     SHELL
 
-      db.vm.network "forwarded_port", guest: 3306, host: 4407
+      db.vm.network "forwarded_port", guest: 3306, host: 3306
       db.vm.network "private_network", ip: "192.168.50.70"
   end
 
