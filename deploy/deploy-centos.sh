@@ -20,7 +20,8 @@ sudo yum -y install gcc gcc-c++
 sudo yum -y install git
 sudo yum -y install nano
 sudo yum -y install wget
-# mariadb dev stuff
+sudo yum -y install mysql # TODO add to puppet
+# 
 sudo yum -y install mariadb-devel
 
 # Web server setup
@@ -120,7 +121,7 @@ cat > /usr/local/projects/temmpo/.settings/private_settings.py <<PRIVATE_SETTING
 DATABASES = {
     'mysql': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'temmpo_p',
+        'NAME': 'temmpo_d',
         'USER': 'temmpo',
         'PASSWORD': 'notsosecret',
         'HOST': '192.168.50.70',
@@ -131,7 +132,7 @@ DATABASES = {
     },
     'admin': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'temmpo_p',
+        'NAME': 'temmpo_d',
         'USER': 'temmpo_a',
         'PASSWORD': 'notsosecret_a',
         'HOST': '192.168.50.70',
