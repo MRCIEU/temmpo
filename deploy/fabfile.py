@@ -287,6 +287,7 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
 def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False):
     """env="dev", use_local_mode=False"""
     # TODO test
+    # sed -e '/PRAGMA/d' -e's/BEGIN/START/' 
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
@@ -313,15 +314,24 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False):
     #           'django_session',
     #           'browser_searchcriteria',
     #           'registration_registrationprofile',)
+    # compare_sql = ''
+    # for table in tables:
+    #     compare_sql += "SELECT count(*) FROM %s; " % table
 
-    # compare_sql = "SHOW tables; SELECT count(*) FROM *;"
+    compare_sqlite = ".tables"
+    compare_mysql = "SHOW TABLES"
 
     with change_dir(venv_dir):
-
         # Export data
         caller("sqlite3 %s .dump > %s" % (sqlite_db, output_file))
+        # Review counts from SQLite
+        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite" % (compare_sqlite, env))
+        # Convert certain commands from SQLite to the MySQL equivalents
+        caller("sed -i -e 's/PRAGMA.*/SET SESSION sql_mode = ANSI_QUOTES;/' -e 's/BEGIN/START/' -e 's/AUTOINCREMENT/AUTO_INCREMENT/g' -e 's/^.*sqlite_sequence.*$//g' %s" % output_file)
         # Import data
-        caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql" % (output_file, env))
+        caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=admin" % (output_file, env))
+        # Review counts from MySQL
+        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql" % (compare_mysql, env))
 
 
 def sym_link_private_settings(env="dev", use_local_mode=False):
