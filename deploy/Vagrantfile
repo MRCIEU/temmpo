@@ -1,44 +1,17 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# On os x needs later version of ruby, e.g. brew install ruby
+# On OS X needs later version of ruby, e.g. brew install ruby
 
 Vagrant.configure("2") do |config|
 
   config.vm.box = "centos/7"
 
-  # Used to allow passphrase free SSH access to allow
+  # Used to allow pass phrase free SSH access to allow
   # remote testing of Fabric scripts against Vagrant VMs
   config.ssh.insert_key = false
 
-  # Django box
-  config.vm.define "django", primary: true do |django|
-
-    # Run the Django setup
-    django.vm.provision "shell", path: "deploy-centos.sh"
-
-    django.vm.synced_folder "../", "/usr/local/projects/temmpo/lib/dev/src/temmpo", type: "sshfs", 
-       owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
-
-    django.vm.network "forwarded_port", guest: 59099, host: 59099
-    django.vm.network "private_network", ip: "192.168.50.72"
-  end
-
-  # Apache/Django box
-  config.vm.define "apache", autostart: false do |apache|
-
-    # Run the Django setup
-    apache.vm.provision "shell", path: "deploy-centos.sh"
-
-    apache.vm.synced_folder "../", "/vagrant", type: "sshfs", 
-       owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
-
-    apache.vm.network "forwarded_port", guest: 80, host: 8800
-    apache.vm.network "private_network", ip: "192.168.50.71"
-  end
-
-  # Disable MariaDB until production migration from SQLlite to central DB service
-  config.vm.define "db", autostart: false do |db|
+  config.vm.define "db" do |db|
 
     db.vm.provision "shell", inline: <<-SHELL
 
@@ -75,4 +48,29 @@ CONF
       db.vm.network "private_network", ip: "192.168.50.70"
   end
 
+  # Django box
+  config.vm.define "django", primary: true do |django|
+
+    # Run the Django setup
+    django.vm.provision "shell", path: "deploy-centos.sh"
+
+    django.vm.synced_folder "../", "/usr/local/projects/temmpo/lib/dev/src/temmpo", type: "sshfs", 
+       owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
+
+    django.vm.network "forwarded_port", guest: 59099, host: 59099
+    django.vm.network "private_network", ip: "192.168.50.72"
+  end
+
+  # Apache/Django box
+  config.vm.define "apache", autostart: false do |apache|
+
+    # Run the Django setup
+    apache.vm.provision "shell", path: "deploy-centos.sh"
+
+    apache.vm.synced_folder "../", "/vagrant", type: "sshfs", 
+       owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
+
+    apache.vm.network "forwarded_port", guest: 80, host: 8800
+    apache.vm.network "private_network", ip: "192.168.50.71"
+  end
 end
