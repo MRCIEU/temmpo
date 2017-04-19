@@ -290,14 +290,38 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False):
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
-    oputput_file = "/usr/local/projects/temmpo/var/data/export-db-%s.sql" % datetime.now().isofomat()
+    now = datetime.now()
+    sqlite_db = '/usr/local/projects/temmpo/var/data/db.sqlite3'
+    output_file = "/usr/local/projects/temmpo/var/data/export-db-%s-%s-%s-%s-%s.sql" % (now.year, now.month, now.day, now.hour, now.minute)
+    # tables = ('auth_group',
+    #           'browser_searchcriteria_genes',
+    #           'auth_group_permissions',
+    #           'browser_searchcriteria_mediator_terms',
+    #           'auth_permission',
+    #           'browser_searchcriteria_outcome_terms',
+    #           'auth_user',
+    #           'browser_searchresult',
+    #           'auth_user_groups',
+    #           'browser_upload',
+    #           'auth_user_user_permissions',
+    #           'django_admin_log',
+    #           'browser_abstract',
+    #           'django_content_type',
+    #           'browser_gene',
+    #           'django_migrations',
+    #           'browser_meshterm',
+    #           'django_session',
+    #           'browser_searchcriteria',
+    #           'registration_registrationprofile',)
+
+    # compare_sql = "SHOW tables; SELECT count(*) FROM *;"
 
     with change_dir(venv_dir):
+
         # Export data
-        caller(".output %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite" % (oputput_file, env))
-        caller(".dump | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite" % env)
+        caller("sqlite3 %s .dump > %s" % (sqlite_db, output_file))
         # Import data
-        caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql" % (oputput_file, env))
+        caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql" % (output_file, env))
 
 
 def sym_link_private_settings(env="dev", use_local_mode=False):
