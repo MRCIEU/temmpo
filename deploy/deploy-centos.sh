@@ -117,7 +117,6 @@ APACHE_CONF
 
 echo "Add placeholder private_settings.py"
 sudo mkdir -p /usr/local/projects/temmpo/.settings/
-sudo chown vagrant:vagrant /usr/local/projects/temmpo/.settings/
 cat > /usr/local/projects/temmpo/.settings/private_settings.py <<PRIVATE_SETTINGS
 DATABASES = {
     'mysql': {
@@ -151,6 +150,8 @@ DATABASES = {
 # Prepare for database migration
 DATABASES['default'] = DATABASES['sqlite']
 PRIVATE_SETTINGS
+sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/.settings/
+sudo chmod -R ug+rwx /usr/local/projects/temmpo/.settings/
 
 echo "## How to create/update the database"
 echo "cd /srv/projects/temmpo/lib/dev/src/temmpo"
