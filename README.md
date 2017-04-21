@@ -124,9 +124,9 @@ git pull
 fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 ```
 
-### Deployment of code changes to an existing installation
+## Deployment of code changes to an existing installation
 
-#### Testing deployment on a development branch on production host, e.g. TMMA-130
+### Testing deployment on a development branch on production host, e.g. TMMA-130
 ```
 ssh ci-p0.rit.bris.ac.uk
 sudo -i -u temmpo
@@ -140,38 +140,32 @@ git pull
 fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 ```
 
-#### Deploy prod_stable branch to Vagrant Apache build
+### Deploy prod_stable branch to Vagrant Apache build
 	fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-#### Deploy master branch to Vagrant Apache build
+### Deploy master branch to Vagrant Apache build
 	fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-#### Redeploy a Vagrant Django VM on a development branch locally
+### Redeploy a Vagrant Django VM on a development branch locally
 	fab deploy:env=dev,branch=TMMA-175,using_apache=False,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-*TODO TEST tagging and merging - will need an SSH key with commit right sto the repo:*
+### *TODO TEST* tagging and merging - will need an SSH key with commit rights to the repo:
 	fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-
-### Preparing existing sqlite installations for using private_settings.py
-
-#### Dev
-	fab sym_link_private_settings:dev,false -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-
-#### Prod from CI server
-	fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 
 ## Migrate data from SQLite to MySQL
-NB: This requires the following named database entries to exist in the Django (private) settings file.
+Preparing existing sqlite installations for using private_settings.py NB: This requires the following named database entries to exist in the Django (private) settings file.
 
 * admin
 * mysql
 * sqlite
 
-Example command to test on dev Vagrant installations
+### Example commands to migrate data on dev Vagrant installations
 
+	fab sym_link_private_settings:dev,false -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 	fab migrate_sqlite_data_to_mysql:dev,False -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-Example command to run via CI server on production # TODO test
+### Example command to run via CI server on production # TODO test
 
+	fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 	fab migrate_sqlite_data_to_mysql:prod,False -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
