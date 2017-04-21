@@ -15,16 +15,17 @@ This development was funded by the World Cancer Research Fund UK, the UK Medical
 We are using Vagrant for our Centos development environment.  It requires an additional plugin to mount the development source code cloned on your local machine.
 
 ### Set up development environment (django and db VMs)
+- Requires Python 2.7 and Fabric (tested with 1.8.2)
 ```
 vagrant plugin install vagrant-sshfs
 git clone git@bitbucket.org:researchit/temmpo.git
 cd temmpo/deploy
-fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+vagrant up
+fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=dev -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 ```
 
 #### Access the Django VM
 ```
-vagrant up
 vagrant ssh
 ```
 
@@ -57,16 +58,18 @@ python manage.py test --settings=temmpo.settings.test
 ```
 python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 ```
+Open http://localhost:59099/ to view in your local browser
 
 ### Installation
 
 #### Installing a Vagrant development build
-
+NB These command set up the virtualenv directly from the VM without requiring Python or Fabric to be installed on your host machine
 ```
 cd deploy
 vagrant up
 vagrant ssh
-fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+cd /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/
+fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev
 ```
 
 #### Installing a Vagrant development build remotely.  Requires Python 2.7+ and Fabric 1.7+
@@ -80,14 +83,14 @@ vagrant ssh
 #### Installing a Vagrant Apache build
 ```
 cd deploy
-vagrant up apache
+vagrnat up db && vagrant up apache
 vagrant ssh apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 ```
 
 #### Installing a Vagrant Apache build remotely.  Requires Python 2.7+ and Fabric 1.7+
 ```
-vagrant up apache
+vagrnat up db && vagrant up apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 ```
 
