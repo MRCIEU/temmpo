@@ -1,7 +1,7 @@
 DROP DATABASE IF EXISTS temmpo_d;
 CREATE DATABASE temmpo_d CHARACTER SET UTF8;
-CREATE USER IF NOT EXISTS temmpo@'%' IDENTIFIED BY 'notsosecret';
-CREATE USER IF NOT EXISTS temmpo_a@'%' IDENTIFIED BY 'notsosecret_a';
+CREATE USER temmpo@'%' IDENTIFIED BY 'notsosecret';
+CREATE USER temmpo_a@'%' IDENTIFIED BY 'notsosecret_a';
 GRANT SELECT, INSERT, UPDATE, DELETE ON temmpo_d.* TO temmpo@'%';
 GRANT ALL PRIVILEGES ON temmpo_d.* TO temmpo_a@'%';
 

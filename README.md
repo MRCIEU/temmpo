@@ -29,6 +29,10 @@ fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,
 vagrant ssh
 ```
 
+#### Access the Apache VM
+```
+vagrant ssh apache
+
 #### Activate virtualenv
 ```
 cd /usr/local/projects/temmpo/lib/dev/bin && source activate
@@ -83,7 +87,7 @@ vagrant ssh
 #### Installing a Vagrant Apache build
 ```
 cd deploy
-vagrnat up db && vagrant up apache
+vagrant up db && vagrant up apache
 vagrant ssh apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 ```
@@ -166,7 +170,7 @@ Preparing existing sqlite installations for using private_settings.py NB: This r
 ### Example commands to migrate data on dev Vagrant installations
 
 	fab sym_link_private_settings:dev,false -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-	fab migrate_sqlite_data_to_mysql:dev,False -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+	fab migrate_sqlite_data_to_mysql:env=dev,use_local_mode=False,using_apache=True,swap_db=True -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ### Example command to run via CI server on production # TODO test
 

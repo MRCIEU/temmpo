@@ -81,13 +81,13 @@ if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa ]
     cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
 fi
 
-sudo chown -R vagrant:vagrant /home/vagrant/.ssh/
-sudo chmod 700 /home/vagrant/.ssh/*
-
 ssh-keyscan -H 104.192.143.1 >> /home/vagrant/.ssh/known_hosts
 ssh-keyscan -H 104.192.143.2 >> /home/vagrant/.ssh/known_hosts
 ssh-keyscan -H 104.192.143.3 >> /home/vagrant/.ssh/known_hosts
 ssh-keyscan -H bitbucket.org >> /home/vagrant/.ssh/known_hosts
+
+sudo chown -R vagrant:vagrant /home/vagrant/.ssh/
+sudo chmod 700 /home/vagrant/.ssh/*
 
 echo "Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF

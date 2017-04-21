@@ -287,6 +287,8 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
 def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=True, swap_db=True):
     """env="dev", use_local_mode=False, using_apache=True, swap_db=True - NB: Written to migrate the data once, not to drop any existing MySQL tables;"""
     use_local_mode = (str(use_local_mode).lower() == 'true')
+    using_apache = (str(using_apache).lower() == 'true')
+    swap_db = (str(swap_db).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
     now = datetime.now()
