@@ -151,3 +151,18 @@ fab sym_link_private_settings:dev,false -u vagrant -i ~/.vagrant.d/insecure_priv
 
 ### Prod from CI server
 fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+## Migrate data from SQLite to MySQL
+- NB: This requires the following named database entries to exist in the Django (private) settings file.
+
+* admin
+* mysql
+* sqlite
+
+Example command to test on dev Vagrant installations
+
+	fab migrate_sqlite_data_to_mysql:dev,False -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+Example command to run via CI server on production # TODO test
+
+	fab migrate_sqlite_data_to_mysql:prod,False -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
