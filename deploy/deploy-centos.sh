@@ -68,6 +68,7 @@ sudo chmod -R g+xw /usr/local/projects/temmpo/var/log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/data
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/results
+sudo chmod g+xw /usr/local/projects/temmpo/var/www
 sudo chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
@@ -147,7 +148,7 @@ DATABASES = {
     },
 }
 
-# Prepare for database mitgration
+# Prepare for database migration
 DATABASES['default'] = DATABASES['sqlite']
 PRIVATE_SETTINGS
 

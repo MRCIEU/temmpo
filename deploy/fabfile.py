@@ -287,13 +287,14 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
 def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False):
     """env="dev", use_local_mode=False"""
     # TODO test
-    # sed -e '/PRAGMA/d' -e's/BEGIN/START/' 
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
     now = datetime.now()
     sqlite_db = '/usr/local/projects/temmpo/var/data/db.sqlite3'
     output_file = "/usr/local/projects/temmpo/var/data/export-db-%s-%s-%s-%s-%s.sql" % (now.year, now.month, now.day, now.hour, now.minute)
+    sqlite_status_file = "/usr/local/projects/temmpo/var/data/sqlite-status-%s-%s-%s-%s-%s.txt" % (now.year, now.month, now.day, now.hour, now.minute)
+    mysql_status_file = "/usr/local/projects/temmpo/var/data/mysql-status-%s-%s-%s-%s-%s.txt" % (now.year, now.month, now.day, now.hour, now.minute)
     # tables = ('auth_group',
     #           'browser_searchcriteria_genes',
     #           'auth_group_permissions',
@@ -321,17 +322,30 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False):
     compare_sqlite = ".tables"
     compare_mysql = "SHOW TABLES"
 
+    disable_apache_site(use_local_mode)
     with change_dir(venv_dir):
         # Export data
         caller("sqlite3 %s .dump > %s" % (sqlite_db, output_file))
         # Review counts from SQLite
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite" % (compare_sqlite, env))
+        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite > %s" % (compare_sqlite, env, sqlite_status_file))
         # Convert certain commands from SQLite to the MySQL equivalents
         caller("sed -i -e 's/PRAGMA.*/SET SESSION sql_mode = ANSI_QUOTES;/' -e 's/BEGIN/START/' -e 's/AUTOINCREMENT/AUTO_INCREMENT/g' -e 's/^.*sqlite_sequence.*$//g' %s" % output_file)
         # Import data
         caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=admin" % (output_file, env))
         # Review counts from MySQL
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql" % (compare_mysql, env))
+        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_mysql, env, mysql_status_file))
+        caller("wc -l %s" % mysql_status_file)
+        # Trim header of MySQL output file
+        caller("sed -i 1,1d %s " % mysql_status_file)
+        caller("wc -l %s" % mysql_status_file)
+        # Trim trailing white space
+        caller("sed -i -e 's/ \{1,\}$//g' %s" % sqlite_status_file)
+        # Split into one column
+        caller("sed -i -e 's/ \{1,\}/\\n/g' %s" % sqlite_status_file)
+        caller("sort %s -o %s" % (sqlite_status_file, sqlite_status_file))
+        caller("diff %s %s" % (sqlite_status_file, mysql_status_file))
+        # TODO Change the DB being used: DATABASES['default'] = DATABASES['sqlite']
+    enable_apache_site(use_local_mode)
 
 
 def sym_link_private_settings(env="dev", use_local_mode=False):
@@ -342,3 +356,23 @@ def sym_link_private_settings(env="dev", use_local_mode=False):
     private_settings_sym_link = '%slib/%s/src/temmpo/temmpo/settings/private_settings.py' % (PROJECT_ROOT, env)
     if not _is_link_local(private_settings_sym_link, use_local_mode):
         caller('ln -s %s.settings/private_settings.py %s' % (PROJECT_ROOT, private_settings_sym_link))
+
+
+def disable_apache_site(use_local_mode=False):
+    """use_local_mode=False"""
+    _toggle_maintenance_mode("_MAINTENANCE_OFF", "_MAINTENANCE_", use_local_mode=False)
+
+
+def enable_apache_site(use_local_mode=False):
+    """use_local_mode=False"""
+    _toggle_maintenance_mode("_MAINTENANCE_", "_MAINTENANCE_OFF", use_local_mode=False)
+
+
+def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
+    """old_flag, new_flag, use_local_mode=False"""
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+
+    with change_dir(PROJECT_ROOT + 'var/www/'):
+        caller("rm -f %s" % old_flag)
+        caller("touch %s" % new_flag)
