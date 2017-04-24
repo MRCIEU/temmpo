@@ -32,6 +32,11 @@ sudo yum -y install mod_wsgi
 sudo yum -y install mysql-connector-python
 sudo yum -y install mysql-utilities
 
+# Required to connect to DB successfully from web server and be able to send emails
+sudo setsebool -P httpd_can_network_connect 1
+sudo setsebool -P httpd_can_network_connect_db 1
+sudo setsebool -P httpd_can_sendmail 1
+
 # Production tools
 sudo yum -y install clamav
 
