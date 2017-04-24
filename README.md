@@ -94,7 +94,7 @@ fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,
 
 #### Installing a Vagrant Apache build remotely.  Requires Python 2.7+ and Fabric 1.7+
 ```
-vagrnat up db && vagrant up apache
+vagrant up db && vagrant up apache
 fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 ```
 
@@ -170,9 +170,14 @@ Preparing existing sqlite installations for using private_settings.py NB: This r
 ### Example commands to migrate data on dev Vagrant installations
 
 	fab sym_link_private_settings:dev,false -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+	fab deploy:env=dev,branch=TMMA-175,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 	fab migrate_sqlite_data_to_mysql:env=dev,use_local_mode=False,using_apache=True,swap_db=True -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ### Example command to run via CI server on production # TODO test
 
+	# Tag code
+	# Pull latests to CI server
 	fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+	# Deploy code on production
+	fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base  -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 	fab migrate_sqlite_data_to_mysql:prod,False -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
