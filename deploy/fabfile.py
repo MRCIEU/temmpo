@@ -156,6 +156,9 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
+    if using_apache:
+        disable_apache_site(use_local_mode)
+
     if tag:
         taggit(gfrom="master", gto=tag, egg='temmpo')
 
@@ -182,6 +185,7 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
         if using_apache:
             collect_static(env, use_local_mode)
             restart_apache(env, use_local_mode, run_checks=True)
+            enable_apache_site(use_local_mode)
 
 
 def setup_apache(env="dev", use_local_mode=False):
@@ -278,7 +282,10 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
     caller("sudo /sbin/apachectl restart")
     caller("sudo /sbin/apachectl status")
     if run_checks:
+        # TODO: Can remove toggling maintenance mode if exclude requests over from redirections
+        enable_apache_site(use_local_mode)
         caller("wget 127.0.0.1")
+        disable_apache_site(use_local_mode)
         caller("rm index.html")
         with change_dir(venv_dir):
             caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
