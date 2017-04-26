@@ -54,6 +54,16 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 ## Installation
 
+### Tag build
+**NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
+
+	git fetch --all
+	git checkout master
+	git pull
+	fab taggit:master,2.3.0,temmpo -f deploy/fabfile.py
+	fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
+
+
 ### Installing a Vagrant development build
 
 	cd deploy
@@ -81,31 +91,34 @@ We are using Vagrant for our Centos development environment.  It requires an add
 	ssh ci-p0.rit.bris.ac.uk
 	sudo -i -u temmpo
 
-
-### One off setup
+*One off setup*
 
 	mkdir -p /srv/projects/temmpo/lib/git
 	cd /srv/projects/temmpo/lib/git
 	git clone git@bitbucket.org:researchit/temmpo.git temmpo
-
-
-### Tag build
-**NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
-
-	git fetch --all
-	git checkout master
-	git pull
-	fab taggit:master,2.3.0,temmpo -f deploy/fabfile.py
-	fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
-
-
-### Each time
-
 	cd /srv/projects/temmpo/lib/git/temmpo
 	git fetch --all
 	git checkout prod_stable
 	git pull
 	fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+#### Database migration
+
+	cd /srv/projects/temmpo/lib/git/temmpo
+	git fetch --all
+	git checkout prod_stable
+	git pull
+	fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+	fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+	fab migrate_sqlite_data_to_mysql:env=prod,use_local_mode=False,using_apache=True,swap_db=True -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+### Each time you want to deploy new code
+
+	cd /srv/projects/temmpo/lib/git/temmpo
+	git fetch --all
+	git checkout prod_stable
+	git pull
+	fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 ## Testing deployment on a development branch on production host, e.g. TMMA-130
 
