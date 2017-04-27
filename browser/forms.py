@@ -65,7 +65,6 @@ class TermSelectorForm(forms.ModelForm):
         super(TermSelectorForm, self).__init__(*args, **kwargs)
 
     def _select_child_nodes_by_id(self, mesh_term_ids):
-        # TODO: TMMA-100 SQL has a 999 param limit
         mesh_terms = MeshTerm.objects.filter(id__in=mesh_term_ids)
         child_term_ids = []
         for mesh_term in mesh_terms:
@@ -73,7 +72,7 @@ class TermSelectorForm(forms.ModelForm):
                 child_term_ids.extend(mesh_term.get_descendants().values_list('id', flat=True))
 
         mesh_term_ids.extend(child_term_ids)
-        # Deduplicate ids
+        # De-duplicate ids
         mesh_term_ids = list(set(mesh_term_ids))
         return mesh_term_ids
 
@@ -131,7 +130,6 @@ class TermSelectorForm(forms.ModelForm):
             if not duplicates:
                 self.cleaned_data['mesh_term_ids'] = mesh_term_ids
             else:
-                # TODO: TMMA-100 SQL has a 999 param limit
                 duplicates = list(MeshTerm.objects.filter(id__in=duplicates).values_list("term", flat=True).distinct())
                 raise forms.ValidationError(duplicates, code='duplicates')
 
