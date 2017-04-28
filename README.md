@@ -45,7 +45,7 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 ### Running tests:
 
-	python manage.py test --settings=temmpo.settings.dev
+	python manage.py test --settings=temmpo.settings.test
 
 ### Run the development server
 
