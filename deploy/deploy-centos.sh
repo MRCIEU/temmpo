@@ -61,6 +61,7 @@ mkdir -p /usr/local/projects/temmpo/var/results
 
 touch /usr/local/projects/temmpo/var/log/django.log
 
+sudo chown vagrant:vagrant /usr/local/projects/temmpo/
 sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
 sudo chown apache:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/var
