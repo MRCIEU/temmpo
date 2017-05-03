@@ -53,11 +53,16 @@ class TermSelectorForm(forms.ModelForm):
     term_names = forms.CharField(widget=forms.Textarea(),
                                  required=False, label="Bulk replace terms")
     term_tree_ids = forms.CharField(widget=forms.HiddenInput, required=False)
+    include_child_nodes = forms.ChoiceField(widget=forms.RadioSelect(),
+                                            choices=(('down', 'Yes'), ('undetermined', 'No'),),
+                                            label="Select descendent MeSH® terms",
+                                            required=False,
+                                            initial='down')
     btn_submit = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
         model = SearchCriteria
-        fields = ['term_tree_ids', 'btn_submit', 'term_names', ]
+        fields = ['term_tree_ids', 'btn_submit', 'term_names', 'include_child_nodes', ]
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
@@ -92,7 +97,7 @@ class TermSelectorForm(forms.ModelForm):
                         mesh_term_ids.extend(term.get_descendants().values_list('id', flat=True))
 
         mesh_term_ids.extend(child_term_ids)
-        # Deduplicate ids
+        # De-duplicate ids
         mesh_term_ids = list(set(mesh_term_ids))
         return mesh_term_ids
 
@@ -101,27 +106,30 @@ class TermSelectorForm(forms.ModelForm):
         if self.cleaned_data['btn_submit'] == "replace" and 'term_names' in self.cleaned_data:
             mesh_terms = self.cleaned_data['term_names'].split(';')
             mesh_terms = [x.strip() for x in mesh_terms if x.strip()]
-            mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
+
+            if self.cleaned_data.get('include_child_nodes', 'undetermined') == 'down':
+                # Ensure all child nodes are selected
+                mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
+            else:
+                # Only extract IDs of specifically listed Mesh Term and not include any child terms by default.
+                mesh_term_ids = MeshTerm.objects.filter(term__in=mesh_terms).values_list("id", flat=True)
 
         elif 'term_tree_ids' in self.cleaned_data:
             mesh_term_ids = self.cleaned_data['term_tree_ids'].split(',')
             mesh_term_ids = [int(x[5:]) for x in mesh_term_ids if len(x) > 5]
-            # Ensure all child nodes are selected
-            mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
+            if self.cleaned_data.get('include_child_nodes', 'undetermined') == 'down':
+                # Ensure all child nodes are selected
+                mesh_term_ids = self._select_child_nodes_by_id(mesh_term_ids)
 
         if mesh_term_ids:
             duplicates = []
-            # NB: Rewritten query to avoid using large __in filter queries, see TMMA-100
-            exposures = self.instance.exposure_terms.values_list("id", flat=True)
-            mediators = self.instance.mediator_terms.values_list("id", flat=True)
-            outcomes = self.instance.outcome_terms.values_list("id", flat=True)
 
             if self.type != 'exposure':
-                duplicates.extend([x for x in mesh_term_ids if x in exposures])
+                duplicates.extend(self.instance.exposure_terms.filter(id__in=mesh_term_ids).values_list("id", flat=True))
             if self.type != 'mediator':
-                duplicates.extend([x for x in mesh_term_ids if x in mediators])
+                duplicates.extend(self.instance.mediator_terms.filter(id__in=mesh_term_ids).values_list("id", flat=True))
             if self.type != 'outcome':
-                duplicates.extend([x for x in mesh_term_ids if x in outcomes])
+                duplicates.extend(self.instance.outcome_terms.filter(id__in=mesh_term_ids).values_list("id", flat=True))
 
             # TODO handle the fact that users can add genes which may conflict with other exposures or outcomes.
             # genes = self.instance.genes.all().values_list("name", flat=True)
