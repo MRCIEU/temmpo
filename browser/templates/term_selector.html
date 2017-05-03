@@ -29,6 +29,14 @@
         </ul>
     {% endif %}
 
+    {% for error in form.term_names.errors %}
+        <p class="errorlist">{{ error }}</p>
+    {% endfor %}
+
+    {% for error in form.term_tree_ids.errors %}
+        <p class="errorlist">{{ error }}</p>
+    {% endfor %}
+
     {% if form.non_field_errors %}
         <p class="warning">The following terms have been already used as exposure, mediator, outcome or gene criteria:</p>
         <ul class="errorlist">
@@ -56,6 +64,18 @@
           <label for="term_names" class="control-label">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
           <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
         </div>
+
+        <!-- Select child nodes -->
+        <!-- TODO: Not keeping previous value in form for select child nodes  -->
+        <div class="form-group">
+          <label for="id_include_child_nodes_0">Select descendent MeSH® terms</label>
+
+          {% for input in form.include_child_nodes %}
+              {{ input }}
+          {% endfor %}
+
+        </div>
+
         <button type="submit" name="btn_submit" value="replace" class="btn btn-primary btn-sm btn-outline">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
     </form>
   </section>
@@ -63,21 +83,6 @@
 
 {% block right_column %}
       <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
-
-      <form action="." method="post" id="select_child_nodes">
-          <!-- Search -->
-          <div class="form-group">
-            <label for="on">Select descendent MeSH® terms</label>
-            <label for="on" class="radio-inline">
-                <input id="on" value="down" type="radio" name="childnodes">
-                Yes
-            </label>
-            <label for="off" class="radio-inline">
-              <input id="off" value="undetermined" type="radio" name="childnodes" checked>
-              No
-            </label>
-          </div>
-      </form>
 
       <form action="." method="post" id="search_form">
           <!-- Search -->
@@ -90,8 +95,20 @@
           </div>
       </form>
 
-      <form action="." method="post">
+      <form action="." method="post" id="meshtree">
           {% csrf_token %}
+
+          <!-- Select child nodes -->
+          <!-- TODO: Not keeping previous value in form for select child nodes  -->
+          <div class="form-group">
+            <label for="id_include_child_nodes_0">Select descendent MeSH® terms</label>
+
+            {% for input in form.include_child_nodes %}
+                {{ input }}
+            {% endfor %}
+
+          </div>
+
           <!-- js tree -->
           {# Ajax version #}
           <div id="term_tree">
@@ -117,9 +134,9 @@
       <script type="text/javascript">
         $(function() {
 
-          $('#term_tree').on("init.jstree", function (e, data) {
-              data.instance.settings.checkbox.cascade = '';
-          })
+          // $('#term_tree').on("init.jstree", function (e, data) {
+          //     data.instance.settings.checkbox.cascade = '';
+          // })
 
           $("#term_tree").jstree({
             "plugins" : [ "checkbox", "search"],
@@ -155,8 +172,8 @@
               });
 
               /* Allow user to toggle whether or not child terms are selected as well */
-              $('#select_child_nodes input').change(function (event) {
-                  var v = $('#select_child_nodes input:checked').val();
+              $('#meshtree input[name="include_child_nodes"]').change(function (event) {
+                  var v = $('#meshtree input[name="include_child_nodes"]:checked').val();
                   console.log(v);
                   $('#term_tree').jstree(true).settings.checkbox.cascade = v;
 
