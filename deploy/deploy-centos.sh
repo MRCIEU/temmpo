@@ -59,6 +59,9 @@ mkdir -p /usr/local/projects/temmpo/var/data
 mkdir -p /usr/local/projects/temmpo/var/abstracts
 mkdir -p /usr/local/projects/temmpo/var/results
 
+echo "Add directory for development emails"
+mkdir -p /usr/local/projects/temmpo/var/email
+
 touch /usr/local/projects/temmpo/var/log/django.log
 
 sudo chown vagrant:vagrant /usr/local/projects/temmpo/
@@ -68,12 +71,14 @@ sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/var
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/abstracts
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/data
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/results
+sudo chown apache:vagrant /usr/local/projects/temmpo/var/email
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/www
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/data
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/results
+sudo chmod -R g+xw /usr/local/projects/temmpo/var/email
 sudo chmod g+xw /usr/local/projects/temmpo/var/www
 sudo chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
