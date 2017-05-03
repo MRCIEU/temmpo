@@ -154,27 +154,9 @@ DATABASES = {
 }
 
 # Prepare for database migration
-DATABASES['default'] = DATABASES['sqlite']
+DATABASES['default'] = DATABASES['mysql']
 PRIVATE_SETTINGS
 sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/.settings/
 sudo chmod -R ug+rwx /usr/local/projects/temmpo/.settings/
 
-echo "## How to create/update the database"
-echo "cd /srv/projects/temmpo/lib/dev/src/temmpo"
-echo "../../bin/python manage.py migrate --settings=temmpo.settings.dev"
-
-echo "## How to run the test suite"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py test --settings=temmpo.settings.dev"
-
-echo "## Populate with all the mesh terms (NB: This takes a very long time - alternatively load test fixtures mesh-terms-test-only.json)"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py import_mesh_terms"
-
-echo "## Populate with the full genes list (NB: This takes a very long time - alternatively load test fixtures genes-test-only.json)"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py import_genes"
-
-echo "## How to create superuser"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev"
-
-echo "## How to run the dev server"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev"
-echo "## Open http://127.0.0.1:59099 in your web browser"
+echo "See README.md for ways to create virtual environments"

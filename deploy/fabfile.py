@@ -135,7 +135,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if migrate_db:
         with change_dir(PROJECT_ROOT + 'lib/' + env):
-            caller('./bin/python src/temmpo/manage.py migrate --noinput --settings=temmpo.settings.%s' % env)
+            caller('./bin/python src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
 
     if configure_apache:
         collect_static(env, use_local_mode)
@@ -180,7 +180,7 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
         if migrate_db:
-            caller('./bin/python src/temmpo/manage.py migrate --settings=temmpo.settings.%s' % env)
+            caller('./bin/python src/temmpo/manage.py migrate --database=admin --settings=temmpo.settings.%s' % env)
 
         if using_apache:
             collect_static(env, use_local_mode)
