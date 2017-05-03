@@ -20,7 +20,7 @@ sudo yum -y install gcc gcc-c++
 sudo yum -y install git
 sudo yum -y install nano
 sudo yum -y install wget
-sudo yum -y install mysql # TODO add to puppet
+sudo yum -y install mariadb # Database client - adds mysql alias to command line
 # 
 sudo yum -y install mariadb-devel
 
