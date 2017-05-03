@@ -18,9 +18,37 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 	vagrant plugin install vagrant-sshfs
 	git clone git@bitbucket.org:researchit/temmpo.git
-	cd temmpo/deploy
+
+Use one of the techniques below to set up your virtual environment
+
+#### a) Installing a Vagrant development build
+
+	cd deploy
 	vagrant up
 	vagrant ssh
+	fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+
+#### b) Installing a Vagrant development build remotely
+
+	cd deploy
+	vagrant up
+	fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=base  -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+	vagrant ssh
+
+#### c) Installing a Vagrant Apache build
+
+	cd deploy
+	vagrant up db && vagrant up apache
+	vagrant ssh apache
+	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
+
+
+#### d) Installing a Vagrant Apache build remotely
+
+	vagrant up db && vagrant up apache
+	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+	vagrant ssh apache
+
 
 ### Activate virtualenv
 
@@ -34,7 +62,7 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 ### Set up database tables and run any migrations
 
-	python manage.py migrate
+	python manage.py migrate --database=admin
 
 
 ### Create a super user
@@ -50,33 +78,19 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 	python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
+### View application in your local browser
 
-## Installation
+####  Django server
 
-### Installing a Vagrant development build
+	http://localhost:59099
 
-	cd deploy
-	vagrant up
-	vagrant ssh
-	fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+####  Apache 
 
+	http://localhost:8800
 
-### Installing a Vagrant Apache build
+## Production
 
-	cd deploy
-	vagrant up db && vagrant up apache
-	vagrant ssh apache
-	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
-
-
-### Installing a Vagrant Apache build remotely
-
-	vagrant up db && vagrant up apache
-	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-	vagrant ssh apache
-
-
-### Tag build
+### Tag a build
 **NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
 
 	git fetch --all
