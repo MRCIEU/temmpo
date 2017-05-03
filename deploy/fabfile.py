@@ -180,7 +180,7 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
         if migrate_db:
-            caller('./bin/python src/temmpo/manage.py migrate --database=admin --settings=temmpo.settings.%s' % env)
+            caller('./bin/python src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
 
         if using_apache:
             collect_static(env, use_local_mode)
