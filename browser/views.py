@@ -599,9 +599,9 @@ class MeshTermSearchJSON(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         search_term = request.GET.get("str", "").strip()
+        results = []
         if search_term:
             root_nodes = MeshTerm.objects.filter(term__istartswith=search_term)
-            results = []
             for n in root_nodes:
                 results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
 
