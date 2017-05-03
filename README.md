@@ -22,7 +22,6 @@ We are using Vagrant for our Centos development environment.  It requires an add
 	vagrant up
 	vagrant ssh
 
-
 ### Activate virtualenv
 
 	cd /usr/local/projects/temmpo/lib/dev/bin && source activate
@@ -54,16 +53,6 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 ## Installation
 
-### Tag build
-**NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
-
-	git fetch --all
-	git checkout master
-	git pull
-	fab taggit:master,2.3.0,temmpo -f deploy/fabfile.py
-	fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
-
-
 ### Installing a Vagrant development build
 
 	cd deploy
@@ -75,15 +64,26 @@ We are using Vagrant for our Centos development environment.  It requires an add
 ### Installing a Vagrant Apache build
 
 	cd deploy
-	vagrant up apache
+	vagrant up db && vagrant up apache
 	vagrant ssh apache
 	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 
 
 ### Installing a Vagrant Apache build remotely
 
-	vagrant up apache
-	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+	vagrant up db && vagrant up apache
+	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+	vagrant ssh apache
+
+
+### Tag build
+**NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
+
+	git fetch --all
+	git checkout master
+	git pull
+	fab taggit:master,2.3.0,temmpo -f deploy/fabfile.py
+	fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
 
 
 ### Installing a production build remotely, e.g. from the CI server
@@ -135,12 +135,12 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 ## Deploy prod_stable branch to Vagrant Apache build
 
-	fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+	fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ## Deploy master branch to Vagrant Apache build
 
-	fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+	fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ## TODO TEST tagging and merging - will need an SSH key with commit rights to the repository:
 
-	fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2222
+	fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
