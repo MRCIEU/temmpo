@@ -111,7 +111,7 @@ class TermSelectorForm(forms.ModelForm):
                 # Ensure all child nodes are selected
                 mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
             else:
-                # Only extract IDs of specifically listed Mesh Term and not include any child terms by default.
+                # Only extract IDs of specifically listed Mesh Terms and do not include any child terms.
                 mesh_term_ids = MeshTerm.objects.filter(term__in=mesh_terms).values_list("id", flat=True)
 
         elif 'term_tree_ids' in self.cleaned_data:
