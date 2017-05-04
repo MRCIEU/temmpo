@@ -23,7 +23,8 @@
     <!-- Select child nodes -->
     <!-- TODO: Not keeping previous value in form for select child nodes  -->
     <div class="form-group" id="master_include_child_nodes">
-      <label for="id_include_child_nodes_0">Select descendent MeSH® terms</label>
+    <span class="fa fa-fw fa-cog"></span>
+      <label for="id_include_child_nodes_0">Select descendent <abbr title="Medical Subject Headings">MeSH®</abbr> terms</label>
 
       {% for input in form.include_child_nodes %}
           {{ input }}
