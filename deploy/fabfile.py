@@ -286,7 +286,6 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
         if _exists_local(PROJECT_ROOT + "var/www/_MAINTENANCE_", use_local_mode):
             toggled_maintenance_mode = True
             enable_apache_site(use_local_mode)
-            print "Enable!!!!!!!!!!!!!!!!!!"
 
         caller("wget 127.0.0.1")
         caller("rm index.html")
