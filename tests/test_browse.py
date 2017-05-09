@@ -5,7 +5,6 @@
 import logging
 import os
 
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -286,17 +285,70 @@ class BrowsingTest(TestCase):
             self.assertContains(response, "errorlist")
             self.assertContains(response, "is not an acceptable file type")
 
-    def test__pubmed_readcitations_parsing_bug(self):
+    def test_pubmed_readcitations_parsing_bug(self):
         citations = _pubmed_readcitations(TEST_BADLY_FORMATTED_FILE)
         self.assertEqual(type(citations), list)
         self.assertEqual(len(citations), 23)
 
-    # def test_results_archive(self):
-    #     """
-    #     """
+    def _assert_toggle_selecting_child_terms(self, search_criteria):
 
-    #     self._find_expected_content(path="/results/%s/archive" %
-    #                                 RESULT_HASH, msg="Download")
+        self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
 
-# def test_gene_input # Can it handle new genes, unexpected spaces and other
-# characters
+        exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(exposure_url,
+                                    {"term_names": "Cell Line",
+                                     "include_child_nodes": "undetermined",
+                                     "btn_submit": "replace"},
+                                    follow=True)
+        search_criteria.refresh_from_db()
+        self.assertEqual(search_criteria.exposure_terms.all().count(), 1)
+
+        response = self.client.post(exposure_url,
+                                    {"term_names": "Cell Line",
+                                     "include_child_nodes": "down",
+                                     "btn_submit": "replace"},
+                                    follow=True)
+        search_criteria.refresh_from_db()
+        self.assertEqual(search_criteria.exposure_terms.all().count(), 2)
+
+        # Clear existing terms
+        search_criteria.exposure_terms.clear()
+        response = self.client.post(exposure_url,
+                                    {"term_tree_ids": "mtid_1882",
+                                     "include_child_nodes": "undetermined",
+                                     "btn_submit": "choose"},
+                                    follow=True)
+        search_criteria.refresh_from_db()
+        self.assertEqual(search_criteria.exposure_terms.all().count(), 1)
+
+        # Clear existing terms
+        search_criteria.exposure_terms.clear()
+        response = self.client.post(exposure_url,
+                                    {"term_tree_ids": "mtid_1882",
+                                     "include_child_nodes": "down",
+                                     "btn_submit": "choose"},
+                                    follow=True)
+        search_criteria.refresh_from_db()
+        self.assertEqual(search_criteria.exposure_terms.all().count(), 2)
+
+    def test_toggling_child_term_selection_ovid(self):
+        self._login_user()
+        with open(TEST_OVID_MEDLINE_ABSTRACTS, 'r') as upload:
+            response = self.client.post(reverse('search_ovid_medline'),
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
+                                        follow=True)
+
+            search_criteria = SearchCriteria.objects.latest("created")
+            self._assert_toggle_selecting_child_terms(search_criteria=search_criteria)
+
+    def test_toggling_child_term_selection_pubmed(self):
+        self._login_user()
+        with open(TEST_PUBMED_MEDLINE_ABSTRACTS, 'r') as upload:
+            response = self.client.post(reverse('search_pubmed'),
+                                        {'abstracts_upload': upload,
+                                         'file_format': PUBMED},
+                                        follow=True)
+
+            search_criteria = SearchCriteria.objects.latest("created")
+            self._assert_toggle_selecting_child_terms(search_criteria=search_criteria)

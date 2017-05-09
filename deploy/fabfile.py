@@ -135,7 +135,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if migrate_db:
         with change_dir(PROJECT_ROOT + 'lib/' + env):
-            caller('./bin/python src/temmpo/manage.py migrate --noinput --settings=temmpo.settings.%s' % env)
+            caller('./bin/python src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
 
     if configure_apache:
         collect_static(env, use_local_mode)
@@ -180,7 +180,7 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
         if migrate_db:
-            caller('./bin/python src/temmpo/manage.py migrate --settings=temmpo.settings.%s' % env)
+            caller('./bin/python src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
 
         if using_apache:
             collect_static(env, use_local_mode)
@@ -282,13 +282,18 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
     caller("sudo /sbin/apachectl restart")
     caller("sudo /sbin/apachectl status")
     if run_checks:
-        # TODO: Can remove toggling maintenance mode if exclude requests over from redirections
-        enable_apache_site(use_local_mode)
+        toggled_maintenance_mode = False
+        if _exists_local(PROJECT_ROOT + "var/www/_MAINTENANCE_", use_local_mode):
+            toggled_maintenance_mode = True
+            enable_apache_site(use_local_mode)
+
         caller("wget 127.0.0.1")
-        disable_apache_site(use_local_mode)
         caller("rm index.html")
         with change_dir(venv_dir):
             caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
+
+        if toggled_maintenance_mode:
+            disable_apache_site(use_local_mode)
 
 
 def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=True, swap_db=True):
@@ -371,8 +376,8 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
             caller("mv %s %s-old" % (sqlite_db, sqlite_db))
 
     if using_apache:
-        restart_apache(env, use_local_mode, run_checks=True)
         enable_apache_site(use_local_mode)
+        restart_apache(env, use_local_mode, run_checks=True)
 
 
 def sym_link_private_settings(env="dev", use_local_mode=False):

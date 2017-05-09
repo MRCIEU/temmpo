@@ -205,12 +205,7 @@ class ExposureSelector(TermSelectorAbstractUpdateView):
     def set_terms(self, node_terms):
         # NB: Any selected nodes should have all children included in selected set
         self.object.exposure_terms.clear()
-        # TODO: Only slice to up assignment when db backend requires it
-        # - max 999 with sqlite; see: batch_size ; DatabaseOperations.max_batch_size
-        # TODO: TMMA-100 SQL has a 999 param limit
-        slices = int(math.ceil(len(node_terms) / 500.0))
-        for i in range(0, slices):
-            self.object.exposure_terms.add(*node_terms[i * 500:((i + 1) * 500)])
+        self.object.exposure_terms.add(*node_terms)
 
 
 class MediatorSelector(TermSelectorAbstractUpdateView):
@@ -233,10 +228,7 @@ class MediatorSelector(TermSelectorAbstractUpdateView):
     def set_terms(self, node_terms):
         # NB: Any selected nodes should have all children included in selected set
         self.object.mediator_terms.clear()
-        # Split up assignment - max 9999 with sql
-        slices = int(math.ceil(len(node_terms) / 500.0))
-        for i in range(0, slices):
-            self.object.mediator_terms.add(*node_terms[i * 500:((i + 1) * 500)])
+        self.object.mediator_terms.add(*node_terms)
 
 
 class OutcomeSelector(TermSelectorAbstractUpdateView):
@@ -258,10 +250,7 @@ class OutcomeSelector(TermSelectorAbstractUpdateView):
     def set_terms(self, node_terms):
         # NB: Any selected nodes should have all children included in selected set
         self.object.outcome_terms.clear()
-        # Split up assignment - max 9999 with sql
-        slices = int(math.ceil(len(node_terms) / 500.0))
-        for i in range(0, slices):
-            self.object.outcome_terms.add(*node_terms[i * 500:((i + 1) * 500)])
+        self.object.outcome_terms.add(*node_terms)
 
 
 class SearchExistingUpload(RedirectView):
@@ -610,9 +599,9 @@ class MeshTermSearchJSON(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         search_term = request.GET.get("str", "").strip()
+        results = []
         if search_term:
             root_nodes = MeshTerm.objects.filter(term__istartswith=search_term)
-            results = []
             for n in root_nodes:
                 results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
 

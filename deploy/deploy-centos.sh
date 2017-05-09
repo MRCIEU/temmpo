@@ -20,7 +20,7 @@ sudo yum -y install gcc gcc-c++
 sudo yum -y install git
 sudo yum -y install nano
 sudo yum -y install wget
-sudo yum -y install mysql # TODO add to puppet
+sudo yum -y install mariadb # Database client - adds mysql alias to command line
 # 
 sudo yum -y install mariadb-devel
 
@@ -59,20 +59,26 @@ mkdir -p /usr/local/projects/temmpo/var/data
 mkdir -p /usr/local/projects/temmpo/var/abstracts
 mkdir -p /usr/local/projects/temmpo/var/results
 
+echo "Add directory for development emails"
+mkdir -p /usr/local/projects/temmpo/var/email
+
 touch /usr/local/projects/temmpo/var/log/django.log
 
+sudo chown vagrant:vagrant /usr/local/projects/temmpo/
 sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
 sudo chown apache:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/var
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/abstracts
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/data
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/results
+sudo chown apache:vagrant /usr/local/projects/temmpo/var/email
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/www
 sudo chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/log
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/data
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
 sudo chmod -R g+xw /usr/local/projects/temmpo/var/results
+sudo chmod -R g+xw /usr/local/projects/temmpo/var/email
 sudo chmod g+xw /usr/local/projects/temmpo/var/www
 sudo chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
 sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
@@ -153,27 +159,9 @@ DATABASES = {
 }
 
 # Prepare for database migration
-DATABASES['default'] = DATABASES['sqlite']
+DATABASES['default'] = DATABASES['mysql']
 PRIVATE_SETTINGS
 sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/.settings/
 sudo chmod -R ug+rwx /usr/local/projects/temmpo/.settings/
 
-echo "## How to create/update the database"
-echo "cd /srv/projects/temmpo/lib/dev/src/temmpo"
-echo "../../bin/python manage.py migrate --settings=temmpo.settings.dev"
-
-echo "## How to run the test suite"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py test --settings=temmpo.settings.dev"
-
-echo "## Populate with all the mesh terms (NB: This takes a very long time - alternatively load test fixtures mesh-terms-test-only.json)"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py import_mesh_terms"
-
-echo "## Populate with the full genes list (NB: This takes a very long time - alternatively load test fixtures genes-test-only.json)"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py import_genes"
-
-echo "## How to create superuser"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py createsuperuser --settings=temmpo.settings.dev"
-
-echo "## How to run the dev server"
-echo "cd /usr/local/projects/temmpo/lib/dev/src/temmpo && ../../bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev"
-echo "## Open http://127.0.0.1:59099 in your web browser"
+echo "See README.md for ways to create virtual environments"
