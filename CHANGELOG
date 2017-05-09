@@ -1,6 +1,9 @@
-2.3.0   TMMA-203 Roll back any SQLlite mesh term limitation code
+2.4.0   TMMA-203 Roll back any SQLlite mesh term limitation code
         TMMA-168 Bug fix: Investigate code within views which is selecting child mesh terms even if the tree is set not to.
         TMMA-173 Bug fix: Tree does not automatically record all child Mesh Term ids when posting form
+
+2.3.0   TMMA-132 Migrate to MySQL to support larger numbers of terms
+                 Add a private settings file to store database credentials
 
 2.2.0   TMMA-190 Apply Django security update 1.8.18
 
