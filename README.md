@@ -96,7 +96,7 @@ Use one of the techniques below to set up your virtual environment
 	git fetch --all
 	git checkout master
 	git pull
-	fab taggit:master,2.3.0,temmpo -f deploy/fabfile.py
+	fab taggit:master,2.4.0,temmpo -f deploy/fabfile.py
 	fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
 
 
