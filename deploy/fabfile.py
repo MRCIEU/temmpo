@@ -408,3 +408,13 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
     with change_dir(PROJECT_ROOT + 'var/www/'):
         caller("rm -f %s" % old_flag)
         caller("touch %s" % new_flag)
+
+# TODO Merge in local development for dump, scrubbing and loading prod sample data
+# TODO add in scp for relevant var directories as well
+# python manage.py dumpdata -o ~/db-prod.json --indent=4 --exclude=auth --database=admin --settings=temmpo.settings.prod
+# "user": 34,
+# "user": 34,
+# perl -pi -w -e 's/"user": (\d+),/"user": 1,/g;' ~/db-prod.json
+# mv ~/db-prod.json ~/db-prod-scrubbed.json
+# python manage.py loaddata ~/db-prod-scrubbed.json --indent=4 --exclude=auth --database=admin --settings=temmpo.settings.dev
+# --database
