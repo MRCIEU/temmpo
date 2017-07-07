@@ -69,6 +69,9 @@ Use one of the techniques below to set up your virtual environment
 
 	python manage.py createsuperuser --settings=temmpo.settings.dev
 
+### Loading test data
+
+	TODO: Describe creating a test DB from a scrubbed dump
 
 ### Running tests:
 
