@@ -409,12 +409,43 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
         caller("rm -f %s" % old_flag)
         caller("touch %s" % new_flag)
 
-# TODO Merge in local development for dump, scrubbing and loading prod sample data
-# TODO add in scp for relevant var directories as well
-# python manage.py dumpdata -o ~/db-prod.json --indent=4 --exclude=auth --database=admin --settings=temmpo.settings.prod
-# "user": 34,
-# "user": 34,
-# perl -pi -w -e 's/"user": (\d+),/"user": 1,/g;' ~/db-prod.json
-# mv ~/db-prod.json ~/db-prod-scrubbed.json
-# python manage.py loaddata ~/db-prod-scrubbed.json --indent=4 --exclude=auth --database=admin --settings=temmpo.settings.dev
-# --database
+
+def dump_scrubbed_database_data(env="prod", database="default", output_file="", use_local_mode=False):
+    """env="prod", database="default", output_file="", use_local_mode=False"""
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    if not output_file:
+        now = datetime.now()
+        output_file = "%svar/export-%s-db-%s-%s-%s.json" % (PROJECT_ROOT, database, now.year, now.month, now.day)
+
+    export_sql_cmd = "dumpdata --indent 4  --exclude=contenttypes --exclude=auth --exclude=registration --output %s" % output_file
+
+    with change_dir(PROJECT_ROOT + 'lib/' + env):
+        caller("./bin/python src/temmpo/manage.py %s --database=%s --settings=temmpo.settings.%s" % (export_sql_cmd, database, env))
+
+    caller("perl -pi -w -e 's/\"user\": (\d+),/\"user\": 1,/g;' %s" % output_file)
+    # caller("sed -e 's/\"user\": .+\,/\"user\": \d+\,/g' %s" % output_file)
+
+
+def copy_user_media_files():
+    """TODO: from_host='', to_host='' Tar up abstracts and results and scp to new host and extract in place"""
+    with cd(PROJECT_ROOT + 'var/'):
+        run("df -h")
+        run("du -sh *")
+        # run("tar -zcvf ")
+        pass # TODO
+    #         caller('mkdir -p %svar/results' % PROJECT_ROOT)
+    # caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
+
+
+def load_database_data(env="dev", database="default", input_file="", use_local_mode=False):
+    """env="dev", database="default", input_file="", use_local_mode=False - NB: Export file likely to be prod server's project var directory"""
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    if not input_file:
+        input_file = output_file = "%s/var/export-%s-db-%s-%s-%s.json" % (PROJECT_ROOT, database, now.year, now.month, now.day)
+
+    import_sql_cmd = "loaddata %s" % output_file
+
+    with change_dir(PROJECT_ROOT + 'lib/' + env):
+        caller("./bin/python src/temmpo/manage.py %s --database=%s --settings=temmpo.settings.%s" % (import_sql_cmd, database, env))
