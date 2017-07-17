@@ -158,3 +158,19 @@ Use one of the techniques below to set up your virtual environment
 ## TODO TEST tagging and merging - will need an SSH key with commit rights to the repository:
 
 	fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+## Setting up a new host 
+
+- To be able to provision the Django application using the Fabric script from the CI server you will need the following to be in place.
+
+* Ensure puppet configuration has been run - this should run all the steps provided in the development Vagrant file and set up scripts.
+
+* Create a /usr/local/projects/temmpo/.settings/private_settings.py file, see example_private_settings.py file for expected format and entries.
+
+* Share keys from CI server to new host
+
+* Create and share an SSH deployment key on code repository on bitbucket
+
+* Ensure a 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
+
+
