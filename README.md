@@ -174,4 +174,12 @@ Use one of the techniques below to set up your virtual environment
 
 * Ensure a 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
 
+### Test server
+- built from CI server
 
+	fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-t0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+### Demo server
+- built from CI server
+
+	fab make_virtualenv:env=demo,configure_apache=True,clone_repo=True,branch=demo_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
