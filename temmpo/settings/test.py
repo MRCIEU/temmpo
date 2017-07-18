@@ -6,3 +6,5 @@ DATABASES = {
         'NAME': '/usr/local/projects/temmpo/var/data/db.sqlite3',
     }
 }
+
+DATABASES['admin'] = DATABASES['default']
