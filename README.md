@@ -2,7 +2,8 @@
 
 ## About TeMMPo
 
-*  https://www.temmpo.org.uk/
+* URL: https://www.temmpo.org.uk/
+* Wiki: https://wikis.bris.ac.uk/display/rit/TeMMPo:+Text+Mining+for+Mechanism+Prioritisation
 
 TeMMPo (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of published evidence for specific mechanisms between an exposure and outcome. The tool identifies co-occurrence of MeSH headings in scientific publications to indicate papers that link an intermediate mechanism to either an exposure or an outcome.
 
@@ -96,7 +97,7 @@ Use one of the techniques below to set up your virtual environment
 	git fetch --all
 	git checkout master
 	git pull
-	fab taggit:master,2.3.0,temmpo -f deploy/fabfile.py
+	fab taggit:master,2.4.0,temmpo -f deploy/fabfile.py
 	fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
 
 
