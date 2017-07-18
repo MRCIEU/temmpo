@@ -10,11 +10,9 @@ https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/
 import os
 import sys
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, PROJECT_ROOT)
-
-vedir = PROJECT_ROOT.split('/')[-1]
-
+SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, SRC_DIR)
+vedir = SRC_DIR.split('/')[-3]
 os.environ["DJANGO_SETTINGS_MODULE"] = "temmpo.settings.%s" % vedir
 
 from django.core.wsgi import get_wsgi_application
