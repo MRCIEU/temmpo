@@ -163,7 +163,9 @@ class BrowsingTest(TestCase):
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         print "RESULTS ARE IN THE THIS FILE: "
         print test_results_edge_csv.name
-        self.assertEqual(len(test_results_edge_csv.readlines()), 2)  # Expected two matches
+        file_lines = test_results_edge_csv.readlines()
+        self.assertEqual(len(file_lines), 3)  # Expected two matches and a line of column headings
+        self.assertEqual(file_lines[0], "Mediators, Exposure counts, Outcome counts, Scores,\n")
         self.assertTrue(search_result.has_completed)
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
