@@ -161,11 +161,16 @@ class BrowsingTest(TestCase):
         search_result = SearchResult.objects.get(criteria=search_criteria)
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
-        print "RESULTS ARE IN THE THIS FILE: "
+        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+        print "RESULTS ARE IN THE THES FILES: "
         print test_results_edge_csv.name
-        file_lines = test_results_edge_csv.readlines()
-        self.assertEqual(len(file_lines), 3)  # Expected two matches and a line of column headings
-        self.assertEqual(file_lines[0], "Mediators, Exposure counts, Outcome counts, Scores,\n")
+        print test_results_abstract_csv.name
+        edge_file_lines = test_results_edge_csv.readlines()
+        abstract_file_lines = test_results_abstract_csv.readlines()
+        self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
+        self.assertEqual(edge_file_lines[0], "Mediators, Exposure counts, Outcome counts, Scores,\n")
+        self.assertTrue(len(abstract_file_lines) > 1)  # Expected more than 1 lines
+        self.assertEqual(abstract_file_lines[0], "Abstract IDs,\n")
         self.assertTrue(search_result.has_completed)
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
