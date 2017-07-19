@@ -404,6 +404,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
     # Output citation ids
     if citation_id:
         resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
+        resultfile.write("Abstract IDs,\n")
         resultfile.write(",\n".join(str(e) for e in citation_id))
         resultfile.write(",")
         resultfile.close()
@@ -599,6 +600,7 @@ def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
 
     # Write out edge file
     edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
+    edgefile.write("Mediators, Exposure counts, Outcome counts, Scores,\n")
     edgefile.write(edge_score)
     edgefile.close()
 
