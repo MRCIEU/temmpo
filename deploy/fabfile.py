@@ -3,6 +3,7 @@ import os
 
 from fabric.api import *
 from fabric.contrib import files
+from fabric.operations import get
 
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
@@ -46,6 +47,12 @@ def _toggle_local_remote(use_local_mode):
         change_dir = cd
 
     return (caller, change_dir)
+
+
+def _get_date_string():
+    now = datetime.now()
+    date_string = "%s-%s-%s-%s-%s" % (now.year, now.month, now.day, now.hour, now.minute)
+    return date_string
 
 
 def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
@@ -303,8 +310,7 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
     swap_db = (str(swap_db).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
-    now = datetime.now()
-    date_string = "%s-%s-%s-%s-%s" % (now.year, now.month, now.day, now.hour, now.minute)
+    date_string = _get_date_string()
     sqlite_db = '/usr/local/projects/temmpo/var/data/db.sqlite3'
     output_file = "/usr/local/projects/temmpo/var/data/export-db-%s.sql" % date_string
     sqlite_table_counts_file = "/usr/local/projects/temmpo/var/data/sqlite-counts-%s.txt" % date_string
@@ -415,8 +421,8 @@ def dump_scrubbed_database_data(env="prod", database="default", output_file="", 
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
     if not output_file:
-        now = datetime.now()
-        output_file = "%svar/export-%s-db-%s-%s-%s.json" % (PROJECT_ROOT, database, now.year, now.month, now.day)
+        date_string = _get_date_string()
+        output_file = "%svar/export-%s-db-%s.json" % (PROJECT_ROOT, database, date_string)
 
     export_sql_cmd = "dumpdata --indent 4  --exclude=contenttypes --exclude=auth --exclude=registration --output %s" % output_file
 
@@ -428,14 +434,36 @@ def dump_scrubbed_database_data(env="prod", database="default", output_file="", 
 
 
 def copy_user_media_files():
-    """TODO: from_host='', to_host='' Tar up abstracts and results and scp to new host and extract in place"""
+    """Use the -H  command line flag to denote the source host.  Files are copied to the /usr/local/projects/temmpo/var directory of the current host"""
+    with lcd(PROJECT_ROOT + 'var/'):
+        local("hostname")
+        local("df -h")
+        local("du -sh *")
+        local("ls *")
+
     with cd(PROJECT_ROOT + 'var/'):
+        hostname = run("hostname", capture=True)
         run("df -h")
         run("du -sh *")
-        # run("tar -zcvf ")
-        pass # TODO
-    #         caller('mkdir -p %svar/results' % PROJECT_ROOT)
-    # caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
+        run("ls *")
+        date_string = _get_date_string()
+        abstracts_tar_file_name = 'abstracts-%s.tar.gz' % date_string
+        results_tar_file_name = 'results-%s.tar.gz' % date_string
+
+        continue_copy = prompt('Are you sure you want to copy abstracts and results data from %s? Y/n' % hostname)
+        if continue_copy.lower() == "y":
+
+            print "Lets tar up the files"
+            run("tar zcvf %s abstracts" % abstracts_tar_file_name)
+            run("tar zcvf %s results" % results_tar_file_name)
+
+            print "Lets copy the files"
+            get(remote_path=PROJECT_ROOT + 'var/' + abstracts_tar_file_name, local_path=PROJECT_ROOT + 'var/')
+            get(remote_path=PROJECT_ROOT + 'var/' + results_tar_file_name, local_path=PROJECT_ROOT + 'var/')
+
+            # TODO test before deleing locate tar files
+            # run("rm " + abstracts_tar_file_name )
+            # run("rm " + results_tar_file_name )
 
 
 def load_database_data(env="dev", database="default", input_file="", use_local_mode=False):
