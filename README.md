@@ -72,7 +72,12 @@ Use one of the techniques below to set up your virtual environment
 
 ### Running tests:
 
-	python manage.py test --settings=temmpo.settings.test
+	python manage.py test --settings=temmpo.settings.test_sqlite
+
+or
+
+	python manage.py test --settings=temmpo.settings.test_mysql
+
 
 ### Run the development server
 

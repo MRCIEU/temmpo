@@ -13,11 +13,13 @@ import sys
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
 sys.path.insert(0, PROJECT_ROOT)
 
-if "dev" in PROJECT_ROOT:
-    os.environ["DJANGO_SETTINGS_MODULE"] = "temmpo.settings.dev"
-else:
-    os.environ["DJANGO_SETTINGS_MODULE"] = "temmpo.settings.prod"
+HOSTS_ENV = {'localhost.localdomain': 'dev',
+             'py-web-t0.epi': 'test',
+             'py-web-d0.epi': 'demo',
+             'py-web-p0.epi': 'prod'}
+
+ENV = HOSTS_ENV.get(os.uname()[1], 'dev')
+os.environ["DJANGO_SETTINGS_MODULE"] = "temmpo.settings." + ENV
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
-
