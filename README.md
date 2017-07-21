@@ -73,7 +73,11 @@ Use one of the techniques below to set up your virtual environment
 
 ### Running tests:
 
-    python manage.py test --settings=temmpo.settings.test
+	python manage.py test --settings=temmpo.settings.test_sqlite
+
+or
+
+	python manage.py test --settings=temmpo.settings.test_mysql
 
 ### Run the development server
 
@@ -183,3 +187,7 @@ Use one of the techniques below to set up your virtual environment
 - built from CI server
 
     fab make_virtualenv:env=demo,configure_apache=True,clone_repo=True,branch=demo_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+- deployed from the CI server
+
+    fab deploy:env=demo,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
