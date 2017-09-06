@@ -1,7 +1,7 @@
 # This is an implicit value, here for clarity
 --index-url https://pypi.python.org/simple/
 pip-tools==1.9.0
-Django==1.8.18  # rq.filter: >=1.8,<1.9
+Django==1.11.5
 django-mptt==0.8.7
 django-registration-redux==1.7
 django-selectable==1.0.0
