@@ -31,6 +31,10 @@ year 2015, 2018
 
 Need to consider when re-using search terms what happens
 
+BUGS - Was finding duplicate parent objects for no reason
+
+Needs review
+
 
 """
 
