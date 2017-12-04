@@ -44,10 +44,12 @@ class MeshTerm(MPTTModel):
 
     FUTURE TODO: Generate JSON as a yearly task when mesh terms are updated, see
     management command import_mesh_terms.py
+    NB: Longest line in MeSH ASCII file is 124 - So 250 Should be limit to any part of the term
     """
-    term = models.CharField(max_length=300)  # TODO: Confirm maximum length
-    tree_number = models.CharField(max_length=50)  # TODO: Confirm maximum length
+    term = models.CharField(max_length=300)
+    tree_number = models.CharField(max_length=250, unique=True)  # NB: Should be unique but checked upon import but not added as will slow import process.
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    # Idea to version trees and keep seaparate - ?? year = Not sure if methods support multiple tree in same DB.
 
     def __str__(self):
         return self.term

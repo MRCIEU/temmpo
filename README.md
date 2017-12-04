@@ -191,3 +191,9 @@ or
 - deployed from the CI server
 
     fab deploy:env=demo,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+
+## Import MeSH Terms
+
+
+python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin

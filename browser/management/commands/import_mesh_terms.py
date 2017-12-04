@@ -1,4 +1,9 @@
-"""
+"""Management command to import or update MeSH terms.
+
+Example format for ASCII MeSH input file.
+
+Ref: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
+
 Body Regions;A01
 Anatomic Landmarks;A01.111
 Breast;A01.236
@@ -9,41 +14,25 @@ Amputation Stumps;A01.378.100
 Lower Extremity;A01.378.610
 Buttocks;A01.378.610.100
 Foot;A01.378.610.250
-"""
-# """
-# MeSH in XML format sample
-# <DescriptorRecord ...><!-- Descriptor  -->
-#    <DescriptorUI>D000005</DescriptorUI>
-#    <DescriptorName><String>Abdomen</String></DescriptorName>
-#    <Annotation> region & abdominal organs...
-#    </Annotation>
-#    <ConceptList>
-#       <Concept PreferredConceptYN="Y"><!-- Concept  -->
-#           <ConceptUI>M0000005</ConceptUI>
-#           <ConceptName><String>Abdomen</String></ConceptName>
-#           <ScopeNote> That portion of the body that lies
-#           between the thorax and the pelvis.</ScopeNote>
-#           <TermList>
-#              <Term ... PrintFlagYN="Y" ... ><!-- Term  -->
-#                 <TermUI>T000012</TermUI>
-#                 <String>Abdomen</String><!-- String = the term itself -->
-#                 <DateCreated>
-#                    <Year>1999</Year>
-#                    <Month>01</Month>
-#                    <Day>01</Day>
-#                 </DateCreated>
-#              </Term>
-#              <Term IsPermutedTermYN="Y" LexicalTag="NON">
-#                  <TermUI>T000012</TermUI>
-#                  <String>Abdomens</String>
-#              </Term>
-#           </TermList>
-#       </Concept>
-#    </ConceptList>
-# </DescriptorRecord>
-# """
 
-# from lxml import etree
+# TODO: There are removals and changes to tree_number that need to be handled.
+
+e.g.
+./temmpo/prepopulate/mtrees2015.bin:Unnecessary Procedures;N02.421.380.900
+to
+
+./temmpo/prepopulate/mtrees2018.bin:Unnecessary Procedures;N02.421.380.450.500
+
+Need to consider versioning results - as based on 2015 MeshTerms,l 2018 MeshTerms
+
+Do we consider versioning MeshTerms
+
+year 2015, 2018
+
+Need to consider when re-using search terms what happens
+
+
+"""
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -52,22 +41,28 @@ from browser.models import MeshTerm
 
 
 class Command(BaseCommand):
+    """Management command for importing Mesh Terms."""
+
     args = '<mesh-term-file-path>'
-    help = 'Creates Mesh Term objects based on importing terms from 2015 MeSH in ASCII format mtrees2015.bin http://www.nlm.nih.gov/mesh/'
+    help = 'Creates Mesh Term objects based on importing terms from a MeSH in ASCII format file, e.g. mtrees2018.bin http://www.nlm.nih.gov/mesh/'
 
     def handle(self, *args, **options):
+        """Main function of command."""
         if args:
 
             filename = args[0]
-            self.stdout.write("About to parse %s and create MesH Terms vocabulary" % filename)
+            self.stdout.write("About to parse %s and create MeSH Terms vocabulary" % filename)
 
             try:
                 with open(filename, 'r') as f:
                     for line in f:
+                        parent = None
                         name, location = line.split(";")
                         location = location.strip()
                         level = location.find('.')
 
+                        self.stdout.write("###########")
+                        self.stdout.write("line:     " + line)
                         self.stdout.write("name:     " + name)
                         self.stdout.write("location: " + location)
                         self.stdout.write("level:    " + str(level))
@@ -77,52 +72,21 @@ class Command(BaseCommand):
                                 parent_tree_number = location[:-4]
                                 try:
                                     parent = MeshTerm.objects.get(tree_number=parent_tree_number)
-                                except:
-                                    self.stderr.write("Found more than one term with tree_number "+ tree_number)
+                                except MultipleObjectsReturned:
+                                    raise CommandError("Found more than one term with the same tree_number in the database: " + parent_tree_number)
 
                             except ObjectDoesNotExist:
                                 self.stderr.write("Could not find parent object " + parent_tree_number)
-                                parent = None
-                        else:
-                            parent = None
 
-                        if parent:
+                        # Try to update term, if it does not exist then create it.
+                        try:
+                            updated = MeshTerm.objects.filter(tree_number=location).update(term=name, parent=parent)
+                            if updated:
+                                self.stdout.write("Updated " + str(updated) + " item, term : " + name + ";" + location)
+
+                        except ObjectDoesNotExist:
                             term = MeshTerm.objects.create(term=name, tree_number=location, parent=parent)
-                        else:
-                            term = MeshTerm.objects.create(term=name, tree_number=location)
-
-                        self.stdout.write("Created:" + term.get_term_with_tree_number())
-
-                # MeshTerm
-
-                # tree = etree.parse(filename)
-                # self.stdout.write("Before parse")
-                # tree = etree.parse(filename)
-                # self.stdout.write("After parse")
-                #tree.getroot()
-                #parser = etree.XMLParser(remove_blank_text=True) # lxml.etree only!
-                # >>> for element in root.iter("*"):
-                # ...     if element.text is not None and not element.text.strip():
-                # ...         element.text = None
-                # The XML parser
-                # boolean dtd_validation, remove_comments
-                # keyword args - schema   - an XMLSchema to validate against
-                # - target   - a parser target object that will receive the parse events
-
-                # Interate DescriptorRecord
-                # DescriptorName > String
-                # Then interate TermList
-                # Term > String
-
-                # for record in tree.iter("DescriptorRecord"):
-                #     print("%s, %s" % (element.tag, element.text))
-                #     name = etree.SubElement(tree, "DescriptorName")
-                #     print(name.tag)
-                #     heading = record.find('//DescriptorName/String').text
-                #     print(heading)
-                #     break
-                #     # if element.text is not None and not element.text.strip():
-                #     #    element.text = None
+                            self.stdout.write("Created: " + term.get_term_with_tree_number())
 
             except Exception as e:
                 self.stderr.write("Some kind of error")
