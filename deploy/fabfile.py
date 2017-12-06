@@ -184,6 +184,7 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
 
         if using_apache:
             collect_static(env, use_local_mode)
+            setup_apache(env, use_local_mode)
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
