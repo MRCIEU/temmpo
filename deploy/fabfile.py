@@ -232,6 +232,7 @@ def setup_apache(env="dev", use_local_mode=False):
     </Directory>
 
     <Directory /usr/local/projects/temmpo/var/www/static>
+        Options -Indexes
         Require all granted
     </Directory>
 
