@@ -4,7 +4,7 @@
 
 {% block styles %}
 <!-- jsTree -->
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/themes/default/style.min.css" />
+<link rel="stylesheet" href="{{STATIC_URL}}js/jstree/themes/default/style.min.css" />
 {% endblock %}
 
 {% block page_heading %}
@@ -122,7 +122,7 @@
 
 {% block scripts %}
 <!-- jsTree -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/jstree.min.js"></script>
+<script src="{{STATIC_URL}}js/jstree/jstree.min.js"></script>
 
       <script type="text/javascript">
         $(function() {
