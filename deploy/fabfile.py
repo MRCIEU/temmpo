@@ -207,6 +207,9 @@ def setup_apache(env="dev", use_local_mode=False):
         caller("rm %s" % apache_conf_file)
 
     apache_conf = """
+    Header set X-Frame-Options "DENY"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' www.google-analytics.com;"
+
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
     # WSGIApplicationGroup %%{GLOBAL}
     # WSGIDaemonProcess temmpo
@@ -240,7 +243,14 @@ def setup_apache(env="dev", use_local_mode=False):
 
     <Location "/static">
         SetHandler None
-    </Location>""" % {'env': env}
+        AllowMethods GET
+    </Location>
+
+    <Location "/admin">
+        Require ip 137.222
+        Require ip 10.0.0.0/8
+    </Location>
+    """ % {'env': env}
 
     _add_file_local(apache_conf_file, apache_conf, use_local_mode)
 
