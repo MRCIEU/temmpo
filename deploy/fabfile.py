@@ -208,7 +208,6 @@ def setup_apache(env="dev", use_local_mode=False):
 
     apache_conf = """
     Header set X-Frame-Options "DENY"
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self' www.google-analytics.com;"
 
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
     # WSGIApplicationGroup %%{GLOBAL}
