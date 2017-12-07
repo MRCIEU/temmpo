@@ -1,3 +1,5 @@
+"""Fabric script used in CI and CD pipeline."""
+
 from datetime import datetime
 import os
 
@@ -8,7 +10,6 @@ PROJECT_ROOT = "/usr/local/projects/temmpo/"
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
 PIP_VERSION = '9.0.1'
-# SETUPTOOLS_VERSION = '34.4.1'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
@@ -49,7 +50,7 @@ def _toggle_local_remote(use_local_mode):
 
 
 def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
-    """fab:master,0.9,egg Create a tag or move a branch
+    """fab taggit:master,0.9,egg Create a tag or move a branch.
         Example create a tag and move it to stable...
         taggit:master,0.8 then taggit:master,prod_stable
     """
@@ -88,7 +89,7 @@ def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
 
 
 def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"):
-    """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"""
+    """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
     clone_repo = (str(clone_repo).lower() == 'true')
@@ -123,7 +124,6 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-            # caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
         sym_link_private_settings(env, use_local_mode)
@@ -143,8 +143,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
 
 def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
-    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"
-    TODO: Tagging and merging branches needs testing"""
+    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"."""
+    # TODO: Tagging and merging branches needs an implementation review.
 
     # Convert any string command line arguments to boolean values, where required.
     using_apache = (str(using_apache).lower() == 'true')
@@ -190,7 +190,7 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
 
 
 def setup_apache(env="dev", use_local_mode=False):
-    # env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required.
+    """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
     # Allow function to be run locally or remotely
@@ -267,8 +267,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
 
 def collect_static(env="dev", use_local_mode=False):
-    """Gather static files to be served by Apache"""
-
+    """Gather static files to be served by Apache."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
@@ -281,7 +280,7 @@ def collect_static(env="dev", use_local_mode=False):
 
 
 def restart_apache(env="dev", use_local_mode=False, run_checks=True):
-    """ env="dev", use_local_mode=False, run_checks=True"""
+    """env="dev", use_local_mode=False, run_checks=True."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     run_checks = (str(run_checks).lower() == 'true')
@@ -308,7 +307,7 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
 
 
 def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=True, swap_db=True):
-    """env="dev", use_local_mode=False, using_apache=True, swap_db=True - NB: Written to migrate the data once, not to drop any existing MySQL tables;"""
+    """env="dev", use_local_mode=False, using_apache=True, swap_db=True - NB: Written to migrate the data once, not to drop any existing MySQL tables."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     using_apache = (str(using_apache).lower() == 'true')
     swap_db = (str(swap_db).lower() == 'true')
@@ -392,7 +391,7 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
 
 
 def sym_link_private_settings(env="dev", use_local_mode=False):
-    """env="dev", use_local_mode=False"""
+    """env="dev", use_local_mode=False."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
@@ -402,20 +401,51 @@ def sym_link_private_settings(env="dev", use_local_mode=False):
 
 
 def disable_apache_site(use_local_mode=False):
-    """use_local_mode=False"""
+    """use_local_mode=False."""
     _toggle_maintenance_mode("_MAINTENANCE_OFF", "_MAINTENANCE_", use_local_mode=False)
 
 
 def enable_apache_site(use_local_mode=False):
-    """use_local_mode=False"""
+    """use_local_mode=False."""
     _toggle_maintenance_mode("_MAINTENANCE_", "_MAINTENANCE_OFF", use_local_mode=False)
 
 
 def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
-    """old_flag, new_flag, use_local_mode=False"""
+    """old_flag, new_flag, use_local_mode=False."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'var/www/'):
         caller("rm -f %s" % old_flag)
         caller("touch %s" % new_flag)
+
+
+def run_tests(env="test", use_local_mode=False, reuse_db=False):
+    """Run Django tests."""
+    # Convert any string command line arguments to boolean values, where required.
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    reuse_db = (str(reuse_db).lower() == 'true')
+    cmd_suffix = ''
+    if reuse_db:
+        cmd_suffix = " --keepdb"
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    with change_dir(venv_dir):
+        caller('./bin/python src/temmpo/manage.py test --noinput %s --database=admin --settings=temmpo.settings.%s' % (env, cmd_suffix))
+
+
+def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
+    """env="test", database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
+    if database_name in ('temmpo_p', ):
+        abort("Function should not be run against a production database.")
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    with change_dir(venv_dir):
+        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python manage.py dbshell --database=admin' % (database_name, database_name, venv_dir), pty=True)
+        caller('echo "TeMMPo database was recreated".')
