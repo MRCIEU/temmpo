@@ -423,7 +423,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir):
-        caller('./bin/python src/temmpo/manage.py test --noinput %s --settings=temmpo.settings.%s' % (cmd_suffix, env))
+        caller(PROJECT_ROOT + 'bin/python src/temmpo/manage.py test --noinput %s --settings=temmpo.settings.%s' % (cmd_suffix, env))
 
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
