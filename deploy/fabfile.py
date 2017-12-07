@@ -421,9 +421,10 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False):
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
-    with change_dir(venv_dir):
-        caller('%sbin/python src/temmpo/manage.py test --noinput %s --settings=temmpo.settings.%s' % (venv_dir, cmd_suffix, env))
+    with change_dir(src_dir):
+        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.%s' % (venv_dir, cmd_suffix, env))
 
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
