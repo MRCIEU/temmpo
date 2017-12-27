@@ -409,7 +409,7 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
         caller("touch %s" % new_flag)
 
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False):
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
     """Run Django tests."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -424,7 +424,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False):
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.%s' % (venv_dir, cmd_suffix, env))
+        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
