@@ -139,18 +139,11 @@ or
     git pull
     fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-## Testing deployment on a development branch on production host, e.g. TMMA-130
+## Testing deployment on a development branch on a the test HyperV VM, e.g. TMMA-130
 
-    ssh ci-p0.rit.bris.ac.uk
-    sudo -i -u temmpo
-    mkdir -p /srv/projects/temmpo/lib/git
-    cd /srv/projects/temmpo/lib/git
-    git clone git@bitbucket.org:researchit/temmpo.git temmpo
-    cd /srv/projects/temmpo/lib/git/temmpo
-    git fetch --all
-    git checkout TMMA-130
-    git pull
-    fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+Reuse the CI job to run test
+
+    https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Test%20jobs/job/run-tests/
 
 ## Deploy prod_stable branch to Vagrant Apache build
 
@@ -159,10 +152,6 @@ or
 ## Deploy master branch to Vagrant Apache build
 
     fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-
-## TODO TEST tagging and merging - will need an SSH key with commit rights to the repository:
-
-    fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ## Setting up a new host 
 
@@ -182,6 +171,8 @@ or
 - built from CI server
 
     fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-t0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+- Tests are run periodically of changes that are committed tothe master branch.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Test%20jobs/job/run-tests/
 
 ### Demo server
 - built from CI server

@@ -113,10 +113,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             # TODO Improve so the known_hosts file does not keep growing
             for host in GIT_SSH_HOSTS:
                 caller('ssh-keyscan -H %s >> ~/.ssh/known_hosts' % host)
-            if not _exists_local(src_dir + "/temmpo", use_local_mode):
+            if not _exists_local(src_dir + "temmpo", use_local_mode):
                 with change_dir(src_dir):
                     caller('git clone %s temmpo' % GIT_URL)
-            with change_dir(src_dir + "/temmpo"):
+            with change_dir(src_dir + "temmpo"):
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
