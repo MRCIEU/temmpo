@@ -93,9 +93,22 @@ or
 
     http://localhost:8800
 
+### Deploy master branch to Vagrant Apache build
+
+    fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+### Deploy demo_stable branch on Vagrant Apache build:
+
+    fab deploy:env=dev,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+### Deploy prod_stable branch to Vagrant Apache build
+
+    fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+
 ## Production
 
-### Tag a build
+### Tag a build - Under review
 **NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
 
     git fetch --all
@@ -105,7 +118,7 @@ or
     fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
 
 
-### Installing a production build remotely, e.g. from the CI server
+### Installing a production build remotely, e.g. from the CI server  - Under review
 
     ssh ci-p0.rit.bris.ac.uk
     sudo -i -u temmpo
@@ -121,7 +134,7 @@ or
     git pull
     fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-#### Database migration
+#### Database migration  - Under review
 
     cd /srv/projects/temmpo/lib/git/temmpo
     git fetch --all
@@ -131,7 +144,7 @@ or
     fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
     fab migrate_sqlite_data_to_mysql:env=prod,use_local_mode=False,using_apache=True,swap_db=True -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-### Each time you want to deploy new code
+### Each time you want to deploy new code  - Under review
 
     cd /srv/projects/temmpo/lib/git/temmpo
     git fetch --all
@@ -139,30 +152,11 @@ or
     git pull
     fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-## Testing deployment on a development branch on production host, e.g. TMMA-130
+## Testing deployment on a development branch on a the test HyperV VM, e.g. TMMA-130
 
-    ssh ci-p0.rit.bris.ac.uk
-    sudo -i -u temmpo
-    mkdir -p /srv/projects/temmpo/lib/git
-    cd /srv/projects/temmpo/lib/git
-    git clone git@bitbucket.org:researchit/temmpo.git temmpo
-    cd /srv/projects/temmpo/lib/git/temmpo
-    git fetch --all
-    git checkout TMMA-130
-    git pull
-    fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+Reuse the CI job to run test, replace instances of master with branch name
 
-## Deploy prod_stable branch to Vagrant Apache build
-
-    fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-
-## Deploy master branch to Vagrant Apache build
-
-    fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-
-## TODO TEST tagging and merging - will need an SSH key with commit rights to the repository:
-
-    fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+    https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Test%20jobs/job/run-tests/
 
 ## Setting up a new host 
 
@@ -179,15 +173,19 @@ or
 * Ensure a 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
 
 ### Test server
-- built from CI server
+- Built a new virtual environment, run from CI server
 
     fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-t0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 ### Demo server
-- built from CI server
+- Built a new virtual environment, run from CI server
 
     fab make_virtualenv:env=demo,configure_apache=True,clone_repo=True,branch=demo_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-- deployed from the CI server
+- Deploy code using Jenkins CI server
+
+Periodically changes that have been moved onto the last_known_good will be deployed onto the demo server.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Demo%20jobs/job/merge-demo-branch-project/
+
+- Deploy directly from the CI server
 
     fab deploy:env=demo,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py

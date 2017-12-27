@@ -49,45 +49,6 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
-    """fab taggit:master,0.9,egg Create a tag or move a branch.
-        Example create a tag and move it to stable...
-        taggit:master,0.8 then taggit:master,prod_stable
-    """
-    if not (gfrom and gto and egg):
-        print 'You must specify taggit:from,to,egg'
-        return
-    try:
-        testint = int(gfrom[0])
-        print 'Don\'t move numeric tags please - add a new one!'
-        return
-    except:
-        pass
-    try:
-        testint = int(gto[0])
-        print 'Marking release tag %s on branch %s' % (gto, gfrom)
-        action = 'tag'
-    except:
-        print 'Merging branch %s to branch %s' % (gto, gfrom)
-        action = 'merge'
-    with lcd(GIT_DIR + egg):
-        local('git pull')
-        if action == 'merge':
-            # make sure this is up to date branches before merging
-            local('git checkout %s' % gfrom)
-            local('git pull')
-            local('git checkout %s' % gto)
-            local('git pull')
-            local('git merge -m "merge for release tagging" %s' % gfrom)
-            local('git push')
-        else:
-            local('git checkout %s' % gfrom)
-            local('git tag -a %s -m "%s"' % (gto, msg))
-            local('git push origin %s' % gto)
-        # Reset local git repo to master
-        local('git checkout master')
-
-
 def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base."""
     # Convert any string command line arguments to boolean values, where required.
@@ -113,10 +74,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             # TODO Improve so the known_hosts file does not keep growing
             for host in GIT_SSH_HOSTS:
                 caller('ssh-keyscan -H %s >> ~/.ssh/known_hosts' % host)
-            if not _exists_local(src_dir + "/temmpo", use_local_mode):
+            if not _exists_local(src_dir + "temmpo", use_local_mode):
                 with change_dir(src_dir):
                     caller('git clone %s temmpo' % GIT_URL)
-            with change_dir(src_dir + "/temmpo"):
+            with change_dir(src_dir + "temmpo"):
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
@@ -141,11 +102,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         collect_static(env, use_local_mode)
         setup_apache(env, use_local_mode)
 
-
-def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
-    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"."""
-    # TODO: Tagging and merging branches needs an implementation review.
-
+def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
+    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"."""
     # Convert any string command line arguments to boolean values, where required.
     using_apache = (str(using_apache).lower() == 'true')
     migrate_db = (str(migrate_db).lower() == 'true')
@@ -158,12 +116,6 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
 
     if using_apache:
         disable_apache_site(use_local_mode)
-
-    if tag:
-        taggit(gfrom="master", gto=tag, egg='temmpo')
-
-    if merge_from:
-        taggit(gfrom=merge_from, gto=branch, egg='temmpo')
 
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
@@ -420,7 +372,7 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
         caller("touch %s" % new_flag)
 
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False):
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
     """Run Django tests."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -432,9 +384,10 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False):
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
-    with change_dir(venv_dir):
-        caller('./bin/python src/temmpo/manage.py test --noinput %s --settings=temmpo.settings.%s' % (env, cmd_suffix))
+    with change_dir(src_dir):
+        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
@@ -447,5 +400,5 @@ def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir):
-        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python manage.py dbshell --database=admin' % (database_name, database_name, venv_dir), pty=True)
+        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin' % (database_name, database_name, venv_dir), pty=True)
         caller('echo "TeMMPo database was recreated".')
