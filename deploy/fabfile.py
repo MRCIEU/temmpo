@@ -373,7 +373,7 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
 
 
 def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
-    """Run Django tests."""
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
