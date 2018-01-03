@@ -36,7 +36,6 @@ except IOError:
 
 # SECURITY WARNING: don't run with debug turned on in production!  See prod.py settings file to change this value.
 DEBUG = True
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
@@ -189,6 +188,9 @@ TEMPLATES = [
         },
     },
 ]
+
+X_FRAME_OPTIONS = 'DENY'
+CSRF_COOKIE_HTTPONLY = True
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.

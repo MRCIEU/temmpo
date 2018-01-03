@@ -1,3 +1,5 @@
+"""Test specific settings file, currently used in BitBucket pipelines."""
+
 from base import *
 
 # Define a local SQLite database to run tests with
