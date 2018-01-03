@@ -197,8 +197,14 @@ def setup_apache(env="dev", use_local_mode=False):
     </Directory>
 
     Alias /static/ "/usr/local/projects/temmpo/var/www/static/"
+    Alias /media/ "/usr/local/projects/temmpo/var/www/media/"
 
     <Location "/static">
+        SetHandler None
+        AllowMethods GET
+    </Location>
+
+    <Location "/media">
         SetHandler None
         AllowMethods GET
     </Location>

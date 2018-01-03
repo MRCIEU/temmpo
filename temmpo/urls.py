@@ -1,9 +1,11 @@
+"""URL patterns for the TeMMPo applications."""
+
 from django.conf import settings
 from django.conf.urls import include, url
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.views.decorators.cache import cache_page
+from django.views.static import serve
 
 from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
@@ -50,4 +52,12 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(), name="logout"),
     url(r'^', include('registration.backends.default.urls')),
     url(r'^', include('django.contrib.auth.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+# For non Apache fronted Django development server scenarios.
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]
