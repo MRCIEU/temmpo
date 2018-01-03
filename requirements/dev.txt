@@ -12,7 +12,7 @@ django-debug-toolbar==1.9.1
 django-mptt==0.8.7
 django-registration-redux==1.7
 django-selectable==1.0.0
-django==1.8.18
+django==1.11.9
 enum34==1.1.6             # via traitlets
 first==2.0.1
 ipython-genutils==0.2.0   # via traitlets
@@ -27,12 +27,10 @@ prompt-toolkit==1.0.15    # via ipython
 ptyprocess==0.5.2         # via pexpect
 pygments==2.2.0           # via ipython
 python-magic==0.4.13
+pytz==2017.2
 scandir==1.6              # via pathlib2
 simplegeneric==0.8.1      # via ipython
 six==1.10.0
 sqlparse==0.2.4           # via django-debug-toolbar
 traitlets==4.3.2          # via ipython
 wcwidth==0.1.7            # via prompt-toolkit
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
