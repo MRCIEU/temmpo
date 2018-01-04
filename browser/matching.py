@@ -1,4 +1,3 @@
-import datetime
 import math
 import os
 import re
@@ -7,6 +6,7 @@ import sys
 
 from django.conf import settings
 # from django.core.mail import send_mail
+from django.utils import timezone
 
 from browser.models import SearchResult, Gene, OVID, PUBMED
 
@@ -44,7 +44,7 @@ def perform_search(search_result_stub_id):
     # Get search result
     search_result_stub = SearchResult.objects.get(pk=int(search_result_stub_id))
 
-    search_result_stub.started_processing = datetime.datetime.now()
+    search_result_stub.started_processing = timezone.now()
     search_result_stub.has_completed = False
     search_result_stub.save()
 
@@ -108,7 +108,7 @@ def perform_search(search_result_stub_id):
     search_result_stub.has_completed = True
     search_result_stub.filename_stub = resultfilename
     # 2 - Give end time
-    search_result_stub.ended_processing = datetime.datetime.now()
+    search_result_stub.ended_processing = timezone.now()
     search_result_stub.save()
 
     # 3 - Email user
