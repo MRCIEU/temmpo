@@ -56,7 +56,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'selectable', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete',]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -191,6 +191,8 @@ TEMPLATES = [
 
 X_FRAME_OPTIONS = 'DENY'
 CSRF_COOKIE_HTTPONLY = True
+
+SIMPLE_AUTOCOMPLETE = {'browser.meshterm': {'search_field': 'term', 'max_items': 10}}
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
