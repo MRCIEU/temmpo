@@ -10,6 +10,7 @@ PROJECT_ROOT = "/usr/local/projects/temmpo/"
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
 PIP_VERSION = '9.0.1'
+SETUPTOOLS_VERSION = '38.2.5'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
@@ -49,45 +50,6 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-# def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
-#     """fab taggit:master,0.9,egg Create a tag or move a branch.
-#         Example create a tag and move it to stable...
-#         taggit:master,0.8 then taggit:master,prod_stable
-#     """
-#     if not (gfrom and gto and egg):
-#         print 'You must specify taggit:from,to,egg'
-#         return
-#     try:
-#         testint = int(gfrom[0])
-#         print 'Don\'t move numeric tags please - add a new one!'
-#         return
-#     except:
-#         pass
-#     try:
-#         testint = int(gto[0])
-#         print 'Marking release tag %s on branch %s' % (gto, gfrom)
-#         action = 'tag'
-#     except:
-#         print 'Merging branch %s to branch %s' % (gto, gfrom)
-#         action = 'merge'
-#     with lcd(GIT_DIR + egg):
-#         local('git pull')
-#         if action == 'merge':
-#             # make sure this is up to date branches before merging
-#             local('git checkout %s' % gfrom)
-#             local('git pull')
-#             local('git checkout %s' % gto)
-#             local('git pull')
-#             local('git merge -m "merge for release tagging" %s' % gfrom)
-#             local('git push')
-#         else:
-#             local('git checkout %s' % gfrom)
-#             local('git tag -a %s -m "%s"' % (gto, msg))
-#             local('git push origin %s' % gto)
-#         # Reset local git repo to master
-#         local('git checkout master')
-
-
 def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base."""
     # Convert any string command line arguments to boolean values, where required.
@@ -124,6 +86,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
         sym_link_private_settings(env, use_local_mode)
@@ -166,6 +129,9 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         caller('git pull origin %s' % branch)
 
     with change_dir(venv_dir):
+        # Ensure setup tools is up to expected version for existing environments.
+        caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
+
         if use_pip_sync:
             caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
         else:
@@ -176,6 +142,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
         if using_apache:
             collect_static(env, use_local_mode)
+            setup_apache(env, use_local_mode)
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
@@ -198,6 +165,8 @@ def setup_apache(env="dev", use_local_mode=False):
         caller("rm %s" % apache_conf_file)
 
     apache_conf = """
+    Header set X-Frame-Options "DENY"
+
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
     # WSGIApplicationGroup %%{GLOBAL}
     # WSGIDaemonProcess temmpo
@@ -223,14 +192,34 @@ def setup_apache(env="dev", use_local_mode=False):
     </Directory>
 
     <Directory /usr/local/projects/temmpo/var/www/static>
+        Options -Indexes
         Require all granted
     </Directory>
 
     Alias /static/ "/usr/local/projects/temmpo/var/www/static/"
+    Alias /media/abstracts/ "/usr/local/projects/temmpo/var/abstracts/"
+    Alias /media/results/ "/usr/local/projects/temmpo/var/results/"
 
     <Location "/static">
         SetHandler None
-    </Location>""" % {'env': env}
+        AllowMethods GET
+    </Location>
+
+    <Location "/media/abstracts">
+        SetHandler None
+        AllowMethods GET
+    </Location>
+
+    <Location "/media/results">
+        SetHandler None
+        AllowMethods GET
+    </Location>
+
+    <Location "/admin">
+        Require ip 137.222
+        Require ip 10.0.0.0/8
+    </Location>
+    """ % {'env': env}
 
     _add_file_local(apache_conf_file, apache_conf, use_local_mode)
 
@@ -402,7 +391,7 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
 
 
 def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
-    """Run Django tests."""
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')

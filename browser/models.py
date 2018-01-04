@@ -1,4 +1,3 @@
-from datetime import datetime
 import re
 import unicodedata
 import os
@@ -6,6 +5,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 
 from mptt.models import MPTTModel, TreeForeignKey
@@ -18,7 +18,7 @@ def get_user_upload_location(instance, filename):
     filename = unicode(re.sub('[^\.\w\s-]', '', filename).strip().lower())
     filename = re.sub('[-\s]+', '-', filename)
 
-    return datetime.now().strftime('/'.join(['abstracts', str(instance.user.id), '%Y-%m-%d', '%H-%M-%S-' + filename]))
+    return timezone.now().strftime('/'.join(['abstracts', str(instance.user.id), '%Y-%m-%d', '%H-%M-%S-' + filename]))
 
 
 class Gene(models.Model):

@@ -53,7 +53,7 @@ Use one of the techniques below to set up your virtual environment
 
 ### Activate virtualenv
 
-    cd /usr/local/projects/temmpo/lib/dev/bin && source activate
+    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
 
 
 ### Move to source directory
@@ -73,11 +73,12 @@ Use one of the techniques below to set up your virtual environment
 
 ### Running tests:
 
-	python manage.py test --settings=temmpo.settings.test_sqlite
+    python manage.py test --settings=temmpo.settings.test_mysql
 
-or
+    or 
 
-	python manage.py test --settings=temmpo.settings.test_mysql
+    python manage.py test --settings=temmpo.settings.test_sqlite
+
 
 ### Run the development server
 
@@ -93,15 +94,15 @@ or
 
     http://localhost:8800
 
-### Deploy master branch to Vagrant Apache build
+### Deploy master branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-### Deploy demo_stable branch on Vagrant Apache build:
+### Deploy demo_stable branch on Vagrant Apache VM:
 
     fab deploy:env=dev,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-### Deploy prod_stable branch to Vagrant Apache build
+### Deploy prod_stable branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
