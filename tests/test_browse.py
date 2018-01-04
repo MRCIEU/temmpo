@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from browser.matching import _pubmed_readcitations  # perform_search
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED  # Gene,
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
 logger = logging.getLogger(__name__)
 RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
@@ -45,29 +45,35 @@ class BrowsingTest(TestCase):
         # self.client.logout()
         self.client.login(username='may', password='12345#abc')
 
-    def _find_expected_content(self, path="", msg="", msg_list=None):
+    def _find_expected_content(self, path="", msg="", msg_list=None, status_code=200):
         response = self.client.get(path, follow=True)
 
         if not msg_list:
             msg_list = [msg, ]
 
         for text in msg_list:
+            if text == "Not found":
+                print response
             self.assertContains(response,
                                 text,
+                                status_code=status_code,
                                 msg_prefix="Expected %(msg)s at %(path)s" %
                                 {'msg': text, 'path': path})
 
     def test_home_page(self):
-        """ Test can view the home page
-        """
-
+        """ Test can view the home page without logging in."""
+        self.client.logout()
         self._find_expected_content(path=reverse("home"), msg="About TeMMPo")
 
     def test_credits_page(self):
-        """ Test can view the credits page
-        """
-
+        """ Test can view the credits page without logging in."""
+        self.client.logout()
         self._find_expected_content(path=reverse("credits"), msg="Credits")
+
+    def test_help_page(self):
+        """ Test can view the help page without logging in."""
+        self.client.logout()
+        self._find_expected_content(path=reverse("help"), msg="Help")
 
     def test_search_page(self):
         """ Test can view the search page
@@ -85,9 +91,9 @@ class BrowsingTest(TestCase):
         """
         path = reverse('results', kwargs={'pk': RESULT_ID})
         self._find_expected_content(path=path, msg="login to use this tool")
+        # TODO Add results rendering tests
         self._login_user()
-        # TODO add a mock search object
-        # self._find_expected_content(path=path, msg='id="chart"')
+        self._find_expected_content(path=path, msg='Page not found', status_code=404)
 
     def test_results_listing_page(self):
         """ Test can view the results listing page
@@ -129,7 +135,8 @@ class BrowsingTest(TestCase):
         exposure_terms = MeshTerm.objects.get(term="Humans").get_descendants(include_self=True)
         mediator_terms = MeshTerm.objects.get(term="Phenotype").get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Apoptosis").get_descendants(include_self=True)
-        # genes = Gene.objects.filter(name="TRPC1")
+        original_gene_count = Gene.objects.filter(name="TRPC1").count()
+        self.assertEqual(original_gene_count, 1)
 
         search_criteria = SearchCriteria(upload=upload)
         search_criteria.save()
@@ -140,22 +147,18 @@ class BrowsingTest(TestCase):
         search_criteria.mediator_terms = mediator_terms
         search_criteria.save()
 
-        # search_result = SearchResult()
-        # search_result.pk = 999
-        # search_result.criteria = search_criteria
-        # # search_result.started_processing = datetime.datetime.now()
-        # # search_result.has_completed = False
-        # search_result.save()
-
         # Run the search, by posting filter and gene selection form
-        # TODO post mesh filter data
-        # TODO split into separate tests - unit and integration
         self._login_user()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
-        response = self.client.post(path, {'genes': 'TRPC1'}, follow=True)
 
-        # TODO: Split into pure integration and unit text version that does not use views
-        # perform_search(search_result.id)
+        # Verifiy expected content is on the gene and filter form page
+        expected_text = ["Enter genes", "Filter", "e.g. Humans"]
+        self._find_expected_content(path=path, msg_list=expected_text)
+
+        # Filter by a genes
+        response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
+
+        # TODO Test filter by MeshTerm part of form
 
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
@@ -174,8 +177,14 @@ class BrowsingTest(TestCase):
         self.assertTrue(search_result.has_completed)
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
+        existing_gene_count = Gene.objects.filter(name="TRPC1").count()
+        new_gene_count = Gene.objects.filter(name="HTR1A").count()
+        self.assertEqual(existing_gene_count, original_gene_count)
+        self.assertEqual(new_gene_count, 1)
+
+
     def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
-        """Upload file and try to bulk select mesh terms"""
+        """Upload file and try to bulk select mesh terms."""
         with open(abstract_file_path, 'r') as upload:
             response = self.client.post(search_url,
                                         {'abstracts_upload': upload,

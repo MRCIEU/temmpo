@@ -6,8 +6,6 @@ from django import forms
 from django.conf import settings
 from django.contrib import messages
 
-from selectable.forms import AutoCompleteWidget, AutoCompleteSelectField
-
 from browser.lookups import MeshTermLookup
 from browser.models import SearchCriteria, Upload, MeshTerm, Gene, OVID, PUBMED
 from browser.widgets import GeneTextarea
@@ -150,11 +148,9 @@ class FilterForm(forms.ModelForm):
                             label='Enter genes (optional)',
                             help_text='Separated by commas')
 
-    mesh_filter = AutoCompleteSelectField(lookup_class=MeshTermLookup,
-                                          widget=AutoCompleteWidget,
-                                          required=False,
-                                          label='Filter',
-                                          help_text="Start entering a MeSH Term, e.g. Humans")
+    mesh_filter = forms.CharField(required=False,
+                                  label='Filter',
+                                  help_text="Enter a MeSH Term, e.g. Humans")
 
     class Meta:
         model = SearchCriteria

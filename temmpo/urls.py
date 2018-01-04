@@ -17,9 +17,6 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
 
 urlpatterns = [
 
-    # Django selectable
-    url(r'^selectable/', include('selectable.urls')),
-
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),

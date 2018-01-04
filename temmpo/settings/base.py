@@ -56,7 +56,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'selectable', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', ]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
