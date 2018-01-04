@@ -6,7 +6,6 @@ from django import forms
 from django.conf import settings
 from django.contrib import messages
 
-from browser.lookups import MeshTermLookup
 from browser.models import SearchCriteria, Upload, MeshTerm, Gene, OVID, PUBMED
 from browser.widgets import GeneTextarea
 from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator
