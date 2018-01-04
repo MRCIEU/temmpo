@@ -17,8 +17,8 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
 
 urlpatterns = [
 
-    # Django selectable
-    url(r'^selectable/', include('selectable.urls')),
+    # auto complete functionality
+    url(r'^simple-autocomplete/', include('simple_autocomplete.urls', namespace='simple_autocomplete')),
 
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
