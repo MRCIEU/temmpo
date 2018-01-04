@@ -1,3 +1,5 @@
+"""Fabric script used in CI and CD pipeline."""
+
 from datetime import datetime
 import os
 
@@ -8,7 +10,7 @@ PROJECT_ROOT = "/usr/local/projects/temmpo/"
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
 PIP_VERSION = '9.0.1'
-# SETUPTOOLS_VERSION = '34.4.1'
+SETUPTOOLS_VERSION = '38.2.5'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
@@ -48,47 +50,8 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def taggit(gfrom='master', gto='', egg='', msg='Marking for release'):
-    """fab:master,0.9,egg Create a tag or move a branch
-        Example create a tag and move it to stable...
-        taggit:master,0.8 then taggit:master,prod_stable
-    """
-    if not (gfrom and gto and egg):
-        print 'You must specify taggit:from,to,egg'
-        return
-    try:
-        testint = int(gfrom[0])
-        print 'Don\'t move numeric tags please - add a new one!'
-        return
-    except:
-        pass
-    try:
-        testint = int(gto[0])
-        print 'Marking release tag %s on branch %s' % (gto, gfrom)
-        action = 'tag'
-    except:
-        print 'Merging branch %s to branch %s' % (gto, gfrom)
-        action = 'merge'
-    with lcd(GIT_DIR + egg):
-        local('git pull')
-        if action == 'merge':
-            # make sure this is up to date branches before merging
-            local('git checkout %s' % gfrom)
-            local('git pull')
-            local('git checkout %s' % gto)
-            local('git pull')
-            local('git merge -m "merge for release tagging" %s' % gfrom)
-            local('git push')
-        else:
-            local('git checkout %s' % gfrom)
-            local('git tag -a %s -m "%s"' % (gto, msg))
-            local('git push origin %s' % gto)
-        # Reset local git repo to master
-        local('git checkout master')
-
-
 def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"):
-    """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"""
+    """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
     clone_repo = (str(clone_repo).lower() == 'true')
@@ -112,10 +75,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             # TODO Improve so the known_hosts file does not keep growing
             for host in GIT_SSH_HOSTS:
                 caller('ssh-keyscan -H %s >> ~/.ssh/known_hosts' % host)
-            if not _exists_local(src_dir + "/temmpo", use_local_mode):
+            if not _exists_local(src_dir + "temmpo", use_local_mode):
                 with change_dir(src_dir):
                     caller('git clone %s temmpo' % GIT_URL)
-            with change_dir(src_dir + "/temmpo"):
+            with change_dir(src_dir + "temmpo"):
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
@@ -123,7 +86,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-            # caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
+            caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
 
         sym_link_private_settings(env, use_local_mode)
@@ -142,10 +105,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         setup_apache(env, use_local_mode)
 
 
-def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
-    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, tag='', merge_from='', migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"
-    TODO: Tagging and merging branches needs testing"""
-
+def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
+    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"."""
     # Convert any string command line arguments to boolean values, where required.
     using_apache = (str(using_apache).lower() == 'true')
     migrate_db = (str(migrate_db).lower() == 'true')
@@ -159,12 +120,6 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
     if using_apache:
         disable_apache_site(use_local_mode)
 
-    if tag:
-        taggit(gfrom="master", gto=tag, egg='temmpo')
-
-    if merge_from:
-        taggit(gfrom=merge_from, gto=branch, egg='temmpo')
-
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with cd(src_dir):
@@ -174,6 +129,9 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
         caller('git pull origin %s' % branch)
 
     with change_dir(venv_dir):
+        # Ensure setup tools is up to expected version for existing environments.
+        caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
+
         if use_pip_sync:
             caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
         else:
@@ -184,12 +142,13 @@ def deploy(env="dev", branch="master", using_apache=True, tag='', merge_from='',
 
         if using_apache:
             collect_static(env, use_local_mode)
+            setup_apache(env, use_local_mode)
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
 
 def setup_apache(env="dev", use_local_mode=False):
-    # env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required.
+    """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
     # Allow function to be run locally or remotely
@@ -206,6 +165,8 @@ def setup_apache(env="dev", use_local_mode=False):
         caller("rm %s" % apache_conf_file)
 
     apache_conf = """
+    Header set X-Frame-Options "DENY"
+
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
     # WSGIApplicationGroup %%{GLOBAL}
     # WSGIDaemonProcess temmpo
@@ -231,14 +192,34 @@ def setup_apache(env="dev", use_local_mode=False):
     </Directory>
 
     <Directory /usr/local/projects/temmpo/var/www/static>
+        Options -Indexes
         Require all granted
     </Directory>
 
     Alias /static/ "/usr/local/projects/temmpo/var/www/static/"
+    Alias /media/abstracts/ "/usr/local/projects/temmpo/var/abstracts/"
+    Alias /media/results/ "/usr/local/projects/temmpo/var/results/"
 
     <Location "/static">
         SetHandler None
-    </Location>""" % {'env': env}
+        AllowMethods GET
+    </Location>
+
+    <Location "/media/abstracts">
+        SetHandler None
+        AllowMethods GET
+    </Location>
+
+    <Location "/media/results">
+        SetHandler None
+        AllowMethods GET
+    </Location>
+
+    <Location "/admin">
+        Require ip 137.222
+        Require ip 10.0.0.0/8
+    </Location>
+    """ % {'env': env}
 
     _add_file_local(apache_conf_file, apache_conf, use_local_mode)
 
@@ -256,8 +237,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
 
 def collect_static(env="dev", use_local_mode=False):
-    """Gather static files to be served by Apache"""
-
+    """Gather static files to be served by Apache."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
@@ -270,7 +250,7 @@ def collect_static(env="dev", use_local_mode=False):
 
 
 def restart_apache(env="dev", use_local_mode=False, run_checks=True):
-    """ env="dev", use_local_mode=False, run_checks=True"""
+    """env="dev", use_local_mode=False, run_checks=True."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     run_checks = (str(run_checks).lower() == 'true')
@@ -287,7 +267,7 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
             toggled_maintenance_mode = True
             enable_apache_site(use_local_mode)
 
-        caller("wget 127.0.0.1")
+        caller("wget --timeout=60 --tries=1 127.0.0.1")
         caller("rm index.html")
         with change_dir(venv_dir):
             caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
@@ -297,7 +277,7 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
 
 
 def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=True, swap_db=True):
-    """env="dev", use_local_mode=False, using_apache=True, swap_db=True - NB: Written to migrate the data once, not to drop any existing MySQL tables;"""
+    """env="dev", use_local_mode=False, using_apache=True, swap_db=True - NB: Written to migrate the data once, not to drop any existing MySQL tables."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     using_apache = (str(using_apache).lower() == 'true')
     swap_db = (str(swap_db).lower() == 'true')
@@ -381,7 +361,7 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
 
 
 def sym_link_private_settings(env="dev", use_local_mode=False):
-    """env="dev", use_local_mode=False"""
+    """env="dev", use_local_mode=False."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
@@ -391,23 +371,24 @@ def sym_link_private_settings(env="dev", use_local_mode=False):
 
 
 def disable_apache_site(use_local_mode=False):
-    """use_local_mode=False"""
+    """use_local_mode=False."""
     _toggle_maintenance_mode("_MAINTENANCE_OFF", "_MAINTENANCE_", use_local_mode=False)
 
 
 def enable_apache_site(use_local_mode=False):
-    """use_local_mode=False"""
+    """use_local_mode=False."""
     _toggle_maintenance_mode("_MAINTENANCE_", "_MAINTENANCE_OFF", use_local_mode=False)
 
 
 def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
-    """old_flag, new_flag, use_local_mode=False"""
+    """old_flag, new_flag, use_local_mode=False."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'var/www/'):
         caller("rm -f %s" % old_flag)
         caller("touch %s" % new_flag)
+
 
 def dump_database_data(env="prod", database="default", output_file="", scrub=True, use_local_mode=False):
     """env="prod", database="default", output_file="", scrub=True, use_local_mode=False - if scrub selected all objects assigned to user id 1, normally the super user in dev builds and not other user data is exported."""
@@ -442,3 +423,34 @@ def load_database_data(env="dev", database="default", input_file="", use_local_m
     with change_dir(PROJECT_ROOT + 'lib/' + env):
         caller("./bin/python src/temmpo/manage.py %s --database=%s --settings=temmpo.settings.%s" % (import_sql_cmd, database, env))
 
+
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
+    # Convert any string command line arguments to boolean values, where required.
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    reuse_db = (str(reuse_db).lower() == 'true')
+    cmd_suffix = ''
+    if reuse_db:
+        cmd_suffix = " --keepdb"
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+
+    with change_dir(src_dir):
+        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+
+
+def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
+    """env="test", database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
+    if database_name in ('temmpo_p', ):
+        abort("Function should not be run against a production database.")
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    with change_dir(venv_dir):
+        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin' % (database_name, database_name, venv_dir), pty=True)
+        caller('echo "TeMMPo database was recreated".')

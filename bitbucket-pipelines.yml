@@ -1,7 +1,8 @@
 image: python:2.7.13
 
 pipelines:
-  default:
+  branches:
+    '{TMMA-*,master}':
     - step:
         script:
           - pip install -U pip==9.0.1
@@ -11,4 +12,4 @@ pipelines:
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - python manage.py test --settings=temmpo.settings.test
+          - python manage.py test --settings=temmpo.settings.test_sqlite

@@ -2,7 +2,8 @@
 
 ## About TeMMPo
 
-*  https://www.temmpo.org.uk/
+* URL: https://www.temmpo.org.uk/
+* Wiki: https://wikis.bris.ac.uk/display/rit/TeMMPo:+Text+Mining+for+Mechanism+Prioritisation
 
 TeMMPo (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of published evidence for specific mechanisms between an exposure and outcome. The tool identifies co-occurrence of MeSH headings in scientific publications to indicate papers that link an intermediate mechanism to either an exposure or an outcome.
 
@@ -16,58 +17,58 @@ We are using Vagrant for our Centos development environment.  It requires an add
 
 ### Set up development environment
 
-	vagrant plugin install vagrant-sshfs
-	git clone git@bitbucket.org:researchit/temmpo.git
+    vagrant plugin install vagrant-sshfs
+    git clone git@bitbucket.org:researchit/temmpo.git
 
 Use one of the techniques below to set up your virtual environment
 
 #### a) Installing a Vagrant development build
 
-	cd deploy
-	vagrant up
-	vagrant ssh
-	fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+    cd deploy
+    vagrant up
+    vagrant ssh
+    fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 #### b) Installing a Vagrant development build remotely
 
-	cd deploy
-	vagrant up
-	fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=base  -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-	vagrant ssh
+    cd deploy
+    vagrant up
+    fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=base  -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+    vagrant ssh
 
 #### c) Installing a Vagrant Apache build
 
-	cd deploy
-	vagrant up db && vagrant up apache
-	vagrant ssh apache
-	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
+    cd deploy
+    vagrant up db && vagrant up apache
+    vagrant ssh apache
+    fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 
 
 #### d) Installing a Vagrant Apache build remotely
 
-	vagrant up db && vagrant up apache
-	fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
-	vagrant ssh apache
+    vagrant up db && vagrant up apache
+    fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+    vagrant ssh apache
 
 
 ### Activate virtualenv
 
-	cd /usr/local/projects/temmpo/lib/dev/bin && source activate
+    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
 
 
 ### Move to source directory
 
-	cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
 
 
 ### Set up database tables and run any migrations
 
-	python manage.py migrate --database=admin
+    python manage.py migrate --database=admin
 
 
 ### Create a super user
 
-	python manage.py createsuperuser --settings=temmpo.settings.dev
+    python manage.py createsuperuser --settings=temmpo.settings.dev
 
 ### Loading test data
 
@@ -75,89 +76,120 @@ Use one of the techniques below to set up your virtual environment
 
 ### Running tests:
 
-	python manage.py test --settings=temmpo.settings.test
+    python manage.py test --settings=temmpo.settings.test_mysql
+
+    or 
+
+    python manage.py test --settings=temmpo.settings.test_sqlite
+
 
 ### Run the development server
 
-	python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
+    python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ### View application in your local browser
 
 ####  Django server
 
-	http://localhost:59099
+    http://localhost:59099
 
 ####  Apache 
 
-	http://localhost:8800
+    http://localhost:8800
+
+### Deploy master branch to Vagrant Apache VM
+
+    fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+### Deploy demo_stable branch on Vagrant Apache VM:
+
+    fab deploy:env=dev,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+### Deploy prod_stable branch to Vagrant Apache VM
+
+    fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
 
 ## Production
 
-### Tag a build
+### Tag a build - Under review
 **NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
 
-	git fetch --all
-	git checkout master
-	git pull
-	fab taggit:master,2.3.0,temmpo -f deploy/fabfile.py
-	fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
+    git fetch --all
+    git checkout master
+    git pull
+    fab taggit:master,2.4.0,temmpo -f deploy/fabfile.py
+    fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
 
 
-### Installing a production build remotely, e.g. from the CI server
+### Installing a production build remotely, e.g. from the CI server  - Under review
 
-	ssh ci-p0.rit.bris.ac.uk
-	sudo -i -u temmpo
+    ssh ci-p0.rit.bris.ac.uk
+    sudo -i -u temmpo
 
 *One off setup*
 
-	mkdir -p /srv/projects/temmpo/lib/git
-	cd /srv/projects/temmpo/lib/git
-	git clone git@bitbucket.org:researchit/temmpo.git temmpo
-	cd /srv/projects/temmpo/lib/git/temmpo
-	git fetch --all
-	git checkout prod_stable
-	git pull
-	fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+    mkdir -p /srv/projects/temmpo/lib/git
+    cd /srv/projects/temmpo/lib/git
+    git clone git@bitbucket.org:researchit/temmpo.git temmpo
+    cd /srv/projects/temmpo/lib/git/temmpo
+    git fetch --all
+    git checkout prod_stable
+    git pull
+    fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-#### Database migration
+#### Database migration  - Under review
 
-	cd /srv/projects/temmpo/lib/git/temmpo
-	git fetch --all
-	git checkout prod_stable
-	git pull
-	fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
-	fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
-	fab migrate_sqlite_data_to_mysql:env=prod,use_local_mode=False,using_apache=True,swap_db=True -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+    cd /srv/projects/temmpo/lib/git/temmpo
+    git fetch --all
+    git checkout prod_stable
+    git pull
+    fab sym_link_private_settings:prod,false -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+    fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+    fab migrate_sqlite_data_to_mysql:env=prod,use_local_mode=False,using_apache=True,swap_db=True -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-### Each time you want to deploy new code
+### Each time you want to deploy new code  - Under review
 
-	cd /srv/projects/temmpo/lib/git/temmpo
-	git fetch --all
-	git checkout prod_stable
-	git pull
-	fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+    cd /srv/projects/temmpo/lib/git/temmpo
+    git fetch --all
+    git checkout prod_stable
+    git pull
+    fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-## Testing deployment on a development branch on production host, e.g. TMMA-130
+## Testing deployment on a development branch on a the test HyperV VM, e.g. TMMA-130
 
-	ssh ci-p0.rit.bris.ac.uk
-	sudo -i -u temmpo
-	mkdir -p /srv/projects/temmpo/lib/git
-	cd /srv/projects/temmpo/lib/git
-	git clone git@bitbucket.org:researchit/temmpo.git temmpo
-	cd /srv/projects/temmpo/lib/git/temmpo
-	git fetch --all
-	git checkout TMMA-130
-	git pull
-	fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=TMMA-130,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+Reuse the CI job to run test, replace instances of master with branch name
 
-## Deploy prod_stable branch to Vagrant Apache build
+    https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Test%20jobs/job/run-tests/
 
-	fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+## Setting up a new host 
 
-## Deploy master branch to Vagrant Apache build
+- To be able to provision the Django application using the Fabric script from the CI server you will need the following to be in place.
 
-	fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+* Ensure puppet configuration has been run - this should run all the steps provided in the development Vagrant file and set up scripts.
 
-## TODO TEST tagging and merging - will need an SSH key with commit rights to the repository:
+* Create a /usr/local/projects/temmpo/.settings/private_settings.py file, see example_private_settings.py file for expected format and entries.
 
-	fab deploy:env=dev,branch=demo_stable,using_apache=True,tag=2.3,merge_from=master,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+* Share keys from CI server to new host
+
+* Create and share an SSH deployment key on code repository on bitbucket
+
+* Ensure a 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
+
+### Test server
+- Built a new virtual environment, run from CI server
+
+    fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-t0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+### Demo server
+- Built a new virtual environment, run from CI server
+
+    fab make_virtualenv:env=demo,configure_apache=True,clone_repo=True,branch=demo_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+- Deploy code using Jenkins CI server
+
+Periodically changes that have been moved onto the last_known_good will be deployed onto the demo server.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Demo%20jobs/job/merge-demo-branch-project/
+
+- Deploy directly from the CI server
+
+    fab deploy:env=demo,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
