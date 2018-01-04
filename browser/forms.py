@@ -142,14 +142,15 @@ class TermSelectorForm(forms.ModelForm):
 
 
 class FilterForm(forms.ModelForm):
-    genes = forms.CharField(widget=GeneTextarea,
+    genes = forms.CharField(widget=GeneTextarea(attrs={'rows':4}),
                             required=False,
                             label='Enter genes (optional)',
                             help_text='Separated by commas')
 
-    mesh_filter = forms.CharField(required=False,
-                                  label='Filter',
-                                  help_text="Enter a MeSH Term, e.g. Humans")
+    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.all(),
+                    required=False,
+                    label='Filter',
+                    help_text="Enter a MeSH Term, e.g. Humans")
 
     class Meta:
         model = SearchCriteria
