@@ -112,6 +112,7 @@ class SearchCriteria(models.Model):
 
     # TODO: Review if need to denormalise term data and store in TextField for
     # performance reasons
+    # TODO: Add fields to record child term selection preference for each _terms field
     exposure_terms = models.ManyToManyField(MeshTerm,
         verbose_name="exposure MeSH terms", blank=True,
         help_text="Select one or more terms", related_name='sc_exposure')
