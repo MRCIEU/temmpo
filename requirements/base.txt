@@ -5,8 +5,9 @@
 #    pip-compile --output-file requirements/base.txt requirements/base.in
 #
 click==6.7                # via pip-tools
-django-mptt==0.8.7
-django-registration-redux==1.7
+django-js-asset==0.1.1    # via django-mptt
+django-mptt==0.9.0
+django-registration-redux==1.9
 django-simple-autocomplete==1.11
 django==1.11.9
 first==2.0.1              # via pip-tools

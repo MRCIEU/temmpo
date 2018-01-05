@@ -243,7 +243,7 @@ class BrowsingTest(TestCase):
                                      "password2": "THISISJUSTATEST"},
                                     follow=True)
 
-        self.assertContains(response, "You registration is complete.", msg_prefix=response.content)
+        self.assertContains(response, "Your registration is complete.", msg_prefix=response.content)
 
     def test_login_page(self):
         """ Test can view the sign in page

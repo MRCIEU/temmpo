@@ -9,8 +9,9 @@ click==6.7
 decorator==4.1.2          # via ipython, traitlets
 django-debug-toolbar-template-timings==0.7
 django-debug-toolbar==1.9.1
-django-mptt==0.8.7
-django-registration-redux==1.7
+django-js-asset==0.1.1
+django-mptt==0.9.0
+django-registration-redux==1.9
 django-simple-autocomplete==1.11
 django==1.11.9
 enum34==1.1.6             # via traitlets
