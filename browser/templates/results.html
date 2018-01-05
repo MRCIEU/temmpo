@@ -37,14 +37,16 @@ Results
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 -->
+{# TODO Consider using 960px as the height #}
+<div style="margin: auto; width:100%; height: 500px;" id="sankey_multiple"></div>
 {% endblock %}
 
 {% block scripts %}
-{# Chart related JS #}
-<script src="{{ STATIC_URL}}js/d3.min.js"></script>
-<!-- script src="{{ STATIC_URL}}js/sankey.js"></script -->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script>
+    {# Chart related JS #}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{ STATIC_URL}}js/d3.min.js"></script>
+    <!-- script src="{{ STATIC_URL}}js/sankey.js"></script -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
         google.charts.load("44", {packages: ["sankey"]});
         google.charts.setOnLoadCallback(function() { (getLinks(topVal))});
@@ -167,24 +169,22 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
             chart.draw(data, options);
 
         }
-$(document).ready(function () {
+        $(document).ready(function () {
 
-        $(function () {
+            $(function () {
 
-            $("#topMatch").slider({
-                range: "max",
-                min: 5,
-                max: 100,
-                value: 20,
-                slide: function (event, ui) {
-                    $("#min").val(ui.value);
-                    google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
-                }
+                $("#topMatch").slider({
+                    range: "max",
+                    min: 5,
+                    max: 100,
+                    value: 20,
+                    slide: function (event, ui) {
+                        $("#min").val(ui.value);
+                        google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
+                    }
+                });
+                $("#min").val($("#topMatch").slider("value"));
             });
-            $("#min").val($("#topMatch").slider("value"));
-        });
-    })
+        })
     </script>
-{# TODO Consider using 960px as the height #}
-<div style="margin: auto; width:100%; height: 500px;" id="sankey_multiple"></div>
 {% endblock %}
