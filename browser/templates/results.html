@@ -3,32 +3,29 @@
 {% block title %}TeMMPo: Results{% endblock %}
 
 {% block styles %}
-<style>
-  {# TODO: Add this to override -1px in style.css #}
-  body{
-      letter-spacing: 0px;
-  }
-</style>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
+
+{% block body_class_style %}results-page{% endblock %}
 
 {% block section_title %}
 Results
 {% endblock %}
 
 {% block page_heading %}
-<p>
     {% if search_result.mesh_filter %}
-      Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.
-    {% else %}
-        <p>
-          <label for="min">Top matches:</label>
-          <input type="text" id="min" readonly style="font-size:large; border:0; color:#f6931f; font-weight:bold;">
-        </p>
-        <div id="topMatch"></div>
+      <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term.</p>
     {% endif %}
 
-    <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
-</p>
+    <p>
+        <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly>
+    </p>
+    <div id="slider"></div>
+
+    <div id="results-buttons" class="form-group">
+        <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
+    </div>
+
 {% endblock %}
 
 {% block section %}
@@ -37,8 +34,7 @@ Results
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 -->
-{# TODO Consider using 960px as the height #}
-<div style="margin: auto; width:100%; height: 500px;" id="sankey_multiple"></div>
+<div id="sankey_multiple"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -46,8 +42,9 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="{{ STATIC_URL}}js/d3.min.js"></script>
     <!-- script src="{{ STATIC_URL}}js/sankey.js"></script -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
+        {# TODO: consider using current versus version 44 #}
         google.charts.load("44", {packages: ["sankey"]});
         google.charts.setOnLoadCallback(function() { (getLinks(topVal))});
     </script>
@@ -60,7 +57,7 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
             return indexes;
         }
 
-        topVal = 20
+        topVal = 50
         function getLinks(topVal) {
             var threshold = topVal;
             var scoreSort = {}
@@ -147,7 +144,7 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
             // Set chart options
             var options = {
                 width: 1200,
-                height: 500,
+                height:650,
                 //iterations: 100,
                 //sankey: { node: { nodePadding: 10 } },
                 sankey: {
@@ -172,18 +169,17 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
         $(document).ready(function () {
 
             $(function () {
-
-                $("#topMatch").slider({
+                $("#slider").slider({
                     range: "max",
                     min: 5,
                     max: 100,
-                    value: 20,
+                    value: 50,
                     slide: function (event, ui) {
-                        $("#min").val(ui.value);
+                        $("#chart-slider-label").val(ui.value);
                         google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
                     }
                 });
-                $("#min").val($("#topMatch").slider("value"));
+                $("#chart-slider-label").val($("#slider").slider("value"));
             });
         })
     </script>
