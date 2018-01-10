@@ -185,7 +185,7 @@ Reuse the CI job to run test, replace instances of master with branch name
 
 - Deploy code using Jenkins CI server
 
-Periodically changes that have been moved onto the last_known_good will be deployed onto the demo server.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Demo%20jobs/job/merge-demo-branch-project/
+Periodically changes that have been moved onto the last_known_good will be deployed onto the demo server.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Demo%20jobs/job/1-merge-demo-branch-project/
 
 - Deploy directly from the CI server
 
