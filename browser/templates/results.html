@@ -3,7 +3,7 @@
 {% block title %}TeMMPo: Results{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.css">
 {% endblock %}
 
 {% block body_class_style %}results-page{% endblock %}
@@ -17,11 +17,12 @@ Results
       <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term.</p>
     {% endif %}
 
-    <p>
-        <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly>
-    </p>
-    <div id="slider"></div>
-
+    <div id="threshold-controller">
+        <p>
+            <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly>
+        </p>
+        <div id="slider"></div>
+    </div>
     <div id="results-buttons" class="form-group">
         <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
     </div>
@@ -39,12 +40,10 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
 
 {% block scripts %}
     {# Chart related JS #}
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.js"></script>
     <script src="{{ STATIC_URL}}js/d3.min.js"></script>
-    <!-- script src="{{ STATIC_URL}}js/sankey.js"></script -->
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
-        {# TODO: consider using current versus version 44 #}
         google.charts.load("44", {packages: ["sankey"]});
         google.charts.setOnLoadCallback(function() { (getLinks(topVal))});
     </script>
@@ -60,78 +59,82 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
         topVal = 50
         function getLinks(topVal) {
             var threshold = topVal;
-            var scoreSort = {}
-            var exp_int = []
-            var int_out = []
-            var oLinks = []
-            var sData = []
+            var exp_int = [];
+            var int_out = [];
+            var oLinks = [];
+            var sData = [];
             d3.json("{{ json_url }}", function (matches) {
-                    //create arrays of target and sources
-                    matches.links = matches.links.filter(function (link) {
-                        exp_int.push(link.target)
-                        int_out.push(link.source)
-                        return link
-                    })
-                    //find overlapping link objects
-                    for (i in exp_int) {
-                        var int_out_match = int_out.indexOf(exp_int[i])
-                        var indexes = getAllIndexes(int_out, exp_int[i])
-                        if (indexes.length > 0) {
-                            for (j in indexes) {
-                                var o = {oNode: exp_int[i], l1: parseInt(i), l2: indexes[j]}
-                                oLinks.push(o)
-                            }
+                //create arrays of target and sources
+                matches.links = matches.links.filter(function (link) {
+                    exp_int.push(link.target);
+                    int_out.push(link.source);
+                    return link;
+                })
+                //find overlapping link objects
+                for (i in exp_int) {
+                    var int_out_match = int_out.indexOf(exp_int[i]);
+                    var indexes = getAllIndexes(int_out, exp_int[i]);
+                    if (indexes.length > 0) {
+                        for (j in indexes) {
+                            var o = {oNode: exp_int[i], l1: parseInt(i), l2: indexes[j]};
+                            oLinks.push(o);
                         }
                     }
-                    //calculate scores based on number of abstracts for overlapping links
-                    for (i in oLinks) {
-                        var l1_val = matches.links[oLinks[i].l1].value
-                        var l2_val = matches.links[oLinks[i].l2].value
-                        if (l1_val > l2_val) {
-                            var score = l2_val / l1_val * (l1_val + l2_val)
-                        } else {
-                            var score = l1_val / l2_val * (l1_val + l2_val)
-                        }
-                        oLinks[i].score = score
+                }
+                //calculate scores based on number of abstracts for overlapping links
+                for (i in oLinks) {
+                    var l1_val = matches.links[oLinks[i].l1].value;
+                    var l2_val = matches.links[oLinks[i].l2].value;
+                    if (l1_val > l2_val) {
+                        var score = l2_val / l1_val * (l1_val + l2_val);
+                    } else {
+                        var score = l1_val / l2_val * (l1_val + l2_val);
                     }
-                    //sort the objects by score
-                    var oLinksSort = oLinks.sort(function (a, b) {
-                        return b.score - a.score
-                    })
+                    oLinks[i].score = score;
+                }
 
-                    if (threshold != -1 && matches.links.length > threshold) {
-                        console.log("Limiting matches to " + threshold + " instead of showing " + matches.links.length);
-                        topLinks = oLinksSort.slice(0, threshold);
-                    }
-                    else
-                    {
-                        topLinks = oLinksSort;
-                    }
+                // //sort the objects by score
+                var oLinksSort = oLinks.sort(function (a, b) {
+                    return b.score - a.score;
+                })
 
-                    var top_sources = []
-                    var top_targets = []
-                    for (i in topLinks) {
-                        t1 = matches.links[topLinks[i].l1].target
-                        s1 = matches.links[topLinks[i].l1].source
-                        t2 = matches.links[topLinks[i].l2].target
-                        s2 = matches.links[topLinks[i].l2].source
-                        top_sources.push(s1, s2)
-                        top_targets.push(t1, t2)
-                    }
-                    nodeMatch = []
+                if (threshold != -1 && oLinksSort.length > threshold) {
+                    console.log("Limiting links to " + threshold + " instead of showing " + oLinksSort.length);
+                    topLinks = oLinksSort.slice(0, threshold);
+                }
+                else
+                {
+                    topLinks = oLinksSort;
+                }
 
-                    matches.links = matches.links.filter(function (link) {
-                        if (top_targets.indexOf(link.target) > -1 && top_sources.indexOf(link.source) > -1) {
-                            nodeMatch.push(link.target, link.source)
-                            target = matches.nodes[link.target].name
-                            source = matches.nodes[link.source].name
-                            sData.push([source, target, link.value])
-                        }
-                    });
-                    drawChart(sData)
-                //}
+                var top_sources = [];
+                var top_targets = [];
+                for (i in topLinks) {
+                    t1 = matches.links[topLinks[i].l1].target;
+                    s1 = matches.links[topLinks[i].l1].source;
+                    t2 = matches.links[topLinks[i].l2].target;
+                    s2 = matches.links[topLinks[i].l2].source;
+                    top_sources.push(s1, s2);
+                    top_targets.push(t1, t2);
+                }
+                nodeMatch = []
+
+                matches.links = matches.links.filter(function (link) {
+                    if (top_targets.indexOf(link.target) > -1 && top_sources.indexOf(link.source) > -1) {
+                        nodeMatch.push(link.target, link.source);
+                        target = matches.nodes[link.target].name;
+                        source = matches.nodes[link.source].name;
+                        sData.push([source, target, link.value]);
+                    }
+                });
+                drawChart(sData);
+
+                // Hide the slider if we are not limiting the result set
+                if (topLinks.length < 5) {
+                    $("#threshold-controller").hide();
+                }
+
             })
-
         }
 
         function drawChart(sData) {
