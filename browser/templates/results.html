@@ -66,7 +66,6 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
             var oLinks = []
             var sData = []
             d3.json("{{ json_url }}", function (matches) {
-                if (threshold != -1 && matches.links.length > threshold) {
                     //create arrays of target and sources
                     matches.links = matches.links.filter(function (link) {
                         exp_int.push(link.target)
@@ -100,9 +99,14 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
                         return b.score - a.score
                     })
 
-                    console.log("Limiting matches to " + threshold + " instead of showing " + matches.links.length);
-
-                    topLinks = oLinksSort.slice(0, threshold);
+                    if (threshold != -1 && matches.links.length > threshold) {
+                        console.log("Limiting matches to " + threshold + " instead of showing " + matches.links.length);
+                        topLinks = oLinksSort.slice(0, threshold);
+                    }
+                    else
+                    {
+                        topLinks = oLinksSort;
+                    }
 
                     var top_sources = []
                     var top_targets = []
@@ -125,7 +129,7 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
                         }
                     });
                     drawChart(sData)
-                }
+                //}
             })
 
         }
