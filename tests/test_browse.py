@@ -171,9 +171,11 @@ class BrowsingTest(TestCase):
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
-        self.assertEqual(edge_file_lines[0], "Mediators, Exposure counts, Outcome counts, Scores,\n")
-        self.assertTrue(len(abstract_file_lines) > 1)  # Expected more than 1 lines
-        self.assertEqual(abstract_file_lines[0], "Abstract IDs,\n")
+        self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
+        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
+        self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
 
@@ -181,7 +183,6 @@ class BrowsingTest(TestCase):
         new_gene_count = Gene.objects.filter(name="HTR1A").count()
         self.assertEqual(existing_gene_count, original_gene_count)
         self.assertEqual(new_gene_count, 1)
-
 
     def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
         """Upload file and try to bulk select mesh terms."""

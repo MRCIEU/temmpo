@@ -3,6 +3,7 @@ import os
 import re
 import string
 import sys
+import unicodecsv
 
 from django.conf import settings
 # from django.core.mail import send_mail
@@ -404,9 +405,9 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
     # Output citation ids
     if citation_id:
         resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
-        resultfile.write("Abstract IDs,\n")
-        resultfile.write(",\n".join(str(e) for e in citation_id))
-        resultfile.write(",")
+        csv_writer = unicodecsv.writer(resultfile)
+        csv_writer.writerow(("Abstract IDs", ))
+        csv_writer.writerows([(cid, ) for cid in citation_id])
         resultfile.close()
 
     return papercounter, edges, identifiers
@@ -415,9 +416,10 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
                      synonymlookup, edges, WEIGHTFILTER, mediatormesh,
                      mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
-    # Gephi input
+    """Gephi input.
+       NB: These files are is not in use in the web application and are not covered by the test suite.
+    """
 
-    # TODO - Work out where to put results file
     resultfile = open('%s%s.csv' % (results_path, resultfilename), 'w')
 
     exposurecounter = {}
@@ -575,8 +577,8 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
 
 
 def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
-    edge_score = ''
-    # expanded_edge_score = ''
+    edge_score = []
+    # expanded_edge_score = []
     for ikey in edges.keys():
         b, d = 0, 0
         for exposure in exposuremesh:
@@ -592,16 +594,17 @@ def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
         bf, df = float(b), float(d)
         if (bf and df) > 0.0:
             score1 = min(bf, df) / max(bf, df) * (bf + df)
-            edge_score = edge_score + ",".join([ikey, str(b), str(d), str(score1)]) + ",\n"  # ,score2
-            # expanded_edge_score = expanded_edge_score + ",".join([ikey,exposure,outcome,str(score1)]) + ",\n"#,score2
+            edge_score.append((ikey, str(b), str(d), str(score1)),)  # ,score2
+            # expanded_edge_score.append((ikey,exposure,outcome,str(score1),) #,score2
 
         else:
             score1 = "NA"
 
     # Write out edge file
     edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
-    edgefile.write("Mediators, Exposure counts, Outcome counts, Scores,\n")
-    edgefile.write(edge_score)
+    csv_writer = unicodecsv.writer(edgefile)
+    csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
+    csv_writer.writerows(edge_score)
     edgefile.close()
 
     # edgeexpfile = open('%s%s_edge_expanded.csv' % (results_path,resultfilename),'w')
