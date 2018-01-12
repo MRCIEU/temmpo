@@ -8,3 +8,4 @@ django-simple-autocomplete==1.11
 lxml==3.8.0
 mysqlclient==1.3.10
 python-magic==0.4.13
+unicodecsv==0.14.1

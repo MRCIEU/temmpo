@@ -17,3 +17,4 @@ pip-tools==1.11.0
 python-magic==0.4.13
 pytz==2017.2              # via django
 six==1.10.0               # via pip-tools
+unicodecsv==0.14.1
