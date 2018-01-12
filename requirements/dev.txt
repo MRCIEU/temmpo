@@ -34,4 +34,5 @@ simplegeneric==0.8.1      # via ipython
 six==1.10.0
 sqlparse==0.2.4           # via django-debug-toolbar
 traitlets==4.3.2          # via ipython
+unicodecsv==0.14.1
 wcwidth==0.1.7            # via prompt-toolkit
