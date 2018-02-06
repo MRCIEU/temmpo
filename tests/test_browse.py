@@ -127,25 +127,9 @@ class BrowsingTest(TestCase):
         with the gene when the WEIGHTFILTER thresh hold is zero
         """
 
-        test_file = open(TEST_FILE, 'r')
-        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
-        upload.save()
-        test_file.close()
-
-        exposure_terms = MeshTerm.objects.get(term="Humans").get_descendants(include_self=True)
-        mediator_terms = MeshTerm.objects.get(term="Phenotype").get_descendants(include_self=True)
-        outcome_terms = MeshTerm.objects.get(term="Apoptosis").get_descendants(include_self=True)
+        search_criteria = self._set_up_test_search_criteria()
         original_gene_count = Gene.objects.filter(name="TRPC1").count()
         self.assertEqual(original_gene_count, 1)
-
-        search_criteria = SearchCriteria(upload=upload)
-        search_criteria.save()
-
-        # search_criteria.genes = genes
-        search_criteria.exposure_terms = exposure_terms
-        search_criteria.outcome_terms = outcome_terms
-        search_criteria.mediator_terms = mediator_terms
-        search_criteria.save()
 
         # Run the search, by posting filter and gene selection form
         self._login_user()
@@ -369,3 +353,35 @@ class BrowsingTest(TestCase):
 
             search_criteria = SearchCriteria.objects.latest("created")
             self._assert_toggle_selecting_child_terms(search_criteria=search_criteria)
+
+    def test_filter_form_rendering(self):
+        """Ensure bug TMMA-243 does not re-appear."""
+        search_criteria = self._set_up_test_search_criteria()
+        self._login_user()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.get(path, follow=True)
+        self.assertContains(response, "TRPC1", msg_prefix=response.content)
+        self.assertNotContains(response, "Gene: TRPC1", msg_prefix=response.content)
+        search_criteria.delete()
+
+    def _set_up_test_search_criteria(self):
+        test_file = open(TEST_FILE, 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
+        upload.save()
+        test_file.close()
+
+        exposure_terms = MeshTerm.objects.get(term="Humans").get_descendants(include_self=True)
+        mediator_terms = MeshTerm.objects.get(term="Phenotype").get_descendants(include_self=True)
+        outcome_terms = MeshTerm.objects.get(term="Apoptosis").get_descendants(include_self=True)
+        gene = Gene.objects.get(name="TRPC1")
+
+        search_criteria = SearchCriteria(upload=upload)
+        search_criteria.save()
+
+        search_criteria.genes.add(gene)
+        search_criteria.exposure_terms = exposure_terms
+        search_criteria.outcome_terms = outcome_terms
+        search_criteria.mediator_terms = mediator_terms
+        search_criteria.save()
+
+        return search_criteria
