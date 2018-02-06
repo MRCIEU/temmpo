@@ -3,22 +3,30 @@
 {% block title %}TeMMPo: Results{% endblock %}
 
 {% block styles %}
+    <link rel="stylesheet" href="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.css">
 {% endblock %}
+
+{% block body_class_style %}results-page{% endblock %}
 
 {% block section_title %}
 Results
 {% endblock %}
 
 {% block page_heading %}
-<p>
-      {% if search_result.mesh_filter %}
-        Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term and limited to the top 50 matches.
-      {% else %}
-        Limited to the top 50 matches.
-      {% endif %}
+    {% if search_result.mesh_filter %}
+      <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term.</p>
+    {% endif %}
 
-      <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
-</p>
+    <div id="threshold-controller">
+        <p>
+            <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly>
+        </p>
+        <div id="slider"></div>
+    </div>
+    <div id="results-buttons" class="form-group">
+        <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
+    </div>
+
 {% endblock %}
 
 {% block section %}
@@ -27,112 +35,159 @@ Results
 Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
 </p>
 -->
-<p id="chart"></p>
+<div id="sankey_multiple"></div>
 {% endblock %}
 
 {% block scripts %}
-{# Chart related JS #}
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
-<script src="{{ STATIC_URL}}js/sankey.js"></script>
+    {# Chart related JS #}
+    <script src="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL}}js/d3.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load("44", {packages: ["sankey"]});
+        google.charts.setOnLoadCallback(function() { (getLinks(topVal))});
+    </script>
+    <script>
+    function getAllIndexes(arr, val) {
+            var indexes = [], i = -1;
+            while ((i = arr.indexOf(val, i + 1)) != -1) {
+                indexes.push(i);
+            }
+            return indexes;
+        }
 
-<script>
-var threshold = 50;
-var availableHeight = 960;
-var availableWidth = $("#chart").width();
+        topVal = 50
+        function getLinks(topVal) {
+            var threshold = topVal;
+            var exp_int = [];
+            var int_out = [];
+            var oLinks = [];
+            var sData = [];
+            d3.json("{{ json_url }}", function (matches) {
+                //create arrays of target and sources
+                matches.links = matches.links.filter(function (link) {
+                    exp_int.push(link.target);
+                    int_out.push(link.source);
+                    return link;
+                })
+                //find overlapping link objects
+                for (i in exp_int) {
+                    var int_out_match = int_out.indexOf(exp_int[i]);
+                    var indexes = getAllIndexes(int_out, exp_int[i]);
+                    if (indexes.length > 0) {
+                        for (j in indexes) {
+                            var o = {oNode: exp_int[i], l1: parseInt(i), l2: indexes[j]};
+                            oLinks.push(o);
+                        }
+                    }
+                }
+                //calculate scores based on number of abstracts for overlapping links
+                for (i in oLinks) {
+                    var l1_val = matches.links[oLinks[i].l1].value;
+                    var l2_val = matches.links[oLinks[i].l2].value;
+                    if (l1_val > l2_val) {
+                        var score = l2_val / l1_val * (l1_val + l2_val);
+                    } else {
+                        var score = l1_val / l2_val * (l1_val + l2_val);
+                    }
+                    oLinks[i].score = score;
+                }
 
-var margin = {top: 1, right: 1, bottom: 6, left: 1},
-    width = availableWidth - margin.left - margin.right,
-    height = availableHeight - margin.top - margin.bottom;
+                // //sort the objects by score
+                var oLinksSort = oLinks.sort(function (a, b) {
+                    return b.score - a.score;
+                })
 
-var formatNumber = d3.format(",.0f"),
-    format = function(d) { return formatNumber(d) + " abstracts"; },
-    color = d3.scale.category20();
+                if (threshold != -1 && oLinksSort.length > threshold) {
+                    console.log("Limiting links to " + threshold + " instead of showing " + oLinksSort.length);
+                    topLinks = oLinksSort.slice(0, threshold);
+                }
+                else
+                {
+                    topLinks = oLinksSort;
+                }
 
-var svg = d3.select("#chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                var top_sources = [];
+                var top_targets = [];
+                for (i in topLinks) {
+                    t1 = matches.links[topLinks[i].l1].target;
+                    s1 = matches.links[topLinks[i].l1].source;
+                    t2 = matches.links[topLinks[i].l2].target;
+                    s2 = matches.links[topLinks[i].l2].source;
+                    top_sources.push(s1, s2);
+                    top_targets.push(t1, t2);
+                }
+                nodeMatch = []
 
-var sankey = d3.sankey()
-    .nodeWidth(15)
-    .nodePadding(10)
-    .size([width, height]);
+                matches.links = matches.links.filter(function (link) {
+                    if (top_targets.indexOf(link.target) > -1 && top_sources.indexOf(link.source) > -1) {
+                        nodeMatch.push(link.target, link.source);
+                        target = matches.nodes[link.target].name;
+                        source = matches.nodes[link.source].name;
+                        sData.push([source, target, link.value]);
+                    }
+                });
+                drawChart(sData);
 
-var path = sankey.link();
+                // Hide the slider if we are not limiting the result set
+                if (topLinks.length < 5) {
+                    $("#threshold-controller").hide();
+                }
 
-d3.json("{{ json_url }}", function(matches) {
+            })
+        }
 
-  /* TMMA-106 Temporarily limit to the top 50 matches */
-  if (threshold != -1 && matches.links.length > threshold) {
+        function drawChart(sData) {
+            var data = new google.visualization.DataTable();
+            var s1Name = 'a'
+            var s2Name = 'b'
+            var maxCounter = 0
 
-    console.log("Limiting matches to " + threshold + " instead of showing " + matches.links.length);
-    var links = matches.links;
-    links.sort(function(a, b) { return b.value - a.value; });
-    links = links.slice(0, threshold);
-    var top_targets = links.map(function(link){ 
-       return link.target;
-    });
-    var top_sources = links.map(function(link){ 
-       return link.source;
-    });
-    matches.links = matches.links.filter(function(link) { return link.target in top_targets || link.source in top_sources;});
+            data.addColumn('string', 'From');
+            data.addColumn('string', 'To');
+            data.addColumn('number', 'Articles');
+            data.addRows(sData)
 
-  }
+            // Set chart options
+            var options = {
+                width: 1200,
+                height:650,
+                //iterations: 100,
+                //sankey: { node: { nodePadding: 10 } },
+                sankey: {
+                    node: {
+                        interactivity: true,
+                        label: {
+                            fontName: 'Times-Roman',
+                            fontSize: 12,
+                            //color: '#871b47',
+                            //bold: true,
+                            //italic: true
+                        }
+                    }
+                }
+            };
 
-  sankey
-      .nodes(matches.nodes)
-      .links(matches.links)
-      .layout(32);
+            // Instantiate and draw our chart, passing in some options.
+            var chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
+            chart.draw(data, options);
 
-  var link = svg.append("g").selectAll(".link")
-      .data(matches.links)
-    .enter().append("path")
-      .attr("class", "link")
-      .attr("d", path)
-      .style("stroke-width", function(d) { return Math.max(1, d.dy); })
-      .sort(function(a, b) { return b.dy - a.dy; });
+        }
+        $(document).ready(function () {
 
-  link.append("title")
-      .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + format(d.value); });
-
-  var node = svg.append("g").selectAll(".node")
-      .data(matches.nodes)
-    .enter().append("g")
-      .attr("class", "node")
-      .attr("style", function(d) { return (d.value == 0) ? "display:none":"";})  /* Hide nodes that have no matches NB: This suppresses issue TMMA-5 and is required by TMMA-106 */
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-    .call(d3.behavior.drag()
-      .origin(function(d) { return d; })
-      .on("dragstart", function() { this.parentNode.appendChild(this); })
-      .on("drag", dragmove));
-
-  node.append("rect")
-      .attr("height", function(d) { return d.dy; })
-      .attr("width", sankey.nodeWidth())
-      .style("fill", function(d) { return d.color = color(d.name.replace(/ .*/, "")); })
-      .style("stroke", function(d) { return d3.rgb(d.color).darker(2); })
-    .append("title")
-      .text(function(d) { return d.name + "\n" + format(d.value); });
-
-  node.append("text")
-      .attr("x", -6)
-      .attr("y", function(d) { return d.dy / 2; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "end")
-      .attr("transform", null)
-      .text(function(d) { return d.name; })
-    .filter(function(d) { return d.x < width / 2; })
-      .attr("x", 6 + sankey.nodeWidth())
-      .attr("text-anchor", "start");
-
-  function dragmove(d) {
-    d3.select(this).attr("transform", "translate(" + d.x + "," + (d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
-    sankey.relayout();
-    link.attr("d", path);
-  }
-});
-
-</script>
-
+            $(function () {
+                $("#slider").slider({
+                    range: "max",
+                    min: 5,
+                    max: 500,
+                    value: 50,
+                    slide: function (event, ui) {
+                        $("#chart-slider-label").val(ui.value);
+                        google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
+                    }
+                });
+                $("#chart-slider-label").val($("#slider").slider("value"));
+            });
+        })
+    </script>
 {% endblock %}

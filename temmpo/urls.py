@@ -1,7 +1,11 @@
+"""URL patterns for the TeMMPo applications."""
+
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.views.decorators.cache import cache_page
+from django.views.static import serve
 
 from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, ResultsView,
                            SearchExisting, ResultsListingView, FilterSelector,
@@ -11,10 +15,11 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
                            MeshTermsAllAsJSON, MeshTermSearchJSON, SelectSearchTypeView,
                            SearchPubMedView, ReuseSearchView)
 
-urlpatterns = patterns(
-    '',
-    # Django selectable
-    url(r'^selectable/', include('selectable.urls')),
+urlpatterns = [
+
+    # auto complete functionality
+    url(r'^simple-autocomplete/', include('simple_autocomplete.urls', namespace='simple_autocomplete')),
+
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
@@ -44,14 +49,15 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
 
     # Django user authentication
-    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name="logout"),
+    url(r'^logout/$', LogoutView.as_view(), name="logout"),
     url(r'^', include('registration.backends.default.urls')),
     url(r'^', include('django.contrib.auth.urls')),
-)
+]
 
-urlpatterns += patterns('',
-                        (r'^media/(?P<path>.*)$',
-                         'django.views.static.serve',
-                         {'document_root': settings.MEDIA_ROOT}),
-                        )
-# ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# For non Apache fronted Django development server scenarios.
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]

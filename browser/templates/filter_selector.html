@@ -5,7 +5,14 @@
 {% block section_title %}Select genes and filter{% endblock %}
 
 {% block scripts %}{{ form.media.js }}{% endblock %}
-{% block styles %}{{ form.media.css }}{% endblock %}
+{% block styles %}
+{# Appears to need to be loaded in the header vs the footer of the page #}
+<script src="{{ STATIC_URL }}admin/js/vendor/jquery/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script src="{{ STATIC_URL }}simple_autocomplete/jquery-ui.js"></script>
+{{ form.media.css }}
+<link rel="stylesheet" href="{{ STATIC_URL }}simple_autocomplete/jquery-ui.css" />
+{% endblock %}
 
 {% block page_heading %}
 {% include 'includes/breadcrumb.html' %}

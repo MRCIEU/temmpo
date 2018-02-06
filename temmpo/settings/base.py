@@ -36,13 +36,13 @@ except IOError:
 
 # SECURITY WARNING: don't run with debug turned on in production!  See prod.py settings file to change this value.
 DEBUG = True
-TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '137.222.16.18',
-                 '.ilrt.bris.ac.uk', '.ilrt.bristol.ac.uk',
-                 '.epi.bris.ac.uk', '.epi.bristol.ac.uk',
-                 '.bris.ac.uk', '.bristol.ac.uk', 'temmpo.org.uk',
-                 'www.temmpo.org.uk', '137.222.0.181', ]
+ALLOWED_HOSTS = ['127.0.0.1',
+                 'localhost',
+                 '.bris.ac.uk',
+                 '.bristol.ac.uk',
+                 'temmpo.org.uk',
+                 'www.temmpo.org.uk', ]
 
 # Application definition
 
@@ -56,20 +56,19 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'selectable', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete',]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'temmpo.urls'
@@ -104,6 +103,7 @@ RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 LOGIN_REDIRECT_URL = 'results_listing'  # 'search'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
 
 # Registration
 ACCOUNT_ACTIVATION_DAYS = 14
@@ -128,7 +128,7 @@ LOGGING = {
     'handlers': {
         'null': {
             'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
         'console': {
             'level': 'DEBUG',
@@ -170,6 +170,29 @@ LOGGING = {
         'level': 'DEBUG',
     }
 }
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages'
+            ],
+        },
+    },
+]
+
+X_FRAME_OPTIONS = 'DENY'
+CSRF_COOKIE_HTTPONLY = True
+
+SIMPLE_AUTOCOMPLETE = {'browser.meshterm': {'search_field': 'term', 'max_items': 10}}
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
