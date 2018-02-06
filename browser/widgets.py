@@ -1,3 +1,5 @@
+"""Custom widget field for selecting Gene Filter terms for searches."""
+
 import logging
 import sys
 
@@ -9,20 +11,18 @@ logger = logging.getLogger(__name__)
 
 
 class GeneTextarea(forms.widgets.Textarea):
+    """Base on TextArea widget."""
 
-    def render(self, name, value, attrs=None):
-        # Transform value
-        # Whilst not the normal place for this other attempts
-        # to override field methods are not triggered.
+    def format_value(self, value):
+        """Ensure plain text is shown not Gene objects."""
         if not value:
             value = ""
 
         elif isinstance(value, list):
+            # Upon loading search criteria with existing genes saved, widget gets passed a list of Gene objects
             try:
-                # Try to look up list of IDs and turn into Gene names
-                genes = Gene.objects.filter(id__in=value)
-                value = ",".join(genes.values_list('name', flat=True))
+                value = ",".join([gene.name for gene in value])
             except:
                 print "Unexpected error handling rendering gene field:", sys.exc_info()
 
-        return super(GeneTextarea, self).render(name, value, attrs)
+        return super(GeneTextarea, self).format_value(value)
