@@ -51,7 +51,7 @@ Use one of the techniques below to set up your virtual environment
     vagrant ssh apache
 
 
-### Activate virtualenv
+### Activate virtualenv and move to source directory
 
     cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
 
