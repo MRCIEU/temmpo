@@ -1,4 +1,4 @@
-{% extends "tworowsthreecolumns.html" %}
+{% extends "tworowscolumns.html" %}
 
 {% block title %}TeMMPo: Select {{ type }} MeSH® terms{% endblock %}
 
@@ -13,27 +13,11 @@
 
 {% block section_title %}{{ form_title }}{% endblock %}
 
-{% block left_width %}3{% endblock %}
-{% block middle_width %}2{% endblock %}
-{% block right_width %}7{% endblock %}
+{% block left_width %}4{% endblock %}
+{% block right_width %}8{% endblock %}
 
 {% block row %}
-{% if pre_selected_term_names %}<a href="{{ next_url }}" class="btn btn-primary">Now select {{ next_type }} &nbsp;<span class="fa fa-angle-double-right">&nbsp;</span></a>{% endif %}
 
-    <!-- Select child nodes -->
-    <!-- TODO: Not keeping previous value in form for select child nodes  -->
-    <div class="form-group" id="master_include_child_nodes">
-    <span class="fa fa-fw fa-cog"></span>
-      <label for="id_include_child_nodes_0">Select descendent <abbr title="Medical Subject Headings">MeSH®</abbr> terms</label>
-
-      {% for input in form.include_child_nodes %}
-          {{ input }}
-      {% endfor %}
-
-    </div>
-
-{% endblock %}
-{% block left_column %}
     {% if messages %}
         <ul class="errorlist">
             {% for message in messages %}
@@ -59,80 +43,119 @@
         </ul>
     {% endif %}
 
-    {# if pre_selected_term_names #}
-      <section>
-          <h2>Current {{ type }} terms</h2>
-          <p>{{ pre_selected_term_names }}</p>
-      </section>
-    {# endif #}
+    {% if pre_selected_term_names %}
 
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Current {{ type }} terms</h2>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+              <div class="col-lg-6">
+                <p>{{ pre_selected_term_names }}</p>
+              </div>
+              <div class="col-lg-6">
+                <a href="{{ next_url }}" class="btn btn-primary">Now select {{ next_type }} &nbsp;<span class="fa fa-angle-double-right">&nbsp;</span></a>
+              </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+            <h2 class="panel-title">Selection of child <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
+        </div>
+        <div class="panel-body">
+          <div class="form-group" id="master_include_child_nodes">
+            <span class="fa fa-fw fa-cog"></span>
+            <label for="id_include_child_nodes_0">Select descendent <abbr title="Medical Subject Headings">MeSH®</abbr> terms</label>
+
+            {% for input in form.include_child_nodes %}
+                {{ input }}
+            {% endfor %}
+          </div>
+      </div>
+    </div>
 {% endblock %}
 
-{% block middle_column %}
+{% block left_column %}
   <section>
-    <h2>Bulk edit</h2>
-    <form action="." method="post" id="bulk_edit">
-        {% csrf_token %}
-        <div class="form-group">
-          <label for="term_names" class="control-label">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
-          <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+          <h2 class="panel-title">Bulk edit</h2>
         </div>
+        <div class="panel-body">
+          <form action="." method="post" id="bulk_edit">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="term_names" class="control-label">Enter <abbr title="Medical Subject Headings">MeSH®</abbr> terms: separated by a semicolon (<strong>;</strong>)</label>
+                <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
+              </div>
 
-        <button type="submit" name="btn_submit" value="replace" class="btn btn-primary btn-sm btn-outline">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
-        <input type="hidden" name="include_child_nodes" value="down" />
-    </form>
+              <button type="submit" name="btn_submit" value="replace" class="btn btn-primary btn-sm btn-outline">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
+              <input type="hidden" name="include_child_nodes" value="down" />
+          </form>
+        </div>
+    </div>
   </section>
+
 {% endblock %}
 
 {% block right_column %}
-      <h2>{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
+  <section>
+    <div class="panel panel-default">
+      <div class="panel-heading">
 
-      <form action="." method="post" id="search_form">
-          <!-- Search -->
-          <div class="form-group">
-            <label for="search_term" class="control-label">Search</label>
-            <input id="search_term" name="search_term" type="text" value="" />
-          </div>
-          <div class="form-group">
-            <button type="submit" id="search_button" value="search" class="btn btn-primary btn-sm btn-outline">Search</button>
-          </div>
-      </form>
+        <h2 class="panel-title">{{ selected_tree_root_node }} <abbr title="Medical Subject Headings">MeSH®</abbr> terms tree</h2>
 
-      <form action="." method="post" id="meshtree">
-          {% csrf_token %}
+        </div>
+        <div class="panel-body">
 
-          <!-- js tree -->
-          {# Ajax version #}
-          <div id="term_tree">
-          </div>
+          <form action="." method="post" id="search_form">
+              <!-- Search -->
+              <div class="form-group">
+                <label for="search_term" class="control-label">Search</label>
+                <input id="search_term" name="search_term" type="text" value="" />
+              </div>
+              <div class="form-group">
+                <button type="submit" id="search_button" value="search" class="btn btn-primary btn-sm btn-outline">Search</button>
+              </div>
+          </form>
 
-          <div class="form-group">
-            <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-sm btn-outline">Select these terms and choose more {{ type }} terms</button>
-          </div>
+          <form action="." method="post" id="meshtree">
+              {% csrf_token %}
 
-          <div class="form-group">
-              <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-sm btn-outline">Select these terms and move on to select {{ next_type }}</button>
-          </div>
+              <!-- js tree -->
+              {# Ajax version #}
+              <div id="term_tree">
+              </div>
 
-          <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
-          <input type="hidden" name="include_child_nodes" value="down" />
-      </form>
+              <div class="form-group">
+                <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-sm btn-outline">Select these terms and choose more {{ type }} terms</button>
+              </div>
 
+              <div class="form-group">
+                  <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-sm btn-outline">Select these terms and move on to select {{ next_type }}</button>
+              </div>
+
+              <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
+              <input type="hidden" name="include_child_nodes" value="down" />
+          </form>
+        </div>
+    </div>
+  </section>
 {% endblock %}
 
 {% block scripts %}
 <!-- jsTree -->
 <script src="{{STATIC_URL}}js/jstree/jstree.min.js"></script>
 
-      <script type="text/javascript">
+      <script>
         $(function() {
 
-          // $('#term_tree').on("init.jstree", function (e, data) {
-          //     data.instance.settings.checkbox.cascade = '';
-          // })
-
           $("#term_tree").jstree({
-            "plugins" : [ "checkbox", "search"],
+            "plugins" : [ "checkbox", "search",],
             "core" : {
               "data" : {
                 "url" : "{{ json_url }}",
@@ -156,8 +179,6 @@
 
         $( "document" ).ready(function () {
 
-              // TODO: Preferably add visual cue to when the search has completed
-              // possibly hide control / show a spinner
               // Need to hide on complete of the .search event.
               $('#search_form').submit(function (event) {
                   var v = $('#search_term').val();
@@ -177,20 +198,6 @@
                   event.preventDefault();
               });
         });
-
-        // Alternative search as you type method
-        // $(function () {
-        //       var to = false;
-        //       $('#search_term').keyup(function () {
-        //         if(to) { 
-        //           clearTimeout(to); 
-        //         }
-        //         to = setTimeout(function () {
-        //             var v = $('#search_term').val();
-        //             $('#term_tree').jstree(true).search(v);
-        //           }, 250);
-        //         })
-        //   });
 
         $( "document" ).ready(function() {
             // Open all
