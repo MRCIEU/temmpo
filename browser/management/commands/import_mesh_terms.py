@@ -1,4 +1,10 @@
 """
+Management command to import or update MeSH terms.
+
+Example format for ASCII MeSH input file.
+
+Ref: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
+
 Body Regions;A01
 Anatomic Landmarks;A01.111
 Breast;A01.236
@@ -52,14 +58,15 @@ from browser.models import MeshTerm
 
 
 class Command(BaseCommand):
-    args = '<mesh-term-file-path>'
-    help = 'Creates Mesh Term objects based on importing terms from 2015 MeSH in ASCII format mtrees2015.bin http://www.nlm.nih.gov/mesh/'
+    args = '<mesh-term-file-path> <year>'
+    help = 'Creates Mesh Term objects based on importing terms from a given years edition of the MeSH terms in ASCII format e.g. mtrees2015.bin http://www.nlm.nih.gov/mesh/'
 
     def handle(self, *args, **options):
         if args:
 
             filename = args[0]
-            self.stdout.write("About to parse %s and create MesH Terms vocabulary" % filename)
+            year = args[1]
+            self.stdout.write("About to parse %s and create MesH Terms vocabulary for year %s" % (filename, year,))
 
             try:
                 with open(filename, 'r') as f:
@@ -84,6 +91,7 @@ class Command(BaseCommand):
                                 self.stderr.write("Could not find parent object " + parent_tree_number)
                                 parent = None
                         else:
+                            # TODO: TMMA-131 Use year MeSHTerm filter
                             parent = None
 
                         if parent:
@@ -93,40 +101,9 @@ class Command(BaseCommand):
 
                         self.stdout.write("Created:" + term.get_term_with_tree_number())
 
-                # MeshTerm
-
-                # tree = etree.parse(filename)
-                # self.stdout.write("Before parse")
-                # tree = etree.parse(filename)
-                # self.stdout.write("After parse")
-                #tree.getroot()
-                #parser = etree.XMLParser(remove_blank_text=True) # lxml.etree only!
-                # >>> for element in root.iter("*"):
-                # ...     if element.text is not None and not element.text.strip():
-                # ...         element.text = None
-                # The XML parser
-                # boolean dtd_validation, remove_comments
-                # keyword args - schema   - an XMLSchema to validate against
-                # - target   - a parser target object that will receive the parse events
-
-                # Interate DescriptorRecord
-                # DescriptorName > String
-                # Then interate TermList
-                # Term > String
-
-                # for record in tree.iter("DescriptorRecord"):
-                #     print("%s, %s" % (element.tag, element.text))
-                #     name = etree.SubElement(tree, "DescriptorName")
-                #     print(name.tag)
-                #     heading = record.find('//DescriptorName/String').text
-                #     print(heading)
-                #     break
-                #     # if element.text is not None and not element.text.strip():
-                #     #    element.text = None
-
             except Exception as e:
                 self.stderr.write("Some kind of error")
                 self.stderr.write(repr(e))
 
         else:
-            raise CommandError("Please supply the file path to the Mesh Tree ASCII format file to parse.")
+            raise CommandError("Please supply the file path to the Mesh Tree ASCII format file to parse and the year of release YYYY.")

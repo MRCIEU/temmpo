@@ -264,7 +264,7 @@ class SearchExistingUpload(RedirectView):
 
 
 class SearchExisting(RedirectView):
-    """TODO: Change to allow separate term collection reuse
+    """TODO: TMMA-139 Change to allow separate term collection reuse
        Create new search criteria based on existing one and pass to
        ExposureSelector view """
     permanent = False
@@ -272,6 +272,8 @@ class SearchExisting(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         """ Copy across existing search criteria and allow user to amend """
         original_criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
+
+        # TODO: TMMA-131 Need to handle missing terms if filter year is not the current year.
 
         # NB: Need to deep copy to ensure Many to Many relationship is captured
         criteria_copy = SearchCriteria(upload=original_criteria.upload)
@@ -538,6 +540,7 @@ class MeshTermsAsJSON(TemplateView):
 
         if self.requested_node_id == '#':
             nodes = MeshTerm.objects.root_nodes()
+            # TODO: TMMA-131 filter by year root node
         else:
             nodes = get_object_or_404(MeshTerm, id=self._get_int_id()).get_children()
 
@@ -574,6 +577,7 @@ class MeshTermsAllAsJSON(TemplateView):
     def dispatch(self, request, *args, **kwargs):
 
         root_nodes = MeshTerm.objects.root_nodes()
+        # TODO: TMMA-131 filter by year and return children
         dicts = []
         for n in root_nodes:
             dicts.append(self.recursive_node_to_dict(n))
@@ -601,9 +605,13 @@ class MeshTermSearchJSON(TemplateView):
         search_term = request.GET.get("str", "").strip()
         results = []
         if search_term:
+            # TODO: TMMA-131 filter by year root node
             root_nodes = MeshTerm.objects.filter(term__istartswith=search_term)
             for n in root_nodes:
                 results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
 
         results = ["mtid_%d" % x for x in results]
         return JsonResponse(results, safe=False)
+
+def _get_latest_mesh_term_release():
+    pass
