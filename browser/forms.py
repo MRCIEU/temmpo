@@ -3,6 +3,7 @@ import logging
 import re
 
 from django import forms
+from django.db.models import Max
 from django.conf import settings
 from django.contrib import messages
 
@@ -83,7 +84,7 @@ class TermSelectorForm(forms.ModelForm):
         child_term_ids = []
 
         for name in mesh_term_names:
-            mesh_terms = MeshTerm.objects.filter(term__iexact=name)
+            mesh_terms = MeshTerm.objects.filter(term__iexact=name, year=self.instance.mesh_terms_year_of_release)
             if mesh_terms.count() == 0:
                 messages.add_message(self.request, messages.WARNING, '%s: could not be found' % name)
                 # raise a validation error versus a message
@@ -109,7 +110,7 @@ class TermSelectorForm(forms.ModelForm):
                 mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
             else:
                 # Only extract IDs of specifically listed Mesh Terms and do not include any child terms.
-                mesh_term_ids = MeshTerm.objects.filter(term__in=mesh_terms).values_list("id", flat=True)
+                mesh_term_ids = MeshTerm.objects.filter(term__in=mesh_terms, year=self.instance.mesh_terms_year_of_release).values_list("id", flat=True)
 
         elif 'term_tree_ids' in self.cleaned_data:
             mesh_term_ids = self.cleaned_data['term_tree_ids'].split(',')
@@ -142,15 +143,17 @@ class TermSelectorForm(forms.ModelForm):
 
 
 class FilterForm(forms.ModelForm):
-    genes = forms.CharField(widget=GeneTextarea(attrs={'rows':4}),
+    """Present a Filter form to allow matching results to be filter by Gene(s) or MeshTerm of the latest release."""
+
+    genes = forms.CharField(widget=GeneTextarea(attrs={'rows': 4}),
                             required=False,
                             label='Enter genes (optional)',
                             help_text='Separated by commas')
 
-    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.all(),
-                    required=False,
-                    label='Filter',
-                    help_text="Enter a MeSH Term, e.g. Humans")
+    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.filter(year=MeshTerm.objects.root_nodes().aggregate(Max('year'))['year__max']),
+                                         required=False,
+                                         label='Filter',
+                                         help_text="Enter a MeSH Term, e.g. Humans")
 
     class Meta:
         model = SearchCriteria
@@ -211,5 +214,3 @@ class FilterForm(forms.ModelForm):
                 self.instance.genes.add(this_gene)
 
         return self.instance
-
-# TODO create custom form fields widgets

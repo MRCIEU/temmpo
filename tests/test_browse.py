@@ -25,6 +25,7 @@ TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
+TEST_YEAR = 2015
 
 
 class BrowsingTest(TestCase):
@@ -370,12 +371,12 @@ class BrowsingTest(TestCase):
         upload.save()
         test_file.close()
 
-        exposure_terms = MeshTerm.objects.get(term="Humans").get_descendants(include_self=True)
-        mediator_terms = MeshTerm.objects.get(term="Phenotype").get_descendants(include_self=True)
-        outcome_terms = MeshTerm.objects.get(term="Apoptosis").get_descendants(include_self=True)
+        exposure_terms = MeshTerm.objects.get(term="Humans", year=TEST_YEAR).get_descendants(include_self=True)
+        mediator_terms = MeshTerm.objects.get(term="Phenotype", year=TEST_YEAR).get_descendants(include_self=True)
+        outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True)
         gene = Gene.objects.get(name="TRPC1")
 
-        search_criteria = SearchCriteria(upload=upload)
+        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=TEST_YEAR)
         search_criteria.save()
 
         search_criteria.genes.add(gene)

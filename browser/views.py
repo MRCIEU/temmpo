@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# import copy
-import logging
-import math
 
+import logging
+
+from django.db.models import Max
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -39,6 +39,7 @@ class CreditsView(TemplateView):
         context['active'] = 'credits'
         return context
 
+
 class HelpView(TemplateView):
     template_name = "help.html"
 
@@ -46,6 +47,7 @@ class HelpView(TemplateView):
         context = super(HelpView, self).get_context_data(**kwargs)
         context['active'] = 'help'
         return context
+
 
 class SelectSearchTypeView(TemplateView):
     template_name = "select_search_type.html"
@@ -294,7 +296,7 @@ class FilterSelector(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the form
+        """ Ensure user logs in before viewing the form.
         """
 
         # Prevent one user viewing data for another
@@ -316,7 +318,7 @@ class FilterSelector(UpdateView):
         return context
 
     def form_valid(self, form):
-        """Store genes and filter"""
+        """Store genes and filter."""
 
         # Save genes to search criteria
         form.save()
@@ -525,27 +527,32 @@ class MeshTermsAsJSON(TemplateView):
         try:
             result = int(id_part)
         except ValueError:
-            raise ValidationError
+            raise Exception("Problem generating MeSH Term JSON file for %s" % self.requested_node_id)
 
         return result
 
     def dispatch(self, request, *args, **kwargs):
-
+        """Return JSON tree structure of MeshTerms and selected term status."""
         # When selecting root nodes # is sent; otherwise node id prefixed with mtid_
         self.requested_node_id = request.GET.get('id', '#')
         self.search_criteria_id = kwargs.get('pk', None)
         self.type = kwargs.get('type', None)
         self.selected = None
         self.ancestor_ids = []
-
-        if self.requested_node_id == '#':
-            nodes = MeshTerm.objects.root_nodes()
-            # TODO: TMMA-131 filter by year root node
-        else:
-            nodes = get_object_or_404(MeshTerm, id=self._get_int_id()).get_children()
+        nodes = []
 
         if self.search_criteria_id:
             sc = get_object_or_404(SearchCriteria, id=self.search_criteria_id)
+            # TMMA-131 filter by year root node
+            year = sc.mesh_terms_year_of_release
+            if self.requested_node_id == '#':
+                try:
+                    nodes = _get_top_level_mesh_terms(year)
+                except ObjectDoesNotExist:
+                    raise Exception("Problem generating year %s MeSH Term JSON file." % year)
+            else:
+                nodes = get_object_or_404(MeshTerm, id=self._get_int_id()).get_children()
+
             self.selected = getattr(sc, self.type + '_terms').all()
             for node in self.selected:
                 self.ancestor_ids.extend(node.get_ancestors().values_list("id", flat=True))
@@ -558,10 +565,10 @@ class MeshTermsAsJSON(TemplateView):
 
 
 class MeshTermsAllAsJSON(TemplateView):
+    """Return MeshTerms from the most recent release recorded."""
 
     def recursive_node_to_dict(self, node):
-        """Recursive """
-
+        """Recursive."""
         node_id = "mtid_" + str(node.id)
         result = {
             'id': node_id,
@@ -575,17 +582,17 @@ class MeshTermsAllAsJSON(TemplateView):
         return result
 
     def dispatch(self, request, *args, **kwargs):
-
-        root_nodes = MeshTerm.objects.root_nodes()
-        # TODO: TMMA-131 filter by year and return children
+        """Return JSON representation of the latest MeshTerm release."""
+        # TMMA-131 filter by year and return children
+        top_level_terms = _get_top_level_mesh_terms()
         dicts = []
-        for n in root_nodes:
+        for n in top_level_terms:
             dicts.append(self.recursive_node_to_dict(n))
-
         return JsonResponse(dicts, safe=False)
 
 
 class MeshTermSearchJSON(TemplateView):
+    """Return MeshTerms related to a search of the most recent release recorded."""
 
     # def node_to_dict_with_ancestors(self, node):
     #     nodes = node.get_ancestors(ascending=True, include_self=True)
@@ -602,16 +609,33 @@ class MeshTermSearchJSON(TemplateView):
     #     return chain
 
     def dispatch(self, request, *args, **kwargs):
+        """Support JSTree search functionality."""
         search_term = request.GET.get("str", "").strip()
         results = []
         if search_term:
-            # TODO: TMMA-131 filter by year root node
-            root_nodes = MeshTerm.objects.filter(term__istartswith=search_term)
-            for n in root_nodes:
+            # TMMA-131 filter by year and search for term
+            top_level_terms = _get_all_mesh_terms().filter(term__istartswith=search_term)
+            for n in top_level_terms:
                 results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
-
-        results = ["mtid_%d" % x for x in results]
+            results = ["mtid_%d" % x for x in results]
         return JsonResponse(results, safe=False)
 
-def _get_latest_mesh_term_release():
-    pass
+
+# TODO: TMMA-131 Test these and refactor as custom manager functions
+def _get_latest_mesh_term_release_year():
+    data = MeshTerm.objects.root_nodes().aggregate(Max('year'))
+    return data['year']
+
+
+def _get_top_level_mesh_terms(year=None):
+    """Get a query set of top level MeshTerms for a specific year."""
+    if not year:
+        year = _get_latest_mesh_term_release_year()
+    return MeshTerm.objects.root_nodes().get(term=str(year)).getChildren()
+
+
+def _get_all_mesh_terms(year=None):
+    """Get a query set of MeshTerms for a specific year."""
+    if not year:
+        year = _get_latest_mesh_term_release_year()
+    return MeshTerm.objects.root_nodes().get(term=str(year)).get_descendants(include_self=False)

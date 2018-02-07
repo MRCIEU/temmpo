@@ -48,31 +48,28 @@ class Gene(models.Model):
 class MeshTerm(MPTTModel):
     """Pre-populated with MeSH terms from http://www.nlm.nih.gov/mesh/.
 
-    IN PROGRESS: TMMA-131 Root nodes represent the year of release.
+    TMMA-131 Root nodes represent the year of release. For example:
 
-    eg.
     2015
         Anatomy
         Organisms
         ...
     2018
         ...
-
-
     """
     term = models.CharField(max_length=300)
     tree_number = models.CharField(max_length=250)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
-    # TMMA-131 Add year index to speed up searching for terms within a specfic year, default 2015
+    # TMMA-131 Add year index to speed up searching for terms within a specific year, default 2015
     year = models.PositiveSmallIntegerField(default=2015, db_index=True)
 
     def __str__(self):
         """Create a string version of each MeshTerm."""
         return self.term
 
-    def get_term_with_tree_number(self):
+    def get_term_with_details(self):
         """Create a string version of each MeshTerm with tree number."""
-        return self.term + ";" + self.tree_number
+        return "Term: %s tree number: %s year: %s" % (self.term, self.tree_number, self.year,)
 
 
 OVID = 'ovid'

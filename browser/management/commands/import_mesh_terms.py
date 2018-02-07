@@ -16,61 +16,40 @@ Lower Extremity;A01.378.610
 Buttocks;A01.378.610.100
 Foot;A01.378.610.250
 """
-# """
-# MeSH in XML format sample
-# <DescriptorRecord ...><!-- Descriptor  -->
-#    <DescriptorUI>D000005</DescriptorUI>
-#    <DescriptorName><String>Abdomen</String></DescriptorName>
-#    <Annotation> region & abdominal organs...
-#    </Annotation>
-#    <ConceptList>
-#       <Concept PreferredConceptYN="Y"><!-- Concept  -->
-#           <ConceptUI>M0000005</ConceptUI>
-#           <ConceptName><String>Abdomen</String></ConceptName>
-#           <ScopeNote> That portion of the body that lies
-#           between the thorax and the pelvis.</ScopeNote>
-#           <TermList>
-#              <Term ... PrintFlagYN="Y" ... ><!-- Term  -->
-#                 <TermUI>T000012</TermUI>
-#                 <String>Abdomen</String><!-- String = the term itself -->
-#                 <DateCreated>
-#                    <Year>1999</Year>
-#                    <Month>01</Month>
-#                    <Day>01</Day>
-#                 </DateCreated>
-#              </Term>
-#              <Term IsPermutedTermYN="Y" LexicalTag="NON">
-#                  <TermUI>T000012</TermUI>
-#                  <String>Abdomens</String>
-#              </Term>
-#           </TermList>
-#       </Concept>
-#    </ConceptList>
-# </DescriptorRecord>
-# """
-
-# from lxml import etree
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from browser.models import MeshTerm
 
+# TODO: TMMA-131 Add explicit tests for importing multiple years from a test sample file
+
 
 class Command(BaseCommand):
+    """Management command to manage importing MeshTerms."""
+
     args = '<mesh-term-file-path> <year>'
     help = 'Creates Mesh Term objects based on importing terms from a given years edition of the MeSH terms in ASCII format e.g. mtrees2015.bin http://www.nlm.nih.gov/mesh/'
 
-    def handle(self, *args, **options):
-        if args:
+    def add_arguments(self, parser):
+        """Define required command line arguments for management command."""
+        parser.add_argument('mesh_term_file_path', type=str)  # TODO TMMA-131 Should I be using type=argparse.FileType('r')
+        parser.add_argument('year', type=int)
 
-            filename = args[0]
-            year = args[1]
-            self.stdout.write("About to parse %s and create MesH Terms vocabulary for year %s" % (filename, year,))
+    def handle(self, *args, **options):
+        """Process file and create MeshTerm objects."""
+        if args:
+            filename = options["mesh_term_file_path"]
+            year = options["year"]
+            self.stdout.write("About to parse %s and create MesH Terms vocabulary for year %d" % (filename, year,))
 
             try:
                 with open(filename, 'r') as f:
+                    # Create parent node for importing a Tree of MeSH terms which will be rooted by a faux term, the year of release.
+                    root_node = MeshTerm.objects.create(term=str(year), tree_number="N/A", year=year)
+                    self.stdout.write("Created: Root term %s." % root_node)
                     for line in f:
+                        parent = None
                         name, location = line.split(";")
                         location = location.strip()
                         level = location.find('.')
@@ -83,26 +62,25 @@ class Command(BaseCommand):
                             try:
                                 parent_tree_number = location[:-4]
                                 try:
-                                    parent = MeshTerm.objects.get(tree_number=parent_tree_number)
-                                except:
-                                    self.stderr.write("Found more than one term with tree_number "+ tree_number)
+                                    parent = MeshTerm.objects.get(tree_number=parent_tree_number, year=year)
 
-                            except ObjectDoesNotExist:
-                                self.stderr.write("Could not find parent object " + parent_tree_number)
-                                parent = None
+                                except MultipleObjectsReturned:
+                                    self.stderr.write("Found more than one term with tree_number: %s for year %s" % (parent_tree_number, year,))
+
+                                except ObjectDoesNotExist:
+                                    self.stderr.write("Could not find parent term with tree_number: %s for year %s" % (parent_tree_number, year,))
+                            except:
+                                self.stderr.write("Problems finding parent tree number from this location: %s" % location)
                         else:
-                            # TODO: TMMA-131 Use year MeSHTerm filter
-                            parent = None
+                            parent = root_node
 
                         if parent:
-                            term = MeshTerm.objects.create(term=name, tree_number=location, parent=parent)
-                        else:
-                            term = MeshTerm.objects.create(term=name, tree_number=location)
+                            term = MeshTerm.objects.create(term=name, tree_number=location, parent=parent, year=year)
 
-                        self.stdout.write("Created:" + term.get_term_with_tree_number())
+                        self.stdout.write("Created:" + term.get_term_with_details())
 
             except Exception as e:
-                self.stderr.write("Some kind of error")
+                self.stderr.write("Some kind of error:")
                 self.stderr.write(repr(e))
 
         else:
