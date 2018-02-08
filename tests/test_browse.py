@@ -407,10 +407,9 @@ class BrowsingTest(TestCase):
     # reuse_search
     # edit_search
     # reuse_upload
-    #  & outcome_selector
 
     def test_mediator_selector(self):
-        """Basic test for rendering the mediatro terms selector page."""
+        """Basic test for rendering the mediator terms selector page."""
         search_criteria = self._set_up_test_search_criteria()
         path = reverse('mediator_selector', kwargs={'pk': search_criteria.pk})
         search_criteria.mediator_terms.clear()
@@ -426,6 +425,24 @@ class BrowsingTest(TestCase):
         search_criteria.save()
         self._find_expected_content(path, msg_list=["Current mediator terms", "Bulk edit", 
                                                     "Replace", "Select descendent", "Phenotype", ])
+
+    def test_outcome_selector(self):
+        """Basic test for rendering the outcome terms selector page."""
+        search_criteria = self._set_up_test_search_criteria()
+        path = reverse('outcome_selector', kwargs={'pk': search_criteria.pk})
+        search_criteria.outcome_terms.clear()
+        search_criteria.save()
+
+        self.client.logout()
+        self._find_expected_content(path, msg="login to use this tool")
+
+        self._login_user()
+        self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent", ])
+
+        search_criteria.outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True)
+        search_criteria.save()
+        self._find_expected_content(path, msg_list=["Current outcome terms", "Bulk edit", 
+                                                    "Replace", "Select descendent", "Apoptosis", ])
 
     def test_criteria(self):
         search_criteria = self._set_up_test_search_criteria()
