@@ -276,7 +276,7 @@ class SearchExisting(RedirectView):
         original_criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
 
         # TODO: TMMA-131 Need to handle missing terms if filter year is not the current year.
-
+        # If mesh_terms_year_of_release != latest_year
         # NB: Need to deep copy to ensure Many to Many relationship is captured
         criteria_copy = SearchCriteria(upload=original_criteria.upload)
         criteria_copy.save()
@@ -624,14 +624,14 @@ class MeshTermSearchJSON(TemplateView):
 # TODO: TMMA-131 Test these and refactor as custom manager functions
 def _get_latest_mesh_term_release_year():
     data = MeshTerm.objects.root_nodes().aggregate(Max('year'))
-    return data['year']
+    return data['year__max']
 
 
 def _get_top_level_mesh_terms(year=None):
     """Get a query set of top level MeshTerms for a specific year."""
     if not year:
         year = _get_latest_mesh_term_release_year()
-    return MeshTerm.objects.root_nodes().get(term=str(year)).getChildren()
+    return MeshTerm.objects.root_nodes().get(term=str(year)).get_children()
 
 
 def _get_all_mesh_terms(year=None):
