@@ -6,12 +6,10 @@ from django.db import migrations
 
 from browser.models import MeshTerm
 
-# TODO: Up to here:loaddata,
-
 
 def filter_terms_by_year(apps, schema_editor):
     """."""
-    print("Before migration")
+    print("Before migration - root nodes")
     print(MeshTerm.objects.root_nodes())
     root_nodes = MeshTerm.objects.root_nodes().exclude(tree_number="N/A")
     if root_nodes:
@@ -23,7 +21,7 @@ def filter_terms_by_year(apps, schema_editor):
     else:
         print("Found data that has already been migrated.")
 
-    print("After migration")
+    print("After migration - root nodes")
     print(MeshTerm.objects.root_nodes())
 
 
