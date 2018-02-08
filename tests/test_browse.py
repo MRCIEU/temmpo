@@ -402,6 +402,34 @@ class BrowsingTest(TestCase):
 
         return search_criteria
 
+
+    # TODO: TMMA-131 Add test for each of these url paths:
+    # reuse_search
+    # edit_search
+    # reuse_upload
+    # mediator_selector & outcome_selector
+
+    def test_criteria(self):
+        search_criteria = self._set_up_test_search_criteria()
+        self.client.logout()
+        path = reverse('criteria', kwargs={'pk': search_criteria.pk})
+        self._find_expected_content(path, msg_list=["login to use this tool", ])
+        self._login_user()
+        self._find_expected_content(path, msg_list=["Humans", "Phenotype", 
+                                                    "Apoptosis", "TRPC1",
+                                                    "test-abstract.txt", ])
+
+    # TODO: Test results counts
+
+    # def test_json_data(self):
+    #     pass
+
+    # def test_count_data(self):
+    #     pass
+
+    # def test_abstracts_data(self):
+    #     pass
+
     # Test JSON MeSH Term exports
 
     def test_json_mesh_term_export(self):
@@ -455,16 +483,6 @@ class BrowsingTest(TestCase):
         #     path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
         #     self._find_expected_content(path, msg_list=examples)
 
-    # TODO: TMMA-131 Add test for each of these url paths:
-    # reuse_search
-    # edit_search
-    # reuse_upload
-    # mediator_selector & outcome_selector
-    # criteria
-    # count_data
-    # abstracts_data
-    # json_data
-
     def test_anon_access_to_admin(self):
         """Test anonymous user does not have access to the Django admin."""
         self.client.logout()
@@ -488,6 +506,6 @@ class BrowsingTest(TestCase):
                               "Search criterias", "Search results", "Uploads", ]
         self._find_expected_content('/admin', msg_list=expected_dashboard)
 
-    # Give "search result" a better str representation
-    # Pluralise "search criteria" chencge field representation my R/A for choice fields? esp for genes - can this be more like terms??  
-    # Maybe add year to str representation of mesh term
+    # TODO: LP Give "search result" a better str representation
+    # TODO: LP Pluralise "search criteria" chencge field representation my R/A for choice fields? esp for genes - can this be more like terms??  
+    # TODO: LP Maybe add year to str representation of mesh term
