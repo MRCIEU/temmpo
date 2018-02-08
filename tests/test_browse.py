@@ -41,10 +41,24 @@ class BrowsingTest(TestCase):
                                              username='may',
                                              email='may@example.com',
                                              password='12345#abc')
+        self.staff_user = User.objects.create_user(id=1000,
+                                             username='staff',
+                                             email='staff@example.com',
+                                             password='12345#abc',
+                                             is_staff=True)
+        self.super_user_user = User.objects.create_superuser(id=1001,
+                                             username='super',
+                                             email='super@example.com',
+                                             password='12345#abc')
 
     def _login_user(self):
-        # self.client.logout()
         self.client.login(username='may', password='12345#abc')
+
+    def _login_staff_user(self):
+        self.client.login(username='staff', password='12345#abc')
+
+    def _login_super_user(self):
+        self.client.login(username='super', password='12345#abc')
 
     def _find_expected_content(self, path="", msg="", msg_list=None, status_code=200):
         response = self.client.get(path, follow=True)
@@ -451,4 +465,29 @@ class BrowsingTest(TestCase):
     # abstracts_data
     # json_data
 
-    # admin access
+    def test_anon_access_to_admin(self):
+        """Test anonymous user does not have access to the Django admin."""
+        self.client.logout()
+        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
+        self._login_user()
+        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
+
+    def test_staff_access_to_admin(self):
+        """Test staff do not have access to the Django admin."""
+        self.client.logout()
+        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
+        self._login_staff_user()
+        self._find_expected_content('/admin', msg_list=["Site administration", 
+                                                        "You don't have permission to edit anything.", ])
+
+    def test_super_access_to_admin(self):
+        """Test super user have access to the Django admin."""
+        self.client.logout()
+        self._login_super_user()
+        expected_dashboard = ["Site administration", "Genes", "Mesh terms", 
+                              "Search criterias", "Search results", "Uploads", ]
+        self._find_expected_content('/admin', msg_list=expected_dashboard)
+
+    # Give "search result" a better str representation
+    # Pluralise "search criteria" chencge field representation my R/A for choice fields? esp for genes - can this be more like terms??  
+    # Maybe add year to str representation of mesh term
