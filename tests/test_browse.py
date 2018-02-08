@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-""" TeMMPo test suite
+""" TeMMPo test suite.
 """
-# import datetime
+import json
 import logging
 import os
 
@@ -387,5 +387,23 @@ class BrowsingTest(TestCase):
 
         return search_criteria
 
-    # TODO: TMMA-131 Add test for JSON of all Mesh terms has expected content
+    # Test JSON MeSH Term exports
+
+    def test_json_mesh_term_export(self):
+        """Test the MeshTerm tree used in jsTree.
+
+        Test year filter parent node is not return.
+        # TODO: TMMA-131 Verify expected tree structure 
+        """
+        self._login_user()
+        response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
+        self.assertTrue(str(TEST_YEAR) not in response.content)
+
+        current_year_mesh_terms = json.loads(response.content)
+        # print(current_year_mesh_terms)
+        
     # TODO: TMMA-131 Add test for management command
+
+    # url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh_terms_as_json"),
+    # url(r'^mesh_terms_search_json/$', MeshTermSearchJSON.as_view(), name="mesh_terms_search_json"),
+    # url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),
