@@ -69,12 +69,12 @@ class BrowsingTest(TestCase):
     def test_credits_page(self):
         """ Test can view the credits page without logging in."""
         self.client.logout()
-        self._find_expected_content(path=reverse("credits"), msg="Credits")
+        self._find_expected_content(path=reverse("credits"), msg_list=["Credits", "NLM", "Technologies", ])
 
     def test_help_page(self):
         """ Test can view the help page without logging in."""
         self.client.logout()
-        self._find_expected_content(path=reverse("help"), msg="Help")
+        self._find_expected_content(path=reverse("help"), msg_list=["Help", "Genes and filter section", ])
 
     def test_search_page(self):
         """ Test can view the search page
@@ -234,7 +234,7 @@ class BrowsingTest(TestCase):
     def test_login_page(self):
         """ Test can view the sign in page
         """
-        self._find_expected_content(path="/login/", msg="Login")
+        self._find_expected_content(path="/login/", msg_list=["Login", "login to use this tool", ])
 
     def test_logout_page(self):
         """ Test logging out redirects to sign in page
@@ -404,7 +404,7 @@ class BrowsingTest(TestCase):
         # print(len(current_year_mesh_terms))
         
     def test_mesh_terms_search_json(self):
-        """Test the MeshTerm JSON used in jsTree search.
+        """Test the MeshTerm JSON used in jsTree searches.
 
         Test year filter parent node is not return.
         """
@@ -423,5 +423,32 @@ class BrowsingTest(TestCase):
         self.assertTrue("mtid_48042" in response.content)
         self.assertTrue("mtid_48096" in response.content)
 
-    # TODO: TMMA-131 url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),
-    # TODO: TMMA-131 Add test for management command
+    # def test_mesh_terms_as_json_for_criteria(self):
+    #   """TODO: TMMA-131 url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),"""
+    #     search_criteria = self._set_up_test_search_criteria()
+        # print("exposure_terms")
+        # print(search_criteria.get_form_codes('exposure'))
+
+        # print("mediator_terms")
+        # print(search_criteria.get_form_codes('mediator'))
+
+        # print("outcome_terms")
+        # print(search_criteria.get_form_codes('outcome'))
+
+        # types = {'exposure': ['mtid_3612',], 'mediator': ['mtid_48940',], 'outcome': ['mtid_48097', 'mtid_48096',],}
+        # for type_key, examples in types.iteritems():
+        #     path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
+        #     self._find_expected_content(path, msg_list=examples)
+
+    # TODO: TMMA-131 Add test for each of these url paths:
+    # reuse_search
+    # edit_search
+    # reuse_upload
+    # mediator_selector & outcome_selector
+    # criteria
+    # count_data
+    # abstracts_data
+    # json_data
+
+    # admin access
+    # logout
