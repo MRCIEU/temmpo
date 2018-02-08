@@ -239,6 +239,7 @@ class BrowsingTest(TestCase):
     def test_logout_page(self):
         """ Test logging out redirects to sign in page
         """
+        self._login_user()
         response = self.client.get("/logout/")
         self.assertEqual(response.status_code, 302)
 
@@ -451,4 +452,3 @@ class BrowsingTest(TestCase):
     # json_data
 
     # admin access
-    # logout
