@@ -390,7 +390,7 @@ class BrowsingTest(TestCase):
     # Test JSON MeSH Term exports
 
     def test_json_mesh_term_export(self):
-        """Test the MeshTerm tree used in jsTree.
+        """Test the MeshTerm JSON used in jsTree.
 
         Test year filter parent node is not return.
         # TODO: TMMA-131 Verify expected tree structure 
@@ -401,9 +401,27 @@ class BrowsingTest(TestCase):
 
         current_year_mesh_terms = json.loads(response.content)
         # print(current_year_mesh_terms)
+        # print(len(current_year_mesh_terms))
         
-    # TODO: TMMA-131 Add test for management command
+    def test_mesh_terms_search_json(self):
+        """Test the MeshTerm JSON used in jsTree search.
 
-    # url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh_terms_as_json"),
-    # url(r'^mesh_terms_search_json/$', MeshTermSearchJSON.as_view(), name="mesh_terms_search_json"),
-    # url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),
+        Test year filter parent node is not return.
+        """
+        self._login_user()
+        path = reverse('mesh_terms_search_json') + "?str=Cell"
+        response = self.client.get(path, follow=True)
+        self.assertTrue(str(TEST_YEAR) not in response.content)
+
+        # Assert valid JSON.
+        assert(json.loads(response.content))
+        # Assert IDs with mtid_ prefix for all instances of 
+        # mesh terms with Cell in the name are found.
+        self.assertTrue("mtid_1882" in response.content)
+        self.assertTrue("mtid_1891" in response.content)
+        self.assertTrue("mtid_48029" in response.content)
+        self.assertTrue("mtid_48042" in response.content)
+        self.assertTrue("mtid_48096" in response.content)
+
+    # TODO: TMMA-131 url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),
+    # TODO: TMMA-131 Add test for management command
