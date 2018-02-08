@@ -407,7 +407,25 @@ class BrowsingTest(TestCase):
     # reuse_search
     # edit_search
     # reuse_upload
-    # mediator_selector & outcome_selector
+    #  & outcome_selector
+
+    def test_mediator_selector(self):
+        """Basic test for rendering the mediatro terms selector page."""
+        search_criteria = self._set_up_test_search_criteria()
+        path = reverse('mediator_selector', kwargs={'pk': search_criteria.pk})
+        search_criteria.mediator_terms.clear()
+        search_criteria.save()
+
+        self.client.logout()
+        self._find_expected_content(path, msg="login to use this tool")
+
+        self._login_user()
+        self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent", ])
+
+        search_criteria.mediator_terms = MeshTerm.objects.get(term="Phenotype", year=TEST_YEAR).get_descendants(include_self=True)
+        search_criteria.save()
+        self._find_expected_content(path, msg_list=["Current mediator terms", "Bulk edit", 
+                                                    "Replace", "Select descendent", "Phenotype", ])
 
     def test_criteria(self):
         search_criteria = self._set_up_test_search_criteria()
