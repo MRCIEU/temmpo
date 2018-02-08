@@ -150,14 +150,17 @@ class FilterForm(forms.ModelForm):
                             label='Enter genes (optional)',
                             help_text='Separated by commas')
 
-    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.filter(year=MeshTerm.objects.root_nodes().aggregate(Max('year'))['year__max']),
+    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.all(),
                                          required=False,
                                          label='Filter',
                                          help_text="Enter a MeSH Term, e.g. Humans")
-
     class Meta:
         model = SearchCriteria
         fields = ['genes', 'mesh_filter', ]
+
+    def __init__(self, *args, **kwargs):
+        super(FilterForm, self).__init__(*args, **kwargs)
+        self.fields['mesh_filter'].queryset = MeshTerm.objects.filter(year=MeshTerm.objects.root_nodes().aggregate(Max('year'))['year__max'])
 
     def clean_genes(self):
         data = self.cleaned_data['genes']
