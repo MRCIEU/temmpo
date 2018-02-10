@@ -631,8 +631,9 @@ class MeshTermSearchJSON(TemplateView):
         return JsonResponse(results, safe=False)
 
 
-# TODO: TMMA-131 Test these and refactor as custom Mesh Term manager functions
+# TODO: TMMA-131 (Low priority) Refactor as custom Mesh Term manager functions
 def _get_latest_mesh_term_release_year():
+    """Retrieve the a latest release year or MeshTerms recorded."""
     data = MeshTerm.objects.root_nodes().aggregate(Max('year'))
     return data['year__max']
 
@@ -652,6 +653,6 @@ def _get_mesh_terms_by_year(year=None):
 
 
 def _convert_terms_to_current_year(previous_term_objs, previous_release, current_year):
-    """TODO: Test Convert terms between release years."""
+    """Convert terms between release years."""
     previous_terms = [x.term for x in previous_term_objs]
     return MeshTerm.objects.filter(year=current_year).filter(term__in=previous_terms)

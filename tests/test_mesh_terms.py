@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-""" TeMMPo Mesh Term .
+""" Test Mesh Term year filter helper functions
 """
 from collections import OrderedDict
 import logging
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase #, Client
+from django.test import TestCase
 
 from browser.models import MeshTerm
 from browser.views import (_get_latest_mesh_term_release_year, 
@@ -15,7 +15,6 @@ from browser.views import (_get_latest_mesh_term_release_year,
 
 
 class TestMeshTermsReleaseYears(TestCase):
-
 
     def _set_up_tree(self, terms, year):
         for (term, parent_term) in terms.items():
@@ -42,7 +41,14 @@ class TestMeshTermsReleaseYears(TestCase):
         self.latest_release = 2018
 
     def test_get_latest_mesh_term_release_year(self):
+        # Based on current test terms
         self.assertEqual(self.latest_release, _get_latest_mesh_term_release_year())
+        # Ensure new years are also taken into account.
+        new_year = 2019
+        new_year_tree = OrderedDict([(str(new_year), None,),
+                                ('A', str(new_year),), ])
+        self._set_up_tree(new_year_tree, new_year)
+        self.assertEqual(new_year, _get_latest_mesh_term_release_year())
 
     def test_get_top_level_mesh_terms(self):
         expected_terms_2015 = ['A', 'B', 'C',]
