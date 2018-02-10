@@ -496,15 +496,13 @@ class BrowsingTest(TestCase):
         """Test the MeshTerm JSON used in jsTree.
 
         Test year filter parent node is not return.
-        # TODO: TMMA-131 Verify expected tree structure 
+        # TODO: TMMA-131 Expand tests to verify expected tree structure 
         """
         self._login_user()
         response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
         self.assertTrue(str(TEST_YEAR) not in response.content)
 
         current_year_mesh_terms = json.loads(response.content)
-        # print(current_year_mesh_terms)
-        # print(len(current_year_mesh_terms))
         
     def test_mesh_terms_search_json(self):
         """Test the MeshTerm JSON used in jsTree searches.
@@ -538,10 +536,12 @@ class BrowsingTest(TestCase):
         # print("outcome_terms")
         # print(search_criteria.get_form_codes('outcome'))
 
-        # types = {'exposure': ['mtid_3612',], 'mediator': ['mtid_48940',], 'outcome': ['mtid_48097', 'mtid_48096',],}
+        # types = {'exposure': ['mtid_??',], 'mediator': ['mtid_??',], 'outcome': ['mtid_??', 'mtid_??',],}
         # for type_key, examples in types.iteritems():
         #     path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
         #     self._find_expected_content(path, msg_list=examples)
+
+    # TODO add previous year to fixtures and re=reun tests
 
     def test_anon_access_to_admin(self):
         """Test anonymous user does not have access to the Django admin."""
