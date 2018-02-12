@@ -186,11 +186,6 @@ Periodically changes that have been moved onto the last_known_good will be deplo
 
 ## Importing MeSH Terms
 
-Annually MeSH terms are released.  Thicn be as early as November for the following year.  There is a mangement command that can be run annually once the new terms have been sourced.
+Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
 
     python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
-
-# TODO: TMMA-131 Create model migrations
-# TODO: TMMA-131 Create data migration for adding 2015 stub mesh term to existing root node
-# TODO: TMMA-131 Add a 2015 and a 2018 root node to JSON fixture
-# TODO: TMMA-131 Needs updating to refect parent node
