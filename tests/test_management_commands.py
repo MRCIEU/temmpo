@@ -11,7 +11,7 @@ from browser.models import Gene, MeshTerm
 
 
 class RunSearchManagementCommandTest(TestCase):
-    """Test running the run_search management command."""
+    """Test running the run_search management command incorrectly."""
 
     fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json', ]
 
@@ -32,13 +32,6 @@ class RunSearchManagementCommandTest(TestCase):
             assert(False)
         except ObjectDoesNotExist as e:
             self.assertIn('SearchResult matching query does not exist.', str(e))
-
-    # TODO: Expand test for run_search management command,
-    # def test_run_search_without_args(self):
-    #     """Does command complain about a lack of parameters"""
-    #     out = StringIO()
-    #     call_command('run_search', stdout=out)
-    #     self.assertIn('Must provide an id', out.getvalue())
 
 
 class ImportGenesManagementCommandTest(TestCase):
