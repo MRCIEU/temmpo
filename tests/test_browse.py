@@ -150,7 +150,7 @@ class BrowsingTest(TestCase):
         self._login_user()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
 
-        # Verifiy expected content is on the gene and filter form page
+        # Verify expected content is on the gene and filter form page
         expected_text = ["Enter genes", "Filter", "e.g. Humans"]
         self._find_expected_content(path=path, msg_list=expected_text)
 
