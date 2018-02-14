@@ -8,6 +8,7 @@ import unicodedata
 import os
 
 from django.db import models
+from django.db.models import Max
 from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
@@ -70,6 +71,32 @@ class MeshTerm(MPTTModel):
     def get_term_with_details(self):
         """Create a string version of each MeshTerm with tree number."""
         return "Term: %s tree number: %s year: %s" % (self.term, self.tree_number, self.year,)
+
+    @classmethod
+    def get_latest_mesh_term_release_year(cls):
+        """Retrieve the a latest release year or MeshTerms recorded."""
+        data = cls.objects.root_nodes().aggregate(Max('year'))
+        return data['year__max']
+
+    @classmethod
+    def get_top_level_mesh_terms(cls, year=None):
+        """Get a query set of top level MeshTerms for a specific year."""
+        if not year:
+            year = cls.get_latest_mesh_term_release_year()
+        return cls.objects.root_nodes().get(term=str(year)).get_children()
+
+    @classmethod
+    def get_mesh_terms_by_year(cls, year=None):
+        """Get a query set of MeshTerms for a specific year."""
+        if not year:
+            year = cls.get_latest_mesh_term_release_year()
+        return cls.objects.root_nodes().get(term=str(year)).get_descendants(include_self=False)
+
+    @classmethod
+    def convert_terms_to_current_year(cls, previous_term_objs, previous_release, current_year):
+        """Convert terms between release years."""
+        previous_terms = [x.term for x in previous_term_objs]
+        return cls.objects.filter(year=current_year).filter(term__in=previous_terms)
 
 
 OVID = 'ovid'

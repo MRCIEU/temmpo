@@ -2,7 +2,6 @@
 
 import logging
 
-from django.db.models import Max
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -89,7 +88,7 @@ class SearchOvidMEDLINE(CreateView):
         # This should redirect to newly create search criteria tied to
         # uploaded file
         # Create a new SearchCriteria object
-        self.search_criteria = SearchCriteria(upload=self.object, mesh_terms_year_of_release=_get_latest_mesh_term_release_year())
+        self.search_criteria = SearchCriteria(upload=self.object, mesh_terms_year_of_release=MeshTerm.get_latest_mesh_term_release_year())
         self.search_criteria.save()
         return reverse('exposure_selector',
                        kwargs={'pk': self.search_criteria.id})
@@ -260,7 +259,7 @@ class SearchExistingUpload(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         upload = get_object_or_404(Upload, pk=kwargs['pk'])
-        criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=_get_latest_mesh_term_release_year())
+        criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=MeshTerm.get_latest_mesh_term_release_year())
         criteria.save()
         return reverse('exposure_selector', kwargs={'pk': criteria.pk})
 
@@ -276,7 +275,7 @@ class SearchExisting(RedirectView):
         original_criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
 
         # NB: Need to deep copy to ensure Many to Many relationships are captured
-        current_year = _get_latest_mesh_term_release_year()
+        current_year = MeshTerm.get_latest_mesh_term_release_year()
         criteria_copy = SearchCriteria(upload=original_criteria.upload, mesh_terms_year_of_release=current_year)
         criteria_copy.save()
         criteria_copy.genes = original_criteria.genes.all()
@@ -285,10 +284,10 @@ class SearchExisting(RedirectView):
         original_outcomes = original_criteria.outcome_terms.all()
         original_year = original_criteria.mesh_terms_year_of_release
         if original_year != current_year:
-            criteria_copy.exposure_terms = _convert_terms_to_current_year(original_exposures, original_year, current_year)
-            criteria_copy.mediator_terms = _convert_terms_to_current_year(original_mediators, original_year, current_year)
-            criteria_copy.outcome_terms = _convert_terms_to_current_year(original_outcomes, original_year, current_year)
-            # TODO: TMMA-131 (Should do) Report any differences via messages
+            criteria_copy.exposure_terms = MeshTerm.convert_terms_to_current_year(original_exposures, original_year, current_year)
+            criteria_copy.mediator_terms = MeshTerm.convert_terms_to_current_year(original_mediators, original_year, current_year)
+            criteria_copy.outcome_terms = MeshTerm.convert_terms_to_current_year(original_outcomes, original_year, current_year)
+            # TODO: TMMA-131 Report any differences via messages
             # and make clear no additional sub terms were included.
         else:
             criteria_copy.exposure_terms = original_exposures
@@ -557,7 +556,7 @@ class MeshTermsAsJSON(TemplateView):
             year = sc.mesh_terms_year_of_release
             if self.requested_node_id == '#':
                 try:
-                    nodes = _get_top_level_mesh_terms(year)
+                    nodes = MeshTerm.get_top_level_mesh_terms(year)
                 except ObjectDoesNotExist:
                     raise Exception("Problem generating year %s MeSH Term JSON file." % year)
             else:
@@ -594,7 +593,7 @@ class MeshTermsAllAsJSON(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         """Return JSON representation of the latest MeshTerm release."""
         # TMMA-131 filter by year and return children
-        top_level_terms = _get_top_level_mesh_terms()
+        top_level_terms = MeshTerm.get_top_level_mesh_terms()
         dicts = []
         for n in top_level_terms:
             dicts.append(self.recursive_node_to_dict(n))
@@ -624,35 +623,8 @@ class MeshTermSearchJSON(TemplateView):
         results = []
         if search_term:
             # TMMA-131 filter by year and search for term
-            top_level_terms = _get_mesh_terms_by_year().filter(term__istartswith=search_term)
+            top_level_terms = MeshTerm.get_mesh_terms_by_year().filter(term__istartswith=search_term)
             for n in top_level_terms:
                 results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
             results = ["mtid_%d" % x for x in results]
         return JsonResponse(results, safe=False)
-
-
-# TODO: TMMA-131 (Low priority) Refactor as custom Mesh Term manager functions
-def _get_latest_mesh_term_release_year():
-    """Retrieve the a latest release year or MeshTerms recorded."""
-    data = MeshTerm.objects.root_nodes().aggregate(Max('year'))
-    return data['year__max']
-
-
-def _get_top_level_mesh_terms(year=None):
-    """Get a query set of top level MeshTerms for a specific year."""
-    if not year:
-        year = _get_latest_mesh_term_release_year()
-    return MeshTerm.objects.root_nodes().get(term=str(year)).get_children()
-
-
-def _get_mesh_terms_by_year(year=None):
-    """Get a query set of MeshTerms for a specific year."""
-    if not year:
-        year = _get_latest_mesh_term_release_year()
-    return MeshTerm.objects.root_nodes().get(term=str(year)).get_descendants(include_self=False)
-
-
-def _convert_terms_to_current_year(previous_term_objs, previous_release, current_year):
-    """Convert terms between release years."""
-    previous_terms = [x.term for x in previous_term_objs]
-    return MeshTerm.objects.filter(year=current_year).filter(term__in=previous_terms)

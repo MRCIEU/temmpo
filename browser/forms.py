@@ -154,13 +154,14 @@ class FilterForm(forms.ModelForm):
                                          required=False,
                                          label='Filter',
                                          help_text="Enter a MeSH Term, e.g. Humans")
+
     class Meta:
         model = SearchCriteria
         fields = ['genes', 'mesh_filter', ]
 
     def __init__(self, *args, **kwargs):
         super(FilterForm, self).__init__(*args, **kwargs)
-        self.fields['mesh_filter'].queryset = MeshTerm.objects.filter(year=MeshTerm.objects.root_nodes().aggregate(Max('year'))['year__max'])
+        self.fields['mesh_filter'].queryset = MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None)
 
     def clean_genes(self):
         data = self.cleaned_data['genes']
@@ -199,10 +200,9 @@ class FilterForm(forms.ModelForm):
         return ','.join(gene_list)
 
     def save(self, commit=True):
-
+        """Custom save method to allow the additional of new Gene names (and other filter terms)."""
         # Clear any existing genes
         self.instance.genes.clear()
-
         gene_data = self.cleaned_data['genes']
 
         if gene_data:
