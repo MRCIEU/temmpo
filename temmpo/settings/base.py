@@ -17,6 +17,8 @@ SERVER = os.uname()[1]
 THIS_PATH = os.path.dirname(__file__)
 PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
+GENE_FILE_LOCATION = PROJECT_ROOT + "/src/temmpo/temmpo/prepopulate/Homo_sapiens.gene_info"
+
 ADMINS = (('Tessa Alexander', 'tessa.alexander+temmpo@bristol.ac.uk'),)
 
 # SECURITY WARNING: keep the secret key used in production secret!
