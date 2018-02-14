@@ -288,7 +288,7 @@ class SearchExisting(RedirectView):
             criteria_copy.exposure_terms = _convert_terms_to_current_year(original_exposures, original_year, current_year)
             criteria_copy.mediator_terms = _convert_terms_to_current_year(original_mediators, original_year, current_year)
             criteria_copy.outcome_terms = _convert_terms_to_current_year(original_outcomes, original_year, current_year)
-            # TODO: TMMA-131 Report any differences via messages
+            # TODO: TMMA-131 (Should do) Report any differences via messages
             # and make clear no additional sub terms were included.
         else:
             criteria_copy.exposure_terms = original_exposures

@@ -190,7 +190,5 @@ Annually MeSH terms are released.  Thicn be as early as November for the followi
 
     python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
 
-# TODO: TMMA-131 Create model migrations
-# TODO: TMMA-131 Create data migration for adding 2015 stub mesh term to existing root node
-# TODO: TMMA-131 Add a 2015 and a 2018 root node to JSON fixture
-# TODO: TMMA-131 Needs updating to refect parent node
+# TODO: 2. TMMA-131 Add a 2015 and a 2018 root node to JSON fixture
+# TODO: 2. TMMA-131 Needs updating to refect parent node

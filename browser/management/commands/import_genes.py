@@ -5,7 +5,7 @@ from temmpo.prepopulate import pre_populate_genes
 
 class Command(BaseCommand):
     args = ''
-    help = 'Imports genes from the files specified'
+    help = 'Imports genes from the Homo_sapiens.gene_info fixture in the temmpo/temmpo/prepopulate directory.'
 
     def handle(self, *args, **options):
         #print "fooo"

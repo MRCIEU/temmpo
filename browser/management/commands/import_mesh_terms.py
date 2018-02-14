@@ -22,7 +22,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from browser.models import MeshTerm
 
-# TODO: TMMA-131 Add explicit tests for importing multiple years from a test sample file
+# TODO: 1. TMMA-131 Add explicit tests for importing different years from a test sample files
 
 
 class Command(BaseCommand):
