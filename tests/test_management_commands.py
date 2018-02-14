@@ -1,5 +1,5 @@
 """Test for import MeshTerm and Gene management commands using sample file snippets."""
-from io import StringIO
+from StringIO import StringIO
 import os
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,7 +7,7 @@ from django.core.management.base import CommandError
 from django.core.management import call_command
 from django.test import TestCase
 
-from browser.models import Gene
+from browser.models import Gene, MeshTerm
 
 
 class RunSearchManagementCommandTest(TestCase):
@@ -20,16 +20,18 @@ class RunSearchManagementCommandTest(TestCase):
         out = StringIO()
         try:
             call_command('run_search', stdout=out)
+            assert(False)
         except CommandError as e:
-            self.assertIn('Error: too few arguments', e)
+            self.assertIn('Error: too few arguments', str(e))
 
     def test_run_search_with_unknown_args(self):
         """Check command handles an unknown search results ID parameters."""
         out = StringIO()
         try:
             call_command('run_search', 777, stdout=out)
+            assert(False)
         except ObjectDoesNotExist as e:
-            self.assertIn('SearchResult matching query does not exist.', e)
+            self.assertIn('SearchResult matching query does not exist.', str(e))
 
     # TODO: Expand test for run_search management command,
     # def test_run_search_without_args(self):
@@ -57,10 +59,62 @@ class ImportGenesManagementCommandTest(TestCase):
             self.assertEqual(names, expected_names)
 
 
-# TODO: TMMA-131 Add test for importing MeSH Terms.
-# class ImportMeshTermsManagementCommandTest(TestCase):
-    # """Test running the import_mesh_terms management command."""
-    # def test_import_mesh_terms_command_output(self):
-    #     """."""
-    #     out = StringIO()
-    #     call_command('import_mesh_terms', stdout=out)
+class ImportMeshTermsManagementCommandTest(TestCase):
+    """Test running the import_mesh_terms management command."""
+
+    def test_import_mesh_terms_command_without_args(self):
+        """Check command handles a lack of parameters."""
+        out = StringIO()
+        try:
+            call_command('import_mesh_terms', stdout=out)
+            assert(False)
+        except CommandError as e:
+            self.assertIn('Error: too few arguments', str(e))
+
+    def test_import_mesh_terms_command_with_unknown_args(self):
+        out = StringIO()
+        try:
+            call_command('import_mesh_terms', "made-up-file-path.txt", "1999", stdout=out)
+            assert(False)
+        except CommandError as e:
+            self.assertIn('No such file or directory', str(e))
+
+    def test_import_mesh_terms_command(self):
+        out = StringIO()
+        file_path = os.path.dirname(os.path.dirname(__file__)) + '/browser/fixtures/test_mesh_terms_file_a.txt'
+        year = 2000
+        call_command('import_mesh_terms', file_path, year, stdout=out)
+
+        # Assert that expected terms have been imported.
+        terms = MeshTerm.objects.all()
+        self.assertEqual(terms.count(), 30)
+        top_level_mesh_terms = list(MeshTerm.get_top_level_mesh_terms(year).values_list("term", flat=True))
+        self.assertEqual(top_level_mesh_terms, ['Body Regions', 'Eukaryota', 'Bacterial Infections and Mycoses', ])
+
+        # Ensure re-running the command does not duplicate terms.
+        call_command('import_mesh_terms', file_path, year, stdout=out)
+        terms = MeshTerm.objects.all()
+        self.assertEqual(terms.count(), 30)
+
+    def test_import_mesh_terms_command_for_multiple_releases(self):
+        """Test running the import command for different years"""
+        out = StringIO()
+        file_path_suffix = os.path.dirname(os.path.dirname(__file__)) + '/browser/fixtures/test_mesh_terms_file_'
+        year = 2015
+        call_command('import_mesh_terms', file_path_suffix + "a.txt", year, stdout=out)
+        year = 2018
+        call_command('import_mesh_terms', file_path_suffix + "b.txt", year, stdout=out)
+
+        ankels_found = MeshTerm.objects.filter(term="Ankle").count()
+        self.assertEqual(ankels_found, 2)
+        ankels_found = MeshTerm.objects.filter(term="Ankle", year=2018).count()
+        self.assertEqual(ankels_found, 1)
+
+        ankels_found = MeshTerm.objects.filter(term="Hemorrhagic Septicemia").count()
+        self.assertEqual(ankels_found, 1)
+        ankels_found = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2015).count()
+        self.assertEqual(ankels_found, 1)
+        ankels_found = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2018).count()
+        self.assertEqual(ankels_found, 0)
+
+        # Test changes between years
