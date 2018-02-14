@@ -28,7 +28,6 @@ from browser.models import MeshTerm
 class Command(BaseCommand):
     """Management command to manage importing MeshTerms."""
 
-    args = '<mesh-term-file-path> <year>'
     help = 'Creates Mesh Term objects based on importing terms from a given years edition of the MeSH terms in ASCII format e.g. mtrees2015.bin http://www.nlm.nih.gov/mesh/'
 
     def add_arguments(self, parser):
