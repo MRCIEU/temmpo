@@ -524,24 +524,35 @@ class BrowsingTest(TestCase):
         self.assertTrue("mtid_48042" in response.content)
         self.assertTrue("mtid_48096" in response.content)
 
-    # def test_mesh_terms_as_json_for_criteria(self):
-    #   """TODO: TMMA-131 url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),"""
-    #     search_criteria = self._set_up_test_search_criteria()
-        # print("exposure_terms")
-        # print(search_criteria.get_form_codes('exposure'))
+    def test_mesh_terms_as_json_for_tree_population(self):
+        """Test can retrieve JSON to top level items in the MeshTerm jsTree."""
+        search_criteria = self._set_up_test_search_criteria()
+        root_nodes = ('mtid_33717', 'mtid_33718', 'mtid_33723', )
+        term_type_to_expected_nodes = {'exposure': root_nodes,
+                                       'mediator': root_nodes,
+                                       'outcome': root_nodes, }
+        # Test retrieve root nodes if no node is supplied on the query string.
+        for type_key, examples in term_type_to_expected_nodes.iteritems():
+            path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
+            self._find_expected_content(path, msg_list=examples)
 
-        # print("mediator_terms")
-        # print(search_criteria.get_form_codes('mediator'))
+        # TODO SHould I be checked undetermined/selected state as well.
 
-        # print("outcome_terms")
-        # print(search_criteria.get_form_codes('outcome'))
+    def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
+        """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
+        search_criteria = self._set_up_test_search_criteria()
+        expanded_node_query_string = '?id=mtid_33717'
+        children_nodes = ('mtid_1784', )
+        term_type_to_expected_nodes = {'exposure': children_nodes,
+                                       'mediator': children_nodes,
+                                       'outcome': children_nodes, }
+        for type_key, examples in term_type_to_expected_nodes.iteritems():
+            path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key}) + expanded_node_query_string
+            self._find_expected_content(path, msg_list=examples)
 
-        # types = {'exposure': ['mtid_??',], 'mediator': ['mtid_??',], 'outcome': ['mtid_??', 'mtid_??',],}
-        # for type_key, examples in types.iteritems():
-        #     path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
-        #     self._find_expected_content(path, msg_list=examples)
+        # TODO SHould I be checked undetermined/selected state as well.
 
-    # TODO add previous year to fixtures and re=reun tests
+    # TODO TMMA-131 add another year to fixtures and rerun tests
 
     def test_anon_access_to_admin(self):
         """Test anonymous user does not have access to the Django admin."""
@@ -566,6 +577,6 @@ class BrowsingTest(TestCase):
                               "Search criterias", "Search results", "Uploads", ]
         self._find_expected_content('/admin', msg_list=expected_dashboard)
 
-    # TODO: LP Give "search result" a better str representation
-    # TODO: LP Pluralise "search criteria" change field representation my R/A for choice fields? esp for genes - can this be more like terms??
-    # TODO: LP Maybe add year to str representation of mesh term
+    # TODO: (Low priority) Give "search result" a better str representation
+    # TODO: (Low priority) Pluralise "search criteria" change field representation my R/A for choice fields? esp for genes - can this be more like terms??
+    # TODO: (Low priority) Maybe add year to str representation of mesh term

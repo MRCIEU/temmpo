@@ -511,6 +511,7 @@ class JSONDataView(RedirectView):
 
 
 class MeshTermsAsJSON(TemplateView):
+    """Used with the JSTrees to represent MeshTerms."""
 
     def node_to_dict(self, node):
         result = {
