@@ -418,9 +418,43 @@ class BrowsingTest(TestCase):
         expected_test_messages = [search_criteria, search_criteria.upload, ]
         self._find_expected_content(path=reverse("reuse_search"), msg_list=expected_test_messages)
 
-    # TODO: TMMA-131 Add test for each of these url paths:
-    # edit_search
-    # reuse_upload
+    def test_reuse_upload(self):
+        """Test the reuse upload functionality."""
+        self._login_user()
+        original_criteria = self._set_up_test_search_criteria()
+        path = reverse('reuse_upload', kwargs={'pk': original_criteria.upload.id})
+        self._find_expected_content(path, msg='Select exposures')
+        recent_search_criteria = SearchCriteria.objects.latest('id')
+        # Ensure a search criteria new object has been created.
+        self.assertNotEquals(original_criteria.id, recent_search_criteria.id)
+        # Ensure no terms settings were carried over
+        self.assertEqual(recent_search_criteria.exposure_terms.all().count(), 0)
+        self.assertEqual(recent_search_criteria.mediator_terms.all().count(), 0)
+        self.assertEqual(recent_search_criteria.outcome_terms.all().count(), 0)
+        self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
+        # Check associated with the same upload.
+        self.assertEqual(original_criteria.upload, recent_search_criteria.upload)
+
+    def test_edit_search(self):
+        """Test the reuse search criteria functionality."""
+        self._login_user()
+        original_criteria = self._set_up_test_search_criteria()
+        path = reverse('edit_search', kwargs={'pk': original_criteria.id})
+        expected_test_messages = ('Select exposures', 'Current exposure terms', )
+        self._find_expected_content(path, msg_list=expected_test_messages)
+        recent_search_criteria = SearchCriteria.objects.latest('id')
+        # Ensure a search criteria new object has been created.
+        self.assertNotEquals(original_criteria.id, recent_search_criteria.id)
+        # Ensure no terms settings were carried over
+        self.assertEqual(list(original_criteria.exposure_terms.values_list("id", flat=True)), list(recent_search_criteria.exposure_terms.values_list("id", flat=True)))
+        self.assertEqual(list(original_criteria.mediator_terms.values_list("id", flat=True)), list(recent_search_criteria.mediator_terms.values_list("id", flat=True)))
+        self.assertEqual(list(original_criteria.outcome_terms.values_list("id", flat=True)), list(recent_search_criteria.outcome_terms.values_list("id", flat=True)))
+        # Check associated with the same upload.
+        self.assertEqual(original_criteria.upload, recent_search_criteria.upload)
+        # Ensure using the current test year
+        self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
+
+    # TODO: Add test of edit_search when mesh term release years change and terms require conversion.
 
     def test_exposure_selector(self):
         """Basic test for rendering the exposure terms selector page."""
