@@ -60,7 +60,7 @@ class BrowsingTest(TestCase):
     def _login_super_user(self):
         self.client.login(username='super', password='12345#abc')
 
-    def _find_expected_content(self, path="", msg="", msg_list=None, status_code=200):
+    def _find_expected_content(self, path="", msg="", msg_list=None, status_code=200, content_type="text/html; charset=utf-8"):
         response = self.client.get(path, follow=True)
 
         if not msg_list:
@@ -74,6 +74,8 @@ class BrowsingTest(TestCase):
                                 status_code=status_code,
                                 msg_prefix="Expected %(msg)s at %(path)s" %
                                 {'msg': text, 'path': path})
+
+        self.assertEqual(content_type, response['Content-Type'])
 
     def test_home_page(self):
         """Test can view the home page without logging in."""
@@ -534,9 +536,9 @@ class BrowsingTest(TestCase):
         # Test retrieve root nodes if no node is supplied on the query string.
         for type_key, examples in term_type_to_expected_nodes.iteritems():
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
-            self._find_expected_content(path, msg_list=examples)
+            self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO SHould I be checked undetermined/selected state as well.
+        # TODO Should undetermined/selected state be tested as well here.
 
     def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
         """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
@@ -548,9 +550,9 @@ class BrowsingTest(TestCase):
                                        'outcome': children_nodes, }
         for type_key, examples in term_type_to_expected_nodes.iteritems():
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key}) + expanded_node_query_string
-            self._find_expected_content(path, msg_list=examples)
+            self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO SHould I be checked undetermined/selected state as well.
+        # TODO Should undetermined/selected state be tested as well here.
 
     # TODO TMMA-131 add another year to fixtures and rerun tests
 
