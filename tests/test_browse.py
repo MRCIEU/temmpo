@@ -454,7 +454,7 @@ class BrowsingTest(TestCase):
         # Ensure using the current test year
         self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
 
-    # TODO: Add test of edit_search when mesh term release years change and terms require conversion.
+    # TODO: TMMA-131 Add test of edit_search when mesh term release years change and terms require conversion.
 
     def test_exposure_selector(self):
         """Basic test for rendering the exposure terms selector page."""
@@ -528,7 +528,7 @@ class BrowsingTest(TestCase):
                                                     "Apoptosis", "TRPC1",
                                                     "test-abstract.txt", ])
 
-    # TODO: Test results counts
+    # TODO: Test result counts
 
     # def test_json_data(self):
     #     pass

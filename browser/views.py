@@ -68,8 +68,7 @@ class ReuseSearchView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the reuse search list
-        """
+        """Ensure user logs in before viewing the reuse search list."""
         return super(ReuseSearchView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -85,8 +84,7 @@ class SearchOvidMEDLINE(CreateView):
     template_name = "search.html"
 
     def get_success_url(self):
-        # This should redirect to newly create search criteria tied to
-        # uploaded file
+        """Redirect to newly create search criteria tied to uploaded file."""
         # Create a new SearchCriteria object
         self.search_criteria = SearchCriteria(upload=self.object, mesh_terms_year_of_release=MeshTerm.get_latest_mesh_term_release_year())
         self.search_criteria.save()
@@ -95,8 +93,7 @@ class SearchOvidMEDLINE(CreateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the search form
-        """
+        """Ensure user logs in before viewing the search form."""
         return super(SearchOvidMEDLINE, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -143,9 +140,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the form
-        """
-
+        """Ensure user logs in before viewing the form."""
         # Prevent one user viewing data for another
         scid = int(kwargs['pk'])
         if SearchCriteria.objects.filter(pk=scid).exists():
@@ -159,9 +154,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         return super(TermSelectorAbstractUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        """ Sub class should define type, term_selector_url,
-            term_selector_by_family_url """
-
+        """Sub class should define type, term_selector_url, term_selector_by_family_url."""
         context = super(TermSelectorAbstractUpdateView, self).get_context_data(**kwargs)
         context['active'] = 'search'
         context['type'] = self.type
@@ -172,9 +165,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        """Auto select any children of selected nodes
-        """
-
+        """Auto select any children of selected nodes."""
         if form.is_valid():
             cleaned_data = form.cleaned_data
 
@@ -305,9 +296,7 @@ class FilterSelector(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the form.
-        """
-
+        """Ensure user logs in before viewing the form."""
         # Prevent one user viewing data for another
         scid = int(kwargs['pk'])
         if SearchCriteria.objects.filter(pk=scid).exists():
@@ -328,7 +317,6 @@ class FilterSelector(UpdateView):
 
     def form_valid(self, form):
         """Store genes and filter."""
-
         # Save genes to search criteria
         form.save()
 
@@ -352,8 +340,7 @@ class ResultsView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the results pages
-        """
+        """Ensure user logs in before viewing the results pages."""
 
         # Prevent user viewing data for another user
         self.id = int(kwargs['pk'])
@@ -386,8 +373,7 @@ class ResultsListingView(ListView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the results listing page
-        """
+        """Ensure user logs in before viewing the results listing page."""
         return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -405,8 +391,7 @@ class CriteriaView(DetailView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         criteria_id = int(kwargs['pk'])
         try:
@@ -438,8 +423,7 @@ class CountDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
@@ -464,8 +448,7 @@ class AbstractDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
@@ -490,8 +473,7 @@ class JSONDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
