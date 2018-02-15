@@ -29,12 +29,12 @@ TEST_YEAR = 2015
 
 
 class BrowsingTest(TestCase):
-    """ Run simple tests for browsing the TeMMPo application
-    """
+    """Run simple tests for browsing the TeMMPo application."""
 
     fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json', ]
 
     def setUp(self):
+        """Override set up to create test users of each Django default role type."""
         super(BrowsingTest, self).setUp()
         self.client = Client()
         self.user = User.objects.create_user(id=999,
@@ -42,14 +42,14 @@ class BrowsingTest(TestCase):
                                              email='may@example.com',
                                              password='12345#abc')
         self.staff_user = User.objects.create_user(id=1000,
-                                             username='staff',
-                                             email='staff@example.com',
-                                             password='12345#abc',
-                                             is_staff=True)
+                                                   username='staff',
+                                                   email='staff@example.com',
+                                                   password='12345#abc',
+                                                   is_staff=True)
         self.super_user_user = User.objects.create_superuser(id=1001,
-                                             username='super',
-                                             email='super@example.com',
-                                             password='12345#abc')
+                                                             username='super',
+                                                             email='super@example.com',
+                                                             password='12345#abc')
 
     def _login_user(self):
         self.client.login(username='may', password='12345#abc')
@@ -76,23 +76,22 @@ class BrowsingTest(TestCase):
                                 {'msg': text, 'path': path})
 
     def test_home_page(self):
-        """ Test can view the home page without logging in."""
+        """Test can view the home page without logging in."""
         self.client.logout()
         self._find_expected_content(path=reverse("home"), msg="About TeMMPo")
 
     def test_credits_page(self):
-        """ Test can view the credits page without logging in."""
+        """Test can view the credits page without logging in."""
         self.client.logout()
         self._find_expected_content(path=reverse("credits"), msg_list=["Credits", "NLM", "Technologies", ])
 
     def test_help_page(self):
-        """ Test can view the help page without logging in."""
+        """Test can view the help page without logging in."""
         self.client.logout()
         self._find_expected_content(path=reverse("help"), msg_list=["Help", "Genes and filter section", ])
 
     def test_search_page(self):
-        """ Test can view the search page
-        """
+        """Test can view the search page."""
         self._find_expected_content(path=reverse("search"), msg="login to use this tool")
         self._find_expected_content(path=reverse("search_pubmed"), msg="login to use this tool")
         self._find_expected_content(path=reverse("search_ovid_medline"), msg="login to use this tool")
@@ -102,8 +101,7 @@ class BrowsingTest(TestCase):
         self._find_expected_content(path=reverse("search_ovid_medline"), msg=u"Search Ovid MEDLINE® formatted abstracts")
 
     def test_results_page(self):
-        """ Test can view the results page
-        """
+        """Test can view the results page."""
         path = reverse('results', kwargs={'pk': RESULT_ID})
         self._find_expected_content(path=path, msg="login to use this tool")
         # TODO Add results rendering tests
@@ -111,14 +109,14 @@ class BrowsingTest(TestCase):
         self._find_expected_content(path=path, msg='Page not found', status_code=404)
 
     def test_results_listing_page(self):
-        """ Test can view the results listing page
-        """
+        """Test can view the results listing page."""
         self._find_expected_content(path=reverse("results_listing"), msg="login to use this tool")
         self._login_user()
         self._find_expected_content(path=reverse("results_listing"), msg="My list")
 
     def test_ovid_medline_matching(self):
-        """
+        """Testing matching using OVID formatted abstracts file.
+
         Mesh terms
 
         exposure: Humans    (B01.050.150.900.649.801.400.112.400.400 Organisms >
@@ -141,7 +139,6 @@ class BrowsingTest(TestCase):
         Should find matches with both mediator term and gene only finds matches
         with the gene when the WEIGHTFILTER thresh hold is zero
         """
-
         search_criteria = self._set_up_test_search_criteria()
         original_gene_count = Gene.objects.filter(name="TRPC1").count()
         self.assertEqual(original_gene_count, 1)
@@ -206,6 +203,7 @@ class BrowsingTest(TestCase):
             self.assertNotContains(response, " could not be found")
 
     def test_ovid_search_bulk_term_edit(self):
+        """Test Ovid MEDLINE formatted search and bulk edit style searching."""
         self._login_user()
         self._find_expected_content(path=reverse('search'),
                                     msg="Upload abstracts to search")
@@ -217,13 +215,14 @@ class BrowsingTest(TestCase):
                                          search_url=reverse('search_ovid_medline'))
 
     def test_pubmed_search_bulk_term_edit(self):
+        """Test PubMed formatted search and bulk edit style searching."""
         self._login_user()
 
         self._find_expected_content(path=reverse('search'),
                                     msg="Upload abstracts to search")
         self._find_expected_content(path=reverse("search_pubmed"),
                                     msg=u"Search PubMed MEDLINE® formatted abstracts")
-        # Search Ovid MEDLINE® formatted abstracts
+        # Search PubMed formatted abstracts
         self._test_search_bulk_term_edit(abstract_file_path=TEST_PUBMED_MEDLINE_ABSTRACTS,
                                          file_format=PUBMED,
                                          search_url=reverse('search_pubmed'))
@@ -231,8 +230,7 @@ class BrowsingTest(TestCase):
     # Additional features
 
     def test_register_page(self):
-        """ Test can use the register page
-        """
+        """Test can use the register page."""
         self._find_expected_content(path=reverse("registration_register"),
                                     msg_list=["Register", "Password confirmation", ])
 
@@ -246,13 +244,11 @@ class BrowsingTest(TestCase):
         self.assertContains(response, "Your registration is complete.", msg_prefix=response.content)
 
     def test_login_page(self):
-        """ Test can view the sign in page
-        """
+        """Test can view the sign in page."""
         self._find_expected_content(path="/login/", msg_list=["Login", "login to use this tool", ])
 
     def test_logout_page(self):
-        """ Test logging out redirects to sign in page
-        """
+        """Test logging out redirects to sign in page."""
         self._login_user()
         response = self.client.get("/logout/")
         self.assertEqual(response.status_code, 302)
@@ -261,6 +257,7 @@ class BrowsingTest(TestCase):
                                     msg="Login")
 
     def test_ovid_medline_file_upload_validation(self):
+        """Test form validation for Ovid MEDLINE formatted abstracts files."""
         self._login_user()
         search_path = reverse('search_ovid_medline')
 
@@ -282,6 +279,7 @@ class BrowsingTest(TestCase):
             self.assertContains(response, "is not an acceptable file type")
 
     def test_pubmed_medline_file_upload_validation(self):
+        """Test form validation for PubMed formatted abstracts files."""
         self._login_user()
         search_path = reverse('search_pubmed')
 
@@ -303,12 +301,13 @@ class BrowsingTest(TestCase):
             self.assertContains(response, "is not an acceptable file type")
 
     def test_pubmed_readcitations_parsing_bug(self):
+        """Test to capture a specific bug in file formats."""
         citations = _pubmed_readcitations(TEST_BADLY_FORMATTED_FILE)
         self.assertEqual(type(citations), list)
         self.assertEqual(len(citations), 23)
 
     def _assert_toggle_selecting_child_terms(self, search_criteria):
-
+        """Helper function to test form toggle selection of child MeshTerms."""
         self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
 
         exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
@@ -349,6 +348,7 @@ class BrowsingTest(TestCase):
         self.assertEqual(search_criteria.exposure_terms.all().count(), 2)
 
     def test_toggling_child_term_selection_ovid(self):
+        """Test form toggle selection of child MeshTerms when working with an Ovid MEDLINE formatted file."""
         self._login_user()
         with open(TEST_OVID_MEDLINE_ABSTRACTS, 'r') as upload:
             response = self.client.post(reverse('search_ovid_medline'),
@@ -360,6 +360,7 @@ class BrowsingTest(TestCase):
             self._assert_toggle_selecting_child_terms(search_criteria=search_criteria)
 
     def test_toggling_child_term_selection_pubmed(self):
+        """Test form toggle selection of child MeshTerms when working with an PubMed formatted file."""
         self._login_user()
         with open(TEST_PUBMED_MEDLINE_ABSTRACTS, 'r') as upload:
             response = self.client.post(reverse('search_pubmed'),
@@ -402,11 +403,28 @@ class BrowsingTest(TestCase):
 
         return search_criteria
 
-
     # TODO: TMMA-131 Add test for each of these url paths:
     # reuse_search
     # edit_search
     # reuse_upload
+
+    def test_exposure_selector(self):
+        """Basic test for rendering the exposure terms selector page."""
+        search_criteria = self._set_up_test_search_criteria()
+        path = reverse('exposure_selector', kwargs={'pk': search_criteria.pk})
+        search_criteria.exposure_terms.clear()
+        search_criteria.save()
+
+        self.client.logout()
+        self._find_expected_content(path, msg="login to use this tool")
+
+        self._login_user()
+        self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent", ])
+
+        search_criteria.exposure_terms = MeshTerm.objects.get(term="Animals", year=TEST_YEAR).get_descendants(include_self=True)
+        search_criteria.save()
+        self._find_expected_content(path, msg_list=["Current exposure terms", "Bulk edit",
+                                                    "Replace", "Select descendent", "Animals", ])
 
     def test_mediator_selector(self):
         """Basic test for rendering the mediator terms selector page."""
@@ -441,7 +459,7 @@ class BrowsingTest(TestCase):
         self._find_expected_content(path, msg="login to use this tool")
 
         self._login_user()
-        self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent", 
+        self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent",
                                                     "Select these terms and choose more outcome terms", ])
 
         search_criteria.outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True)
@@ -451,31 +469,14 @@ class BrowsingTest(TestCase):
                                                     "Select these terms and choose more outcome terms",
                                                     "Select these terms and move on to select Genes and Filters", ])
 
-    def test_outcome_selector(self):
-        """Basic test for rendering the outcome terms selector page."""
-        search_criteria = self._set_up_test_search_criteria()
-        path = reverse('outcome_selector', kwargs={'pk': search_criteria.pk})
-        search_criteria.outcome_terms.clear()
-        search_criteria.save()
-
-        self.client.logout()
-        self._find_expected_content(path, msg="login to use this tool")
-
-        self._login_user()
-        self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent", ])
-
-        search_criteria.outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True)
-        search_criteria.save()
-        self._find_expected_content(path, msg_list=["Current outcome terms", "Bulk edit", 
-                                                    "Replace", "Select descendent", "Apoptosis", ])
-
     def test_criteria(self):
+        """Test rendering of the view of a SearchCriteria instance."""
         search_criteria = self._set_up_test_search_criteria()
         self.client.logout()
         path = reverse('criteria', kwargs={'pk': search_criteria.pk})
         self._find_expected_content(path, msg_list=["login to use this tool", ])
         self._login_user()
-        self._find_expected_content(path, msg_list=["Humans", "Phenotype", 
+        self._find_expected_content(path, msg_list=["Humans", "Phenotype",
                                                     "Apoptosis", "TRPC1",
                                                     "test-abstract.txt", ])
 
@@ -496,14 +497,14 @@ class BrowsingTest(TestCase):
         """Test the MeshTerm JSON used in jsTree.
 
         Test year filter parent node is not return.
-        # TODO: TMMA-131 Expand tests to verify expected tree structure 
+        TODO: TMMA-131 Expand tests to verify expected tree structure
         """
         self._login_user()
         response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
         self.assertTrue(str(TEST_YEAR) not in response.content)
 
         current_year_mesh_terms = json.loads(response.content)
-        
+
     def test_mesh_terms_search_json(self):
         """Test the MeshTerm JSON used in jsTree searches.
 
@@ -516,8 +517,7 @@ class BrowsingTest(TestCase):
 
         # Assert valid JSON.
         assert(json.loads(response.content))
-        # Assert IDs with mtid_ prefix for all instances of 
-        # mesh terms with Cell in the name are found.
+        # Assert IDs with mtid_ prefix for all instances of mesh terms with Cell in the name are found.
         self.assertTrue("mtid_1882" in response.content)
         self.assertTrue("mtid_1891" in response.content)
         self.assertTrue("mtid_48029" in response.content)
@@ -555,17 +555,17 @@ class BrowsingTest(TestCase):
         self.client.logout()
         self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
         self._login_staff_user()
-        self._find_expected_content('/admin', msg_list=["Site administration", 
+        self._find_expected_content('/admin', msg_list=["Site administration",
                                                         "You don't have permission to edit anything.", ])
 
     def test_super_access_to_admin(self):
         """Test super user have access to the Django admin."""
         self.client.logout()
         self._login_super_user()
-        expected_dashboard = ["Site administration", "Genes", "Mesh terms", 
+        expected_dashboard = ["Site administration", "Genes", "Mesh terms",
                               "Search criterias", "Search results", "Uploads", ]
         self._find_expected_content('/admin', msg_list=expected_dashboard)
 
     # TODO: LP Give "search result" a better str representation
-    # TODO: LP Pluralise "search criteria" chencge field representation my R/A for choice fields? esp for genes - can this be more like terms??  
-    # TODO: LP Maybe add year to str representation of mesh term
+    # TODO: LP Pluralise "search criteria" change field representation my R/A for choice fields? esp for genes - can this be more like terms??
+    # TODO: LP Maybe add year to str representation of mesh term
