@@ -405,8 +405,20 @@ class BrowsingTest(TestCase):
 
         return search_criteria
 
+    def test_reuse_search(self):
+        """Test the reuse search functionality."""
+        self._find_expected_content(path=reverse("reuse_search"), msg="login to use this tool")
+        self._login_user()
+        self._find_expected_content(path=reverse("reuse_search"), msg="Reuse an existing upload or search criteria")
+
+        expected_empty_messages = ['No previously uploaded abstracts.', 'No saved search criteria.', ]
+        self._find_expected_content(path=reverse("reuse_search"), msg_list=expected_empty_messages)
+        search_criteria = self._set_up_test_search_criteria()
+
+        expected_test_messages = [search_criteria, search_criteria.upload, ]
+        self._find_expected_content(path=reverse("reuse_search"), msg_list=expected_test_messages)
+
     # TODO: TMMA-131 Add test for each of these url paths:
-    # reuse_search
     # edit_search
     # reuse_upload
 
