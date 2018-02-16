@@ -40,7 +40,7 @@
       <div class="panel-body">
         <ul class="link-list" id="reuse-criteria">
             {% for search in criteria %}
-                <li class="item"><a href="{% url 'criteria' pk=search.id %}">{{ search|truncatechars:70 }}</a></li>
+                <li class="item"><a data-criteria-id="{{ search.id }}" href="{% url 'criteria' pk=search.id %}">{{ search|truncatechars:70 }}</a></li>
             {% empty %}
                 <li>No saved search criteria.</li>
             {% endfor %}

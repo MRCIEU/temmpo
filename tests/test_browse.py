@@ -414,8 +414,7 @@ class BrowsingTest(TestCase):
         expected_empty_messages = ['No previously uploaded abstracts.', 'No saved search criteria.', ]
         self._find_expected_content(path=reverse("reuse_search"), msg_list=expected_empty_messages)
         search_criteria = self._set_up_test_search_criteria()
-
-        expected_test_messages = [search_criteria, search_criteria.upload, ]
+        expected_test_messages = ['data-criteria-id="%s"' % search_criteria.id, search_criteria.upload, ]
         self._find_expected_content(path=reverse("reuse_search"), msg_list=expected_test_messages)
 
     def test_reuse_upload(self):
@@ -551,6 +550,7 @@ class BrowsingTest(TestCase):
         response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
         self.assertTrue(str(TEST_YEAR) not in response.content)
 
+        # Assert valid JSON
         current_year_mesh_terms = json.loads(response.content)
 
     def test_mesh_terms_search_json(self):
