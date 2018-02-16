@@ -26,9 +26,11 @@ class RunSearchManagementCommandTest(TestCase):
 
     def test_run_search_with_unknown_args(self):
         """Check command handles an unknown search results ID parameters."""
+        fake_id = 777
+        self.assertFalse(MeshTerm.objects.filter(id=fake_id).exists())
         out = StringIO()
         try:
-            call_command('run_search', 777, stdout=out)
+            call_command('run_search', fake_id, stdout=out)
             assert(False)
         except ObjectDoesNotExist as e:
             self.assertIn('SearchResult matching query does not exist.', str(e))
@@ -50,6 +52,11 @@ class ImportGenesManagementCommandTest(TestCase):
             self.assertEqual(gene_count, len(expected_names))
             names = sorted(list(Gene.objects.all().values_list('name', flat=True)))
             self.assertEqual(names, expected_names)
+
+            # Test re-running command does not generate duplicates.
+            call_command('import_genes', stdout=out)
+            gene_count = Gene.objects.all().count()
+            self.assertEqual(gene_count, len(expected_names))
 
 
 class ImportMeshTermsManagementCommandTest(TestCase):
@@ -93,21 +100,22 @@ class ImportMeshTermsManagementCommandTest(TestCase):
         """Test running the import command for different years"""
         out = StringIO()
         file_path_suffix = os.path.dirname(os.path.dirname(__file__)) + '/browser/fixtures/test_mesh_terms_file_'
-        year = 2015
-        call_command('import_mesh_terms', file_path_suffix + "a.txt", year, stdout=out)
-        year = 2018
-        call_command('import_mesh_terms', file_path_suffix + "b.txt", year, stdout=out)
+        call_command('import_mesh_terms', file_path_suffix + "a.txt", 2015, stdout=out)
+        call_command('import_mesh_terms', file_path_suffix + "b.txt", 2018, stdout=out)
 
         ankels_found = MeshTerm.objects.filter(term="Ankle").count()
         self.assertEqual(ankels_found, 2)
+        ankels_found = MeshTerm.objects.filter(term="Ankle", year=2015).count()
+        self.assertEqual(ankels_found, 1)        
         ankels_found = MeshTerm.objects.filter(term="Ankle", year=2018).count()
         self.assertEqual(ankels_found, 1)
 
-        ankels_found = MeshTerm.objects.filter(term="Hemorrhagic Septicemia").count()
-        self.assertEqual(ankels_found, 1)
-        ankels_found = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2015).count()
-        self.assertEqual(ankels_found, 1)
-        ankels_found = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2018).count()
-        self.assertEqual(ankels_found, 0)
-
         # Test changes between years
+        removed_term_count = MeshTerm.objects.filter(term="Hemorrhagic Septicemia").count()
+        self.assertEqual(removed_term_count, 1)
+        removed_term_count = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2015).count()
+        self.assertEqual(removed_term_count, 1)
+        removed_term_count = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2018).count()
+        self.assertEqual(removed_term_count, 0)
+
+        
