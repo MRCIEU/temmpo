@@ -22,8 +22,6 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from browser.models import MeshTerm
 
-# TODO: 1. TMMA-131 Add explicit tests for importing different years from a test sample files
-
 
 class Command(BaseCommand):
     """Management command to manage importing MeshTerms."""
