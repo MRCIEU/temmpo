@@ -72,6 +72,7 @@ class ImportMeshTermsManagementCommandTest(TestCase):
             self.assertIn('Error: too few arguments', str(e))
 
     def test_import_mesh_terms_command_with_unknown_args(self):
+        """Check command handles unexpected parameters."""
         out = StringIO()
         try:
             call_command('import_mesh_terms', "made-up-file-path.txt", "1999", stdout=out)
@@ -80,6 +81,7 @@ class ImportMeshTermsManagementCommandTest(TestCase):
             self.assertIn('No such file or directory', str(e))
 
     def test_import_mesh_terms_command(self):
+        """Test command generates the expected terms and structure."""
         out = StringIO()
         file_path = os.path.dirname(os.path.dirname(__file__)) + '/browser/fixtures/test_mesh_terms_file_a.txt'
         year = 2000
@@ -87,17 +89,31 @@ class ImportMeshTermsManagementCommandTest(TestCase):
 
         # Assert that expected terms have been imported.
         terms = MeshTerm.objects.all()
-        self.assertEqual(terms.count(), 30)
+        self.assertEqual(terms.count(), 46)
+        # Assert that classification terms have been created as top level mesh term items
         top_level_mesh_terms = list(MeshTerm.get_top_level_mesh_terms(year).values_list("term", flat=True))
-        self.assertEqual(top_level_mesh_terms, ['Body Regions', 'Eukaryota', 'Bacterial Infections and Mycoses', ])
+        self.assertEqual(top_level_mesh_terms, ['Anatomy', 'Organisms', 'Diseases', 'Chemicals and Drugs',
+                                                'Analytical, Diagnostic and Therapeutic Techniques and Equipment',
+                                                'Psychiatry and Psychology', 'Phenomena and Processes',
+                                                'Disciplines and Occupations',
+                                                'Anthropology, Education, Sociology and Social Phenomena',
+                                                'Technology, Industry, Agriculture', 'Humanities', 'Information Science',
+                                                'Named Groups', 'Health Care', 'Publication Characteristics',
+                                                'Geographicals', ])
+
+        # Body Regions parent Anatomy
+        body_regions_term = MeshTerm.objects.filter(term="Body Regions")
+        self.assertTrue(body_regions_term.exists())
+        self.assertEqual(body_regions_term.count(), 1)
+        self.assertEqual(body_regions_term[0].parent.term, "Anatomy")
 
         # Ensure re-running the command does not duplicate terms.
         call_command('import_mesh_terms', file_path, year, stdout=out)
         terms = MeshTerm.objects.all()
-        self.assertEqual(terms.count(), 30)
+        self.assertEqual(terms.count(), 46)
 
     def test_import_mesh_terms_command_for_multiple_releases(self):
-        """Test running the import command for different years"""
+        """Test running the import command for different years."""
         out = StringIO()
         file_path_suffix = os.path.dirname(os.path.dirname(__file__)) + '/browser/fixtures/test_mesh_terms_file_'
         call_command('import_mesh_terms', file_path_suffix + "a.txt", 2015, stdout=out)
@@ -106,7 +122,7 @@ class ImportMeshTermsManagementCommandTest(TestCase):
         ankels_found = MeshTerm.objects.filter(term="Ankle").count()
         self.assertEqual(ankels_found, 2)
         ankels_found = MeshTerm.objects.filter(term="Ankle", year=2015).count()
-        self.assertEqual(ankels_found, 1)        
+        self.assertEqual(ankels_found, 1)
         ankels_found = MeshTerm.objects.filter(term="Ankle", year=2018).count()
         self.assertEqual(ankels_found, 1)
 
@@ -117,5 +133,3 @@ class ImportMeshTermsManagementCommandTest(TestCase):
         self.assertEqual(removed_term_count, 1)
         removed_term_count = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2018).count()
         self.assertEqual(removed_term_count, 0)
-
-        

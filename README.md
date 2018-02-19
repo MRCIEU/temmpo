@@ -171,7 +171,7 @@ Reuse the CI job to run test, replace instances of master with branch name
 
 * Create and share an SSH deployment key on code repository on bitbucket
 
-* Ensure a 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
+* Ensure an 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
 
 ### Test server
 - Built a new virtual environment, run from CI server
