@@ -25,13 +25,14 @@ TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
+PREVIOUS_TEST_YEAR = 2013
 TEST_YEAR = 2015
 
 
 class BrowsingTest(TestCase):
     """Run simple tests for browsing the TeMMPo application."""
 
-    fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json', ]
+    fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json', 'mesh-terms-test-pevious-year-only.json', ]
 
     def setUp(self):
         """Override set up to create test users of each Django default role type."""
@@ -383,18 +384,20 @@ class BrowsingTest(TestCase):
         self.assertNotContains(response, "Gene: TRPC1", msg_prefix=response.content)
         search_criteria.delete()
 
-    def _set_up_test_search_criteria(self):
+    def _set_up_test_search_criteria(self, year=None):
+        if not year:
+            year = TEST_YEAR
         test_file = open(TEST_FILE, 'r')
         upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
         upload.save()
         test_file.close()
 
-        exposure_terms = MeshTerm.objects.get(term="Humans", year=TEST_YEAR).get_descendants(include_self=True)
-        mediator_terms = MeshTerm.objects.get(term="Phenotype", year=TEST_YEAR).get_descendants(include_self=True)
-        outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True)
+        exposure_terms = MeshTerm.objects.get(term="Humans", year=year).get_descendants(include_self=True)
+        mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
+        outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=year).get_descendants(include_self=True)
         gene = Gene.objects.get(name="TRPC1")
 
-        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=TEST_YEAR)
+        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
         search_criteria.save()
 
         search_criteria.genes.add(gene)
@@ -442,18 +445,55 @@ class BrowsingTest(TestCase):
         expected_test_messages = ('Select exposures', 'Current exposure terms', )
         self._find_expected_content(path, msg_list=expected_test_messages)
         recent_search_criteria = SearchCriteria.objects.latest('id')
+
         # Ensure a search criteria new object has been created.
         self.assertNotEquals(original_criteria.id, recent_search_criteria.id)
-        # Ensure no terms settings were carried over
+
+        # Ensure exact terms settings were carried over
         self.assertEqual(list(original_criteria.exposure_terms.values_list("id", flat=True)), list(recent_search_criteria.exposure_terms.values_list("id", flat=True)))
         self.assertEqual(list(original_criteria.mediator_terms.values_list("id", flat=True)), list(recent_search_criteria.mediator_terms.values_list("id", flat=True)))
         self.assertEqual(list(original_criteria.outcome_terms.values_list("id", flat=True)), list(recent_search_criteria.outcome_terms.values_list("id", flat=True)))
+
         # Check associated with the same upload.
         self.assertEqual(original_criteria.upload, recent_search_criteria.upload)
+
         # Ensure using the current test year
         self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
 
-    # TODO: TMMA-131 (High priority) Add test of edit_search when mesh term release years change and terms require conversion.
+    def test_edit_search_with_previous_release_year(self):
+        """Test edit_search when mesh term release years change and terms require conversion."""
+        self._login_user()
+        original_criteria = self._set_up_test_search_criteria(year=PREVIOUS_TEST_YEAR)
+        path = reverse('edit_search', kwargs={'pk': original_criteria.id})
+        expected_test_messages = ('Select exposures', 'Current exposure terms',
+                                  'Converting search from MeshTerm Terms released in %s' % str(PREVIOUS_TEST_YEAR),
+                                  'could not be translated',)
+        self._find_expected_content(path, msg_list=expected_test_messages)
+        recent_search_criteria = SearchCriteria.objects.latest('id')
+
+        # Ensure a search criteria new object has been created.
+        self.assertNotEquals(original_criteria.id, recent_search_criteria.id)
+
+        # Ensure expected terms settings were carried over
+        self.assertEqual(list(original_criteria.exposure_terms.values_list("term", flat=True)), list(recent_search_criteria.exposure_terms.values_list("term", flat=True)))
+        self.assertEqual(list(original_criteria.mediator_terms.values_list("term", flat=True)), list(recent_search_criteria.mediator_terms.values_list("term", flat=True)))
+        previous_outcomes = list(original_criteria.outcome_terms.values_list("term", flat=True))
+        new_outcomes = list(recent_search_criteria.outcome_terms.values_list("term", flat=True))
+        self.assertNotEqual(previous_outcomes, new_outcomes)
+        self.assertIn("Prior name for: Anoikis", previous_outcomes)
+        self.assertNotIn("Prior name for: Anoikis", new_outcomes)
+
+        # Assert recent search is using terms from the current year
+        self.assertFalse(recent_search_criteria.exposure_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+        self.assertFalse(recent_search_criteria.mediator_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+        self.assertFalse(recent_search_criteria.outcome_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+
+        # Check associated with the same upload.
+        self.assertEqual(original_criteria.upload, recent_search_criteria.upload)
+
+        # Ensure using the current test year for new searches
+        self.assertNotEqual(original_criteria.mesh_terms_year_of_release, recent_search_criteria.mesh_terms_year_of_release)
+        self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
 
     def test_exposure_selector(self):
         """Basic test for rendering the exposure terms selector page."""

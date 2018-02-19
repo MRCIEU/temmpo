@@ -3,8 +3,9 @@
 import logging
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -262,7 +263,7 @@ class SearchExisting(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        """ Copy across existing search criteria and allow user to amend """
+        """Copy across existing search criteria and allow user to amend."""
         original_criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
 
         # NB: Need to deep copy to ensure Many to Many relationships are captured
@@ -275,11 +276,18 @@ class SearchExisting(RedirectView):
         original_outcomes = original_criteria.outcome_terms.all()
         original_year = original_criteria.mesh_terms_year_of_release
         if original_year != current_year:
+            messages.add_message(self.request, messages.INFO, "Converting search from MeshTerm Terms released in %s" % str(original_criteria.mesh_terms_year_of_release))
             criteria_copy.exposure_terms = MeshTerm.convert_terms_to_current_year(original_exposures, original_year, current_year)
             criteria_copy.mediator_terms = MeshTerm.convert_terms_to_current_year(original_mediators, original_year, current_year)
             criteria_copy.outcome_terms = MeshTerm.convert_terms_to_current_year(original_outcomes, original_year, current_year)
-            # TODO: TMMA-131 Report any differences via messages
-            # and make clear no additional sub terms were included.
+            # Report any differences via messages.
+            terms = ('exposure', 'mediator', 'outcome', )
+            for term in terms:
+                old_terms = getattr(criteria_copy, '%s_terms' % term)
+                new_terms = getattr(original_criteria, '%s_terms' % term)
+                if (old_terms.count() != new_terms.count()):
+                    diff_terms = ", ".join(list(set(old_terms.values_list("term", flat=True)) - set(new_terms.values_list("term", flat=True))))
+                    messages.add_message(self.request, messages.WARNING, "The following %s terms could not be translated into current MeSH Term equivalents. %s" % (term, diff_terms, ))
         else:
             criteria_copy.exposure_terms = original_exposures
             criteria_copy.mediator_terms = original_mediators
