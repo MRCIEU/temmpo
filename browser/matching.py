@@ -284,7 +284,7 @@ def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
     return string.find(pubmed_mesh_term_text.lower(), transformed_mesh_term)
 
 # TODO: TMMA-161 Review changing to accept zero indexed matches - may have affected previous live searches
-# TODO: TMMA-161 Could re-reun searches and email users where any changes exist
+# TODO: TMMA-161 Could re-rerun searches and email users where any changes exist
 
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,

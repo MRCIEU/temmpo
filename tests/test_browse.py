@@ -651,8 +651,6 @@ class BrowsingTest(TestCase):
 
         # TODO Should undetermined/selected state be tested as well here.
 
-    # TODO TMMA-131 add another year to fixtures and rerun tests
-
     def test_anon_access_to_admin(self):
         """Test anonymous user does not have access to the Django admin."""
         self.client.logout()
