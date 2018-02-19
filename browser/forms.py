@@ -13,9 +13,6 @@ from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineForm
 
 logger = logging.getLogger(__name__)
 
-# TODO: Review possible usage of
-# http://django-mptt.github.io/django-mptt/forms.html
-
 
 class OvidMedLineFileUploadForm(forms.ModelForm):
     file_format = forms.CharField(widget=forms.HiddenInput, initial=OVID)
