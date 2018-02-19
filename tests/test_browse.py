@@ -453,7 +453,7 @@ class BrowsingTest(TestCase):
         # Ensure using the current test year
         self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
 
-    # TODO: TMMA-131 Add test of edit_search when mesh term release years change and terms require conversion.
+    # TODO: TMMA-131 (High priority) Add test of edit_search when mesh term release years change and terms require conversion.
 
     def test_exposure_selector(self):
         """Basic test for rendering the exposure terms selector page."""
@@ -527,31 +527,42 @@ class BrowsingTest(TestCase):
                                                     "Apoptosis", "TRPC1",
                                                     "test-abstract.txt", ])
 
-    # TODO: Test result counts
-
+    # TODO: Test results JSON exports
     # def test_json_data(self):
     #     pass
 
+    # TODO: Test result count data
     # def test_count_data(self):
     #     pass
 
+    # TODO: Test abstracts data
     # def test_abstracts_data(self):
     #     pass
 
     # Test JSON MeSH Term exports
 
     def test_json_mesh_term_export(self):
-        """Test the MeshTerm JSON used in jsTree.
-
-        Test year filter parent node is not return.
-        TODO: TMMA-131 Expand tests to verify expected tree structure
-        """
+        """Test the MeshTerm JSON used in jsTree."""
         self._login_user()
         response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
         self.assertTrue(str(TEST_YEAR) not in response.content)
 
         # Assert valid JSON
         current_year_mesh_terms = json.loads(response.content)
+        # Assert contains the number of expected top level terms for TEST_YEAR.
+        self.assertEqual(len(current_year_mesh_terms), 3)
+        # Assert the year filter term is not returned as a root node term.
+        found = [x for x in current_year_mesh_terms if x['text'] == str(TEST_YEAR)]
+        self.assertEqual(found, [])
+        # Assert a leaf term is where expected.
+        # "term": "Humans",
+        # "tree_number": "B01.050.150.900.649.801.400.112.400.400",
+        levels = range(1, 10)
+        level_10_b_terms = current_year_mesh_terms[1]['children']
+        for i in levels:
+            level_10_b_terms = level_10_b_terms[0]['children']
+        found_humans_term = [x for x in level_10_b_terms if x['text'] == "Humans"]
+        self.assertEqual(len(found_humans_term), 1)
 
     def test_mesh_terms_search_json(self):
         """Test the MeshTerm JSON used in jsTree searches.
