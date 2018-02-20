@@ -9,6 +9,15 @@ from django.test import TestCase
 
 from browser.models import Gene, MeshTerm
 
+MESH_TERM_CLASSIFICATIONS = ['Anatomy', 'Organisms', 'Diseases', 'Chemicals and Drugs',
+                             'Analytical, Diagnostic and Therapeutic Techniques and Equipment',
+                             'Psychiatry and Psychology', 'Phenomena and Processes',
+                             'Disciplines and Occupations',
+                             'Anthropology, Education, Sociology and Social Phenomena',
+                             'Technology, Industry, Agriculture', 'Humanities', 'Information Science',
+                             'Named Groups', 'Health Care', 'Publication Characteristics',
+                             'Geographicals', ]
+
 
 class RunSearchManagementCommandTest(TestCase):
     """Test running the run_search management command incorrectly."""
@@ -92,14 +101,7 @@ class ImportMeshTermsManagementCommandTest(TestCase):
         self.assertEqual(terms.count(), 46)
         # Assert that classification terms have been created as top level mesh term items
         top_level_mesh_terms = list(MeshTerm.get_top_level_mesh_terms(year).values_list("term", flat=True))
-        self.assertEqual(top_level_mesh_terms, ['Anatomy', 'Organisms', 'Diseases', 'Chemicals and Drugs',
-                                                'Analytical, Diagnostic and Therapeutic Techniques and Equipment',
-                                                'Psychiatry and Psychology', 'Phenomena and Processes',
-                                                'Disciplines and Occupations',
-                                                'Anthropology, Education, Sociology and Social Phenomena',
-                                                'Technology, Industry, Agriculture', 'Humanities', 'Information Science',
-                                                'Named Groups', 'Health Care', 'Publication Characteristics',
-                                                'Geographicals', ])
+        self.assertEqual(top_level_mesh_terms, MESH_TERM_CLASSIFICATIONS)
 
         # Body Regions parent Anatomy
         body_regions_term = MeshTerm.objects.filter(term="Body Regions")
