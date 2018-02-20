@@ -503,7 +503,6 @@ class BrowsingTest(TestCase):
         # Ensure using the current test year for new searches
         self.assertNotEqual(original_criteria.mesh_terms_year_of_release, recent_search_criteria.mesh_terms_year_of_release)
         self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
-        # TODO NB: Not in 2018 - Cell Physiological Processes
 
     def test_exposure_selector(self):
         """Basic test for rendering the exposure terms selector page."""
@@ -614,7 +613,6 @@ class BrowsingTest(TestCase):
         level_12_b_terms = current_year_mesh_terms
         for i in levels_indicies:
             level_12_b_terms = level_12_b_terms[i]['children']
-        # found_humans_term = [x for x in level_12_b_terms if x['text'] == "Humans"]
         term = level_12_b_terms[1]['text']
         self.assertEqual(term, "Humans")
 
