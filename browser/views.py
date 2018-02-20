@@ -614,8 +614,11 @@ class MeshTermSearchJSON(TemplateView):
         results = []
         if search_term:
             # TMMA-131 filter by year and search for term
-            top_level_terms = MeshTerm.get_mesh_terms_by_year().filter(term__istartswith=search_term)
-            for n in top_level_terms:
+            found_terms = MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year(), term__istartswith=search_term)
+            for n in found_terms:
                 results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
+            # Remove the year filter
+            year_filter_term_id = MeshTerm.get_latest_mesh_term_filter_year_term().id
+            results = [x for x in results if x != year_filter_term_id]
             results = ["mtid_%d" % x for x in results]
         return JsonResponse(results, safe=False)

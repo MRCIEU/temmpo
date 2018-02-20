@@ -79,6 +79,13 @@ class MeshTerm(MPTTModel):
         return data['year__max']
 
     @classmethod
+    def get_latest_mesh_term_filter_year_term(cls):
+        """Retrieve the a latest release year or MeshTerms recorded."""
+        year = cls.get_latest_mesh_term_release_year()
+        term = cls.objects.get(term=str(year), year=year)
+        return term
+
+    @classmethod
     def get_top_level_mesh_terms(cls, year=None):
         """Get a query set of top level MeshTerms for a specific year."""
         if not year:

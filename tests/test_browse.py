@@ -25,14 +25,14 @@ TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
-PREVIOUS_TEST_YEAR = 2013
-TEST_YEAR = 2015
+PREVIOUS_TEST_YEAR = 2015
+TEST_YEAR = 2018
 
 
 class BrowsingTest(TestCase):
     """Run simple tests for browsing the TeMMPo application."""
 
-    fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json', 'mesh-terms-test-pevious-year-only.json', ]
+    fixtures = ['mesh_terms_2015_2018.json', 'genes-test-only.json', ]  # ['mesh-terms-test-only.json', 'genes-test-only.json', 'mesh-terms-test-pevious-year-only.json', ]
 
     def setUp(self):
         """Override set up to create test users of each Django default role type."""
@@ -202,7 +202,10 @@ class BrowsingTest(TestCase):
                                         follow=True)
             search_criteria.refresh_from_db()
             # NB: Only a limited set of mesh terms are available for testing, for speed purposes
-            self.assertEqual(search_criteria.exposure_terms.all().count(), 3)
+            exposure_terms = search_criteria.exposure_terms.all()
+            unique_exposure_terms = set(exposure_terms.values_list("term", flat=True))
+            self.assertEqual(exposure_terms.count(), 5)
+            self.assertEqual(len(unique_exposure_terms), 3)
             self.assertNotContains(response, " could not be found")
 
     def test_ovid_search_bulk_term_edit(self):
@@ -328,12 +331,12 @@ class BrowsingTest(TestCase):
                                      "btn_submit": "replace"},
                                     follow=True)
         search_criteria.refresh_from_db()
-        self.assertEqual(search_criteria.exposure_terms.all().count(), 2)
+        self.assertEqual(search_criteria.exposure_terms.all().count(), 30)
 
         # Clear existing terms
         search_criteria.exposure_terms.clear()
         response = self.client.post(exposure_url,
-                                    {"term_tree_ids": "mtid_1882",
+                                    {"term_tree_ids": "mtid_222259",
                                      "include_child_nodes": "undetermined",
                                      "btn_submit": "choose"},
                                     follow=True)
@@ -343,12 +346,12 @@ class BrowsingTest(TestCase):
         # Clear existing terms
         search_criteria.exposure_terms.clear()
         response = self.client.post(exposure_url,
-                                    {"term_tree_ids": "mtid_1882",
+                                    {"term_tree_ids": "mtid_222259",
                                      "include_child_nodes": "down",
                                      "btn_submit": "choose"},
                                     follow=True)
         search_criteria.refresh_from_db()
-        self.assertEqual(search_criteria.exposure_terms.all().count(), 2)
+        self.assertEqual(search_criteria.exposure_terms.all().count(), 30)
 
     def test_toggling_child_term_selection_ovid(self):
         """Test form toggle selection of child MeshTerms when working with an Ovid MEDLINE formatted file."""
@@ -464,6 +467,9 @@ class BrowsingTest(TestCase):
         """Test edit_search when mesh term release years change and terms require conversion."""
         self._login_user()
         original_criteria = self._set_up_test_search_criteria(year=PREVIOUS_TEST_YEAR)
+        extra_terms = MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term="Cell Physiological Processes").get_descendants(include_self=True)
+        for term in extra_terms:
+            original_criteria.outcome_terms.add(term)
         path = reverse('edit_search', kwargs={'pk': original_criteria.id})
         expected_test_messages = ('Select exposures', 'Current exposure terms',
                                   'Converting search from MeshTerm Terms released in %s' % str(PREVIOUS_TEST_YEAR),
@@ -476,12 +482,15 @@ class BrowsingTest(TestCase):
 
         # Ensure expected terms settings were carried over
         self.assertEqual(list(original_criteria.exposure_terms.values_list("term", flat=True)), list(recent_search_criteria.exposure_terms.values_list("term", flat=True)))
-        self.assertEqual(list(original_criteria.mediator_terms.values_list("term", flat=True)), list(recent_search_criteria.mediator_terms.values_list("term", flat=True)))
+        original_mediators = list(original_criteria.mediator_terms.values_list("term", flat=True))
+        recent_mediators = list(recent_search_criteria.mediator_terms.values_list("term", flat=True))
+        self.assertEqual(set(original_mediators), set(recent_mediators))
+
         previous_outcomes = list(original_criteria.outcome_terms.values_list("term", flat=True))
         new_outcomes = list(recent_search_criteria.outcome_terms.values_list("term", flat=True))
         self.assertNotEqual(previous_outcomes, new_outcomes)
-        self.assertIn("Prior name for: Anoikis", previous_outcomes)
-        self.assertNotIn("Prior name for: Anoikis", new_outcomes)
+        self.assertIn("Cell Physiological Processes", previous_outcomes)
+        self.assertNotIn("Cell Physiological Processes", new_outcomes)
 
         # Assert recent search is using terms from the current year
         self.assertFalse(recent_search_criteria.exposure_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
@@ -494,6 +503,7 @@ class BrowsingTest(TestCase):
         # Ensure using the current test year for new searches
         self.assertNotEqual(original_criteria.mesh_terms_year_of_release, recent_search_criteria.mesh_terms_year_of_release)
         self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
+        # TODO NB: Not in 2018 - Cell Physiological Processes
 
     def test_exposure_selector(self):
         """Basic test for rendering the exposure terms selector page."""
@@ -585,24 +595,28 @@ class BrowsingTest(TestCase):
         """Test the MeshTerm JSON used in jsTree."""
         self._login_user()
         response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
-        self.assertTrue(str(TEST_YEAR) not in response.content)
+        self.assertTrue('"text": "%d"' % TEST_YEAR not in response.content)
 
         # Assert valid JSON
         current_year_mesh_terms = json.loads(response.content)
         # Assert contains the number of expected top level terms for TEST_YEAR.
-        self.assertEqual(len(current_year_mesh_terms), 3)
+        self.assertEqual(len(current_year_mesh_terms), 16)
         # Assert the year filter term is not returned as a root node term.
         found = [x for x in current_year_mesh_terms if x['text'] == str(TEST_YEAR)]
         self.assertEqual(found, [])
         # Assert a leaf term is where expected.
+        # "pk": 223987,
         # "term": "Humans",
-        # "tree_number": "B01.050.150.900.649.801.400.112.400.400",
-        levels = range(1, 10)
-        level_10_b_terms = current_year_mesh_terms[1]['children']
-        for i in levels:
-            level_10_b_terms = level_10_b_terms[0]['children']
-        found_humans_term = [x for x in level_10_b_terms if x['text'] == "Humans"]
-        self.assertEqual(len(found_humans_term), 1)
+        # "tree_number": "B01.050.150.900.649.313.988.400.112.400.400",
+        # "year": 2018,
+        # "level": 12
+        levels_indicies = (1, 0, 2, 1, 1, 3, 0, 6, 0, 0, 1)
+        level_12_b_terms = current_year_mesh_terms
+        for i in levels_indicies:
+            level_12_b_terms = level_12_b_terms[i]['children']
+        # found_humans_term = [x for x in level_12_b_terms if x['text'] == "Humans"]
+        term = level_12_b_terms[1]['text']
+        self.assertEqual(term, "Humans")
 
     def test_mesh_terms_search_json(self):
         """Test the MeshTerm JSON used in jsTree searches.
@@ -612,21 +626,24 @@ class BrowsingTest(TestCase):
         self._login_user()
         path = reverse('mesh_terms_search_json') + "?str=Cell"
         response = self.client.get(path, follow=True)
-        self.assertTrue(str(TEST_YEAR) not in response.content)
+        year_jstree_id = "mtid_" + str(MeshTerm.objects.get(term=str(TEST_YEAR)).id)
+        self.assertTrue(year_jstree_id not in response.content)
 
         # Assert valid JSON.
         assert(json.loads(response.content))
         # Assert IDs with mtid_ prefix for all instances of mesh terms with Cell in the name are found.
-        self.assertTrue("mtid_1882" in response.content)
-        self.assertTrue("mtid_1891" in response.content)
-        self.assertTrue("mtid_48029" in response.content)
-        self.assertTrue("mtid_48042" in response.content)
-        self.assertTrue("mtid_48096" in response.content)
+        self.assertTrue("mtid_222259" in response.content)  # 222259 Cell Line
+        self.assertTrue("mtid_222297" in response.content)  # 1882  Cell Line, Tumor
+        self.assertTrue("mtid_270123" in response.content)  # 270123 Cell Physiological Phenomena
+        self.assertTrue("mtid_270187" in response.content)  # 270187 Cell Death
 
     def test_mesh_terms_as_json_for_tree_population(self):
         """Test can retrieve JSON to top level items in the MeshTerm jsTree."""
         search_criteria = self._set_up_test_search_criteria()
-        root_nodes = ('mtid_33717', 'mtid_33718', 'mtid_33723', )
+        # Classification term ids for 2018 (TEST_YEAR)
+        root_nodes = range(220395, 220411)
+        root_nodes = ["mtid_" + str(x) for x in root_nodes]
+        self.assertEqual(len(root_nodes), 16)
         term_type_to_expected_nodes = {'exposure': root_nodes,
                                        'mediator': root_nodes,
                                        'outcome': root_nodes, }
@@ -640,8 +657,20 @@ class BrowsingTest(TestCase):
     def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
         """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
         search_criteria = self._set_up_test_search_criteria()
-        expanded_node_query_string = '?id=mtid_33717'
-        children_nodes = ('mtid_1784', )
+        # Expand the 2018 272772 node
+        expanded_node_query_string = '?id=mtid_272772'
+        # Anatomy, Artistic 272773
+        # Anatomy, Comparative 272774
+        # Anatomy, Cross-Sectional 272775
+        # Anatomy, Regional 272777
+        # Anatomy, Veterinary 272778
+        # Cell Biology 272779
+        # Embryology 272780
+        # Histology 272782
+        # Neuroanatomy 272786
+        # Osteology 272787
+        children_nodes = ('mtid_272773', 'mtid_272774', 'mtid_272775', 'mtid_272777', 'mtid_272778',
+                          'mtid_272779', 'mtid_272780', 'mtid_272782', 'mtid_272786', 'mtid_272787', )
         term_type_to_expected_nodes = {'exposure': children_nodes,
                                        'mediator': children_nodes,
                                        'outcome': children_nodes, }
