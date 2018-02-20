@@ -3,6 +3,7 @@ import logging
 import re
 
 from django import forms
+from django.db.models import Max
 from django.conf import settings
 from django.contrib import messages
 
@@ -11,9 +12,6 @@ from browser.widgets import GeneTextarea
 from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator
 
 logger = logging.getLogger(__name__)
-
-# TODO: Review possible usage of
-# http://django-mptt.github.io/django-mptt/forms.html
 
 
 class OvidMedLineFileUploadForm(forms.ModelForm):
@@ -83,7 +81,7 @@ class TermSelectorForm(forms.ModelForm):
         child_term_ids = []
 
         for name in mesh_term_names:
-            mesh_terms = MeshTerm.objects.filter(term__iexact=name)
+            mesh_terms = MeshTerm.objects.filter(term__iexact=name, year=self.instance.mesh_terms_year_of_release)
             if mesh_terms.count() == 0:
                 messages.add_message(self.request, messages.WARNING, '%s: could not be found' % name)
                 # raise a validation error versus a message
@@ -109,7 +107,7 @@ class TermSelectorForm(forms.ModelForm):
                 mesh_term_ids = self._select_child_nodes_by_name(mesh_terms)
             else:
                 # Only extract IDs of specifically listed Mesh Terms and do not include any child terms.
-                mesh_term_ids = MeshTerm.objects.filter(term__in=mesh_terms).values_list("id", flat=True)
+                mesh_term_ids = MeshTerm.objects.filter(term__in=mesh_terms, year=self.instance.mesh_terms_year_of_release).values_list("id", flat=True)
 
         elif 'term_tree_ids' in self.cleaned_data:
             mesh_term_ids = self.cleaned_data['term_tree_ids'].split(',')
@@ -142,19 +140,25 @@ class TermSelectorForm(forms.ModelForm):
 
 
 class FilterForm(forms.ModelForm):
-    genes = forms.CharField(widget=GeneTextarea(attrs={'rows':4}),
+    """Present a Filter form to allow matching results to be filter by Gene(s) or MeshTerm of the latest release."""
+
+    genes = forms.CharField(widget=GeneTextarea(attrs={'rows': 4}),
                             required=False,
                             label='Enter genes (optional)',
                             help_text='Separated by commas')
 
     mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.all(),
-                    required=False,
-                    label='Filter',
-                    help_text="Enter a MeSH Term, e.g. Humans")
+                                         required=False,
+                                         label='Filter',
+                                         help_text="Enter a MeSH Term, e.g. Humans")
 
     class Meta:
         model = SearchCriteria
         fields = ['genes', 'mesh_filter', ]
+
+    def __init__(self, *args, **kwargs):
+        super(FilterForm, self).__init__(*args, **kwargs)
+        self.fields['mesh_filter'].queryset = MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None)
 
     def clean_genes(self):
         data = self.cleaned_data['genes']
@@ -193,10 +197,9 @@ class FilterForm(forms.ModelForm):
         return ','.join(gene_list)
 
     def save(self, commit=True):
-
+        """Custom save method to allow the additional of new Gene names (and other filter terms)."""
         # Clear any existing genes
         self.instance.genes.clear()
-
         gene_data = self.cleaned_data['genes']
 
         if gene_data:
@@ -211,5 +214,3 @@ class FilterForm(forms.ModelForm):
                 self.instance.genes.add(this_gene)
 
         return self.instance
-
-# TODO create custom form fields widgets

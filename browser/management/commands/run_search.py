@@ -1,16 +1,19 @@
-from django.core.management.base import BaseCommand, CommandError
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+"""Management command that can re-run a matching search based on the ID of an existing SearchResult."""
+
+from django.core.management.base import BaseCommand
 
 from browser.matching import perform_search
 
+
 class Command(BaseCommand):
-    args = '<search_result_id>'
-    help = 'Performs search on the SearchResult based on passed in pk'
+    """Django management command wrapper class."""
+
+    help = 'Performs search on a SearchResult object based on the supplied ID'
+
+    def add_arguments(self, parser):
+        """Define required command line arguments for management command."""
+        parser.add_argument('search_result_id', type=int)
 
     def handle(self, *args, **options):
-        if args:
-
-            sr_id = int(args[0])
-            perform_search(sr_id)
-        else:
-            print "Must provide an id for the Search Results"
+        """Perform search where and ID has been supplied."""
+        perform_search(options['search_result_id'])

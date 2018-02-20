@@ -276,15 +276,15 @@ def searchgene(texttosearch, searchstring):
 
 
 def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
-    """ Return -1 for no matches > 0 for match found,
-        Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
-    # TODO Profile whether these comparisons should be replaced with regular expressions.
-    # TODO Move transformation outside of the matching function, as same term is compared many times
+    """Return -1 for no matches > 0 for match found.
+    Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
+    # TODO: (Low priority) Profile whether these comparisons should be replaced with regular expressions.
+    # TODO: (Low priority) Move transformation outside of the matching function, as same term is compared many times
     transformed_mesh_term = mesh_term.lower().replace('[', ' ').replace(']', ' ').replace('(', ' ').replace(')', ' ')
     return string.find(pubmed_mesh_term_text.lower(), transformed_mesh_term)
 
-# TODO: Review changing to accept zero indexed matches - may have affected previous live searches
-# TODO: Could re-reun searches and email thoses where changes exist
+# TODO: TMMA-161 Review changing to accept zero indexed matches - may have affected previous live searches
+# TODO: TMMA-161 Could re-rerun searches and email users where any changes exist
 
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
@@ -309,8 +309,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     for citation in citations:
         countthis = 0
-        # TODO optimisation - check Abstract seciton exists sooner
-        # TODO: HIGH PRIORITY - > should be >= to capture any zero indexed matches
+        # TODO: (Low priority) optimisation - check Abstract section exists sooner
+        # TODO: TMMA-161 HIGH PRIORITY - > should be >= to capture any zero indexed matches
         # https://docs.python.org/2/library/string.html#string.find
 
         # Ensure we only test citations with associated mesh headings

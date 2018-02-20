@@ -87,6 +87,18 @@ Use one of the techniques below to set up your virtual environment
 
     http://localhost:8800
 
+### Importing MeSH Terms
+
+#### Load fixture data
+
+    python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json
+
+#### Management command
+Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/ NB: These commands each take over 20 minutes to run.
+
+    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015
+    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
+
 ### Deploy master branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
@@ -164,7 +176,7 @@ Reuse the CI job to run test, replace instances of master with branch name
 
 * Create and share an SSH deployment key on code repository on bitbucket
 
-* Ensure a 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
+* Ensure an 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
 
 ### Test server
 - Built a new virtual environment, run from CI server

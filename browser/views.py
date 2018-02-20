@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# import copy
+
 import logging
-import math
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -39,6 +39,7 @@ class CreditsView(TemplateView):
         context['active'] = 'credits'
         return context
 
+
 class HelpView(TemplateView):
     template_name = "help.html"
 
@@ -46,6 +47,7 @@ class HelpView(TemplateView):
         context = super(HelpView, self).get_context_data(**kwargs)
         context['active'] = 'help'
         return context
+
 
 class SelectSearchTypeView(TemplateView):
     template_name = "select_search_type.html"
@@ -67,8 +69,7 @@ class ReuseSearchView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the reuse search list
-        """
+        """Ensure user logs in before viewing the reuse search list."""
         return super(ReuseSearchView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -84,18 +85,16 @@ class SearchOvidMEDLINE(CreateView):
     template_name = "search.html"
 
     def get_success_url(self):
-        # This should redirect to newly create search criteria tied to
-        # uploaded file
+        """Redirect to newly create search criteria tied to uploaded file."""
         # Create a new SearchCriteria object
-        self.search_criteria = SearchCriteria(upload=self.object)
+        self.search_criteria = SearchCriteria(upload=self.object, mesh_terms_year_of_release=MeshTerm.get_latest_mesh_term_release_year())
         self.search_criteria.save()
         return reverse('exposure_selector',
                        kwargs={'pk': self.search_criteria.id})
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the search form
-        """
+        """Ensure user logs in before viewing the search form."""
         return super(SearchOvidMEDLINE, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -142,9 +141,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the form
-        """
-
+        """Ensure user logs in before viewing the form."""
         # Prevent one user viewing data for another
         scid = int(kwargs['pk'])
         if SearchCriteria.objects.filter(pk=scid).exists():
@@ -158,9 +155,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         return super(TermSelectorAbstractUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        """ Sub class should define type, term_selector_url,
-            term_selector_by_family_url """
-
+        """Sub class should define type, term_selector_url, term_selector_by_family_url."""
         context = super(TermSelectorAbstractUpdateView, self).get_context_data(**kwargs)
         context['active'] = 'search'
         context['type'] = self.type
@@ -171,9 +166,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        """Auto select any children of selected nodes
-        """
-
+        """Auto select any children of selected nodes."""
         if form.is_valid():
             cleaned_data = form.cleaned_data
 
@@ -258,28 +251,47 @@ class SearchExistingUpload(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         upload = get_object_or_404(Upload, pk=kwargs['pk'])
-        criteria = SearchCriteria(upload=upload)
+        criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=MeshTerm.get_latest_mesh_term_release_year())
         criteria.save()
         return reverse('exposure_selector', kwargs={'pk': criteria.pk})
 
 
 class SearchExisting(RedirectView):
-    """TODO: Change to allow separate term collection reuse
+    """TODO: TMMA-139 Change to allow separate term collection reuse
        Create new search criteria based on existing one and pass to
        ExposureSelector view """
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        """ Copy across existing search criteria and allow user to amend """
+        """Copy across existing search criteria and allow user to amend."""
         original_criteria = get_object_or_404(SearchCriteria, pk=kwargs['pk'])
 
-        # NB: Need to deep copy to ensure Many to Many relationship is captured
-        criteria_copy = SearchCriteria(upload=original_criteria.upload)
+        # NB: Need to deep copy to ensure Many to Many relationships are captured
+        current_year = MeshTerm.get_latest_mesh_term_release_year()
+        criteria_copy = SearchCriteria(upload=original_criteria.upload, mesh_terms_year_of_release=current_year)
         criteria_copy.save()
         criteria_copy.genes = original_criteria.genes.all()
-        criteria_copy.exposure_terms = original_criteria.exposure_terms.all()
-        criteria_copy.outcome_terms = original_criteria.outcome_terms.all()
-        criteria_copy.mediator_terms = original_criteria.mediator_terms.all()
+        original_exposures = original_criteria.exposure_terms.all()
+        original_mediators = original_criteria.mediator_terms.all()
+        original_outcomes = original_criteria.outcome_terms.all()
+        original_year = original_criteria.mesh_terms_year_of_release
+        if original_year != current_year:
+            messages.add_message(self.request, messages.INFO, "Converting search from MeshTerm Terms released in %s" % str(original_criteria.mesh_terms_year_of_release))
+            criteria_copy.exposure_terms = MeshTerm.convert_terms_to_current_year(original_exposures, original_year, current_year)
+            criteria_copy.mediator_terms = MeshTerm.convert_terms_to_current_year(original_mediators, original_year, current_year)
+            criteria_copy.outcome_terms = MeshTerm.convert_terms_to_current_year(original_outcomes, original_year, current_year)
+            # Report any differences via messages.
+            terms = ('exposure', 'mediator', 'outcome', )
+            for term in terms:
+                old_terms = getattr(criteria_copy, '%s_terms' % term)
+                new_terms = getattr(original_criteria, '%s_terms' % term)
+                if (old_terms.count() != new_terms.count()):
+                    diff_terms = ", ".join(list(set(old_terms.values_list("term", flat=True)) - set(new_terms.values_list("term", flat=True))))
+                    messages.add_message(self.request, messages.WARNING, "The following %s terms could not be translated into current MeSH Term equivalents. %s" % (term, diff_terms, ))
+        else:
+            criteria_copy.exposure_terms = original_exposures
+            criteria_copy.mediator_terms = original_mediators
+            criteria_copy.outcome_terms = original_outcomes
         criteria_copy.save()
 
         return reverse('exposure_selector', kwargs={'pk': criteria_copy.pk})
@@ -292,9 +304,7 @@ class FilterSelector(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the form
-        """
-
+        """Ensure user logs in before viewing the form."""
         # Prevent one user viewing data for another
         scid = int(kwargs['pk'])
         if SearchCriteria.objects.filter(pk=scid).exists():
@@ -314,8 +324,7 @@ class FilterSelector(UpdateView):
         return context
 
     def form_valid(self, form):
-        """Store genes and filter"""
-
+        """Store genes and filter."""
         # Save genes to search criteria
         form.save()
 
@@ -339,8 +348,7 @@ class ResultsView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the results pages
-        """
+        """Ensure user logs in before viewing the results pages."""
 
         # Prevent user viewing data for another user
         self.id = int(kwargs['pk'])
@@ -373,8 +381,7 @@ class ResultsListingView(ListView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing the results listing page
-        """
+        """Ensure user logs in before viewing the results listing page."""
         return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -392,8 +399,7 @@ class CriteriaView(DetailView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         criteria_id = int(kwargs['pk'])
         try:
@@ -425,8 +431,7 @@ class CountDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
@@ -451,8 +456,7 @@ class AbstractDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
@@ -477,8 +481,7 @@ class JSONDataView(RedirectView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Ensure user logs in before viewing
-        """
+        """Ensure user logs in before viewing."""
         # Prevent user viewing data for another user
         # Pretty dirty but OK for now...
         srid = int(kwargs['pk'])
@@ -498,6 +501,7 @@ class JSONDataView(RedirectView):
 
 
 class MeshTermsAsJSON(TemplateView):
+    """Used with the JSTrees to represent MeshTerms."""
 
     def node_to_dict(self, node):
         result = {
@@ -523,26 +527,32 @@ class MeshTermsAsJSON(TemplateView):
         try:
             result = int(id_part)
         except ValueError:
-            raise ValidationError
+            raise Exception("Problem generating MeSH Term JSON file for %s" % self.requested_node_id)
 
         return result
 
     def dispatch(self, request, *args, **kwargs):
-
+        """Return JSON tree structure of MeshTerms and selected term status."""
         # When selecting root nodes # is sent; otherwise node id prefixed with mtid_
         self.requested_node_id = request.GET.get('id', '#')
         self.search_criteria_id = kwargs.get('pk', None)
         self.type = kwargs.get('type', None)
         self.selected = None
         self.ancestor_ids = []
-
-        if self.requested_node_id == '#':
-            nodes = MeshTerm.objects.root_nodes()
-        else:
-            nodes = get_object_or_404(MeshTerm, id=self._get_int_id()).get_children()
+        nodes = []
 
         if self.search_criteria_id:
             sc = get_object_or_404(SearchCriteria, id=self.search_criteria_id)
+            # TMMA-131 filter by year root node
+            year = sc.mesh_terms_year_of_release
+            if self.requested_node_id == '#':
+                try:
+                    nodes = MeshTerm.get_top_level_mesh_terms(year)
+                except ObjectDoesNotExist:
+                    raise Exception("Problem generating year %s MeSH Term JSON file." % year)
+            else:
+                nodes = get_object_or_404(MeshTerm, id=self._get_int_id()).get_children()
+
             self.selected = getattr(sc, self.type + '_terms').all()
             for node in self.selected:
                 self.ancestor_ids.extend(node.get_ancestors().values_list("id", flat=True))
@@ -555,10 +565,10 @@ class MeshTermsAsJSON(TemplateView):
 
 
 class MeshTermsAllAsJSON(TemplateView):
+    """Return MeshTerms from the most recent release recorded."""
 
     def recursive_node_to_dict(self, node):
-        """Recursive """
-
+        """Recursive."""
         node_id = "mtid_" + str(node.id)
         result = {
             'id': node_id,
@@ -572,16 +582,17 @@ class MeshTermsAllAsJSON(TemplateView):
         return result
 
     def dispatch(self, request, *args, **kwargs):
-
-        root_nodes = MeshTerm.objects.root_nodes()
+        """Return JSON representation of the latest MeshTerm release."""
+        # TMMA-131 filter by year and return children
+        top_level_terms = MeshTerm.get_top_level_mesh_terms()
         dicts = []
-        for n in root_nodes:
+        for n in top_level_terms:
             dicts.append(self.recursive_node_to_dict(n))
-
         return JsonResponse(dicts, safe=False)
 
 
 class MeshTermSearchJSON(TemplateView):
+    """Return MeshTerms related to a search of the most recent release recorded."""
 
     # def node_to_dict_with_ancestors(self, node):
     #     nodes = node.get_ancestors(ascending=True, include_self=True)
@@ -598,12 +609,16 @@ class MeshTermSearchJSON(TemplateView):
     #     return chain
 
     def dispatch(self, request, *args, **kwargs):
+        """Support JSTree search functionality."""
         search_term = request.GET.get("str", "").strip()
         results = []
         if search_term:
-            root_nodes = MeshTerm.objects.filter(term__istartswith=search_term)
-            for n in root_nodes:
+            # TMMA-131 filter by year and search for term
+            found_terms = MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year(), term__istartswith=search_term)
+            for n in found_terms:
                 results.extend(n.get_ancestors(include_self=True).values_list("id", flat=True))  # self.node_to_dict_with_ancestors(n)
-
-        results = ["mtid_%d" % x for x in results]
+            # Remove the year filter
+            year_filter_term_id = MeshTerm.get_latest_mesh_term_filter_year_term().id
+            results = [x for x in results if x != year_filter_term_id]
+            results = ["mtid_%d" % x for x in results]
         return JsonResponse(results, safe=False)

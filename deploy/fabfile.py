@@ -72,7 +72,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         if clone_repo:
             caller('mkdir -p %s' % src_dir)
-            # TODO Improve so the known_hosts file does not keep growing
+            # TODO: (Low priority) Improve so the known_hosts file does not keep growing
             for host in GIT_SSH_HOSTS:
                 caller('ssh-keyscan -H %s >> ~/.ssh/known_hosts' % host)
             if not _exists_local(src_dir + "temmpo", use_local_mode):
