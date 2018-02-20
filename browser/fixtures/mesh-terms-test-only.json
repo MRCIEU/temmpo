@@ -1,405 +1,450 @@
 [
 {
+    "model": "browser.meshterm",
+    "pk": 1784,
     "fields": {
-        "rght": 5103,
         "term": "Cells",
-        "parent": 33717,
-        "level": 1,
         "tree_number": "A11",
-        "lft": 3476,
-        "tree_id": 1
-    },
-    "model": "browser.meshterm",
-    "pk": 1784
+        "parent": 33717,
+        "year": 2015,
+        "lft": 3477,
+        "rght": 5104,
+        "tree_id": 8,
+        "level": 2
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 1881,
     "fields": {
-        "rght": 3766,
         "term": "Cells, Cultured",
-        "parent": 1784,
-        "level": 2,
         "tree_number": "A11.251",
-        "lft": 3669,
-        "tree_id": 1
-    },
-    "model": "browser.meshterm",
-    "pk": 1881
-},
-{
-    "fields": {
-        "rght": 3723,
-        "term": "Cell Line",
-        "parent": 1881,
-        "level": 3,
-        "tree_number": "A11.251.210",
+        "parent": 1784,
+        "year": 2015,
         "lft": 3670,
-        "tree_id": 1
-    },
-    "model": "browser.meshterm",
-    "pk": 1882
+        "rght": 3767,
+        "tree_id": 8,
+        "level": 3
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 1882,
     "fields": {
-        "rght": 3710,
+        "term": "Cell Line",
+        "tree_number": "A11.251.210",
+        "parent": 1881,
+        "year": 2015,
+        "lft": 3671,
+        "rght": 3724,
+        "tree_id": 8,
+        "level": 4
+    }
+},
+{
+    "model": "browser.meshterm",
+    "pk": 1891,
+    "fields": {
         "term": "Cell Line, Tumor",
-        "parent": 1882,
-        "level": 4,
         "tree_number": "A11.251.210.190",
-        "lft": 3687,
-        "tree_id": 1
-    },
-    "model": "browser.meshterm",
-    "pk": 1891
+        "parent": 1882,
+        "year": 2015,
+        "lft": 3688,
+        "rght": 3711,
+        "tree_id": 8,
+        "level": 5
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3162,
     "fields": {
-        "rght": 4829,
         "term": "Eukaryota",
-        "parent": 33718,
-        "level": 1,
         "tree_number": "B01",
-        "lft": 2,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3162
+        "parent": 33718,
+        "year": 2015,
+        "lft": 6235,
+        "rght": 11062,
+        "tree_id": 8,
+        "level": 2
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3250,
     "fields": {
-        "rght": 1892,
         "term": "Animals",
-        "parent": 3162,
-        "level": 2,
         "tree_number": "B01.050",
-        "lft": 177,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3250
+        "parent": 3162,
+        "year": 2015,
+        "lft": 6410,
+        "rght": 8125,
+        "tree_id": 8,
+        "level": 3
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3337,
     "fields": {
-        "rght": 1199,
         "term": "Chordata",
-        "parent": 3250,
-        "level": 3,
         "tree_number": "B01.050.150",
-        "lft": 350,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3337
+        "parent": 3250,
+        "year": 2015,
+        "lft": 6583,
+        "rght": 7432,
+        "tree_id": 8,
+        "level": 4
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3345,
     "fields": {
-        "rght": 1198,
         "term": "Vertebrates",
-        "parent": 3337,
-        "level": 4,
         "tree_number": "B01.050.150.900",
-        "lft": 365,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3345
+        "parent": 3337,
+        "year": 2015,
+        "lft": 6598,
+        "rght": 7431,
+        "tree_id": 8,
+        "level": 5
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3486,
     "fields": {
-        "rght": 1163,
         "term": "Mammals",
-        "parent": 3345,
-        "level": 5,
         "tree_number": "B01.050.150.900.649",
-        "lft": 646,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3486
+        "parent": 3345,
+        "year": 2015,
+        "lft": 6879,
+        "rght": 7396,
+        "tree_id": 8,
+        "level": 6
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3584,
     "fields": {
-        "rght": 966,
         "term": "Primates",
-        "parent": 3486,
-        "level": 6,
         "tree_number": "B01.050.150.900.649.801",
-        "lft": 841,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3584
+        "parent": 3486,
+        "year": 2015,
+        "lft": 7074,
+        "rght": 7199,
+        "tree_id": 8,
+        "level": 7
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3585,
     "fields": {
-        "rght": 953,
         "term": "Haplorhini",
-        "parent": 3584,
-        "level": 7,
         "tree_number": "B01.050.150.900.649.801.400",
-        "lft": 842,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3585
+        "parent": 3584,
+        "year": 2015,
+        "lft": 7075,
+        "rght": 7186,
+        "tree_id": 8,
+        "level": 8
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3586,
     "fields": {
-        "rght": 912,
         "term": "Catarrhini",
-        "parent": 3585,
-        "level": 8,
         "tree_number": "B01.050.150.900.649.801.400.112",
-        "lft": 843,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3586
+        "parent": 3585,
+        "year": 2015,
+        "lft": 7076,
+        "rght": 7145,
+        "tree_id": 8,
+        "level": 9
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3610,
     "fields": {
-        "rght": 907,
         "term": "Hominidae",
-        "parent": 3586,
-        "level": 9,
         "tree_number": "B01.050.150.900.649.801.400.112.400",
-        "lft": 890,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3610
+        "parent": 3586,
+        "year": 2015,
+        "lft": 7123,
+        "rght": 7140,
+        "tree_id": 8,
+        "level": 10
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 3612,
     "fields": {
-        "rght": 894,
         "term": "Humans",
-        "parent": 3610,
-        "level": 10,
         "tree_number": "B01.050.150.900.649.801.400.112.400.400",
-        "lft": 893,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 3612
+        "parent": 3610,
+        "year": 2015,
+        "lft": 7126,
+        "rght": 7127,
+        "tree_id": 8,
+        "level": 11
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 33717,
     "fields": {
-        "rght": 6232,
         "term": "Anatomy",
-        "parent": null,
-        "level": 0,
         "tree_number": "A",
-        "lft": 1,
-        "tree_id": 1
-    },
-    "model": "browser.meshterm",
-    "pk": 33717
+        "parent": 48948,
+        "year": 2015,
+        "lft": 2,
+        "rght": 6233,
+        "tree_id": 8,
+        "level": 1
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 33718,
     "fields": {
-        "rght": 10402,
         "term": "Organisms",
-        "parent": null,
-        "level": 0,
         "tree_number": "B",
-        "lft": 1,
-        "tree_id": 2
-    },
-    "model": "browser.meshterm",
-    "pk": 33718
+        "parent": 48948,
+        "year": 2015,
+        "lft": 6234,
+        "rght": 16635,
+        "tree_id": 8,
+        "level": 1
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 33723,
     "fields": {
-        "rght": 7120,
         "term": "Phenomena and Processes",
-        "parent": null,
-        "level": 0,
         "tree_number": "G",
-        "lft": 1,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 33723
+        "parent": 48948,
+        "year": 2015,
+        "lft": 16636,
+        "rght": 23755,
+        "tree_id": 8,
+        "level": 1
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48029,
     "fields": {
-        "rght": 2599,
         "term": "Cell Physiological Phenomena",
-        "parent": 33723,
-        "level": 1,
         "tree_number": "G04",
-        "lft": 2226,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48029
-},
-{
-    "fields": {
-        "rght": 2554,
-        "term": "Cell Physiological Processes",
-        "parent": 48029,
-        "level": 2,
-        "tree_number": "G04.299",
-        "lft": 2251,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48042
-},
-{
-    "fields": {
-        "rght": 2369,
-        "term": "Cell Death",
-        "parent": 48042,
-        "level": 3,
-        "tree_number": "G04.299.139",
-        "lft": 2358,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48096
-},
-{
-    "fields": {
-        "rght": 2362,
-        "term": "Apoptosis",
-        "parent": 48096,
-        "level": 4,
-        "tree_number": "G04.299.139.160",
-        "lft": 2359,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48097
-},
-{
-    "fields": {
-        "rght": 2361,
-        "term": "Anoikis",
-        "parent": 48097,
-        "level": 5,
-        "tree_number": "G04.299.139.160.060",
-        "lft": 2360,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48098
-},
-{
-    "fields": {
-        "rght": 4101,
-        "term": "Genetic Phenomena",
         "parent": 33723,
-        "level": 1,
+        "year": 2015,
+        "lft": 18861,
+        "rght": 19234,
+        "tree_id": 8,
+        "level": 2
+    }
+},
+{
+    "model": "browser.meshterm",
+    "pk": 48042,
+    "fields": {
+        "term": "Cell Physiological Processes",
+        "tree_number": "G04.299",
+        "parent": 48029,
+        "year": 2015,
+        "lft": 18886,
+        "rght": 19189,
+        "tree_id": 8,
+        "level": 3
+    }
+},
+{
+    "model": "browser.meshterm",
+    "pk": 48096,
+    "fields": {
+        "term": "Cell Death",
+        "tree_number": "G04.299.139",
+        "parent": 48042,
+        "year": 2015,
+        "lft": 18993,
+        "rght": 19004,
+        "tree_id": 8,
+        "level": 4
+    }
+},
+{
+    "model": "browser.meshterm",
+    "pk": 48097,
+    "fields": {
+        "term": "Apoptosis",
+        "tree_number": "G04.299.139.160",
+        "parent": 48096,
+        "year": 2015,
+        "lft": 18994,
+        "rght": 18997,
+        "tree_id": 8,
+        "level": 5
+    }
+},
+{
+    "model": "browser.meshterm",
+    "pk": 48098,
+    "fields": {
+        "term": "Anoikis",
+        "tree_number": "G04.299.139.160.060",
+        "parent": 48097,
+        "year": 2015,
+        "lft": 18995,
+        "rght": 18996,
+        "tree_id": 8,
+        "level": 6
+    }
+},
+{
+    "model": "browser.meshterm",
+    "pk": 48216,
+    "fields": {
+        "term": "Genetic Phenomena",
         "tree_number": "G05",
-        "lft": 2600,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48216
+        "parent": 33723,
+        "year": 2015,
+        "lft": 19235,
+        "rght": 20736,
+        "tree_id": 8,
+        "level": 2
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48940,
     "fields": {
-        "rght": 4062,
         "term": "Phenotype",
-        "parent": 48216,
-        "level": 2,
         "tree_number": "G05.695",
-        "lft": 4047,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48940
+        "parent": 48216,
+        "year": 2015,
+        "lft": 20682,
+        "rght": 20697,
+        "tree_id": 8,
+        "level": 3
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48941,
     "fields": {
-        "rght": 4049,
         "term": "Ecotype",
-        "parent": 48940,
-        "level": 3,
         "tree_number": "G05.695.200",
-        "lft": 4048,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48941
+        "parent": 48940,
+        "year": 2015,
+        "lft": 20683,
+        "rght": 20684,
+        "tree_id": 8,
+        "level": 4
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48942,
     "fields": {
-        "rght": 4051,
         "term": "Endophenotypes",
-        "parent": 48940,
-        "level": 3,
         "tree_number": "G05.695.224",
-        "lft": 4050,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48942
+        "parent": 48940,
+        "year": 2015,
+        "lft": 20685,
+        "rght": 20686,
+        "tree_id": 8,
+        "level": 4
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48943,
     "fields": {
-        "rght": 4053,
         "term": "Gene-Environment Interaction",
-        "parent": 48940,
-        "level": 3,
         "tree_number": "G05.695.337",
-        "lft": 4052,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48943
+        "parent": 48940,
+        "year": 2015,
+        "lft": 20687,
+        "rght": 20688,
+        "tree_id": 8,
+        "level": 4
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48944,
     "fields": {
-        "rght": 4055,
         "term": "Genetic Markers",
-        "parent": 48940,
-        "level": 3,
         "tree_number": "G05.695.450",
-        "lft": 4054,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48944
+        "parent": 48940,
+        "year": 2015,
+        "lft": 20689,
+        "rght": 20690,
+        "tree_id": 8,
+        "level": 4
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48945,
     "fields": {
-        "rght": 4057,
         "term": "Genetic Pleiotropy",
-        "parent": 48940,
-        "level": 3,
         "tree_number": "G05.695.550",
-        "lft": 4056,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48945
+        "parent": 48940,
+        "year": 2015,
+        "lft": 20691,
+        "rght": 20692,
+        "tree_id": 8,
+        "level": 4
+    }
 },
 {
+    "model": "browser.meshterm",
+    "pk": 48946,
     "fields": {
-        "rght": 4059,
         "term": "Penetrance",
-        "parent": 48940,
-        "level": 3,
         "tree_number": "G05.695.650",
-        "lft": 4058,
-        "tree_id": 7
-    },
-    "model": "browser.meshterm",
-    "pk": 48946
+        "parent": 48940,
+        "year": 2015,
+        "lft": 20693,
+        "rght": 20694,
+        "tree_id": 8,
+        "level": 4
+    }
 },
 {
-    "fields": {
-        "rght": 4061,
-        "term": "Serogroup",
-        "parent": 48940,
-        "level": 3,
-        "tree_number": "G05.695.825",
-        "lft": 4060,
-        "tree_id": 7
-    },
     "model": "browser.meshterm",
-    "pk": 48947
+    "pk": 48947,
+    "fields": {
+        "term": "Serogroup",
+        "tree_number": "G05.695.825",
+        "parent": 48940,
+        "year": 2015,
+        "lft": 20695,
+        "rght": 20696,
+        "tree_id": 8,
+        "level": 4
+    }
+},
+{
+    "model": "browser.meshterm",
+    "pk": 48948,
+    "fields": {
+        "term": "2015",
+        "tree_number": "N/A",
+        "parent": null,
+        "year": 2015,
+        "lft": 1,
+        "rght": 23756,
+        "tree_id": 8,
+        "level": 0
+    }
 }
 ]

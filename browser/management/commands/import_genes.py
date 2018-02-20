@@ -1,12 +1,15 @@
-from django.core.management.base import BaseCommand, CommandError
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+"""This management command is used as a one off setup for new projects to import and list of known gene names."""
+
+from django.core.management.base import BaseCommand
 
 from temmpo.prepopulate import pre_populate_genes
 
+
 class Command(BaseCommand):
-    args = ''
-    help = 'Imports genes from the files specified'
+    """Django management command wrapper class."""
+
+    help = 'Imports genes from the Homo_sapiens.gene_info fixture.'
 
     def handle(self, *args, **options):
-        #print "fooo"
+        """Pass off to the helper command."""
         pre_populate_genes()
