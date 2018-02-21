@@ -63,15 +63,30 @@ Use one of the techniques below to set up your virtual environment
 
     python manage.py createsuperuser --settings=temmpo.settings.dev
 
+### Importing MeSH Terms
 
-### Running tests:
+To be able to run the applications browsing and searching functionality Mesh Terms will need to be imported, either by using fixtures or the custom management command.
 
-    python manage.py test --settings=temmpo.settings.test_mysql
+1. Load fixture data
 
-    or 
+NB: this can take a few minutes.
 
-    python manage.py test --settings=temmpo.settings.test_sqlite
+    python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json
 
+2. Management command
+
+Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
+
+NB: These commands each take over 20 minutes to run.
+
+    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015
+    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
+
+### Importing Genes - optional
+
+A database of existing gene terms can be imported into the Django application database.  A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
+
+    python manage.py import_genes
 
 ### Run the development server
 
@@ -87,17 +102,13 @@ Use one of the techniques below to set up your virtual environment
 
     http://localhost:8800
 
-### Importing MeSH Terms
+### Running tests:
 
-#### Load fixture data
+    python manage.py test --settings=temmpo.settings.test_mysql
 
-    python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json
+    or
 
-#### Management command
-Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/ NB: These commands each take over 20 minutes to run.
-
-    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015
-    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
+    python manage.py test --settings=temmpo.settings.test_sqlite
 
 ### Deploy master branch to Vagrant Apache VM
 
@@ -195,3 +206,10 @@ Periodically changes that have been moved onto the last_known_good will be deplo
 - Deploy directly from the CI server
 
     fab deploy:env=demo,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+## Warnings
+
+    IntegrityError at /search/ovidmedline/
+    (1048, "Column 'mesh_terms_year_of_release' cannot be null")
+
+This suggests attempting to create a search when no mesh terms have been imported.
