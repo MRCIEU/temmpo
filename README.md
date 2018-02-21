@@ -20,26 +20,27 @@ We are using Vagrant for our Centos development environment.  It requires an add
     vagrant plugin install vagrant-sshfs
     git clone git@bitbucket.org:researchit/temmpo.git
 
-Use one of the techniques below to set up your virtual environment
+Use one of the techniques below to set up your virtual environment and create your Django application.
+Various options exist.  Optionally front with Apache, by default run database migrations.
 
-#### a) Installing a Vagrant development build
+#### a) Installing a Vagrant development virtual environment.
 
     cd deploy
     vagrant up && vagrant ssh
     fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=base -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-#### b) Installing a Vagrant development build remotely
+#### b) Installing a Vagrant development virtual environment using remotely run Fabric command.
 
     cd deploy
     vagrant up && fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=base  -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh
 
-#### c) Installing a Vagrant Apache build
+#### c) Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive.
 
     cd deploy && vagrant up db && vagrant up apache && vagrant ssh apache
     fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
 
 
-#### d) Installing a Vagrant Apache build remotely
+#### d) Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using remotely run Fabric command,
 
     vagrant up db && vagrant up apache && fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh apache
 
@@ -47,16 +48,6 @@ Use one of the techniques below to set up your virtual environment
 ### Activate virtualenv and move to source directory
 
     cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-
-
-### Move to source directory
-
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-
-
-### Set up database tables and run any migrations
-
-    python manage.py migrate --database=admin
 
 
 ### Create a super user
@@ -94,11 +85,11 @@ A database of existing gene terms can be imported into the Django application da
 
 ### View application in your local browser
 
-####  Django server
+####  Using Django development server
 
     http://localhost:59099
 
-####  Apache 
+####  Using Apache as a proxy server
 
     http://localhost:8800
 
@@ -109,6 +100,14 @@ A database of existing gene terms can be imported into the Django application da
     or
 
     python manage.py test --settings=temmpo.settings.test_sqlite
+
+### Database migrations
+
+NB: If you want to manually run migrations you need to use the --database flag
+
+    python manage.py migrate --database=admin
+
+## Deployment commands - UNDER REVIEW
 
 ### Deploy master branch to Vagrant Apache VM
 
@@ -125,8 +124,8 @@ A database of existing gene terms can be imported into the Django application da
 
 ## Production
 
-### Tag a build - Under review
-**NB: needs to be run as user with commit rights on the temmpo repo - ie. not the temmpo user**
+### Tag a build - Under review being replaced with direct Jenkins job
+**NB: needs to be run as user with commit rights on the temmpo repository**
 
     git fetch --all
     git checkout master
@@ -151,7 +150,9 @@ A database of existing gene terms can be imported into the Django application da
     git pull
     fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-#### Database migration  - Under review
+#### Database transfer to MySQL - *Legacy*
+
+- How data was migrated from SQLite to MySQL
 
     cd /srv/projects/temmpo/lib/git/temmpo
     git fetch --all

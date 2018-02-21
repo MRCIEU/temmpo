@@ -27,6 +27,8 @@ TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
 PREVIOUS_TEST_YEAR = 2015
 TEST_YEAR = 2018
+TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes'
+TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 
 
 class BrowsingTest(TestCase):
@@ -120,18 +122,21 @@ class BrowsingTest(TestCase):
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.
 
-        Mesh terms
+        Mesh terms - 2018 structure
 
-        exposure: Humans    (B01.050.150.900.649.801.400.112.400.400 Organisms >
-         Eukaryota > Animals > Chordata > Vertebrates > Mammals > Primates >
-         Haplorhini > Catarrhini > Hominidae)
+        exposure: Humans (B01.050.150.900.649.313.988.400.112.400.400)
+                  - Organisms > Eukaryota > Animals > Chordata > Vertebrates
+                    > Mammals > Eutheria > Primates
+                    > Haplorhini > Catarrhini > Hominidae
 
-        mediator: Phenotype (G05.695 Phenomena and Processes >
+        mediator: Phenotype (G05.695)
+                  - Phenomena and Processes >
             Genetic Phenomena)
 
-        outcome: Apoptosis (G04.299.139.160 Phenomena and Processes >
-            Cell Physiological Phenomena > Cell Physiological Processes >
-            Cell Death)
+        outcome: Apoptosis (G04.146.160)
+                 - Phenomena and Processes
+                   > Cell Physiological Phenomena
+                   > Cell Physiological Processes > Cell Death
 
         gene: TRPC1
 
@@ -467,7 +472,7 @@ class BrowsingTest(TestCase):
         """Test edit_search when mesh term release years change and terms require conversion."""
         self._login_user()
         original_criteria = self._set_up_test_search_criteria(year=PREVIOUS_TEST_YEAR)
-        extra_terms = MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term="Cell Physiological Processes").get_descendants(include_self=True)
+        extra_terms = MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term=TERM_MISSING_IN_CURRENT_RELEASE).get_descendants(include_self=True)
         for term in extra_terms:
             original_criteria.outcome_terms.add(term)
         path = reverse('edit_search', kwargs={'pk': original_criteria.id})
@@ -489,8 +494,8 @@ class BrowsingTest(TestCase):
         previous_outcomes = list(original_criteria.outcome_terms.values_list("term", flat=True))
         new_outcomes = list(recent_search_criteria.outcome_terms.values_list("term", flat=True))
         self.assertNotEqual(previous_outcomes, new_outcomes)
-        self.assertIn("Cell Physiological Processes", previous_outcomes)
-        self.assertNotIn("Cell Physiological Processes", new_outcomes)
+        self.assertIn(TERM_MISSING_IN_CURRENT_RELEASE, previous_outcomes)
+        self.assertNotIn(TERM_MISSING_IN_CURRENT_RELEASE, new_outcomes)
 
         # Assert recent search is using terms from the current year
         self.assertFalse(recent_search_criteria.exposure_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
@@ -580,11 +585,11 @@ class BrowsingTest(TestCase):
     # def test_json_data(self):
     #     pass
 
-    # TODO: Test result count data
+    # TODO: (TMMA-227) Test result count data
     # def test_count_data(self):
     #     pass
 
-    # TODO: Test abstracts data
+    # TODO: (TMMA-222) Test abstracts data
     # def test_abstracts_data(self):
     #     pass
 
@@ -635,6 +640,22 @@ class BrowsingTest(TestCase):
         self.assertTrue("mtid_270123" in response.content)  # 270123 Cell Physiological Phenomena
         self.assertTrue("mtid_270187" in response.content)  # 270187 Cell Death
 
+    def test_search_for_new_mesh_terms_json(self):
+        """Test that terms only in the previous term release is not present in current searches."""
+        self._login_user()
+        path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_NEW_IN_CURRENT_RELEASE)
+        response = self.client.get(path, follow=True)
+        new_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=TEST_YEAR, term=str(TERM_NEW_IN_CURRENT_RELEASE)).id)
+        self.assertIn(new_term_tree_id, response.content)
+
+    def test_search_for_old_mesh_terms_json(self):
+        """Test that terms only in the previous term release is not present in current searches."""
+        self._login_user()
+        path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_MISSING_IN_CURRENT_RELEASE)
+        response = self.client.get(path, follow=True)
+        missing_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term=str(TERM_MISSING_IN_CURRENT_RELEASE)).id)
+        self.assertFalse(missing_term_tree_id in response.content)
+
     def test_mesh_terms_as_json_for_tree_population(self):
         """Test can retrieve JSON to top level items in the MeshTerm jsTree."""
         search_criteria = self._set_up_test_search_criteria()
@@ -650,7 +671,7 @@ class BrowsingTest(TestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Should undetermined/selected state be tested as well here.
+        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
 
     def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
         """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
@@ -676,7 +697,7 @@ class BrowsingTest(TestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key}) + expanded_node_query_string
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Should undetermined/selected state be tested as well here.
+        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
 
     def test_anon_access_to_admin(self):
         """Test anonymous user does not have access to the Django admin."""
