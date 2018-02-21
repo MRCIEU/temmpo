@@ -148,14 +148,14 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- jsTree -->
-<script src="{{STATIC_URL}}js/jstree/jstree.min.js"></script>
+      <!-- jsTree -->
+      <script src="{{STATIC_URL}}js/jstree/jstree.min.js"></script>
 
       <script>
         $(function() {
 
           $("#term_tree").jstree({
-            "plugins" : [ "checkbox", "search",],
+            "plugins" : [  "massload", "checkbox", "search",],
             "core" : {
               "data" : {
                 "url" : "{{ json_url }}",
@@ -163,6 +163,16 @@
                   return { "id" : node.id };
                 }
               },
+            },
+            "massload" : {
+                  "url" : "{{ json_all_url }}",
+                  "data" : function (nodes) {
+                    var ids = [];
+                    for (node in nodes) {
+                      ids.push(node.id);
+                    }
+                    return { 'id' : ids.join(',') };
+                }
             },
             "search" : {
                 "ajax" : {

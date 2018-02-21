@@ -161,6 +161,7 @@ class TermSelectorAbstractUpdateView(UpdateView):
         context['type'] = self.type
         context['pre_selected_term_names'] = "; ".join(self.object.get_wcrf_input_variables(self.type))
         context['json_url'] = reverse('mesh_terms_as_json_for_criteria', kwargs={'pk': self.object.id, 'type': self.type})
+        context['json_all_url'] = reverse("mesh_terms_as_json")
         context['json_search_url'] = reverse("mesh_terms_search_json")
         context['pre_selected'] = ",".join(self.object.get_form_codes(self.type))
         return context
