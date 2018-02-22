@@ -1,6 +1,56 @@
 # -*- coding: utf-8 -*-
 """ TeMMPo test suite.
+
+Test data used frequently in tests set up in the _set_up_test_search_criteria helper method.
+
+        exposure term: Humans
+
+            Parent terms:
+                Organisms > Eukaryota > Animals > Chordata
+                    > Vertebrates
+                    > Mammals > Eutheria > Primates
+                    > Haplorhini > Catarrhini > Hominidae
+
+            2018 file locations
+                mtrees2018.bin:3577:Humans;B01.050.150.900.649.313.988.400.112.400.400
+
+            2015 file locations
+                mtrees2015.bin:3566:Humans;B01.050.150.900.649.801.400.112.400.400
+
+        mediator terms: Phenotype and descendent terms
+
+            2018 file locations
+                mtrees2015.bin:48876:Phenotype;G05.695
+                mtrees2015.bin:48877:Ecotype;G05.695.200
+                mtrees2015.bin:48878:Endophenotypes;G05.695.224
+                mtrees2015.bin:48879:Gene-Environment Interaction;G05.695.337
+                mtrees2015.bin:48880:Genetic Markers;G05.695.450
+                mtrees2015.bin:48881:Genetic Pleiotropy;G05.695.550
+                mtrees2015.bin:48882:Penetrance;G05.695.650
+                mtrees2015.bin:48883:Serogroup;G05.695.825
+
+            2015 file locations
+                mtrees2018.bin:50634:Phenotype;G05.695
+                mtrees2018.bin:50635:Ecotype;G05.695.200
+                mtrees2018.bin:50636:Endophenotypes;G05.695.224
+                mtrees2018.bin:50637:Gene-Environment Interaction;G05.695.337
+                mtrees2018.bin:50638:Genetic Markers;G05.695.450
+                mtrees2018.bin:50639:Genetic Pleiotropy;G05.695.550
+                mtrees2018.bin:50640:Penetrance;G05.695.650
+                mtrees2018.bin:50641:Serogroup;G05.695.825
+
+        outcome terms: Apoptosis and descendent terms
+
+            2018 file locations
+                mtrees2018.bin:49778:Apoptosis;G04.146.160
+                mtrees2018.bin:49780:Eryptosis;G04.146.160.295
+                mtrees2018.bin:49781:Pyroptosis;G04.146.160.530
+
+            2015 file locations
+                mtrees2015.bin:48033:Apoptosis;G04.299.139.160
+                mtrees2015.bin:48034:Anoikis;G04.299.139.160.060
 """
+
 import json
 import logging
 import os
@@ -27,7 +77,8 @@ TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
 PREVIOUS_TEST_YEAR = 2015
 TEST_YEAR = 2018
-TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes'
+TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes' # mtrees2015.bin 47978:Cell Physiological Processes;G04.299
+TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processes, G0 Phase'  # mtrees2015.bin 47980:Cell Aging;G04.299.119 - 48025:G0 Phase;G04.299.134.500.300
 TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 
 
@@ -122,27 +173,10 @@ class BrowsingTest(TestCase):
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.
 
-        Mesh terms - 2018 structure
-
-        exposure: Humans (B01.050.150.900.649.313.988.400.112.400.400)
-                  - Organisms > Eukaryota > Animals > Chordata > Vertebrates
-                    > Mammals > Eutheria > Primates
-                    > Haplorhini > Catarrhini > Hominidae
-
-        mediator: Phenotype (G05.695)
-                  - Phenomena and Processes >
-            Genetic Phenomena)
-
-        outcome: Apoptosis (G04.146.160)
-                 - Phenomena and Processes
-                   > Cell Physiological Phenomena
-                   > Cell Physiological Processes > Cell Death
+        Additional test data.
 
         gene: TRPC1
-
         citation file: test-abstract.txt
-        or
-        citation file: 13-53-45-22-39-12-citation_1-400.txt
 
         Should find matches with both mediator term and gene only finds matches
         with the gene when the WEIGHTFILTER thresh hold is zero
@@ -169,9 +203,9 @@ class BrowsingTest(TestCase):
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
-        print "RESULTS ARE IN THE THES FILES: "
-        print test_results_edge_csv.name
-        print test_results_abstract_csv.name
+        print("RESULTS ARE IN THE THES FILES: ")
+        print(test_results_edge_csv.name)
+        print(test_results_abstract_csv.name)
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
@@ -478,7 +512,8 @@ class BrowsingTest(TestCase):
         path = reverse('edit_search', kwargs={'pk': original_criteria.id})
         expected_test_messages = ('Select exposures', 'Current exposure terms',
                                   'Converting search from MeshTerm Terms released in %s' % str(PREVIOUS_TEST_YEAR),
-                                  'could not be translated',)
+                                  'outcome term(s) could not be translated into current MeSH Term equivalents: ',
+                                  TERM_NAMES_MISSING_IN_CURRENT_RELEASE,)
         self._find_expected_content(path, msg_list=expected_test_messages)
         recent_search_criteria = SearchCriteria.objects.latest('id')
 
@@ -507,6 +542,46 @@ class BrowsingTest(TestCase):
 
         # Ensure using the current test year for new searches
         self.assertNotEqual(original_criteria.mesh_terms_year_of_release, recent_search_criteria.mesh_terms_year_of_release)
+        self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
+
+    def test_edit_search_with_previous_release_year_no_change(self):
+        """Test edit_search when mesh term release years change but not terms are changed."""
+        self._login_user()
+        original_criteria = self._set_up_test_search_criteria(year=PREVIOUS_TEST_YEAR)
+        path = reverse('edit_search', kwargs={'pk': original_criteria.id})
+        expected_test_messages = ('Select exposures', 'Current exposure terms',
+                                  'Converting search from MeshTerm Terms released in %s' % str(PREVIOUS_TEST_YEAR),)
+        unexpected_test_messages = ('could not be translated',)
+        response = self.client.get(path, follow=True)
+        for msg in expected_test_messages:
+            self.assertContains(response, msg)
+        for msg in unexpected_test_messages:
+            self.assertNotContains(response, msg)
+
+        recent_search_criteria = SearchCriteria.objects.latest('id')
+
+        # Ensure expected terms settings were carried over
+        original_exposures = set(list(original_criteria.exposure_terms.values_list("term", flat=True)))
+        recent_exposures = set(list(recent_search_criteria.exposure_terms.values_list("term", flat=True)))
+        self.assertEqual(original_exposures, recent_exposures)
+
+        original_mediators = set(list(original_criteria.mediator_terms.values_list("term", flat=True)))
+        recent_mediators = set(list(recent_search_criteria.mediator_terms.values_list("term", flat=True)))
+        self.assertEqual(original_mediators, recent_mediators)
+
+        previous_outcomes = set(list(original_criteria.outcome_terms.values_list("term", flat=True)))
+        new_outcomes = set(list(recent_search_criteria.outcome_terms.values_list("term", flat=True)))
+        self.assertEqual(previous_outcomes, new_outcomes)
+
+        # Assert recent search is using terms from the current year
+        self.assertFalse(recent_search_criteria.exposure_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+        self.assertFalse(recent_search_criteria.mediator_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+        self.assertFalse(recent_search_criteria.outcome_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+
+        # Check associated with the same upload.
+        self.assertEqual(original_criteria.upload, recent_search_criteria.upload)
+
+        # Ensure using the current test year for new searches
         self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
 
     def test_exposure_selector(self):
