@@ -52,21 +52,16 @@ Test data used frequently in tests set up in the _set_up_test_search_criteria he
 """
 
 import json
-import logging
 import os
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
 
 from browser.matching import _pubmed_readcitations  # perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
-logger = logging.getLogger(__name__)
-RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
-RESULT_ID = '1'
+from tests.base_test_case import BaseTestCase
 
 BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
@@ -82,93 +77,10 @@ TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processe
 TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 
 
-class BrowsingTest(TestCase):
-    """Run simple tests for browsing the TeMMPo application."""
+class BrowsingTest(BaseTestCase):
+    """Run tests for browsing the TeMMPo application."""
 
-    fixtures = ['mesh_terms_2015_2018.json', 'genes-test-only.json', ]  # ['mesh-terms-test-only.json', 'genes-test-only.json', 'mesh-terms-test-pevious-year-only.json', ]
-
-    def setUp(self):
-        """Override set up to create test users of each Django default role type."""
-        super(BrowsingTest, self).setUp()
-        self.client = Client()
-        self.user = User.objects.create_user(id=999,
-                                             username='may',
-                                             email='may@example.com',
-                                             password='12345#abc')
-        self.staff_user = User.objects.create_user(id=1000,
-                                                   username='staff',
-                                                   email='staff@example.com',
-                                                   password='12345#abc',
-                                                   is_staff=True)
-        self.super_user_user = User.objects.create_superuser(id=1001,
-                                                             username='super',
-                                                             email='super@example.com',
-                                                             password='12345#abc')
-
-    def _login_user(self):
-        self.client.login(username='may', password='12345#abc')
-
-    def _login_staff_user(self):
-        self.client.login(username='staff', password='12345#abc')
-
-    def _login_super_user(self):
-        self.client.login(username='super', password='12345#abc')
-
-    def _find_expected_content(self, path="", msg="", msg_list=None, status_code=200, content_type="text/html; charset=utf-8"):
-        response = self.client.get(path, follow=True)
-
-        if not msg_list:
-            msg_list = [msg, ]
-
-        for text in msg_list:
-            if text == "Not found":
-                print response
-            self.assertContains(response,
-                                text,
-                                status_code=status_code,
-                                msg_prefix="Expected %(msg)s at %(path)s" %
-                                {'msg': text, 'path': path})
-
-        self.assertEqual(content_type, response['Content-Type'])
-
-    def test_home_page(self):
-        """Test can view the home page without logging in."""
-        self.client.logout()
-        self._find_expected_content(path=reverse("home"), msg="About TeMMPo")
-
-    def test_credits_page(self):
-        """Test can view the credits page without logging in."""
-        self.client.logout()
-        self._find_expected_content(path=reverse("credits"), msg_list=["Credits", "NLM", "Technologies", ])
-
-    def test_help_page(self):
-        """Test can view the help page without logging in."""
-        self.client.logout()
-        self._find_expected_content(path=reverse("help"), msg_list=["Help", "Genes and filter section", ])
-
-    def test_search_page(self):
-        """Test can view the search page."""
-        self._find_expected_content(path=reverse("search"), msg="login to use this tool")
-        self._find_expected_content(path=reverse("search_pubmed"), msg="login to use this tool")
-        self._find_expected_content(path=reverse("search_ovid_medline"), msg="login to use this tool")
-        self._login_user()
-        self._find_expected_content(path=reverse("search"), msg="Upload abstracts to search")
-        self._find_expected_content(path=reverse("search_pubmed"), msg=u"Search PubMed MEDLINE® formatted abstracts")
-        self._find_expected_content(path=reverse("search_ovid_medline"), msg=u"Search Ovid MEDLINE® formatted abstracts")
-
-    def test_results_page(self):
-        """Test can view the results page."""
-        path = reverse('results', kwargs={'pk': RESULT_ID})
-        self._find_expected_content(path=path, msg="login to use this tool")
-        # TODO Add results rendering tests
-        self._login_user()
-        self._find_expected_content(path=path, msg='Page not found', status_code=404)
-
-    def test_results_listing_page(self):
-        """Test can view the results listing page."""
-        self._find_expected_content(path=reverse("results_listing"), msg="login to use this tool")
-        self._login_user()
-        self._find_expected_content(path=reverse("results_listing"), msg="My list")
+    fixtures = ['mesh_terms_2015_2018.json', 'genes-test-only.json', ]
 
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.
@@ -271,35 +183,6 @@ class BrowsingTest(TestCase):
         self._test_search_bulk_term_edit(abstract_file_path=TEST_PUBMED_MEDLINE_ABSTRACTS,
                                          file_format=PUBMED,
                                          search_url=reverse('search_pubmed'))
-
-    # Additional features
-
-    def test_register_page(self):
-        """Test can use the register page."""
-        self._find_expected_content(path=reverse("registration_register"),
-                                    msg_list=["Register", "Password confirmation", ])
-
-        response = self.client.post(reverse("registration_register"),
-                                    {"username": "testuser1",
-                                     "email": "bob@example.com",
-                                     "password1": "THISISJUSTATEST",
-                                     "password2": "THISISJUSTATEST"},
-                                    follow=True)
-
-        self.assertContains(response, "Your registration is complete.", msg_prefix=response.content)
-
-    def test_login_page(self):
-        """Test can view the sign in page."""
-        self._find_expected_content(path="/login/", msg_list=["Login", "login to use this tool", ])
-
-    def test_logout_page(self):
-        """Test logging out redirects to sign in page."""
-        self._login_user()
-        response = self.client.get("/logout/")
-        self.assertEqual(response.status_code, 302)
-
-        self._find_expected_content(path="/logout/",
-                                    msg="Login")
 
     def test_ovid_medline_file_upload_validation(self):
         """Test form validation for Ovid MEDLINE formatted abstracts files."""
@@ -773,30 +656,3 @@ class BrowsingTest(TestCase):
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
         # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
-
-    def test_anon_access_to_admin(self):
-        """Test anonymous user does not have access to the Django admin."""
-        self.client.logout()
-        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
-        self._login_user()
-        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
-
-    def test_staff_access_to_admin(self):
-        """Test staff do not have access to the Django admin."""
-        self.client.logout()
-        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
-        self._login_staff_user()
-        self._find_expected_content('/admin', msg_list=["Site administration",
-                                                        "You don't have permission to edit anything.", ])
-
-    def test_super_access_to_admin(self):
-        """Test super user have access to the Django admin."""
-        self.client.logout()
-        self._login_super_user()
-        expected_dashboard = ["Site administration", "Genes", "Mesh terms",
-                              "Search criterias", "Search results", "Uploads", ]
-        self._find_expected_content('/admin', msg_list=expected_dashboard)
-
-    # TODO: (Low priority) Give "search result" a better str representation
-    # TODO: (Low priority) Pluralise "search criteria" change field representation my R/A for choice fields? esp for genes - can this be more like terms??
-    # TODO: (Low priority) Maybe add year to str representation of mesh term
