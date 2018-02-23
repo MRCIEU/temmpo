@@ -19,7 +19,7 @@ MESH_TERM_CLASSIFICATIONS = ['Anatomy', 'Organisms', 'Diseases', 'Chemicals and 
                              'Geographicals', ]
 
 
-class RunSearchManagementCommandTest(TestCase):
+class RunSearchManagementCommandTestCase(TestCase):
     """Test running the run_search management command incorrectly."""
 
     fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json', ]
