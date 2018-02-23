@@ -80,7 +80,7 @@ TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 class SearchingTestCase(BaseTestCase):
     """Run tests for browsing the TeMMPo application."""
 
-    fixtures = ['test_searching_mesh_terms.json', 'genes-test-only.json', ]
+    fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
 
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.

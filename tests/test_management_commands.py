@@ -22,7 +22,7 @@ MESH_TERM_CLASSIFICATIONS = ['Anatomy', 'Organisms', 'Diseases', 'Chemicals and 
 class RunSearchManagementCommandTestCase(TestCase):
     """Test running the run_search management command incorrectly."""
 
-    fixtures = ['mesh-terms-test-only.json', 'genes-test-only.json', ]
+    fixtures = ['test_management_commands_mesh_terms.json', 'test_genes.json', ]
 
     def test_run_search_without_args(self):
         """Check command handles a lack of parameters."""
