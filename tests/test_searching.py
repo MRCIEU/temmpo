@@ -77,10 +77,10 @@ TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processe
 TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 
 
-class BrowsingTest(BaseTestCase):
+class SearchingTestCase(BaseTestCase):
     """Run tests for browsing the TeMMPo application."""
 
-    fixtures = ['mesh_terms_2015_2018.json', 'genes-test-only.json', ]
+    fixtures = ['test_searching_mesh_terms.json', 'genes-test-only.json', ]
 
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.
@@ -155,7 +155,7 @@ class BrowsingTest(BaseTestCase):
             # NB: Only a limited set of mesh terms are available for testing, for speed purposes
             exposure_terms = search_criteria.exposure_terms.all()
             unique_exposure_terms = set(exposure_terms.values_list("term", flat=True))
-            self.assertEqual(exposure_terms.count(), 5)
+            self.assertEqual(exposure_terms.count(), 4) # NB: Penetrance appears twice in this test mesh tree subset
             self.assertEqual(len(unique_exposure_terms), 3)
             self.assertNotContains(response, " could not be found")
 
@@ -258,7 +258,7 @@ class BrowsingTest(BaseTestCase):
         # Clear existing terms
         search_criteria.exposure_terms.clear()
         response = self.client.post(exposure_url,
-                                    {"term_tree_ids": "mtid_222259",
+                                    {"term_tree_ids": "mtid_21072",
                                      "include_child_nodes": "undetermined",
                                      "btn_submit": "choose"},
                                     follow=True)
@@ -268,7 +268,7 @@ class BrowsingTest(BaseTestCase):
         # Clear existing terms
         search_criteria.exposure_terms.clear()
         response = self.client.post(exposure_url,
-                                    {"term_tree_ids": "mtid_222259",
+                                    {"term_tree_ids": "mtid_21072",
                                      "include_child_nodes": "down",
                                      "btn_submit": "choose"},
                                     follow=True)
@@ -593,10 +593,11 @@ class BrowsingTest(BaseTestCase):
         # Assert valid JSON.
         assert(json.loads(response.content))
         # Assert IDs with mtid_ prefix for all instances of mesh terms with Cell in the name are found.
-        self.assertTrue("mtid_222259" in response.content)  # 222259 Cell Line
-        self.assertTrue("mtid_222297" in response.content)  # 1882  Cell Line, Tumor
-        self.assertTrue("mtid_270123" in response.content)  # 270123 Cell Physiological Phenomena
-        self.assertTrue("mtid_270187" in response.content)  # 270187 Cell Death
+        self.assertTrue("mtid_21072" in response.content)  # 21072 Cell Line
+        self.assertTrue("mtid_21082" in response.content)  # 21082, 21110  Cell Line, Tumor
+        self.assertTrue("mtid_21110" in response.content)
+        self.assertTrue("mtid_24271" in response.content)  # 24271 Cell Physiological Phenomena
+        self.assertTrue("mtid_24335" in response.content)  # 24335 Cell Death
 
     def test_search_for_new_mesh_terms_json(self):
         """Test that terms only in the previous term release is not present in current searches."""
@@ -618,7 +619,7 @@ class BrowsingTest(BaseTestCase):
         """Test can retrieve JSON to top level items in the MeshTerm jsTree."""
         search_criteria = self._set_up_test_search_criteria()
         # Classification term ids for 2018 (TEST_YEAR)
-        root_nodes = range(220395, 220411)
+        root_nodes = range(20955, 20971)
         root_nodes = ["mtid_" + str(x) for x in root_nodes]
         self.assertEqual(len(root_nodes), 16)
         term_type_to_expected_nodes = {'exposure': root_nodes,
@@ -634,20 +635,20 @@ class BrowsingTest(BaseTestCase):
     def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
         """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
         search_criteria = self._set_up_test_search_criteria()
-        # Expand the 2018 272772 node
-        expanded_node_query_string = '?id=mtid_272772'
-        # Anatomy, Artistic 272773
-        # Anatomy, Comparative 272774
-        # Anatomy, Cross-Sectional 272775
-        # Anatomy, Regional 272777
-        # Anatomy, Veterinary 272778
-        # Cell Biology 272779
-        # Embryology 272780
-        # Histology 272782
-        # Neuroanatomy 272786
-        # Osteology 272787
-        children_nodes = ('mtid_272773', 'mtid_272774', 'mtid_272775', 'mtid_272777', 'mtid_272778',
-                          'mtid_272779', 'mtid_272780', 'mtid_272782', 'mtid_272786', 'mtid_272787', )
+        # Expand the 2018 25242 Anatomy node
+        expanded_node_query_string = '?id=mtid_25242'
+        # Anatomy, Artistic 25243
+        # Anatomy, Comparative 25244
+        # Anatomy, Cross-Sectional 25245
+        # Anatomy, Regional 25247
+        # Anatomy, Veterinary 25248
+        # Cell Biology 25249
+        # Embryology 25250
+        # Histology 25252
+        # Neuroanatomy 25256
+        # Osteology 25257
+        children_nodes = ('mtid_25243', 'mtid_25244', 'mtid_25245', 'mtid_25247', 'mtid_25248',
+                          'mtid_25249', 'mtid_25250', 'mtid_25252', 'mtid_25256', 'mtid_25257', )
         term_type_to_expected_nodes = {'exposure': children_nodes,
                                        'mediator': children_nodes,
                                        'outcome': children_nodes, }
