@@ -16,9 +16,11 @@ DEBUG_TOOLBAR_PANELS = [
     'template_timings_panel.panels.TemplateTimings.TemplateTimings',
 ]
 
-
-DEV_APPS = ['debug_toolbar', 'template_timings_panel', ]
+# DEV_APPS = ['debug_toolbar', 'template_timings_panel', ]
 # INSTALLED_APPS.extend(DEV_APPS)
+
+# DEV_MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
+# MIDDLEWARE.extend(DEV_MIDDLEWARE)
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/usr/local/projects/temmpo/var/email'

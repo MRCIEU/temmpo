@@ -1,22 +1,67 @@
 # -*- coding: utf-8 -*-
 """ TeMMPo test suite.
+
+Test data used frequently in tests set up in the _set_up_test_search_criteria helper method.
+
+        exposure term: Humans
+
+            Parent terms:
+                Organisms > Eukaryota > Animals > Chordata
+                    > Vertebrates
+                    > Mammals > Eutheria > Primates
+                    > Haplorhini > Catarrhini > Hominidae
+
+            2018 file locations
+                mtrees2018.bin:3577:Humans;B01.050.150.900.649.313.988.400.112.400.400
+
+            2015 file locations
+                mtrees2015.bin:3566:Humans;B01.050.150.900.649.801.400.112.400.400
+
+        mediator terms: Phenotype and descendent terms
+
+            2018 file locations
+                mtrees2015.bin:48876:Phenotype;G05.695
+                mtrees2015.bin:48877:Ecotype;G05.695.200
+                mtrees2015.bin:48878:Endophenotypes;G05.695.224
+                mtrees2015.bin:48879:Gene-Environment Interaction;G05.695.337
+                mtrees2015.bin:48880:Genetic Markers;G05.695.450
+                mtrees2015.bin:48881:Genetic Pleiotropy;G05.695.550
+                mtrees2015.bin:48882:Penetrance;G05.695.650
+                mtrees2015.bin:48883:Serogroup;G05.695.825
+
+            2015 file locations
+                mtrees2018.bin:50634:Phenotype;G05.695
+                mtrees2018.bin:50635:Ecotype;G05.695.200
+                mtrees2018.bin:50636:Endophenotypes;G05.695.224
+                mtrees2018.bin:50637:Gene-Environment Interaction;G05.695.337
+                mtrees2018.bin:50638:Genetic Markers;G05.695.450
+                mtrees2018.bin:50639:Genetic Pleiotropy;G05.695.550
+                mtrees2018.bin:50640:Penetrance;G05.695.650
+                mtrees2018.bin:50641:Serogroup;G05.695.825
+
+        outcome terms: Apoptosis and descendent terms
+
+            2018 file locations
+                mtrees2018.bin:49778:Apoptosis;G04.146.160
+                mtrees2018.bin:49780:Eryptosis;G04.146.160.295
+                mtrees2018.bin:49781:Pyroptosis;G04.146.160.530
+
+            2015 file locations
+                mtrees2015.bin:48033:Apoptosis;G04.299.139.160
+                mtrees2015.bin:48034:Anoikis;G04.299.139.160.060
 """
+
 import json
-import logging
 import os
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
 
 from browser.matching import _pubmed_readcitations  # perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
-logger = logging.getLogger(__name__)
-RESULT_HASH = "2020936a-9fe7-4047-bbca-6184780164a8"
-RESULT_ID = '1'
+from tests.base_test_case import BaseTestCase
 
 BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
@@ -27,117 +72,23 @@ TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
 PREVIOUS_TEST_YEAR = 2015
 TEST_YEAR = 2018
+TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes' # mtrees2015.bin 47978:Cell Physiological Processes;G04.299
+TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processes, G0 Phase'  # mtrees2015.bin 47980:Cell Aging;G04.299.119 - 48025:G0 Phase;G04.299.134.500.300
+TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 
 
-class BrowsingTest(TestCase):
-    """Run simple tests for browsing the TeMMPo application."""
+class SearchingTestCase(BaseTestCase):
+    """Run tests for browsing the TeMMPo application."""
 
-    fixtures = ['mesh_terms_2015_2018.json', 'genes-test-only.json', ]  # ['mesh-terms-test-only.json', 'genes-test-only.json', 'mesh-terms-test-pevious-year-only.json', ]
-
-    def setUp(self):
-        """Override set up to create test users of each Django default role type."""
-        super(BrowsingTest, self).setUp()
-        self.client = Client()
-        self.user = User.objects.create_user(id=999,
-                                             username='may',
-                                             email='may@example.com',
-                                             password='12345#abc')
-        self.staff_user = User.objects.create_user(id=1000,
-                                                   username='staff',
-                                                   email='staff@example.com',
-                                                   password='12345#abc',
-                                                   is_staff=True)
-        self.super_user_user = User.objects.create_superuser(id=1001,
-                                                             username='super',
-                                                             email='super@example.com',
-                                                             password='12345#abc')
-
-    def _login_user(self):
-        self.client.login(username='may', password='12345#abc')
-
-    def _login_staff_user(self):
-        self.client.login(username='staff', password='12345#abc')
-
-    def _login_super_user(self):
-        self.client.login(username='super', password='12345#abc')
-
-    def _find_expected_content(self, path="", msg="", msg_list=None, status_code=200, content_type="text/html; charset=utf-8"):
-        response = self.client.get(path, follow=True)
-
-        if not msg_list:
-            msg_list = [msg, ]
-
-        for text in msg_list:
-            if text == "Not found":
-                print response
-            self.assertContains(response,
-                                text,
-                                status_code=status_code,
-                                msg_prefix="Expected %(msg)s at %(path)s" %
-                                {'msg': text, 'path': path})
-
-        self.assertEqual(content_type, response['Content-Type'])
-
-    def test_home_page(self):
-        """Test can view the home page without logging in."""
-        self.client.logout()
-        self._find_expected_content(path=reverse("home"), msg="About TeMMPo")
-
-    def test_credits_page(self):
-        """Test can view the credits page without logging in."""
-        self.client.logout()
-        self._find_expected_content(path=reverse("credits"), msg_list=["Credits", "NLM", "Technologies", ])
-
-    def test_help_page(self):
-        """Test can view the help page without logging in."""
-        self.client.logout()
-        self._find_expected_content(path=reverse("help"), msg_list=["Help", "Genes and filter section", ])
-
-    def test_search_page(self):
-        """Test can view the search page."""
-        self._find_expected_content(path=reverse("search"), msg="login to use this tool")
-        self._find_expected_content(path=reverse("search_pubmed"), msg="login to use this tool")
-        self._find_expected_content(path=reverse("search_ovid_medline"), msg="login to use this tool")
-        self._login_user()
-        self._find_expected_content(path=reverse("search"), msg="Upload abstracts to search")
-        self._find_expected_content(path=reverse("search_pubmed"), msg=u"Search PubMed MEDLINE® formatted abstracts")
-        self._find_expected_content(path=reverse("search_ovid_medline"), msg=u"Search Ovid MEDLINE® formatted abstracts")
-
-    def test_results_page(self):
-        """Test can view the results page."""
-        path = reverse('results', kwargs={'pk': RESULT_ID})
-        self._find_expected_content(path=path, msg="login to use this tool")
-        # TODO Add results rendering tests
-        self._login_user()
-        self._find_expected_content(path=path, msg='Page not found', status_code=404)
-
-    def test_results_listing_page(self):
-        """Test can view the results listing page."""
-        self._find_expected_content(path=reverse("results_listing"), msg="login to use this tool")
-        self._login_user()
-        self._find_expected_content(path=reverse("results_listing"), msg="My list")
+    fixtures = ['test_searching_mesh_terms.json', 'genes-test-only.json', ]
 
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.
 
-        Mesh terms
-
-        exposure: Humans    (B01.050.150.900.649.801.400.112.400.400 Organisms >
-         Eukaryota > Animals > Chordata > Vertebrates > Mammals > Primates >
-         Haplorhini > Catarrhini > Hominidae)
-
-        mediator: Phenotype (G05.695 Phenomena and Processes >
-            Genetic Phenomena)
-
-        outcome: Apoptosis (G04.299.139.160 Phenomena and Processes >
-            Cell Physiological Phenomena > Cell Physiological Processes >
-            Cell Death)
+        Additional test data.
 
         gene: TRPC1
-
         citation file: test-abstract.txt
-        or
-        citation file: 13-53-45-22-39-12-citation_1-400.txt
 
         Should find matches with both mediator term and gene only finds matches
         with the gene when the WEIGHTFILTER thresh hold is zero
@@ -164,9 +115,9 @@ class BrowsingTest(TestCase):
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
-        print "RESULTS ARE IN THE THES FILES: "
-        print test_results_edge_csv.name
-        print test_results_abstract_csv.name
+        print("RESULTS ARE IN THE THES FILES: ")
+        print(test_results_edge_csv.name)
+        print(test_results_abstract_csv.name)
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
@@ -204,7 +155,7 @@ class BrowsingTest(TestCase):
             # NB: Only a limited set of mesh terms are available for testing, for speed purposes
             exposure_terms = search_criteria.exposure_terms.all()
             unique_exposure_terms = set(exposure_terms.values_list("term", flat=True))
-            self.assertEqual(exposure_terms.count(), 5)
+            self.assertEqual(exposure_terms.count(), 4) # NB: Penetrance appears twice in this test mesh tree subset
             self.assertEqual(len(unique_exposure_terms), 3)
             self.assertNotContains(response, " could not be found")
 
@@ -232,35 +183,6 @@ class BrowsingTest(TestCase):
         self._test_search_bulk_term_edit(abstract_file_path=TEST_PUBMED_MEDLINE_ABSTRACTS,
                                          file_format=PUBMED,
                                          search_url=reverse('search_pubmed'))
-
-    # Additional features
-
-    def test_register_page(self):
-        """Test can use the register page."""
-        self._find_expected_content(path=reverse("registration_register"),
-                                    msg_list=["Register", "Password confirmation", ])
-
-        response = self.client.post(reverse("registration_register"),
-                                    {"username": "testuser1",
-                                     "email": "bob@example.com",
-                                     "password1": "THISISJUSTATEST",
-                                     "password2": "THISISJUSTATEST"},
-                                    follow=True)
-
-        self.assertContains(response, "Your registration is complete.", msg_prefix=response.content)
-
-    def test_login_page(self):
-        """Test can view the sign in page."""
-        self._find_expected_content(path="/login/", msg_list=["Login", "login to use this tool", ])
-
-    def test_logout_page(self):
-        """Test logging out redirects to sign in page."""
-        self._login_user()
-        response = self.client.get("/logout/")
-        self.assertEqual(response.status_code, 302)
-
-        self._find_expected_content(path="/logout/",
-                                    msg="Login")
 
     def test_ovid_medline_file_upload_validation(self):
         """Test form validation for Ovid MEDLINE formatted abstracts files."""
@@ -336,7 +258,7 @@ class BrowsingTest(TestCase):
         # Clear existing terms
         search_criteria.exposure_terms.clear()
         response = self.client.post(exposure_url,
-                                    {"term_tree_ids": "mtid_222259",
+                                    {"term_tree_ids": "mtid_21072",
                                      "include_child_nodes": "undetermined",
                                      "btn_submit": "choose"},
                                     follow=True)
@@ -346,7 +268,7 @@ class BrowsingTest(TestCase):
         # Clear existing terms
         search_criteria.exposure_terms.clear()
         response = self.client.post(exposure_url,
-                                    {"term_tree_ids": "mtid_222259",
+                                    {"term_tree_ids": "mtid_21072",
                                      "include_child_nodes": "down",
                                      "btn_submit": "choose"},
                                     follow=True)
@@ -467,13 +389,14 @@ class BrowsingTest(TestCase):
         """Test edit_search when mesh term release years change and terms require conversion."""
         self._login_user()
         original_criteria = self._set_up_test_search_criteria(year=PREVIOUS_TEST_YEAR)
-        extra_terms = MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term="Cell Physiological Processes").get_descendants(include_self=True)
+        extra_terms = MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term=TERM_MISSING_IN_CURRENT_RELEASE).get_descendants(include_self=True)
         for term in extra_terms:
             original_criteria.outcome_terms.add(term)
         path = reverse('edit_search', kwargs={'pk': original_criteria.id})
         expected_test_messages = ('Select exposures', 'Current exposure terms',
                                   'Converting search from MeshTerm Terms released in %s' % str(PREVIOUS_TEST_YEAR),
-                                  'could not be translated',)
+                                  'outcome term(s) could not be translated into current MeSH Term equivalents: ',
+                                  TERM_NAMES_MISSING_IN_CURRENT_RELEASE,)
         self._find_expected_content(path, msg_list=expected_test_messages)
         recent_search_criteria = SearchCriteria.objects.latest('id')
 
@@ -489,8 +412,8 @@ class BrowsingTest(TestCase):
         previous_outcomes = list(original_criteria.outcome_terms.values_list("term", flat=True))
         new_outcomes = list(recent_search_criteria.outcome_terms.values_list("term", flat=True))
         self.assertNotEqual(previous_outcomes, new_outcomes)
-        self.assertIn("Cell Physiological Processes", previous_outcomes)
-        self.assertNotIn("Cell Physiological Processes", new_outcomes)
+        self.assertIn(TERM_MISSING_IN_CURRENT_RELEASE, previous_outcomes)
+        self.assertNotIn(TERM_MISSING_IN_CURRENT_RELEASE, new_outcomes)
 
         # Assert recent search is using terms from the current year
         self.assertFalse(recent_search_criteria.exposure_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
@@ -502,6 +425,46 @@ class BrowsingTest(TestCase):
 
         # Ensure using the current test year for new searches
         self.assertNotEqual(original_criteria.mesh_terms_year_of_release, recent_search_criteria.mesh_terms_year_of_release)
+        self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
+
+    def test_edit_search_with_previous_release_year_no_change(self):
+        """Test edit_search when mesh term release years change but not terms are changed."""
+        self._login_user()
+        original_criteria = self._set_up_test_search_criteria(year=PREVIOUS_TEST_YEAR)
+        path = reverse('edit_search', kwargs={'pk': original_criteria.id})
+        expected_test_messages = ('Select exposures', 'Current exposure terms',
+                                  'Converting search from MeshTerm Terms released in %s' % str(PREVIOUS_TEST_YEAR),)
+        unexpected_test_messages = ('could not be translated',)
+        response = self.client.get(path, follow=True)
+        for msg in expected_test_messages:
+            self.assertContains(response, msg)
+        for msg in unexpected_test_messages:
+            self.assertNotContains(response, msg)
+
+        recent_search_criteria = SearchCriteria.objects.latest('id')
+
+        # Ensure expected terms settings were carried over
+        original_exposures = set(list(original_criteria.exposure_terms.values_list("term", flat=True)))
+        recent_exposures = set(list(recent_search_criteria.exposure_terms.values_list("term", flat=True)))
+        self.assertEqual(original_exposures, recent_exposures)
+
+        original_mediators = set(list(original_criteria.mediator_terms.values_list("term", flat=True)))
+        recent_mediators = set(list(recent_search_criteria.mediator_terms.values_list("term", flat=True)))
+        self.assertEqual(original_mediators, recent_mediators)
+
+        previous_outcomes = set(list(original_criteria.outcome_terms.values_list("term", flat=True)))
+        new_outcomes = set(list(recent_search_criteria.outcome_terms.values_list("term", flat=True)))
+        self.assertEqual(previous_outcomes, new_outcomes)
+
+        # Assert recent search is using terms from the current year
+        self.assertFalse(recent_search_criteria.exposure_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+        self.assertFalse(recent_search_criteria.mediator_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+        self.assertFalse(recent_search_criteria.outcome_terms.filter(year=PREVIOUS_TEST_YEAR).exists())
+
+        # Check associated with the same upload.
+        self.assertEqual(original_criteria.upload, recent_search_criteria.upload)
+
+        # Ensure using the current test year for new searches
         self.assertEqual(recent_search_criteria.mesh_terms_year_of_release, TEST_YEAR)
 
     def test_exposure_selector(self):
@@ -580,11 +543,11 @@ class BrowsingTest(TestCase):
     # def test_json_data(self):
     #     pass
 
-    # TODO: Test result count data
+    # TODO: (TMMA-227) Test result count data
     # def test_count_data(self):
     #     pass
 
-    # TODO: Test abstracts data
+    # TODO: (TMMA-222) Test abstracts data
     # def test_abstracts_data(self):
     #     pass
 
@@ -630,16 +593,33 @@ class BrowsingTest(TestCase):
         # Assert valid JSON.
         assert(json.loads(response.content))
         # Assert IDs with mtid_ prefix for all instances of mesh terms with Cell in the name are found.
-        self.assertTrue("mtid_222259" in response.content)  # 222259 Cell Line
-        self.assertTrue("mtid_222297" in response.content)  # 1882  Cell Line, Tumor
-        self.assertTrue("mtid_270123" in response.content)  # 270123 Cell Physiological Phenomena
-        self.assertTrue("mtid_270187" in response.content)  # 270187 Cell Death
+        self.assertTrue("mtid_21072" in response.content)  # 21072 Cell Line
+        self.assertTrue("mtid_21082" in response.content)  # 21082, 21110  Cell Line, Tumor
+        self.assertTrue("mtid_21110" in response.content)
+        self.assertTrue("mtid_24271" in response.content)  # 24271 Cell Physiological Phenomena
+        self.assertTrue("mtid_24335" in response.content)  # 24335 Cell Death
+
+    def test_search_for_new_mesh_terms_json(self):
+        """Test that terms only in the previous term release is not present in current searches."""
+        self._login_user()
+        path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_NEW_IN_CURRENT_RELEASE)
+        response = self.client.get(path, follow=True)
+        new_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=TEST_YEAR, term=str(TERM_NEW_IN_CURRENT_RELEASE)).id)
+        self.assertIn(new_term_tree_id, response.content)
+
+    def test_search_for_old_mesh_terms_json(self):
+        """Test that terms only in the previous term release is not present in current searches."""
+        self._login_user()
+        path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_MISSING_IN_CURRENT_RELEASE)
+        response = self.client.get(path, follow=True)
+        missing_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term=str(TERM_MISSING_IN_CURRENT_RELEASE)).id)
+        self.assertFalse(missing_term_tree_id in response.content)
 
     def test_mesh_terms_as_json_for_tree_population(self):
         """Test can retrieve JSON to top level items in the MeshTerm jsTree."""
         search_criteria = self._set_up_test_search_criteria()
         # Classification term ids for 2018 (TEST_YEAR)
-        root_nodes = range(220395, 220411)
+        root_nodes = range(20955, 20971)
         root_nodes = ["mtid_" + str(x) for x in root_nodes]
         self.assertEqual(len(root_nodes), 16)
         term_type_to_expected_nodes = {'exposure': root_nodes,
@@ -650,25 +630,25 @@ class BrowsingTest(TestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Should undetermined/selected state be tested as well here.
+        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
 
     def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
         """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
         search_criteria = self._set_up_test_search_criteria()
-        # Expand the 2018 272772 node
-        expanded_node_query_string = '?id=mtid_272772'
-        # Anatomy, Artistic 272773
-        # Anatomy, Comparative 272774
-        # Anatomy, Cross-Sectional 272775
-        # Anatomy, Regional 272777
-        # Anatomy, Veterinary 272778
-        # Cell Biology 272779
-        # Embryology 272780
-        # Histology 272782
-        # Neuroanatomy 272786
-        # Osteology 272787
-        children_nodes = ('mtid_272773', 'mtid_272774', 'mtid_272775', 'mtid_272777', 'mtid_272778',
-                          'mtid_272779', 'mtid_272780', 'mtid_272782', 'mtid_272786', 'mtid_272787', )
+        # Expand the 2018 25242 Anatomy node
+        expanded_node_query_string = '?id=mtid_25242'
+        # Anatomy, Artistic 25243
+        # Anatomy, Comparative 25244
+        # Anatomy, Cross-Sectional 25245
+        # Anatomy, Regional 25247
+        # Anatomy, Veterinary 25248
+        # Cell Biology 25249
+        # Embryology 25250
+        # Histology 25252
+        # Neuroanatomy 25256
+        # Osteology 25257
+        children_nodes = ('mtid_25243', 'mtid_25244', 'mtid_25245', 'mtid_25247', 'mtid_25248',
+                          'mtid_25249', 'mtid_25250', 'mtid_25252', 'mtid_25256', 'mtid_25257', )
         term_type_to_expected_nodes = {'exposure': children_nodes,
                                        'mediator': children_nodes,
                                        'outcome': children_nodes, }
@@ -676,31 +656,4 @@ class BrowsingTest(TestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key}) + expanded_node_query_string
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Should undetermined/selected state be tested as well here.
-
-    def test_anon_access_to_admin(self):
-        """Test anonymous user does not have access to the Django admin."""
-        self.client.logout()
-        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
-        self._login_user()
-        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
-
-    def test_staff_access_to_admin(self):
-        """Test staff do not have access to the Django admin."""
-        self.client.logout()
-        self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
-        self._login_staff_user()
-        self._find_expected_content('/admin', msg_list=["Site administration",
-                                                        "You don't have permission to edit anything.", ])
-
-    def test_super_access_to_admin(self):
-        """Test super user have access to the Django admin."""
-        self.client.logout()
-        self._login_super_user()
-        expected_dashboard = ["Site administration", "Genes", "Mesh terms",
-                              "Search criterias", "Search results", "Uploads", ]
-        self._find_expected_content('/admin', msg_list=expected_dashboard)
-
-    # TODO: (Low priority) Give "search result" a better str representation
-    # TODO: (Low priority) Pluralise "search criteria" change field representation my R/A for choice fields? esp for genes - can this be more like terms??
-    # TODO: (Low priority) Maybe add year to str representation of mesh term
+        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?

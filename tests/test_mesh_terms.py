@@ -8,7 +8,7 @@ from django.test import TestCase
 from browser.models import MeshTerm
 
 
-class TestMeshTermsReleaseYears(TestCase):
+class TestMeshTermsReleaseYearsTestCase(TestCase):
 
     def _set_up_tree(self, terms, year):
         for (term, parent_term) in terms.items():
@@ -18,7 +18,7 @@ class TestMeshTermsReleaseYears(TestCase):
             MeshTerm.objects.create(term=term, parent=parent, year=year, tree_number="N/A")
 
     def setUp(self):
-        super(TestMeshTermsReleaseYears, self).setUp()
+        super(TestMeshTermsReleaseYearsTestCase, self).setUp()
         self.year_2015_terms = OrderedDict([('2015', None,),
                                             ('A', '2015',),
                                             ('AA', 'A',),

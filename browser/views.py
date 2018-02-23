@@ -281,13 +281,13 @@ class SearchExisting(RedirectView):
             criteria_copy.mediator_terms = MeshTerm.convert_terms_to_current_year(original_mediators, original_year, current_year)
             criteria_copy.outcome_terms = MeshTerm.convert_terms_to_current_year(original_outcomes, original_year, current_year)
             # Report any differences via messages.
-            terms = ('exposure', 'mediator', 'outcome', )
-            for term in terms:
-                old_terms = getattr(criteria_copy, '%s_terms' % term)
-                new_terms = getattr(original_criteria, '%s_terms' % term)
-                if (old_terms.count() != new_terms.count()):
-                    diff_terms = ", ".join(list(set(old_terms.values_list("term", flat=True)) - set(new_terms.values_list("term", flat=True))))
-                    messages.add_message(self.request, messages.WARNING, "The following %s terms could not be translated into current MeSH Term equivalents. %s" % (term, diff_terms, ))
+            term_types = ('exposure', 'mediator', 'outcome', )
+            for term_type in term_types:
+                old_terms = set(getattr(criteria_copy, '%s_terms' % term_type).all().values_list("term", flat=True).order_by("term"))
+                new_terms = set(getattr(original_criteria, '%s_terms' % term_type).all().values_list("term", flat=True).order_by("term"))
+                if (old_terms != new_terms):
+                    diff_terms = ", ".join(sorted(list(new_terms - old_terms)))
+                    messages.add_message(self.request, messages.WARNING, "The following %s term(s) could not be translated into current MeSH Term equivalents: %s" % (term_type, diff_terms, ))
         else:
             criteria_copy.exposure_terms = original_exposures
             criteria_copy.mediator_terms = original_mediators
