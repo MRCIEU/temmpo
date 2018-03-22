@@ -13,7 +13,7 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
                            CriteriaView, CountDataView, AbstractDataView,
                            JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
                            MeshTermsAllAsJSON, MeshTermSearchJSON, SelectSearchTypeView,
-                           SearchPubMedView, ReuseSearchView)
+                           SearchPubMedView, ReuseSearchView, DeleteSearch)
 
 urlpatterns = [
 
@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^data/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count_data'),
     url(r'^data/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts_data'),
     url(r'^data/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json_data'),
+    url(r'^data/delete/(?P<pk>\d+)/$', DeleteSearch.as_view(), name='delete_data'),
 
     url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh_terms_as_json"),
     url(r'^mesh_terms_search_json/$', MeshTermSearchJSON.as_view(), name="mesh_terms_search_json"),
