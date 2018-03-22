@@ -22,6 +22,10 @@ class BaseTestCase(TestCase):
                                                              username='super',
                                                              email='super@example.com',
                                                              password='12345#abc')
+        self.second_user = User.objects.create_user(id=1002,
+                                                    username='june',
+                                                    email='june@example.com',
+                                                    password='12345#abc')
 
     def _login_user(self):
         self.client.login(username='may', password='12345#abc')
@@ -31,6 +35,12 @@ class BaseTestCase(TestCase):
 
     def _login_super_user(self):
         self.client.login(username='super', password='12345#abc')
+
+    def _login_second_user(self):
+        self.client.login(username='june', password='12345#abc')
+
+    def _logout_user(self):
+        self.client.logout()
 
     def _find_expected_content(self, path="", msg="", msg_list=None, status_code=200, content_type="text/html; charset=utf-8"):
         response = self.client.get(path, follow=True)
