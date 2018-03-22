@@ -1,0 +1,16 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: User account{% endblock %}
+
+{% block section_title %}User account{% endblock %}
+
+{% block section %}
+
+<p>Manage your user account on TeMMPo.</p>
+
+<ul>
+	<li><a href="{% url 'password_change' %}">Change password</a></li>
+	<li><a href="{% url 'close_account' pk=user.id %}">Close your account and delete all searches</a> (requires confirmation)</li>
+</ul>
+
+{% endblock %}

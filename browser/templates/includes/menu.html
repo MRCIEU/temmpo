@@ -36,7 +36,7 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'results_listing' %}" {% if active == "results" %}class="active"{% endif %}><i class="fa fa-bar-chart-o fa-fw"></i> Results</a></li>
-                    <li><a href="{% url 'password_change' %}"><i class="fa fa-user fa-fw"></i> Change password</a></li>
+                    <li><a href="{% url 'account' %}"><i class="fa fa-user fa-fw"></i> User account</a></li>
                     <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i>Logout</a></li>
 
                 {% else %}
