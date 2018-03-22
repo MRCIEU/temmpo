@@ -1,0 +1,31 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Delete search{% endblock %}
+
+{% block section_title %}Delete search{% endblock %}
+
+{% block scripts %}{{ form.media.js }}{% endblock %}
+{% block styles %}
+{# Appears to need to be loaded in the header vs the footer of the page #}
+<script src="{{ STATIC_URL }}admin/js/vendor/jquery/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script src="{{ STATIC_URL }}simple_autocomplete/jquery-ui.js"></script>
+{{ form.media.css }}
+<link rel="stylesheet" href="{{ STATIC_URL }}simple_autocomplete/jquery-ui.css" />
+{% endblock %}
+
+
+{% block section %}
+
+    <p>Please confirm the deletion of this search.</p>
+
+    {% if delete_upload %}
+    <p><strong>Important, the uploaded abstract file used in this search is not used in any other search and will be deleted.</strong>
+        <br>This means <em>the abstracts will not be available</em> for use in other searches unless uploaded again.</p>
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="Delete search">
+    </form>
+{% endblock %}
