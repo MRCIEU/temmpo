@@ -14,6 +14,9 @@ from django.views.generic import ListView
 from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormView, DeleteView
+from django.contrib.auth.models import User
+from django.contrib.auth import logout
+
 
 from browser.forms import OvidMedLineFileUploadForm, PubMedFileUploadForm, TermSelectorForm, FilterForm
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload  # Gene,
@@ -659,4 +662,78 @@ class DeleteSearch(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         messages.add_message(self.request, messages.INFO, "Search results deleted")
+        logger.info('User: %s deleted search: %s' % (request.user.id, kwargs['pk']))
         return super(DeleteSearch, self).delete(request, *args, **kwargs)
+
+
+class UserAccountView(TemplateView):
+    template_name = "user_account.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserAccountView, self).get_context_data(**kwargs)
+        context['active'] = 'account'
+        return context
+
+
+class CloseAccount(DeleteView):
+    """ Confirm that a user wants to close their account"""
+    model = User
+    template_name = 'user_confirm_close_account.html'
+    success_url = reverse_lazy('account_closed')
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Check that all no user searches are still running """
+        # Check email hasn't been tampered
+        if int(kwargs['pk']) != request.user.id:
+            raise PermissionDenied
+
+        if request.method == 'POST':
+            all_user_searches = SearchResult.objects.filter(criteria__upload__user=request.user)
+
+            # Delete searches
+            for user_search in all_user_searches:
+                if not user_search.has_completed and not user_search.has_failed:
+                    # Search still running
+                    raise PermissionDenied
+
+        return super(CloseAccount, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CloseAccount, self).get_context_data(*args, **kwargs)
+
+        # Check that no user searches are still running
+        all_user_searches = SearchResult.objects.filter(criteria__upload__user=self.request.user)
+        context['search_still_running'] = False
+
+        # Delete searches
+        for user_search in all_user_searches:
+            if not user_search.has_completed and not user_search.has_failed:
+                # Search still running
+                context['search_still_running'] = True
+                break
+
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        """ When deleting a user we also need to delete all their uploads and searches """
+        # Find all searches and uploads
+        all_user_searches = SearchResult.objects.filter(criteria__upload__user=request.user)
+        total_searches = len(all_user_searches)
+
+        # Delete searches
+        for user_search in all_user_searches:
+            user_search.delete()
+
+        # Check for remaining uploads
+        remaining_uploads = Upload.objects.filter(user=request.user)
+        for left_upload in remaining_uploads:
+            left_upload.delete()
+
+        logger.info('User: %s closed their account and deleted %s searches' % (request.user.id, total_searches))
+        # Force logout
+        logout(request)
+        return super(CloseAccount, self).delete(request, *args, **kwargs)
+
+
+class AccountClosedConfirmation(TemplateView):
+    template_name = "account_closed.html"
