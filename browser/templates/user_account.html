@@ -10,6 +10,9 @@
 
 <ul>
 	<li><a href="{% url 'password_change' %}">Change password</a></li>
+    {% if user.is_superuser %}
+    <li>Super user only - <a href="{% url 'manage_users' %}">Manage users</a></li>
+    {% endif %}
 	<li><a href="{% url 'close_account' pk=user.id %}">Close your account and delete all searches</a> (requires confirmation)</li>
 </ul>
 

@@ -1,0 +1,79 @@
+{% extends "onecolumn.html" %}
+{% load humanize %}
+{% block title %}TeMMPo: Manage users{% endblock %}
+
+{% block styles %}
+<!-- DataTables CSS -->
+<link href="{{ STATIC_URL }}sb-admin-2/vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+<!-- DataTables Responsive CSS -->
+<link href="{{ STATIC_URL }}sb-admin-2/vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block scripts %}
+
+<!-- DataTables JavaScript -->
+<script src="{{ STATIC_URL }}sb-admin-2/vendor/datatables/js/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}sb-admin-2/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}sb-admin-2/vendor/datatables-responsive/dataTables.responsive.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#users').DataTable({
+        responsive: true,
+        "columnDefs": [
+            { "orderable": false, "targets": [ -1,],
+             }
+            ],
+        "order": [ 1, 'desc' ],   {# NB: Ensure remains in sync with ListView queryset ordering #}
+    });
+} );
+</script>
+
+{% endblock %}
+
+{% block section_title %}Manage users{% endblock %}
+
+{% block section %}
+
+{% if messages %}
+    <ul class="errorlist">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<table id="users" width="100%" class="table table-striped table-bordered table-hover">
+    <caption>Users</caption>
+    <thead>
+        <tr>
+            <th scope="col" class="dt-left">Username</th>
+            <th scope="col" class="dt-left">Status</th>
+            <th scope="col" class="dt-left">Date joined</th>
+            <th scope="col" class="dt-left">Last log in</th>
+            <th scope="col">Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for each_user in user_list %}
+        <tr>
+            <th scope="row" class="dt-left">{{ each_user.username }}{% if each_user.is_superuser %} <em>(Super user)</em>{% elif each_user.is_staff %} (Staff){% endif %}</th>
+            <td>{% if each_user.is_active %}Active{% else %}<em>Inactive</em>{% endif %}</td>
+            <td scope="row" class="dt-left">{{ each_user.date_joined|date:"d M Y" }}</td>
+            <td scope="row" class="dt-left">{% if each_user.last_login %}{{ each_user.last_login|date:"d M Y" }}{% else %}&nbsp;{% endif %}</td>
+            <td><div class="controls">
+                    {% if not each_user.is_superuser %}
+                        {% if each_user.id != user.id %}
+                        <a href="{% url 'delete_user' pk=each_user.pk %}" class="btn btn-danger">Delete user</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

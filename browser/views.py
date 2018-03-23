@@ -634,6 +634,7 @@ class DeleteSearch(DeleteView):
     template_name = 'searchresult_confirm_delete.html'
     success_url = reverse_lazy('results_listing')
 
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """ Delete search terms """
         # Check it exists
@@ -669,6 +670,10 @@ class DeleteSearch(DeleteView):
 class UserAccountView(TemplateView):
     template_name = "user_account.html"
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserAccountView, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(UserAccountView, self).get_context_data(**kwargs)
         context['active'] = 'account'
@@ -681,9 +686,10 @@ class CloseAccount(DeleteView):
     template_name = 'user_confirm_close_account.html'
     success_url = reverse_lazy('account_closed')
 
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """ Check that all no user searches are still running """
-        # Check email hasn't been tampered
+        # Check user matches pk
         if int(kwargs['pk']) != request.user.id:
             raise PermissionDenied
 
@@ -737,3 +743,97 @@ class CloseAccount(DeleteView):
 
 class AccountClosedConfirmation(TemplateView):
     template_name = "account_closed.html"
+
+
+class UsersListingView(ListView):
+    template_name = "user_listing.html"
+    context_object_name = "user_list"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """Ensure user is a super user."""
+        # Check super user
+        if (not request.user.is_superuser):
+            raise PermissionDenied
+
+        return super(UsersListingView, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return User.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(UsersListingView, self).get_context_data(**kwargs)
+        context['active'] = 'results'
+        return context
+
+
+class DeleteUser(DeleteView):
+    """  Get confirmation and then delete a user"""
+    model = User
+    template_name = 'superuser_confirm_user_delete.html'
+    success_url = reverse_lazy('manage_users')
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """ Check perms and that all no user searches are still running """
+        # Check requesting user is a superuser
+        if (not request.user.is_superuser):
+            raise PermissionDenied
+
+        # Check user isn't yourself
+        if int(kwargs['pk']) == request.user.id:
+            raise PermissionDenied
+
+        # Check user isn't superuser
+        user_to_delete = User.objects.get(id=int(kwargs['pk']))
+        if user_to_delete.is_superuser:
+            raise PermissionDenied
+
+        if request.method == 'POST':
+            all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_to_delete)
+            # Delete searches
+            for user_search in all_user_searches:
+                if not user_search.has_completed and not user_search.has_failed:
+                    # Search still running
+                    raise PermissionDenied
+
+        return super(DeleteUser, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(DeleteUser, self).get_context_data(*args, **kwargs)
+
+        # Check that no user searches are still running
+        user_to_delete = kwargs['object']
+        all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_to_delete)
+        context['search_still_running'] = False
+        context['user_to_delete'] = user_to_delete.username
+
+        # Delete searches
+        for user_search in all_user_searches:
+            if not user_search.has_completed and not user_search.has_failed:
+                # Search still running
+                context['search_still_running'] = True
+                break
+
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        """ When deleting a user we also need to delete all their uploads and searches """
+        # Find all searches and uploads
+        user_to_delete = User.objects.get(id=int(kwargs['pk']))
+        all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_to_delete)
+        total_searches = len(all_user_searches)
+
+        # Delete searches
+        for user_search in all_user_searches:
+            user_search.delete()
+
+        # Check for remaining uploads
+        remaining_uploads = Upload.objects.filter(user=user_to_delete)
+        for left_upload in remaining_uploads:
+            left_upload.delete()
+
+        logger.info('User: %s deleted user %s and their %s searches' % (request.user.id, user_to_delete.id, total_searches))
+        messages.add_message(self.request, messages.INFO, "User '%s' deleted" % user_to_delete.username)
+
+        return super(DeleteUser, self).delete(request, *args, **kwargs)

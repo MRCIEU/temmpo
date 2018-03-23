@@ -115,6 +115,8 @@ class UserDeletionTest(BaseTestCase):
         # Check account page
         response = self.client.get(reverse('account'))
         self.assertContains(response, 'Manage your user account on TeMMPo')
+        self.assertNotContains(response, 'Manage users')
+        self.assertNotContains(response, 'Super user only')
 
         # Check deletion confirmation
         response = self.client.get(reverse('close_account', kwargs={'pk': test_user.id}))
@@ -165,3 +167,124 @@ class UserDeletionTest(BaseTestCase):
 
         # Check user record deleted
         self.assertFalse(User.objects.filter(pk=test_user.id).exists())
+
+    def test_superuser_delete_user(self):
+        """ Check that a superuser can delete users """
+        search_criteria = self._set_up_test_search_criteria()
+        original_gene_count = Gene.objects.filter(name="TRPC1").count()
+        self.assertEqual(original_gene_count, 1)
+
+        # Run the search, by posting filter and gene selection form
+        self._login_user()
+        test_user = User.objects.get(id=999)
+        su_user = User.objects.get(id=1001)
+
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+
+        # Verify expected content is on the gene and filter form page
+        expected_text = ["Enter genes", "Filter", "e.g. Humans"]
+        self._find_expected_content(path=path, msg_list=expected_text)
+
+        # Filter by a genes
+        response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
+
+        # Retrieve results object
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+
+        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'),
+                                     'r')
+        test_results_abstract_csv = open(
+            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+        edge_file_lines = test_results_edge_csv.readlines()
+        abstract_file_lines = test_results_abstract_csv.readlines()
+        self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
+        self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
+        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
+        self.assertEqual(abstract_file_lines[1].strip(), "23266572")
+        self.assertTrue(search_result.has_completed)
+        self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
+
+        # Go to results page
+        response = self.client.get(reverse('results_listing'))
+
+        # Check delete button
+        self.assertContains(response, 'Delete', count=2)
+
+        search_result = SearchResult.objects.all()[0]
+        search_result_id = search_result.id
+        search_criteria_id = search_result.criteria.id
+        upload_id = search_result.criteria.upload.id
+
+        # Check files...
+        # Check abstract
+        upload_record = Upload.objects.get(pk=upload_id)
+
+        self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
+        # Check results files
+        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 5)
+
+        # Check can't access manage users page
+        response = self.client.get(reverse('manage_users'))
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse('delete_user', kwargs={'pk': test_user.id}))
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse('delete_user', kwargs={'pk': su_user.id}))
+        self.assertEqual(response.status_code, 403)
+
+        # Log out, superuser log in
+        self._logout_user()
+        self._login_super_user()
+
+        # Access manage users page
+        response = self.client.get(reverse('manage_users'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Manage users')
+        self.assertContains(response, 'Delete user', count=3)
+
+        # Check can't delete if searches running
+        search_result.has_completed = False
+        search_result.save()
+        response = self.client.get(reverse('delete_user', kwargs={'pk': test_user.id}))
+        self.assertContains(response, 'This user has a search that is still running')
+        self.assertNotContains(response, 'Delete user (inc. their searches and uploads)')
+        response = self.client.post(reverse('delete_user', kwargs={'pk': test_user.id}))
+        self.assertEqual(response.status_code, 403)
+
+        # Check can't delete yourself
+        response = self.client.post(reverse('delete_user', kwargs={'pk': su_user.id}))
+        self.assertEqual(response.status_code, 403)
+
+        # Reset search
+        search_result.has_completed = True
+        search_result.save()
+
+        # Delete other user
+        response = self.client.get(reverse('delete_user', kwargs={'pk': test_user.id}))
+        self.assertNotContains(response, 'This user has a search that is still running')
+        self.assertContains(response, 'Delete user (inc. their searches and uploads)')
+        response = self.client.post(reverse('delete_user', kwargs={'pk': test_user.id}), follow=True)
+        self.assertContains(response, "User &#39;may&#39; deleted")
+
+        # Check records have gone
+        self.assertFalse(SearchResult.objects.filter(pk=search_result_id).exists())
+        self.assertFalse(SearchCriteria.objects.filter(pk=search_criteria_id).exists())
+        self.assertFalse(Upload.objects.filter(pk=upload_id).exists())
+
+        # Check files...
+        self.assertFalse(os.path.exists(upload_record.abstracts_upload.file.name))
+        # Check results files
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
+
+        # Check user record deleted
+        self.assertFalse(User.objects.filter(pk=test_user.id).exists())
+
+        # Access manage users page
+        response = self.client.get(reverse('manage_users'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Manage users')
+        self.assertContains(response, 'Delete user', count=2)

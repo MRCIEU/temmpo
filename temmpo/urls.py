@@ -14,7 +14,7 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
                            JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
                            MeshTermsAllAsJSON, MeshTermSearchJSON, SelectSearchTypeView,
                            SearchPubMedView, ReuseSearchView, DeleteSearch, UserAccountView,
-                           CloseAccount, AccountClosedConfirmation)
+                           CloseAccount, AccountClosedConfirmation, UsersListingView, DeleteUser)
 
 urlpatterns = [
 
@@ -45,6 +45,8 @@ urlpatterns = [
     url(r'^account/$', UserAccountView.as_view(), name='account'),
     url(r'^close-account/(?P<pk>\d+)/$', CloseAccount.as_view(), name='close_account'),
     url(r'^account-closed/$', AccountClosedConfirmation.as_view(), name='account_closed'),
+    url(r'^manage-users/$', UsersListingView.as_view(), name='manage_users'),
+    url(r'^delete-user/(?P<pk>\d+)/$', DeleteUser.as_view(), name='delete_user'),
 
     url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh_terms_as_json"),
     url(r'^mesh_terms_search_json/$', MeshTermSearchJSON.as_view(), name="mesh_terms_search_json"),
