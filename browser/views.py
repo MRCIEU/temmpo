@@ -21,6 +21,7 @@ from django.contrib.auth import logout
 from browser.forms import OvidMedLineFileUploadForm, PubMedFileUploadForm, TermSelectorForm, FilterForm
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload  # Gene,
 from browser.matching import perform_search
+from browser.utils import delete_user_content
 
 logger = logging.getLogger(__name__)
 
@@ -726,14 +727,7 @@ class CloseAccount(DeleteView):
         all_user_searches = SearchResult.objects.filter(criteria__upload__user=request.user)
         total_searches = len(all_user_searches)
 
-        # Delete searches
-        for user_search in all_user_searches:
-            user_search.delete()
-
-        # Check for remaining uploads
-        remaining_uploads = Upload.objects.filter(user=request.user)
-        for left_upload in remaining_uploads:
-            left_upload.delete()
+        delete_user_content(user_id=request.user.id)
 
         logger.info('User: %s closed their account and deleted %s searches' % (request.user.id, total_searches))
         # Force logout
@@ -824,14 +818,7 @@ class DeleteUser(DeleteView):
         all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_to_delete)
         total_searches = len(all_user_searches)
 
-        # Delete searches
-        for user_search in all_user_searches:
-            user_search.delete()
-
-        # Check for remaining uploads
-        remaining_uploads = Upload.objects.filter(user=user_to_delete)
-        for left_upload in remaining_uploads:
-            left_upload.delete()
+        delete_user_content(user_id=user_to_delete.id)
 
         logger.info('User: %s deleted user %s and their %s searches' % (request.user.id, user_to_delete.id, total_searches))
         messages.add_message(self.request, messages.INFO, "User '%s' deleted" % user_to_delete.username)
