@@ -26,6 +26,12 @@ class BaseTestCase(TestCase):
                                                     username='june',
                                                     email='june@example.com',
                                                     password='12345#abc')
+        self.inactive_user = User.objects.create_user(id=1003,
+                                                    username='lazy',
+                                                    email='lazy@example.com',
+                                                    password='12345#abc')
+        self.inactive_user.is_active = False
+        self.inactive_user.save()
 
     def _login_user(self):
         self.client.login(username='may', password='12345#abc')
