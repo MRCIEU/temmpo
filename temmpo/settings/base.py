@@ -19,7 +19,7 @@ PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
 GENE_FILE_LOCATION = BASE_DIR + "/prepopulate/Homo_sapiens.gene_info"
 
-ADMINS = (('Tessa Alexander', 'tessa.alexander+temmpo@bristol.ac.uk'),)
+ADMINS = (('Tessa Alexander', 'tessa.alexander@bristol.ac.uk'),)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Based on idea
@@ -202,3 +202,9 @@ try:
     from temmpo.settings.private_settings import *
 except ImportError:
     print("No private settings where found in the expected location /usr/local/projects/temmpo/.settings/private_settings.py or symlinked into the temmpo/temmpo/settings/ directory")
+
+# Number of days of inactivity before warning of deletion
+# Gives 60 days of grace before deletion
+ACCOUNT_CLOSURE_WARNING = 305
+
+DEFAULT_FROM_EMAIL = 'TeMMPo <blackhole@bristol.ac.uk>'
