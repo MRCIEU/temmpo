@@ -63,7 +63,10 @@ class OvidMedLineFormatValidator(object):
             if has_ovid_medline_file_header(first_line, second_line) and has_ovid_medline_mesh_headings(value):
                 return value
             else:
-                raise ValidationError('This file %s does not appear to be a Ovid MEDLINE® formatted export of journal abstracts with MeSH Subject Headings.' % value)
+                raise ValidationError('This file %s does not appear to be a Ovid MEDLINE® formatted export of journal '
+                                      'abstracts with MeSH Subject Headings. This may be because the file uses '
+                                      'Windows line endings and not Linux line endings (or a mixture). Most good text '
+                                      'editors allow you to re-save a file using Linux line endings.' % value)
         else:
             raise ValidationError("Couldn't read the uploaded file.")
 

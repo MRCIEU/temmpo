@@ -1,6 +1,7 @@
 2.5.0   TMMA-96 Add slider to adjust mediator count threshold for inclusion in plot
         TMMA-123 Investigate error processing a very large file
         TMMA-131 Update MeSH Terms
+        TMMA-134 Addition of user documentation and clearer error messages
         TMMA-136 Fixing the Sankey plot (code provided by Benjamin Elsworth)
         TMMA-201 Broken Sankey plot - very small and appearing in the bottom left
         TMMA-204 Re-running import mesh terms management command has incorrect top level terms
