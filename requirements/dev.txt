@@ -13,7 +13,7 @@ django-js-asset==0.1.1
 django-mptt==0.9.0
 django-registration-redux==1.9
 django-simple-autocomplete==1.11
-django==1.11.10
+django==1.11.11
 enum34==1.1.6             # via traitlets
 first==2.0.1
 ipython-genutils==0.2.0   # via traitlets
