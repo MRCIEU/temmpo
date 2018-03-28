@@ -17,6 +17,7 @@
         TMMA-243 Bug rendering Genes in Filter form
         TMMA-246 Extend test suite
         TMMA-249 Create a subset of the current 2015 & 2018 mesh terms to speed up running the test suite
+        TMMA-252 Upgrade Django to 1.11.x
 
 2.4.0   TMMA-203 Roll back any SQLlite mesh term limitation code
         TMMA-168 Bug fix: Investigate code within views which is selecting child mesh terms even if the tree is set not to.
