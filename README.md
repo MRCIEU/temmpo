@@ -37,7 +37,7 @@ Various options exist.  Optionally front with Apache, by default run database mi
 #### c) Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive.
 
     cd deploy && vagrant up db && vagrant up apache && vagrant ssh apache
-    fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/deploy/fabfile.py
+    fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/fabfile.py
 
 
 #### d) Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using remotely run Fabric command,

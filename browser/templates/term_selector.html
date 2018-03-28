@@ -62,11 +62,7 @@
     </div>
     {% endif %}
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-            <h2 class="panel-title">Selection of child <abbr title="Medical Subject Headings">MeSH®</abbr> terms</h2>
-        </div>
-        <div class="panel-body">
+        <div class="well well-sm">
           <div class="form-group" id="master_include_child_nodes">
             <span class="fa fa-fw fa-cog"></span>
             <label for="id_include_child_nodes_0">Select descendent <abbr title="Medical Subject Headings">MeSH®</abbr> terms</label>
@@ -75,7 +71,6 @@
                 {{ input }}
             {% endfor %}
           </div>
-      </div>
     </div>
 {% endblock %}
 
@@ -93,7 +88,7 @@
                 <textarea id="term_names" name="term_names" rows="10" cols="35">{{ form.term_names.value|default:"" }}</textarea>
               </div>
 
-              <button type="submit" name="btn_submit" value="replace" class="btn btn-primary btn-sm btn-outline">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
+              <button type="submit" name="btn_submit" value="replace" class="btn btn-default btn-block">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
               <input type="hidden" name="include_child_nodes" value="down" />
           </form>
         </div>
@@ -114,12 +109,11 @@
 
           <form action="." method="post" id="search_form">
               <!-- Search -->
-              <div class="form-group">
-                <label for="search_term" class="control-label">Search</label>
-                <input id="search_term" name="search_term" type="text" value="" />
-              </div>
-              <div class="form-group">
-                <button type="submit" id="search_button" value="search" class="btn btn-primary btn-sm btn-outline">Search</button>
+              <div class="form-group input-group">
+                <input id="search_term" class="form-control" name="search_term" type="text" value="" />
+                <span class="input-group-btn">
+                	<button type="submit" id="search_button" value="search" class="btn btn-default"><i class="fa fa-search" title="search"></i></button>
+                </span>
               </div>
           </form>
 
@@ -132,11 +126,10 @@
               </div>
 
               <div class="form-group">
-                <button type="submit" name="btn_submit" value="choose" class="btn btn-primary btn-sm btn-outline">Select these terms and choose more {{ type }} terms</button>
-              </div>
+                  <button type="submit" name="btn_submit" value="choose" class="btn btn-default btn-block">Save and choose more {{ type }} terms</button>
 
-              <div class="form-group">
-                  <button type="submit" name="btn_submit" value="progress" class="btn btn-primary btn-sm btn-outline">Select these terms and move on to select {{ next_type }}</button>
+                  <button type="submit" name="btn_submit" value="progress" class="btn btn-default btn-block">Save and move on to select {{ next_type }}</button>
+
               </div>
 
               <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
