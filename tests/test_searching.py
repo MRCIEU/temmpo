@@ -827,8 +827,9 @@ class SearchingTestCase(BaseTestCase):
         self.assertContains(response, 'Delete', count=1)
 
         # Test deletion
-        # Get should show confirmation screen
+        # Should not be shown a confirmation screen
         response = self.client.get(reverse('delete_data', kwargs={'pk': search_result.id}))
         self.assertEqual(response.status_code, 403)
+        # Shown not be ale to delete object either
         response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}))
         self.assertEqual(response.status_code, 403)
