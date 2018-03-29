@@ -420,11 +420,22 @@
     		</thead>
 			</table>
 		<ul>
-			<li>View search criteria: allows you to see which terms were selected. This is useful for reproducibility, allowing you too view a record of the analytical parameters. In addition, you can copy and edit any of the lists and enter them into the text box on any of the MeSH selection pages</li>
-			<li>Visualisations: this provides a Sankey visualisation of the highest priority mechanisms (full results can be downloaded)</li>
-			<li>Score data: contains the full set of results as a csv file. For each mechanism the columns contain: mechanism MeSH term, number of articles linking that mechanism to exposure, number of articles linking that mechanism to outcome and priority score (see below)</li>
-			<li>Abstract IDs: a csv file containing the abstract IDs used in analysis.</li>
+            <li><strong>Abstract file</strong>: the name of the file containing the abstracts used in this search</li>
+            <li><strong>Date uploaded</strong>: the date the abstract file was uploaded or, if being reused, the date the search was run</li>
+			<li><strong>View search criteria</strong>: allows you to see which terms were selected. This is useful for reproducibility, allowing you too view a record of the analytical parameters. In addition, you can copy and edit any of the lists and enter them into the text box on any of the MeSH selection pages</li>
+			<li><strong>Visualisations</strong>: this provides a Sankey visualisation of the highest priority mechanisms (full results can be downloaded)</li>
+			<li><strong>Score data</strong>: contains the full set of results as a csv file. For each mechanism the columns contain:
+                <ul>
+                    <li><em>Mediators</em> = mechanism MeSH term</li>
+                    <li><em>Exposure counts</em> = number of articles linking that mechanism to exposure</li>
+                    <li><em>Outcome counts</em> = number of articles linking that mechanism to outcome</li>
+                    <li><em>Scores</em> = priority score (see below)</li>
+                </ul>
+            </li>
+			<li><strong>Abstract IDs</strong>: a csv file containing the abstract IDs used in analysis.</li>
 		</ul>
+
+      <p><strong>How is the <em>priority score</em> calculated?</strong></p>
 		<p>The priority score is a weighted ratio of the number of abstracts linking the mechanisms to exposure (<code>EM</code>) and outcome (<code>MO</code>), calculated as:</p>
 			 <code>score = max(EM,MO) / min(EM,MO) x (EM + MO)</code>
 </div>

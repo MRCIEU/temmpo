@@ -1,4 +1,23 @@
-2.5.0   TMMA-232 Review and resolve TeMMPo vulnerability scan reports
+2.5.0   TMMA-96 Add slider to adjust mediator count threshold for inclusion in plot
+        TMMA-123 Investigate error processing a very large file
+        TMMA-131 Update MeSH Terms
+        TMMA-134 Addition of user documentation and clearer error messages
+        TMMA-136 Fixing the Sankey plot (code provided by Benjamin Elsworth)
+        TMMA-201 Broken Sankey plot - very small and appearing in the bottom left
+        TMMA-204 Re-running import mesh terms management command has incorrect top level terms
+        TMMA-216 Upgrade Django to 1.11
+        TMMA-220 4. Headers on CSV file
+        TMMA-221 5. Fixing the Sankey plot (code provided by Ben)
+        TMMA-231 The "top 50" in the Sankey plot doesn't seem to correspond to the top 50 by score in the csv output.
+        TMMA-232 Review and resolve TeMMPo vulnerability scan reports
+        TMMA-233 Improve deselecting terms from MeSH term tree
+        TMMA-240 Bug fix Gene and filter form
+        TMMA-241 Improve CSV generation
+        TMMA-242 Upgrade Django to 1.11.10
+        TMMA-243 Bug rendering Genes in Filter form
+        TMMA-246 Extend test suite
+        TMMA-249 Create a subset of the current 2015 & 2018 mesh terms to speed up running the test suite
+        TMMA-252 Upgrade Django to 1.11.x
 
 2.4.0   TMMA-203 Roll back any SQLlite mesh term limitation code
         TMMA-168 Bug fix: Investigate code within views which is selecting child mesh terms even if the tree is set not to.

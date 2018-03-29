@@ -500,15 +500,15 @@ class SearchingTestCase(BaseTestCase):
 
         self._login_user()
         self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent",
-                                                    "Select these terms and choose more mediator terms",
-                                                    "Select these terms and move on to select outcomes"])
+                                                    "Save and choose more mediator terms",
+                                                    "Save and move on to select outcomes"])
 
         search_criteria.mediator_terms = MeshTerm.objects.get(term="Phenotype", year=TEST_YEAR).get_descendants(include_self=True)
         search_criteria.save()
         self._find_expected_content(path, msg_list=["Current mediator terms", "Bulk edit",
                                                     "Replace", "Select descendent", "Phenotype",
-                                                    "Select these terms and choose more mediator terms",
-                                                    "Select these terms and move on to select outcomes"])
+                                                    "Save and choose more mediator terms",
+                                                    "Save and move on to select outcomes"])
 
     def test_outcome_selector(self):
         """Basic test for rendering the outcome terms selector page."""
@@ -522,14 +522,14 @@ class SearchingTestCase(BaseTestCase):
 
         self._login_user()
         self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent",
-                                                    "Select these terms and choose more outcome terms", ])
+                                                    "Save and choose more outcome terms", ])
 
         search_criteria.outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True)
         search_criteria.save()
         self._find_expected_content(path, msg_list=["Current outcome terms", "Bulk edit",
                                                     "Replace", "Select descendent", "Apoptosis",
-                                                    "Select these terms and choose more outcome terms",
-                                                    "Select these terms and move on to select Genes and Filters", ])
+                                                    "Save and choose more outcome terms",
+                                                    "Save and move on to select Genes and Filters", ])
 
     def test_criteria(self):
         """Test rendering of the view of a SearchCriteria instance."""

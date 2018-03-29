@@ -78,3 +78,6 @@ requirements.txt
 
 # OS X
 .DS_Store
+
+# Editor specific
+.idea/
