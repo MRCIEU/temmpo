@@ -19,16 +19,8 @@ from browser.utils import user_clean_up
 
 BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
-TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'pubmed-abstract.txt')
-TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
-TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
-TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
-TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
-PREVIOUS_TEST_YEAR = 2015
 TEST_YEAR = 2018
-TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes' # mtrees2015.bin 47978:Cell Physiological Processes;G04.299
-TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processes, G0 Phase'  # mtrees2015.bin 47980:Cell Aging;G04.299.119 - 48025:G0 Phase;G04.299.134.500.300
-TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
+
 
 class UserDeletionTest(BaseTestCase):
 
@@ -86,6 +78,8 @@ class UserDeletionTest(BaseTestCase):
             os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
+        test_results_edge_csv.close()
+        test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
@@ -172,6 +166,8 @@ class UserDeletionTest(BaseTestCase):
         # Check user record deleted
         self.assertFalse(User.objects.filter(pk=test_user.id).exists())
 
+    # TODO extend test suite to cover search criteria stubs with no search results associated with them.
+
     def test_superuser_delete_user(self):
         """ Check that a superuser can delete users """
         search_criteria = self._set_up_test_search_criteria()
@@ -201,6 +197,8 @@ class UserDeletionTest(BaseTestCase):
             os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
+        test_results_edge_csv.close()
+        test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
@@ -446,6 +444,8 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
             os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
+        test_results_edge_csv.close()
+        test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
