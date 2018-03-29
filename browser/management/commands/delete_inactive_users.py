@@ -1,4 +1,4 @@
-"""This management command is used as a one off setup for new projects to import and list of known gene names."""
+"""This management command is used warn/delete inactive users."""
 
 from django.core.management.base import BaseCommand
 
