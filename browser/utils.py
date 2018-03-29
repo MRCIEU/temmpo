@@ -4,7 +4,7 @@ import logging
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
-from browser.models import SearchResult, Upload
+from browser.models import SearchResult, Upload, SearchCriteria
 from django.core.mail import send_mail
 from django.template import loader, Context
 
@@ -80,6 +80,12 @@ def delete_user_content(user_id):
     # Delete searches
     for user_search in all_user_searches:
         user_search.delete()
+
+    all_user_search_criteria = SearchCriteria.objects.filter(upload__user=user_to_delete)
+
+    # Delete search criteria
+    for user_search_criteria in all_user_search_criteria:
+        user_search_criteria.delete()
 
     # Check for remaining uploads
     remaining_uploads = Upload.objects.filter(user=user_to_delete)

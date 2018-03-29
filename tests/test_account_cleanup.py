@@ -14,7 +14,7 @@ from django.core import mail
 
 from tests.base_test_case import BaseTestCase
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
-from browser.utils import user_clean_up
+from browser.utils import user_clean_up, delete_user_content
 
 
 BASE_DIR = os.path.dirname(__file__)
@@ -166,8 +166,6 @@ class UserDeletionTest(BaseTestCase):
         # Check user record deleted
         self.assertFalse(User.objects.filter(pk=test_user.id).exists())
 
-    # TODO extend test suite to cover search criteria stubs with no search results associated with them.
-
     def test_superuser_delete_user(self):
         """ Check that a superuser can delete users """
         search_criteria = self._set_up_test_search_criteria()
@@ -292,6 +290,22 @@ class UserDeletionTest(BaseTestCase):
         self.assertContains(response, 'Delete user', count=3)
 
 
+    def test_delete_user_content_unsubmitted_search_criteria(self):
+        """Ensure that saved search criteria which has not been submitted for a search is also deleted."""
+        search_criteria = self._set_up_test_search_criteria()
+        upload = search_criteria.upload
+
+        # Ensure no related search result exists
+        self.assertFalse(SearchResult.objects.filter(criteria=search_criteria).exists())
+
+        delete_user_content(search_criteria.upload.user.id)
+
+        # Ensure stub search criteria has been removed.
+        self.assertFalse(SearchCriteria.objects.filter(id=search_criteria.id).exists())
+
+        # Ensure file upload has been removed.
+        self.assertFalse(Upload.objects.filter(id=upload.id).exists())
+
 class UserCleanUpManagementCommandTest(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
@@ -390,11 +404,6 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         self.inactive_user.is_active = True
         self.inactive_user.last_login = datetime.utcnow().replace(tzinfo=timezone.utc)
         self.inactive_user.save()
-
-        # # Configure registered user who hasn't logged in for a year
-        # self.user.date_joined = self.year_ago
-        # self.user.last_login = datetime.utcnow().replace(tzinfo=timezone.utc)
-        # self.user.save()
 
         user_clean_up()
 
@@ -500,4 +509,3 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
 
         # Check user deleted
         self.assertEqual((self.total_users - 1), User.objects.all().count())
-

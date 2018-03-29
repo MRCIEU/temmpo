@@ -142,8 +142,8 @@ class Upload(models.Model):
     def delete(self):
         """ Override delete as we need to delete the file"""
         upload_count = SearchResult.objects.filter(criteria__upload=self).count()
-        if upload_count == 1:
-            # Only one record so delete Upload record and file
+        if upload_count <= 1:
+            # Not associated with more than one search result so we delete Upload record and file
             os.remove(self.abstracts_upload.file.name)
             super(Upload, self).delete()
 
