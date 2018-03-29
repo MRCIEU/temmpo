@@ -207,4 +207,4 @@ except ImportError:
 # Gives 60 days of grace before deletion
 ACCOUNT_CLOSURE_WARNING = 305
 
-DEFAULT_FROM_EMAIL = 'TeMMPo <blackhole@bristol.ac.uk>'
+DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'
