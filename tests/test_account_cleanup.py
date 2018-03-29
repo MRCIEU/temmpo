@@ -306,6 +306,32 @@ class UserDeletionTest(BaseTestCase):
         # Ensure file upload has been removed.
         self.assertFalse(Upload.objects.filter(id=upload.id).exists())
 
+    def test_delete_user_content_where_upload_was_reused(self):
+        search_criteria = self._set_up_test_search_criteria()
+        upload = search_criteria.upload
+        user_id = search_criteria.upload.user.id
+        additional_search_criteria = self._set_up_test_search_criteria()
+        additional_search_criteria.upload = upload
+        additional_search_criteria.save()
+
+        delete_user_content(user_id)
+
+        # Ensure search criteria has been removed.
+        self.assertFalse(SearchCriteria.objects.filter(id=search_criteria.id).exists())
+        self.assertFalse(SearchCriteria.objects.filter(id=additional_search_criteria.id).exists())
+
+        # Ensure file upload has been removed.
+        self.assertFalse(Upload.objects.filter(id=upload.id).exists())
+
+    def test_upload_delete_with_no_search_result(self):
+        search_criteria = self._set_up_test_search_criteria()
+        upload = search_criteria.upload
+
+        upload.delete()
+
+        # Ensure file upload has been removed.
+        self.assertFalse(Upload.objects.filter(id=upload.id).exists())
+
 class UserCleanUpManagementCommandTest(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
