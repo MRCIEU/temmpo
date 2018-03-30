@@ -1,13 +1,15 @@
-2.5.0   TMMA-96 Add slider to adjust mediator count threshold for inclusion in plot
+2.5.0   TMMA-41 Implement periodically clean up of file uploads and or unused accounts
+        TMMA-42 Add functionality to allow users to delete user account
+        TMMA-43 Add functionality to allow delete abstract uploads & any associated search criteria and results
+        TMMA-96 Add slider to adjust mediator count threshold for inclusion in plot
         TMMA-123 Investigate error processing a very large file
         TMMA-131 Update MeSH Terms
         TMMA-134 Addition of user documentation and clearer error messages
+        TMMA-135 Headers on CSV file
         TMMA-136 Fixing the Sankey plot (code provided by Benjamin Elsworth)
         TMMA-201 Broken Sankey plot - very small and appearing in the bottom left
         TMMA-204 Re-running import mesh terms management command has incorrect top level terms
         TMMA-216 Upgrade Django to 1.11
-        TMMA-220 4. Headers on CSV file
-        TMMA-221 5. Fixing the Sankey plot (code provided by Ben)
         TMMA-231 The "top 50" in the Sankey plot doesn't seem to correspond to the top 50 by score in the csv output.
         TMMA-232 Review and resolve TeMMPo vulnerability scan reports
         TMMA-233 Improve deselecting terms from MeSH term tree
@@ -18,6 +20,8 @@
         TMMA-246 Extend test suite
         TMMA-249 Create a subset of the current 2015 & 2018 mesh terms to speed up running the test suite
         TMMA-252 Upgrade Django to 1.11.x
+        TMMA-253 Allow super users to delete searches and users
+        TMMA-257 Bug fix cleaning up search criteria objects
 
 2.4.0   TMMA-203 Roll back any SQLlite mesh term limitation code
         TMMA-168 Bug fix: Investigate code within views which is selecting child mesh terms even if the tree is set not to.
