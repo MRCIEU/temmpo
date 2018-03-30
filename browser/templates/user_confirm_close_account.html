@@ -1,0 +1,34 @@
+{% extends "onecolumn.html" %}
+
+{% block title %}TeMMPo: Confirm you want to close your account{% endblock %}
+
+{% block section_title %}Confirm you want to close your account{% endblock %}
+
+{% block scripts %}{{ form.media.js }}{% endblock %}
+{% block styles %}
+{# Appears to need to be loaded in the header vs the footer of the page #}
+<script src="{{ STATIC_URL }}admin/js/vendor/jquery/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script src="{{ STATIC_URL }}simple_autocomplete/jquery-ui.js"></script>
+{{ form.media.css }}
+<link rel="stylesheet" href="{{ STATIC_URL }}simple_autocomplete/jquery-ui.css" />
+{% endblock %}
+
+
+{% block section %}
+
+    {% if search_still_running %}
+        <p>You have a search that is still running. You cannot close your account whilst searches are running.
+            Please wait for the search to finish before trying to close your account.</p>
+
+    {% else %}
+        <p>Please confirm that you want to close your account and delete all searches, results and uploads.<br>
+        <strong>This action cannot be undone and your account will be closed immediately.</strong></p>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-danger" value="Close my account and delete searches and uploads">
+        </form>
+    {% endif %}
+
+{% endblock %}

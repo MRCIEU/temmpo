@@ -6,6 +6,8 @@ NB: Abstract files are not reproduced in the database.  Instead matching is perf
 import re
 import unicodedata
 import os
+import datetime
+import glob
 
 from django.db import models
 from django.db.models import Max
@@ -13,6 +15,7 @@ from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
+from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -136,6 +139,14 @@ class Upload(models.Model):
         """Helper function to extrapolate only the file name part of an upload."""
         return os.path.basename(self.abstracts_upload.file.name)
 
+    def delete(self):
+        """ Override delete as we need to delete the file"""
+        upload_usage_count = SearchCriteria.objects.filter(upload=self).count()
+        if upload_usage_count <= 1:
+            # Not associated with more than one search criteria so we delete Upload record and file
+            os.remove(self.abstracts_upload.file.name)
+            super(Upload, self).delete()
+
 
 class SearchCriteria(models.Model):
     """Used to describe the criteria for a search - which file, which terms, which genes and which filters used."""
@@ -220,3 +231,39 @@ class SearchResult(models.Model):
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
     # mediator_match_counts # TODO TMMA-157 needed to support displaying mediator match count table
+
+    @property
+    def has_failed(self):
+        """Property identifying failed jobs"""
+        if self.has_completed:
+            return False
+        else:
+            # Still processing?
+            # Assume all processing longer than 12hrs is broken?
+            now = datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
+            timediff = now - self.started_processing
+            if timediff.total_seconds() > (12 * 60 * 60):
+                return True
+            else:
+                return False
+
+    def delete(self):
+        """ Override delete as there are a number of things we need to remove"""
+
+        # Try deleting upload
+        # Won't be deleted if Upload file is used on more than one search
+        upload_record = self.criteria.upload
+        upload_record.delete()
+
+        # Delete SearchCriteria
+        self.criteria.delete()
+
+        # Delete associated results files (if completed)
+        if self.has_completed:
+            base_path = settings.MEDIA_ROOT + '/results/' + self.filename_stub + '*'
+            files_to_delete = glob.glob(base_path)
+
+            for delfile in files_to_delete:
+                os.remove(delfile)
+
+        super(SearchResult, self).delete()

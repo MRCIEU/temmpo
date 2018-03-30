@@ -53,10 +53,13 @@ Test data used frequently in tests set up in the _set_up_test_search_criteria he
 
 import json
 import os
+from datetime import datetime, timedelta
+import glob
 
 from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 from browser.matching import _pubmed_readcitations  # perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
@@ -115,7 +118,7 @@ class SearchingTestCase(BaseTestCase):
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
-        print("RESULTS ARE IN THE THES FILES: ")
+        print("RESULTS ARE IN THE THESE FILES: ")
         print(test_results_edge_csv.name)
         print(test_results_abstract_csv.name)
         edge_file_lines = test_results_edge_csv.readlines()
@@ -657,3 +660,176 @@ class SearchingTestCase(BaseTestCase):
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
         # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
+
+    def test_search_results_deletion(self):
+        """Test we can delete results and associated files """
+
+        search_criteria = self._set_up_test_search_criteria()
+        original_gene_count = Gene.objects.filter(name="TRPC1").count()
+        self.assertEqual(original_gene_count, 1)
+
+        # Run the search, by posting filter and gene selection form
+        self._login_user()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+
+        # Verify expected content is on the gene and filter form page
+        expected_text = ["Enter genes", "Filter", "e.g. Humans"]
+        self._find_expected_content(path=path, msg_list=expected_text)
+
+        # Filter by a genes
+        response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
+
+        # Retrieve results object
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+
+        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
+        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+        edge_file_lines = test_results_edge_csv.readlines()
+        abstract_file_lines = test_results_abstract_csv.readlines()
+        self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
+        self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
+        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
+        self.assertEqual(abstract_file_lines[1].strip(), "23266572")
+        self.assertTrue(search_result.has_completed)
+        self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
+
+        # Go to results page
+        response = self.client.get(reverse('results_listing'))
+
+        # Check delete button
+        self.assertContains(response, 'Delete', count=2)
+
+        # Fake still processing, no button
+        search_result = SearchResult.objects.all()[0]
+        search_result.has_completed = False
+        search_result.save()
+        response = self.client.get(reverse('results_listing'))
+        self.assertContains(response, 'Delete', count=1)
+        self.assertContains(response, 'Processing', count=1)
+
+        # Check failed job, delete button
+        orig_date = search_result.started_processing
+        time_in_past = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(days=3)
+        search_result.started_processing = time_in_past
+        search_result.save()
+
+        response = self.client.get(reverse('results_listing'))
+        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'Search failed', count=1)
+
+        # Reset search results
+        search_result.has_completed = True
+        search_result.started_processing = orig_date
+        search_result.save()
+
+        # Test deletion
+        # Get should show confirmation screen
+        response = self.client.get(reverse('delete_data', kwargs={'pk': search_result.id}))
+        self.assertContains(response, 'Please confirm the deletion of this search.')
+        self.assertContains(response, 'is not used in any other search and will be deleted')
+
+        # Do POST
+        # This does the actual delete
+        # Check models
+        all_search_results_count = SearchResult.objects.all().count()
+        all_search_criteria_count = SearchCriteria.objects.all().count()
+        all_uploads_count = Upload.objects.all().count()
+        self.assertEqual(all_search_results_count, 1)
+        self.assertEqual(all_search_criteria_count, 1)
+        self.assertEqual(all_uploads_count, 1)
+
+        search_result_id = search_result.id
+        search_criteria_id = search_result.criteria.id
+        upload_id = search_result.criteria.upload.id
+        self.assertTrue(SearchResult.objects.filter(pk=search_result_id).exists())
+        self.assertTrue(SearchCriteria.objects.filter(pk=search_criteria_id).exists())
+        self.assertTrue(Upload.objects.filter(pk=upload_id).exists())
+        upload_record = Upload.objects.get(pk=upload_id)
+
+        # Check files...
+        # Check abstract
+        self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
+        # Check results files
+        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 5)
+
+        # DO deletion
+        response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}), follow=True)
+        self.assertContains(response, 'Search results deleted', count=1)
+
+        # Re-check models etc
+        self.assertEqual((all_search_results_count - 1),  SearchResult.objects.all().count())
+        self.assertEqual((all_search_criteria_count - 1),  SearchCriteria.objects.all().count())
+        self.assertEqual((all_uploads_count - 1),  Upload.objects.all().count())
+
+        self.assertFalse(SearchResult.objects.filter(pk=search_result_id).exists())
+        self.assertFalse(SearchCriteria.objects.filter(pk=search_criteria_id).exists())
+        self.assertFalse(Upload.objects.filter(pk=upload_id).exists())
+
+        # Check files...
+        self.assertFalse(os.path.exists(upload_record.abstracts_upload.file.name))
+        # Check results files
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
+
+    def test_search_results_can_only_be_deleted_by_owner(self):
+        """Test another user cannot delete someone else's files """
+
+        search_criteria = self._set_up_test_search_criteria()
+        original_gene_count = Gene.objects.filter(name="TRPC1").count()
+        self.assertEqual(original_gene_count, 1)
+
+        # Run the search, by posting filter and gene selection form
+        self._login_user()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+
+        # Verify expected content is on the gene and filter form page
+        expected_text = ["Enter genes", "Filter", "e.g. Humans"]
+        self._find_expected_content(path=path, msg_list=expected_text)
+
+        # Filter by a genes
+        response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
+
+        # Retrieve results object
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+
+        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
+        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+        edge_file_lines = test_results_edge_csv.readlines()
+        abstract_file_lines = test_results_abstract_csv.readlines()
+        self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
+        self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
+        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
+        self.assertEqual(abstract_file_lines[1].strip(), "23266572")
+        self.assertTrue(search_result.has_completed)
+        self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
+
+        # Go to results page
+        response = self.client.get(reverse('results_listing'))
+
+        # Check delete button
+        self.assertContains(response, 'Delete', count=2)
+
+        # Log out user
+        self._logout_user()
+
+        # Log in new user
+        self._login_second_user()
+
+        # Check no delete button etc
+        response = self.client.get(reverse('results_listing'))
+        # Should only be one instance (the table heading)
+        self.assertContains(response, 'Delete', count=1)
+
+        # Test deletion
+        # Should not be shown a confirmation screen
+        response = self.client.get(reverse('delete_data', kwargs={'pk': search_result.id}))
+        self.assertEqual(response.status_code, 403)
+        # Shown not be ale to delete object either
+        response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}))
+        self.assertEqual(response.status_code, 403)
