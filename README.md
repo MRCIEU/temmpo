@@ -23,24 +23,24 @@ We are using Vagrant for our Centos development environment.  It requires an add
 Use one of the techniques below to set up your virtual environment and create your Django application.
 Various options exist.  Optionally front with Apache, by default run database migrations.
 
-#### a) Installing a Vagrant development virtual environment.
+#### a. Installing a Vagrant development virtual environment.
 
     cd deploy
     vagrant up && vagrant ssh
     fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-#### b) Installing a Vagrant development virtual environment using remotely run Fabric command.
+#### b. Installing a Vagrant development virtual environment using remotely run Fabric command.
 
     cd deploy
     vagrant up && fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=dev  -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh
 
-#### c) Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive.
+#### c. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive.
 
     cd deploy && vagrant up db && vagrant up apache && vagrant ssh apache
     fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/fabfile.py
 
 
-#### d) Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using remotely run Fabric command,
+#### d. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using remotely run Fabric command,
 
     vagrant up db && vagrant up apache && fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh apache
 
@@ -60,9 +60,9 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
 1. Load fixture data
 
-NB: this can take a few minutes.
+    NB: this can take a few minutes.
 
-    python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json
+        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json
 
 2. Management command
 
@@ -107,52 +107,70 @@ NB: If you want to manually run migrations you need to use the --database flag
 
     python manage.py migrate --database=admin
 
-## Deployment commands - UNDER REVIEW
+### Development deployment commands when working with the apache Vagrant VM.
 
-### Deploy master branch to Vagrant Apache VM
+#### a. Deploy master branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-### Deploy demo_stable branch on Vagrant Apache VM:
+#### b. Deploy demo_stable branch on Vagrant Apache VM:
 
     fab deploy:env=dev,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-### Deploy prod_stable branch to Vagrant Apache VM
+#### c. Deploy prod_stable branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-
 ## Production
 
-### Tag a build - Under review being replaced with direct Jenkins job
-**NB: needs to be run as user with commit rights on the temmpo repository**
+### Deploying changes to the production site, https://www.temmpo.org.uk/
 
-    git fetch --all
-    git checkout master
-    git pull
-    fab taggit:master,2.4.0,temmpo -f deploy/fabfile.py
-    fab taggit:master,prod_stable,temmpo -f deploy/fabfile.py
+The Research IT Jenkins continuous integration server is used to deploy code to the production website.  This job is manually triggered simply by building this job:
 
+https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Production/job/1-merge-prod-stable-branch/
 
-### Installing a production build remotely, e.g. from the CI server  - Under review
+Below are the shell commands that each part of the CI pipeline runs from the CI server ci-p0.rit.bris.ac.uk:
 
-    ssh ci-p0.rit.bris.ac.uk
-    sudo -i -u temmpo
+1. Project 1-merge-prod-stable-branch
+
+        if [ ! -d temmpo ] ; then git clone git@bitbucket.org:researchit/temmpo.git; fi
+        cd temmpo
+        git fetch origin
+        git checkout demo_stable
+        git pull
+        git checkout prod_stable
+        git pull origin prod_stable
+        git merge -m "RIT Jenkins CI merged demo_stable into prod_stable branch before deployment" demo_stable
+        git push origin prod_stable
+
+    Upon success the following job is triggered.
+
+2. Project 2-deploy-production
+
+        fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -H py-web-p0.epi.bris.ac.uk -f deploy/fabfile.py  --forward-agent
+
+3. Project 3-tag-prod-stable
+
+        git tag -a deployed_on_prod_${BUILD_TIMESTAMP} -m "RIT Jenkins CI deployed the production site on ${BUILD_TIMESTAMP}"
+        git push origin deployed_on_prod_${BUILD_TIMESTAMP}
+
+NB: The Jenkins jobs are configured to use the CI server's temmpo user account's SSH keys /usr/local/projects/temmpo/.ssh/id_rsa.pub and the rit-temmpo-ci Bitbucket user's SSH key.
+
+### To build a production Python virtual environment from the CI server
 
 *One off setup*
 
-    mkdir -p /srv/projects/temmpo/lib/git
-    cd /srv/projects/temmpo/lib/git
-    git clone git@bitbucket.org:researchit/temmpo.git temmpo
-    cd /srv/projects/temmpo/lib/git/temmpo
-    git fetch --all
-    git checkout prod_stable
+    ssh ci-p0.rit.bris.ac.uk
+    sudo -i -u temmpo
+    cd /srv/projects/temmpo/lib/git/temmpo/
+    git fetch origin
+    git checkout master
     git pull
     fab make_virtualenv:env=prod,configure_apache=True,clone_repo=True,branch=prod_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-#### Database transfer to MySQL - *Legacy*
+### Database transfer from SQLlite to MySQL - *Legacy*
 
-- How data was migrated from SQLite to MySQL
+How data was migrated from SQLite to MySQL
 
     cd /srv/projects/temmpo/lib/git/temmpo
     git fetch --all
@@ -162,51 +180,109 @@ NB: If you want to manually run migrations you need to use the --database flag
     fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
     fab migrate_sqlite_data_to_mysql:env=prod,use_local_mode=False,using_apache=True,swap_db=True -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
-### Each time you want to deploy new code  - Under review
+## Demo
 
-    cd /srv/projects/temmpo/lib/git/temmpo
-    git fetch --all
-    git checkout prod_stable
+### Deploying changes to the demo site, https://py-web-d0.epi.bris.ac.uk/
+
+The Research IT Jenkins continuous integration server is used to deploy code to the demo website.  Periodically changes that have been moved onto the last_known_good will be deployed onto the demo server.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Demo%20jobs/job/1-merge-demo-branch-project/
+
+Below are the shell commands that each part of the CI pipeline runs from the CI server ci-p0.rit.bris.ac.uk:
+
+1. Project 1-merge-demo-branch-project
+
+        if [ ! -d temmpo ] ; then git clone git@bitbucket.org:researchit/temmpo.git; fi
+        cd temmpo
+        git fetch origin
+        git checkout last_known_good
+        git pull
+        git checkout demo_stable
+        git pull origin demo_stable
+        git merge -m "RIT Jenkins CI merged last_known_good into demo_stable branch before deployment" last_known_good
+        git push origin demo_stable
+
+2. Project 2-deploy-demo-project
+
+        fab deploy:env=demo,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -H py-web-d0.epi.bris.ac.uk -f deploy/fabfile.py  --forward-agent
+
+3. Project 3-tag-demo-stable-project
+
+        git tag -a deployed_on_demo_${BUILD_TIMESTAMP} -m "RIT Jenkins CI deployed demo site on ${BUILD_TIMESTAMP}"
+        git push origin deployed_on_demo_${BUILD_TIMESTAMP}
+
+NB: The Jenkins jobs are configured to use the CI server's temmpo user account's SSH keys /usr/local/projects/temmpo/.ssh/id_rsa.pub and the rit-temmpo-ci Bitbucket user's SSH key.
+
+### To build a demo Python virtual environment from the CI server
+
+*One off setup*
+
+    ssh ci-p0.rit.bris.ac.uk
+    sudo -i -u temmpo
+    cd /srv/projects/temmpo/lib/git/temmpo/
+    git fetch origin
+    git checkout master
     git pull
-    fab deploy:env=prod,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-p0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+    fab make_virtualenv:env=demo,configure_apache=True,clone_repo=True,branch=demo_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
+## Testing environment
 
 ## Testing deployment on a development branch on a the test HyperV VM, e.g. TMMA-130
 
-Reuse the CI job to run test, replace instances of master with branch name
+### Testing changes on the master branch on the test environment https://py-web-t0.epi.bris.ac.uk/
 
-    https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Test%20jobs/job/run-tests/
+The Research IT Jenkins continuous integration server is used to automate running tests.  Periodically changes that have been moved onto the master branch will be deployed onto the test server.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Test%20jobs/job/1-run-tests/
+
+Below are the shell commands that each part of the CI pipeline runs from the CI server ci-p0.rit.bris.ac.uk:
+
+1. Project 1-run-tests
+
+        # Build test environment
+        fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        # Clear database
+        fab recreate_db:env=test,database_name=temmpo_test -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        # Run tests
+        fab run_tests:env=test,use_local_mode=False,reuse_db=True,db_type=mysql -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+
+2. Project 2-update-last-known-good-branch
+
+        if [ ! -d temmpo ] ; then git clone git@bitbucket.org:researchit/temmpo.git; fi
+        cd temmpo
+        git fetch origin
+        git checkout master 
+        git pull
+        git checkout last_known_good
+        git pull
+        git merge -m "RIT Jenkins CI merged master into last_known_good branch after tests passed on Centos test server" master
+        git push origin last_known_good
+
+NB: The Jenkins jobs are configured to use the CI server's temmpo user account's SSH keys /usr/local/projects/temmpo/.ssh/id_rsa.pub and the rit-temmpo-ci Bitbucket user's SSH key.
+
+### To build a test Python virtual environment, run the below commands from the CI server
+
+*One off setup*
+
+    ssh ci-p0.rit.bris.ac.uk
+    sudo -i -u temmpo
+    cd /srv/projects/temmpo/lib/git/temmpo/
+    git fetch origin
+    git checkout master
+    git pull
+    fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-t0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 ## Setting up a new host 
 
 - To be able to provision the Django application using the Fabric script from the CI server you will need the following to be in place.
 
-* Ensure puppet configuration has been run - this should run all the steps provided in the development Vagrant file and set up scripts.
+1. Ensure the project specific puppet configuration https://gitlab.isys.bris.ac.uk/research_it/temmpo has been updated for and run on the new host.  NB This should run all the environment specific steps provided in the development Vagrant file and set up scripts.
 
-* Create a /usr/local/projects/temmpo/.settings/private_settings.py file, see example_private_settings.py file for expected format and entries.
+2. Create a /usr/local/projects/temmpo/.settings/private_settings.py file, see example_private_settings.py file for expected format and entries.
 
-* Share keys from CI server to new host
+3. Share the SSH key for the temmpo user from the CI server ci-p0.rit.bris.ac.uk to the new host.
 
-* Create and share an SSH deployment key on code repository on bitbucket
+4. Create and add a new SSH deployment key to the Bitbucket code repository
 
-* Ensure an 'env'.py file exists e.g. demo.py, prod.py in the settings directory.
+5. Ensure an 'env'.py file exists, e.g. demo.py, prod.py, in the code's *temmpo/temmpo/settings* directory.
 
-### Test server
-- Built a new virtual environment, run from CI server
-
-    fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-t0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
-
-### Demo server
-- Built a new virtual environment, run from CI server
-
-    fab make_virtualenv:env=demo,configure_apache=True,clone_repo=True,branch=demo_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
-
-- Deploy code using Jenkins CI server
-
-Periodically changes that have been moved onto the last_known_good will be deployed onto the demo server.  See: https://ci-p0.rit.bris.ac.uk/job/TeMMPo/job/Demo%20jobs/job/1-merge-demo-branch-project/
-
-- Deploy directly from the CI server
-
-    fab deploy:env=demo,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+6. Build new Python virtual environment, see steps for building production, demo or test for example commands.
 
 ## Warnings
 
