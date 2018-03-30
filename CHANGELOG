@@ -22,6 +22,7 @@
         TMMA-252 Upgrade Django to 1.11.x
         TMMA-253 Allow super users to delete searches and users
         TMMA-257 Bug fix cleaning up search criteria objects
+        TMMA-259 Expand README
 
 2.4.0   TMMA-203 Roll back any SQLlite mesh term limitation code
         TMMA-168 Bug fix: Investigate code within views which is selecting child mesh terms even if the tree is set not to.
