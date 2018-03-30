@@ -332,6 +332,26 @@ class UserDeletionTest(BaseTestCase):
         # Ensure file upload has been removed.
         self.assertFalse(Upload.objects.filter(id=upload.id).exists())
 
+    def test_delete_search_result_that_has_not_began_processing(self):
+        """Test to ensure this bug does not appear again TMMA-260."""
+        search_criteria = self._set_up_test_search_criteria()
+        upload = search_criteria.upload
+
+        # Prepare the stub search result object but do not start processing the search
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        delete_user_content(search_criteria.upload.user.id)
+
+        # Ensure search criteria has been removed.
+        self.assertFalse(SearchCriteria.objects.filter(id=search_criteria.id).exists())
+
+        # Ensure file upload has been removed.
+        self.assertFalse(Upload.objects.filter(id=upload.id).exists())
+
+        # Ensure stub search result has been removed.
+        self.assertFalse(SearchResult.objects.filter(id=search_result.id).exists())
+
 class UserCleanUpManagementCommandTest(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]

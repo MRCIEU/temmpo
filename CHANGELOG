@@ -1,3 +1,5 @@
+2.5.1   TMMA-260 Error related to SearchResults objects that have not started_processing when processing the has_failed property
+
 2.5.0   TMMA-41 Implement periodically clean up of file uploads and or unused accounts
         TMMA-42 Add functionality to allow users to delete user account
         TMMA-43 Add functionality to allow delete abstract uploads & any associated search criteria and results

@@ -833,3 +833,22 @@ class SearchingTestCase(BaseTestCase):
         # Shown not be ale to delete object either
         response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}))
         self.assertEqual(response.status_code, 403)
+
+    def test_result_listing_with_unprocessed_results_objects(self):
+        search_criteria = self._set_up_test_search_criteria()
+        original_gene_count = Gene.objects.filter(name="TRPC1").count()
+        self.assertEqual(original_gene_count, 1)
+
+        # Run the search, by posting filter and gene selection form
+        self._login_user()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+
+        # Ensure a stub results object is created.
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        # Go to results page
+        response = self.client.get(reverse('results_listing'))
+
+        # Ensure stub search results objects are not shown
+        self.assertNotContains(response, "Search criteria for resultset '%s'" % search_result.id)
