@@ -389,7 +389,8 @@ class ResultsListingView(ListView):
         return super(ResultsListingView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return SearchResult.objects.filter(criteria__upload__user=self.request.user)
+        # Ensure only listing users results and no stub search results that have not been started.
+        return SearchResult.objects.filter(criteria__upload__user=self.request.user).exclude(started_processing=None)
 
     def get_context_data(self, **kwargs):
         context = super(ResultsListingView, self).get_context_data(**kwargs)
@@ -697,9 +698,9 @@ class CloseAccount(DeleteView):
         if request.method == 'POST':
             all_user_searches = SearchResult.objects.filter(criteria__upload__user=request.user)
 
-            # Delete searches
+            # Check we can delete all search results
             for user_search in all_user_searches:
-                if not user_search.has_completed and not user_search.has_failed:
+                if not user_search.is_deletable:
                     # Search still running
                     raise PermissionDenied
 
@@ -714,7 +715,7 @@ class CloseAccount(DeleteView):
 
         # Delete searches
         for user_search in all_user_searches:
-            if not user_search.has_completed and not user_search.has_failed:
+            if not user_search.is_deletable:
                 # Search still running
                 context['search_still_running'] = True
                 break
@@ -787,7 +788,7 @@ class DeleteUser(DeleteView):
             all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_to_delete)
             # Delete searches
             for user_search in all_user_searches:
-                if not user_search.has_completed and not user_search.has_failed:
+                if not user_search.is_deletable:
                     # Search still running
                     raise PermissionDenied
 
@@ -804,7 +805,7 @@ class DeleteUser(DeleteView):
 
         # Delete searches
         for user_search in all_user_searches:
-            if not user_search.has_completed and not user_search.has_failed:
+            if not user_search.is_deletable:
                 # Search still running
                 context['search_still_running'] = True
                 break
