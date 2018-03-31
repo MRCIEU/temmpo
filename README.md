@@ -66,12 +66,12 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
 2. Management command
 
-Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
+    Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
 
-NB: These commands each take over 20 minutes to run.
+    NB: These commands each take over 20 minutes to run.
 
-    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015
-    python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
 
 ### Importing Genes - optional
 
@@ -224,8 +224,6 @@ NB: The Jenkins jobs are configured to use the CI server's temmpo user account's
     fab make_virtualenv:env=demo,configure_apache=True,clone_repo=True,branch=demo_stable,migrate_db=True,use_local_mode=False,requirements=base -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 ## Testing environment
-
-## Testing deployment on a development branch on a the test HyperV VM, e.g. TMMA-130
 
 ### Testing changes on the master branch on the test environment https://py-web-t0.epi.bris.ac.uk/
 
