@@ -93,6 +93,7 @@ class MeshTerm(MPTTModel):
         """Get a query set of top level MeshTerms for a specific year."""
         if not year:
             year = cls.get_latest_mesh_term_release_year()
+            # TODO handle errors better when no terms for examle
         return cls.objects.root_nodes().get(term=str(year)).get_children()
 
     @classmethod
@@ -233,9 +234,17 @@ class SearchResult(models.Model):
     # mediator_match_counts # TODO TMMA-157 needed to support displaying mediator match count table
 
     @property
+    def has_started(self):
+        """Property identifying failed jobs"""
+        if self.started_processing:
+            return True
+        else:
+            return False
+
+    @property
     def has_failed(self):
         """Property identifying failed jobs"""
-        if self.has_completed:
+        if self.has_completed or not self.has_started:
             return False
         else:
             # Still processing?
@@ -246,6 +255,13 @@ class SearchResult(models.Model):
                 return True
             else:
                 return False
+
+    @property
+    def is_deletable(self):
+        status = True
+        if self.has_started and not self.has_completed and not self.has_failed:
+            status = False
+        return status
 
     def delete(self):
         """ Override delete as there are a number of things we need to remove"""
