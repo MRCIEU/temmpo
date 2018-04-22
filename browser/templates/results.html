@@ -3,7 +3,7 @@
 {% block title %}TeMMPo: Results{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.css">
 {% endblock %}
 
 {% block body_class_style %}results-page{% endblock %}
@@ -24,31 +24,34 @@ Results
         <div id="slider"></div>
     </div>
     <div id="results-buttons" class="form-group">
-        <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
+        <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View search criteria</a>
     </div>
 
 {% endblock %}
 
 {% block section %}
+{# TODO: Should this be included somewhere? #}
 <!--
 <p>
-Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
+Total {{ article_count }} papers.
 </p>
 -->
 <div id="sankey_multiple"></div>
+<hr /> {# TODO: Need to show and hide each chart type #}
+<div id="bubble_chart"></div>
 {% endblock %}
 
 {% block scripts %}
-    {# Chart related JS #}
-    <script src="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    {# Chart related JS libraries #}
     <script src="{{ STATIC_URL}}js/d3.min.js"></script>
+    <script src="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
+        // Generate Sankey diagram
         google.charts.load("44", {packages: ["sankey"]});
         google.charts.setOnLoadCallback(function() { (getLinks(topVal))});
-    </script>
-    <script>
-    function getAllIndexes(arr, val) {
+
+        function getAllIndexes(arr, val) {
             var indexes = [], i = -1;
             while ((i = arr.indexOf(val, i + 1)) != -1) {
                 indexes.push(i);
@@ -63,6 +66,7 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
             var int_out = [];
             var oLinks = [];
             var sData = [];
+            // TODO: Can i replace the usage of the D3.js libruary?  Can I use google.visualization.DataView.fromJSON(data, viewAsJson)
             d3.json("{{ json_url }}", function (matches) {
                 //create arrays of target and sources
                 matches.links = matches.links.filter(function (link) {
@@ -129,6 +133,7 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
                 });
                 drawChart(sData);
 
+                // TODO Low priority Start with slider controller hidden and only show when in use?
                 // Hide the slider if we are not limiting the result set
                 if (topLinks.length < 5) {
                     $("#threshold-controller").hide();
@@ -148,17 +153,19 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
             data.addColumn('number', 'Articles');
             data.addRows(sData)
 
+            // TODO: Can I toggle between the chart types from here?  Need to confirm any differences in expected data format.
+
             // Set chart options
             var options = {
                 width: 1200,
-                height:650,
+                height: 650,
                 //iterations: 100,
                 //sankey: { node: { nodePadding: 10 } },
                 sankey: {
                     node: {
                         interactivity: true,
                         label: {
-                            fontName: 'Times-Roman',
+                            fontName: '"Helvetica Neue",Helvetica,Arial,sans-serif',
                             fontSize: 12,
                             //color: '#871b47',
                             //bold: true,
@@ -189,5 +196,42 @@ Total {{ article_count }} papers containing mediators AND the MeSH term <strong>
                 $("#chart-slider-label").val($("#slider").slider("value"));
             });
         })
+    </script>
+    <script>
+        // Generate Bubble chart
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawBubbleChart);
+
+        function drawBubbleChart() {
+          // TODO replace with search result data
+          // 'ID (bubble name)', 'X', 'Y', 'Temperature of colour' OPTIONAL, 'Size'  OPTIONAL
+          var data = google.visualization.arrayToDataTable([
+            ['ID', 'Number of abstracts linking exposure to mechanism', 'Number of abstracts linking exposure to outcome', 'Region',     'Population'],
+            ['CAN',    80.66,              1.67,      'North America',  33739900],
+            ['DEU',    79.84,              1.36,      'Europe',         81902307],
+            ['DNK',    78.6,               1.84,      'Europe',         5523095],
+            ['EGY',    72.73,              2.78,      'Middle East',    79716203],
+            ['GBR',    80.05,              2,         'Europe',         61801570],
+            ['IRN',    72.49,              1.7,       'Middle East',    73137148],
+            ['IRQ',    68.09,              4.77,      'Middle East',    31090763],
+            ['ISR',    81.55,              2.96,      'Middle East',    7485600],
+            ['RUS',    68.6,               1.54,      'Europe',         141850000],
+            ['USA',    78.09,              2.05,      'North America',  307007000]
+          ]);
+
+          var options = {
+            title: 'Focused search results from PubMed based on original score',
+            hAxis: { title: 'Number of abstracts linking exposure to mechanism' },
+            vAxis: { title: 'Number of abstracts linking exposure to outcome' },
+            bubble: { textStyle: 
+              { fontSize: 12,
+                fontName: '"Helvetica Neue",Helvetica,Arial,sans-serif',
+              }
+            }
+          };
+
+          var chart = new google.visualization.BubbleChart(document.getElementById('bubble_chart'));
+          chart.draw(data, options);
+        }
     </script>
 {% endblock %}
