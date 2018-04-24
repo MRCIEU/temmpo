@@ -66,7 +66,6 @@ Total {{ article_count }} papers.
             var int_out = [];
             var oLinks = [];
             var sData = [];
-            // TODO: Can i replace the usage of the D3.js libruary?  Can I use google.visualization.DataView.fromJSON(data, viewAsJson)
             d3.json("{{ json_url }}", function (matches) {
                 //create arrays of target and sources
                 matches.links = matches.links.filter(function (link) {
@@ -131,18 +130,16 @@ Total {{ article_count }} papers.
                         sData.push([source, target, link.value]);
                     }
                 });
-                drawChart(sData);
-
-                // TODO Low priority Start with slider controller hidden and only show when in use?
                 // Hide the slider if we are not limiting the result set
                 if (topLinks.length < 5) {
                     $("#threshold-controller").hide();
                 }
 
+                drawSankeyDiagram(sData);
             })
         }
 
-        function drawChart(sData) {
+        function drawSankeyDiagram(sData) {
             var data = new google.visualization.DataTable();
             var s1Name = 'a'
             var s2Name = 'b'
@@ -153,23 +150,16 @@ Total {{ article_count }} papers.
             data.addColumn('number', 'Articles');
             data.addRows(sData)
 
-            // TODO: Can I toggle between the chart types from here?  Need to confirm any differences in expected data format.
-
             // Set chart options
             var options = {
                 width: 1200,
                 height: 650,
-                //iterations: 100,
-                //sankey: { node: { nodePadding: 10 } },
                 sankey: {
                     node: {
                         interactivity: true,
                         label: {
                             fontName: '"Helvetica Neue",Helvetica,Arial,sans-serif',
                             fontSize: 12,
-                            //color: '#871b47',
-                            //bold: true,
-                            //italic: true
                         }
                     }
                 }
@@ -200,36 +190,49 @@ Total {{ article_count }} papers.
     <script>
         // Generate Bubble chart
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawBubbleChart);
+        google.charts.setOnLoadCallback(loadBubbleChartData);
 
-        function drawBubbleChart() {
-          // TODO replace with search result data
-          // 'ID (bubble name)', 'X', 'Y', 'Temperature of colour' OPTIONAL, 'Size'  OPTIONAL
-          var data = google.visualization.arrayToDataTable([
-            ['ID', 'Number of abstracts linking exposure to mechanism', 'Number of abstracts linking exposure to outcome', 'Region',     'Population'],
-            ['CAN',    80.66,              1.67,      'North America',  33739900],
-            ['DEU',    79.84,              1.36,      'Europe',         81902307],
-            ['DNK',    78.6,               1.84,      'Europe',         5523095],
-            ['EGY',    72.73,              2.78,      'Middle East',    79716203],
-            ['GBR',    80.05,              2,         'Europe',         61801570],
-            ['IRN',    72.49,              1.7,       'Middle East',    73137148],
-            ['IRQ',    68.09,              4.77,      'Middle East',    31090763],
-            ['ISR',    81.55,              2.96,      'Middle East',    7485600],
-            ['RUS',    68.6,               1.54,      'Europe',         141850000],
-            ['USA',    78.09,              2.05,      'North America',  307007000]
-          ]);
-
-          var options = {
-            title: 'Focused search results from PubMed based on original score',
-            hAxis: { title: 'Number of abstracts linking exposure to mechanism' },
-            vAxis: { title: 'Number of abstracts linking exposure to outcome' },
-            bubble: { textStyle: 
-              { fontSize: 12,
-                fontName: '"Helvetica Neue",Helvetica,Arial,sans-serif',
-              }
+        function loadBubbleChartData() {
+          var max_results = 20;
+          var data = new google.visualization.DataTable();
+          data.addColumn('string', 'ID');
+          data.addColumn('number', 'Number of abstracts linking exposure to mechanism');
+          data.addColumn('number', 'Number of abstracts linking exposure to outcome');
+          data.addColumn('string', 'Mechanism');
+          data.addColumn('number', 'Score');
+          d3.csv("{{ csv_url }}", function(score_data) {
+            // Only use the top results
+            if (score_data.length > max_results) {
+              score_data = score_data.slice(0, max_results)
             }
-          };
+            for (var i = 0; i < score_data.length; i++) {
+              id = String(i+1);
+              data.addRow([id, Number(score_data[i]["Exposure counts"]), Number(score_data[i]["Outcome counts"]), id + ". " + score_data[i]['Mediators'], Number(score_data[i]['Scores'])]);
+            }
 
+            drawBubbleChart(data);
+          });
+        }
+
+        function drawBubbleChart(data) {
+          var options = {
+            title: 'Focused search results from PubMed based on original score (Top 20)',
+            hAxis: { title: 'Number of abstracts linking exposure to mechanism',
+                     titleTextStyle: { bold: true }
+            },
+            vAxis: { title: 'Number of abstracts linking exposure to outcome',
+                     titleTextStyle: { bold: true }
+            },
+            bubble: { textStyle: 
+                      { fontSize: 12,
+                        fontName: '"Helvetica Neue",Helvetica,Arial,sans-serif',
+                        auraColor: 'none',
+                        color: 'white',
+                        bold: true
+                      },
+            },
+            chartArea: {width:'75%' }
+          };
           var chart = new google.visualization.BubbleChart(document.getElementById('bubble_chart'));
           chart.draw(data, options);
         }
