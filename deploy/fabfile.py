@@ -420,3 +420,17 @@ def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     with change_dir(venv_dir):
         caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin' % (database_name, database_name, venv_dir), pty=True)
         caller('echo "TeMMPo database was recreated".')
+
+
+def add_missing_csv_headers_to_scores(env="dev", use_local_mode=False):
+    """TMMA-262 - CSV files generated in the past do not have headers.
+        TODO Finish this. """
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+
+    # _abstracts.csv
+    # needs Abstract IDs
+    # _edge.csv'
+    # csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
+
+    # csv_files_directory = "%s/var/results" % PROJECT_ROOT
