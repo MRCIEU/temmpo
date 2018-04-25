@@ -422,15 +422,20 @@ def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
         caller('echo "TeMMPo database was recreated".')
 
 
-def add_missing_csv_headers_to_scores(env="dev", use_local_mode=False):
+def add_missing_csv_headers_to_scores():
     """TMMA-262 - CSV files generated in the past do not have headers.
-        TODO Finish this. """
-    use_local_mode = (str(use_local_mode).lower() == 'true')
-    caller, change_dir = _toggle_local_remote(use_local_mode)
 
-    # _abstracts.csv
-    # needs Abstract IDs
-    # _edge.csv'
-    # csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
+    NB: Needs to be run remotely against the demo and production VMs to ensure Bubble charts can be rendered.
+    """
+    results_directory = PROJECT_ROOT + "var/results/"
+    file_header_info = [{'headers': 'Abstract IDs,', 'file_extension': '_abstracts.csv'},
+                        {'headers': 'Mediators,Exposure counts,Outcome counts,Scores', 'file_extension': '_edge.csv'}, ]
 
-    # csv_files_directory = "%s/var/results" % PROJECT_ROOT
+    with cd(results_directory):
+        for info in file_header_info:
+            run('echo "%(headers)s" > headers%(file_extension)s' % info)
+            csv_files = run('find . -name "*%(file_extension)s"' % info)
+            for csv_file in csv_files.splitlines():
+                if not files.contains(csv_file, info['headers'], exact=False):
+                    run('cat headers%s %s > tmp-csv-file.txt && mv tmp-csv-file.txt %s' % (info['file_extension'], csv_file, csv_file))
+            run("rm headers%(file_extension)s" % info)
