@@ -348,7 +348,8 @@ class FilterSelector(UpdateView):
 
 
 class ResultsView(TemplateView):
-    template_name = "results.html"
+    """Need to define chart_js and either sankey_active or bubble_active as "active" in views"""
+    template_name = "results_base.html"
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -370,12 +371,40 @@ class ResultsView(TemplateView):
         context['active'] = 'results'
 
         # TODO: TMMA-30 Add tabular version of results table as per PDF
-        json_filename = reverse('json_data', kwargs=kwargs)
-        csv_filename = reverse('count_data', kwargs=kwargs)
         context['search_result'] = self.search_result
-        context['json_url'] = json_filename
-        context['csv_url'] = csv_filename
+        context['json_url'] = reverse('json_data', kwargs=kwargs)
+        context['score_csv_url'] = reverse('count_data', kwargs=kwargs)
+        context['abstract_ids_csv_url'] = reverse('abstracts_data', kwargs=kwargs)
         context['criteria_url'] = reverse('criteria', kwargs={'pk': self.search_result.criteria.id})
+        context['results_sankey_url'] = reverse('results', kwargs=kwargs)
+        context['results_bubble_url'] = reverse('results_bubble', kwargs=kwargs)
+        # To be overridden in sub chart type class
+        context['chart_js'] = ''
+        context['sankey_is_active'] = False
+        context['bubble_is_active'] = False
+
+        return context
+
+
+class ResultsBubbleView(ResultsView):
+    template_name = "results_bubble.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ResultsBubbleView, self).get_context_data(**kwargs)
+        context['chart_js'] = 'includes/results_bubble_chart_js.html'
+        context['bubble_is_active'] = True
+
+        return context
+
+
+class ResultsSankeyView(ResultsView):
+    template_name = "results_sankey.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ResultsSankeyView, self).get_context_data(**kwargs)
+        context['chart_js'] = 'includes/results_sankey_chart_js.html'
+        context['sankey_is_active'] = True
+
         return context
 
 

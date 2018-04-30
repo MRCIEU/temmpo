@@ -72,14 +72,17 @@
     border: 0;
     color: #f6931f;
     font-weight: bold;
+    width: 30px;
 }
+
+#slider{ margin-bottom: 1em; }
 
 #results-buttons
 {
     margin-top: 1em;
 }
 
-#sankey_multiple
+#sankey_multiple, #bubble_chart
 {
     margin: auto;
     width: 100%;
@@ -94,4 +97,10 @@
 .results-page #page-wrapper 
 {
     padding-left: 0px;
+}
+
+.results-page .nav-tabs
+{
+    margin-top:1em;
+    margin-bottom:1em;
 }

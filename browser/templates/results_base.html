@@ -1,0 +1,77 @@
+{% extends "onecolumncompact.html" %}
+{% block title %}TeMMPo: Results{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.css">
+{% endblock %}
+
+{% block body_class_style %}results-page{% endblock %}
+
+{% block section_title %}
+Results
+{% endblock %}
+
+{% block page_heading %}
+{% endblock %}
+
+{% block section %}
+<ul class="nav nav-tabs">
+    <li {% if sankey_is_active %}class="active"{% endif %}><a href="{{ results_sankey_url }}">Mechanism visualisation</a>
+    </li>
+    <li {% if bubble_is_active %}class="active"{% endif %}><a href="{{ results_bubble_url }}">Score visualisation</a>
+    </li>
+    <li><a href="#criteria" data-toggle="tab">Search criteria</a>
+    </li>
+    <li><a href="#downloads" data-toggle="tab">Downloads</a>
+    </li>
+</ul>
+
+{# TODO: Should this be included somewhere? #}
+<!--
+<p>
+Total {{ article_count }} papers.
+</p>
+-->
+<div class="tab-content">
+    <div class="tab-pane fade" id="criteria">
+        <h2>Search criteria</h2>
+        <div id="results-buttons" class="form-group">
+            <a href="{{ criteria_url }}" class="btn btn-outline btn-default btn-lg">View search criteria</a>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="downloads">
+      <h2>Downloads</h2>
+        <h3>Scores</h3>
+        <div class="form-group">
+            <a href="{{ score_csv_url }}" class="btn btn-outline btn-default btn-lg">Download scores as CSV</a>
+        </div>
+        <h3>Abstract IDs</h3>
+        <div class="form-group">
+            <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default btn-lg">Download abstract IDs as CSV</a>
+        </div>
+    </div>
+</div>
+
+{% if sankey_is_active %}
+<div id="threshold-controller">
+    <p>
+      <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly> {% if search_result.mesh_filter %} filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term{% endif %}.
+    </p>
+    <div id="slider"></div>
+</div>
+<div id="sankey_multiple"></div>
+{% endif %}
+
+{% if bubble_is_active %}
+<div id="bubble_chart"></div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+    {# Chart related JS libraries #}
+    <script src="{{ STATIC_URL}}js/d3.min.js"></script>
+    <script src="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    {% include chart_js %}
+{% endblock %}

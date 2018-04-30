@@ -1,0 +1,51 @@
+<script>
+    // Generate the bubble chart JavaScript 
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(loadBubbleChartData);
+
+    function loadBubbleChartData() {
+      var max_results = 20;
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'ID');
+      data.addColumn('number', 'Number of abstracts linking exposure to mechanism');
+      data.addColumn('number', 'Number of abstracts linking exposure to outcome');
+      data.addColumn('string', 'Mechanism');
+      data.addColumn('number', 'Score');
+      d3.csv("{{ score_csv_url }}", function(score_data) {
+        // Only use the top results
+        if (score_data.length > max_results) {
+          score_data = score_data.slice(0, max_results)
+        }
+        for (var i = 0; i < score_data.length; i++) {
+          id = String(i+1);
+          data.addRow([id, Number(score_data[i]["Exposure counts"]), Number(score_data[i]["Outcome counts"]), id + ". " + score_data[i]['Mediators'], Number(score_data[i]['Scores'])]);
+        }
+
+        drawBubbleChart(data);
+      });
+    }
+
+    function drawBubbleChart(data) {
+      var options = {
+        title: 'Focused search results from PubMed based on original score (Top 20)',
+        hAxis: { title: 'Number of abstracts linking exposure to mechanism',
+                 titleTextStyle: { bold: true }
+        },
+        vAxis: { title: 'Number of abstracts linking exposure to outcome',
+                 titleTextStyle: { bold: true }
+        },
+        bubble: { textStyle: 
+                  { fontSize: 12,
+                    fontName: '"Helvetica Neue",Helvetica,Arial,sans-serif',
+                    auraColor: 'none',
+                    color: 'white',
+                    bold: true
+                  },
+        },
+        chartArea: {width:'70%'}
+      };
+      var chart = new google.visualization.BubbleChart(document.getElementById('bubble_chart'));
+      chart.draw(data, options);
+      console.log("Drawn chart");
+    }
+</script>
