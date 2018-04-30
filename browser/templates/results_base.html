@@ -16,13 +16,11 @@ Results
 
 {% block section %}
 <ul class="nav nav-tabs">
+    <li><a href="{{ criteria_url }}">Search criteria</a>
+    </li>
     <li {% if sankey_is_active %}class="active"{% endif %}><a href="{{ results_sankey_url }}">Mechanism visualisation</a>
     </li>
     <li {% if bubble_is_active %}class="active"{% endif %}><a href="{{ results_bubble_url }}">Score visualisation</a>
-    </li>
-    <li><a href="#criteria" data-toggle="tab">Search criteria</a>
-    </li>
-    <li><a href="#downloads" data-toggle="tab">Downloads</a>
     </li>
 </ul>
 
@@ -32,26 +30,6 @@ Results
 Total {{ article_count }} papers.
 </p>
 -->
-<div class="tab-content">
-    <div class="tab-pane fade" id="criteria">
-        <h2>Search criteria</h2>
-        <div id="results-buttons" class="form-group">
-            <a href="{{ criteria_url }}" class="btn btn-outline btn-default btn-lg">View search criteria</a>
-        </div>
-    </div>
-    <div class="tab-pane fade" id="downloads">
-      <h2>Downloads</h2>
-        <h3>Scores</h3>
-        <div class="form-group">
-            <a href="{{ score_csv_url }}" class="btn btn-outline btn-default btn-lg">Download scores as CSV</a>
-        </div>
-        <h3>Abstract IDs</h3>
-        <div class="form-group">
-            <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default btn-lg">Download abstract IDs as CSV</a>
-        </div>
-    </div>
-</div>
-
 {% if sankey_is_active %}
 <div id="threshold-controller">
     <p>
@@ -66,6 +44,10 @@ Total {{ article_count }} papers.
 <div id="bubble_chart"></div>
 {% endif %}
 
+<div id="results-buttons" class="form-group">
+    <a href="{{ score_csv_url }}" class="btn btn-outline btn-default">Download scores as CSV</a> <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default">Download abstract IDs as CSV</a>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -75,3 +57,7 @@ Total {{ article_count }} papers.
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     {% include chart_js %}
 {% endblock %}
+
+
+{# Change to three tabs that are all urls chart, chart, criteria type #}
+{# Always show download links #}

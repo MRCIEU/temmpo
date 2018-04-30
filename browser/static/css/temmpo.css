@@ -89,17 +89,17 @@
     height: 100%;
 }
 
-.results-page .page-header
+.results-page .page-header, .criteria-page .page-header
 {
     display: none;
 }
 
-.results-page #page-wrapper 
+.results-page #page-wrapper, .criteria-page #page-wrapper 
 {
     padding-left: 0px;
 }
 
-.results-page .nav-tabs
+.results-page .nav-tabs, .criteria-page .nav-tabs
 {
     margin-top:1em;
     margin-bottom:1em;

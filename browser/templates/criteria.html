@@ -2,9 +2,21 @@
 
 {% block title %}TeMMPo: Search criteria{% endblock %}
 
+{% block body_class_style %}criteria-page{% endblock %}
+
 {% block section_title %}Search criteria{% endblock %}
 
 {% block section %}
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="{{ criteria_url }}">Search criteria</a>
+    </li>
+    <li><a href="{{ results_sankey_url }}">Mechanism visualisation</a>
+    </li>
+    <li><a href="{{ results_bubble_url }}">Score visualisation</a>
+    </li>
+</ul>
+
 <table id="criteria" class="table">
     <caption>Criteria</caption>
     <thead>
@@ -32,11 +44,12 @@
         </tr>
         <tr>
             <th scope="row" class="dt-left">Abstract</th>
-            <td>{{ object.upload }} </td>
+            <td>{{ upload }} </td>
         </tr>
      </tbody>
 </table>
 
 <hr />
 <a href="{{ reuse_criteria_url }}" class="btn btn-primary">Reuse search criteria</a> <a href="{{ reuse_abstract_url }}" class="btn btn-default">Reuse abstracts only</a>
+
 {% endblock %}

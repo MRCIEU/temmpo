@@ -448,14 +448,13 @@ class CriteriaView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CriteriaView, self).get_context_data(**kwargs)
-
         context['exposures'] = "; ".join(self.object.get_wcrf_input_variables('exposure'))
         context['mediators'] = "; ".join(self.object.get_wcrf_input_variables('mediator'))
         context['outcomes'] = "; ".join(self.object.get_wcrf_input_variables('outcome'))
         context['genes'] = ", ".join(self.object.get_wcrf_input_variables('gene'))
+        context['upload'] = self.object.upload
         context['reuse_criteria_url'] = reverse('edit_search', kwargs={'pk': self.object.id})
         context['reuse_abstract_url'] = reverse('reuse_upload', kwargs={'pk': self.object.upload.id})
-
         return context
 
 
