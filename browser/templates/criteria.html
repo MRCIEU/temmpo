@@ -9,12 +9,16 @@
 {% block section %}
 
 <ul class="nav nav-tabs">
-    <li class="active"><a href="{{ criteria_url }}">Search criteria</a>
+    <li class="active"><a href="#">Search criteria</a>
     </li>
+    {% if results_sankey_url %}
     <li><a href="{{ results_sankey_url }}">Mechanism visualisation</a>
     </li>
+    {% endif %}
+    {% if results_bubble_url %}
     <li><a href="{{ results_bubble_url }}">Score visualisation</a>
     </li>
+    {% endif %}
 </ul>
 
 <table id="criteria" class="table">
