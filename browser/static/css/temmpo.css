@@ -72,26 +72,35 @@
     border: 0;
     color: #f6931f;
     font-weight: bold;
+    width: 30px;
 }
+
+#slider{ margin-bottom: 1em; }
 
 #results-buttons
 {
     margin-top: 1em;
 }
 
-#sankey_multiple
+#sankey_multiple, #bubble_chart
 {
     margin: auto;
     width: 100%;
     height: 100%;
 }
 
-.results-page .page-header
+.results-page .page-header, .criteria-page .page-header
 {
     display: none;
 }
 
-.results-page #page-wrapper 
+.results-page #page-wrapper, .criteria-page #page-wrapper 
 {
     padding-left: 0px;
+}
+
+.results-page .nav-tabs, .criteria-page .nav-tabs
+{
+    margin-top:1em;
+    margin-bottom:1em;
 }

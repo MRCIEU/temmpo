@@ -420,3 +420,22 @@ def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     with change_dir(venv_dir):
         caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin' % (database_name, database_name, venv_dir), pty=True)
         caller('echo "TeMMPo database was recreated".')
+
+
+def add_missing_csv_headers_to_scores():
+    """TMMA-262 - CSV files generated in the past do not have headers.
+
+    NB: Needs to be run remotely against the demo and production VMs to ensure Bubble charts can be rendered.
+    """
+    results_directory = PROJECT_ROOT + "var/results/"
+    file_header_info = [{'headers': 'Abstract IDs,', 'file_extension': '_abstracts.csv'},
+                        {'headers': 'Mediators,Exposure counts,Outcome counts,Scores', 'file_extension': '_edge.csv'}, ]
+
+    with cd(results_directory):
+        for info in file_header_info:
+            run('echo "%(headers)s" > headers%(file_extension)s' % info)
+            csv_files = run('find . -name "*%(file_extension)s"' % info)
+            for csv_file in csv_files.splitlines():
+                if not files.contains(csv_file, info['headers'], exact=False):
+                    run('cat headers%s %s > tmp-csv-file.txt && mv tmp-csv-file.txt %s' % (info['file_extension'], csv_file, csv_file))
+            run("rm headers%(file_extension)s" % info)

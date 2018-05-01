@@ -49,6 +49,7 @@ ALLOWED_HOSTS = ['127.0.0.1',
 # Application definition
 
 DEFAULT_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +59,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete',]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', ]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -196,15 +197,16 @@ CSRF_COOKIE_HTTPONLY = True
 
 SIMPLE_AUTOCOMPLETE = {'browser.meshterm': {'search_field': 'term', 'max_items': 10}}
 
+# Number of days of inactivity before warning of deletion
+# Gives 60 days of grace before deletion
+ACCOUNT_CLOSURE_WARNING = 305
+
+DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'
+
+SITE_ID = 1
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:
     from temmpo.settings.private_settings import *
 except ImportError:
     print("No private settings where found in the expected location /usr/local/projects/temmpo/.settings/private_settings.py or symlinked into the temmpo/temmpo/settings/ directory")
-
-# Number of days of inactivity before warning of deletion
-# Gives 60 days of grace before deletion
-ACCOUNT_CLOSURE_WARNING = 305
-
-DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'

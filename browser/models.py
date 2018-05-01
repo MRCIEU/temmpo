@@ -90,15 +90,15 @@ class MeshTerm(MPTTModel):
 
     @classmethod
     def get_top_level_mesh_terms(cls, year=None):
-        """Get a query set of top level MeshTerms for a specific year."""
+        """Get a query set of top level classification terms for a specific year."""
         if not year:
             year = cls.get_latest_mesh_term_release_year()
-            # TODO handle errors better when no terms for examle
+            # TODO handle errors better when no terms for example
         return cls.objects.root_nodes().get(term=str(year)).get_children()
 
     @classmethod
     def get_mesh_terms_by_year(cls, year=None):
-        """Get a query set of MeshTerms for a specific year."""
+        """Get a tree query set of MeshTerms for a specific year."""
         if not year:
             year = cls.get_latest_mesh_term_release_year()
         return cls.objects.root_nodes().get(term=str(year)).get_descendants(include_self=False)

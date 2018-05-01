@@ -1,9 +1,8 @@
 {% extends "onecolumncompact.html" %}
-
-{% block title %}TeMMPo: Results{% endblock %}
+{% block title %}{{ results_page_title }}{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.css">
 {% endblock %}
 
 {% block body_class_style %}results-page{% endblock %}
@@ -13,181 +12,52 @@ Results
 {% endblock %}
 
 {% block page_heading %}
-    {% if search_result.mesh_filter %}
-      <p>Results filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term.</p>
-    {% endif %}
-
-    <div id="threshold-controller">
-        <p>
-            <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly>
-        </p>
-        <div id="slider"></div>
-    </div>
-    <div id="results-buttons" class="form-group">
-        <a href="{{ csv_url }}" class="btn btn-outline btn-default">Download as CSV</a> <a href="{{ criteria_url }}" class="btn btn-outline btn-default">View associated search criteria</a>
-    </div>
-
 {% endblock %}
 
 {% block section %}
+<ul class="nav nav-tabs">
+    <li><a href="{{ criteria_url }}">Search criteria</a>
+    </li>
+    <li {% if sankey_is_active %}class="active"{% endif %}><a href="{{ results_sankey_url }}">Mechanism visualisation</a>
+    </li>
+    <li {% if bubble_is_active %}class="active"{% endif %}><a href="{{ results_bubble_url }}">Score visualisation</a>
+    </li>
+</ul>
+
+{# TODO: Include the article count, not currently pre-calculated nor stored anywhere #}
 <!--
 <p>
-Total {{ article_count }} papers containing mediators AND the MeSH term <strong>{{ mesh_term_filter }}</strong>.
+Total {{ article_count }} papers.
 </p>
 -->
+{% if sankey_is_active %}
+<div id="threshold-controller">
+    <p>
+      <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly> {% if search_result.mesh_filter %} filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term{% endif %}.
+    </p>
+    <div id="slider"></div>
+</div>
 <div id="sankey_multiple"></div>
+{% endif %}
+
+{% if bubble_is_active %}
+<div id="bubble_chart"></div>
+{% endif %}
+
+<div id="results-buttons" class="form-group">
+    <a href="{{ score_csv_url }}" class="btn btn-outline btn-default">Download scores as CSV</a> <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default">Download abstract IDs as CSV</a>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
-    {# Chart related JS #}
-    <script src="{{ STATIC_URL}}jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    {# Chart related JS libraries #}
     <script src="{{ STATIC_URL}}js/d3.min.js"></script>
+    <script src="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
-    <script>
-        google.charts.load("44", {packages: ["sankey"]});
-        google.charts.setOnLoadCallback(function() { (getLinks(topVal))});
-    </script>
-    <script>
-    function getAllIndexes(arr, val) {
-            var indexes = [], i = -1;
-            while ((i = arr.indexOf(val, i + 1)) != -1) {
-                indexes.push(i);
-            }
-            return indexes;
-        }
-
-        topVal = 50
-        function getLinks(topVal) {
-            var threshold = topVal;
-            var exp_int = [];
-            var int_out = [];
-            var oLinks = [];
-            var sData = [];
-            d3.json("{{ json_url }}", function (matches) {
-                //create arrays of target and sources
-                matches.links = matches.links.filter(function (link) {
-                    exp_int.push(link.target);
-                    int_out.push(link.source);
-                    return link;
-                })
-                //find overlapping link objects
-                for (i in exp_int) {
-                    var int_out_match = int_out.indexOf(exp_int[i]);
-                    var indexes = getAllIndexes(int_out, exp_int[i]);
-                    if (indexes.length > 0) {
-                        for (j in indexes) {
-                            var o = {oNode: exp_int[i], l1: parseInt(i), l2: indexes[j]};
-                            oLinks.push(o);
-                        }
-                    }
-                }
-                //calculate scores based on number of abstracts for overlapping links
-                for (i in oLinks) {
-                    var l1_val = matches.links[oLinks[i].l1].value;
-                    var l2_val = matches.links[oLinks[i].l2].value;
-                    if (l1_val > l2_val) {
-                        var score = l2_val / l1_val * (l1_val + l2_val);
-                    } else {
-                        var score = l1_val / l2_val * (l1_val + l2_val);
-                    }
-                    oLinks[i].score = score;
-                }
-
-                // //sort the objects by score
-                var oLinksSort = oLinks.sort(function (a, b) {
-                    return b.score - a.score;
-                })
-
-                if (threshold != -1 && oLinksSort.length > threshold) {
-                    console.log("Limiting links to " + threshold + " instead of showing " + oLinksSort.length);
-                    topLinks = oLinksSort.slice(0, threshold);
-                }
-                else
-                {
-                    topLinks = oLinksSort;
-                }
-
-                var top_sources = [];
-                var top_targets = [];
-                for (i in topLinks) {
-                    t1 = matches.links[topLinks[i].l1].target;
-                    s1 = matches.links[topLinks[i].l1].source;
-                    t2 = matches.links[topLinks[i].l2].target;
-                    s2 = matches.links[topLinks[i].l2].source;
-                    top_sources.push(s1, s2);
-                    top_targets.push(t1, t2);
-                }
-                nodeMatch = []
-
-                matches.links = matches.links.filter(function (link) {
-                    if (top_targets.indexOf(link.target) > -1 && top_sources.indexOf(link.source) > -1) {
-                        nodeMatch.push(link.target, link.source);
-                        target = matches.nodes[link.target].name;
-                        source = matches.nodes[link.source].name;
-                        sData.push([source, target, link.value]);
-                    }
-                });
-                drawChart(sData);
-
-                // Hide the slider if we are not limiting the result set
-                if (topLinks.length < 5) {
-                    $("#threshold-controller").hide();
-                }
-
-            })
-        }
-
-        function drawChart(sData) {
-            var data = new google.visualization.DataTable();
-            var s1Name = 'a'
-            var s2Name = 'b'
-            var maxCounter = 0
-
-            data.addColumn('string', 'From');
-            data.addColumn('string', 'To');
-            data.addColumn('number', 'Articles');
-            data.addRows(sData)
-
-            // Set chart options
-            var options = {
-                width: 1200,
-                height:650,
-                //iterations: 100,
-                //sankey: { node: { nodePadding: 10 } },
-                sankey: {
-                    node: {
-                        interactivity: true,
-                        label: {
-                            fontName: 'Times-Roman',
-                            fontSize: 12,
-                            //color: '#871b47',
-                            //bold: true,
-                            //italic: true
-                        }
-                    }
-                }
-            };
-
-            // Instantiate and draw our chart, passing in some options.
-            var chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
-            chart.draw(data, options);
-
-        }
-        $(document).ready(function () {
-
-            $(function () {
-                $("#slider").slider({
-                    range: "max",
-                    min: 5,
-                    max: 500,
-                    value: 50,
-                    slide: function (event, ui) {
-                        $("#chart-slider-label").val(ui.value);
-                        google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
-                    }
-                });
-                $("#chart-slider-label").val($("#slider").slider("value"));
-            });
-        })
-    </script>
+    {% include chart_js %}
 {% endblock %}
+
+
+{# Change to three tabs that are all urls chart, chart, criteria type #}
+{# Always show download links #}
