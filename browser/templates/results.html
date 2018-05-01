@@ -1,5 +1,5 @@
 {% extends "onecolumncompact.html" %}
-{% block title %}TeMMPo: Results{% endblock %}
+{% block title %}{{ results_page_title }}{% endblock %}
 
 {% block styles %}
     <link rel="stylesheet" href="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.css">
@@ -24,7 +24,7 @@ Results
     </li>
 </ul>
 
-{# TODO: Should this be included somewhere? #}
+{# TODO: Include the article count, not currently pre-calculated nor stored anywhere #}
 <!--
 <p>
 Total {{ article_count }} papers.

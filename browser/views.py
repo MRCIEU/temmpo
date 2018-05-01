@@ -349,7 +349,7 @@ class FilterSelector(UpdateView):
 
 class ResultsView(TemplateView):
     """Need to define chart_js and either sankey_active or bubble_active as "active" in views"""
-    template_name = "results_base.html"
+    template_name = "results.html"
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -382,28 +382,29 @@ class ResultsView(TemplateView):
         context['chart_js'] = ''
         context['sankey_is_active'] = False
         context['bubble_is_active'] = False
+        context['results_page_title'] = 'TeMMPo: Results'
 
         return context
 
 
 class ResultsBubbleView(ResultsView):
-    template_name = "results_bubble.html"
 
     def get_context_data(self, **kwargs):
         context = super(ResultsBubbleView, self).get_context_data(**kwargs)
         context['chart_js'] = 'includes/results_bubble_chart_js.html'
         context['bubble_is_active'] = True
+        context['results_page_title'] = 'TeMMPo: Results as a Bubble chart'
 
         return context
 
 
 class ResultsSankeyView(ResultsView):
-    template_name = "results_sankey.html"
 
     def get_context_data(self, **kwargs):
         context = super(ResultsSankeyView, self).get_context_data(**kwargs)
         context['chart_js'] = 'includes/results_sankey_chart_js.html'
         context['sankey_is_active'] = True
+        context['results_page_title'] = 'TeMMPo: Results as a Sankey diagram'
 
         return context
 
@@ -455,6 +456,10 @@ class CriteriaView(DetailView):
         context['upload'] = self.object.upload
         context['reuse_criteria_url'] = reverse('edit_search', kwargs={'pk': self.object.id})
         context['reuse_abstract_url'] = reverse('reuse_upload', kwargs={'pk': self.object.upload.id})
+        results = SearchResult.objects.filter(criteria=self.object)
+        if results:
+            context['results_sankey_url'] = reverse('results', kwargs={'pk': results[0].id})
+            context['results_bubble_url'] = reverse('results_bubble', kwargs={'pk': results[0].id})
         return context
 
 
