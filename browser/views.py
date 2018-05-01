@@ -348,6 +348,7 @@ class FilterSelector(UpdateView):
 
 
 class ResultsView(TemplateView):
+    """Need to define chart_js and either sankey_active or bubble_active as "active" in views"""
     template_name = "results.html"
 
     @method_decorator(login_required)
@@ -370,12 +371,41 @@ class ResultsView(TemplateView):
         context['active'] = 'results'
 
         # TODO: TMMA-30 Add tabular version of results table as per PDF
-        json_filename = reverse('json_data', kwargs=kwargs)
-        csv_filename = reverse('count_data', kwargs=kwargs)
         context['search_result'] = self.search_result
-        context['json_url'] = json_filename
-        context['csv_url'] = csv_filename
+        context['json_url'] = reverse('json_data', kwargs=kwargs)
+        context['score_csv_url'] = reverse('count_data', kwargs=kwargs)
+        context['abstract_ids_csv_url'] = reverse('abstracts_data', kwargs=kwargs)
         context['criteria_url'] = reverse('criteria', kwargs={'pk': self.search_result.criteria.id})
+        context['results_sankey_url'] = reverse('results', kwargs=kwargs)
+        context['results_bubble_url'] = reverse('results_bubble', kwargs=kwargs)
+        # To be overridden in sub chart type class
+        context['chart_js'] = ''
+        context['sankey_is_active'] = False
+        context['bubble_is_active'] = False
+        context['results_page_title'] = 'TeMMPo: Results'
+
+        return context
+
+
+class ResultsBubbleView(ResultsView):
+
+    def get_context_data(self, **kwargs):
+        context = super(ResultsBubbleView, self).get_context_data(**kwargs)
+        context['chart_js'] = 'includes/results_bubble_chart_js.html'
+        context['bubble_is_active'] = True
+        context['results_page_title'] = 'TeMMPo: Results as a Bubble chart'
+
+        return context
+
+
+class ResultsSankeyView(ResultsView):
+
+    def get_context_data(self, **kwargs):
+        context = super(ResultsSankeyView, self).get_context_data(**kwargs)
+        context['chart_js'] = 'includes/results_sankey_chart_js.html'
+        context['sankey_is_active'] = True
+        context['results_page_title'] = 'TeMMPo: Results as a Sankey diagram'
+
         return context
 
 
@@ -419,14 +449,17 @@ class CriteriaView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CriteriaView, self).get_context_data(**kwargs)
-
         context['exposures'] = "; ".join(self.object.get_wcrf_input_variables('exposure'))
         context['mediators'] = "; ".join(self.object.get_wcrf_input_variables('mediator'))
         context['outcomes'] = "; ".join(self.object.get_wcrf_input_variables('outcome'))
         context['genes'] = ", ".join(self.object.get_wcrf_input_variables('gene'))
+        context['upload'] = self.object.upload
         context['reuse_criteria_url'] = reverse('edit_search', kwargs={'pk': self.object.id})
         context['reuse_abstract_url'] = reverse('reuse_upload', kwargs={'pk': self.object.upload.id})
-
+        results = SearchResult.objects.filter(criteria=self.object)
+        if results:
+            context['results_sankey_url'] = reverse('results', kwargs={'pk': results[0].id})
+            context['results_bubble_url'] = reverse('results_bubble', kwargs={'pk': results[0].id})
         return context
 
 

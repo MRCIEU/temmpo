@@ -7,8 +7,8 @@ from django.contrib.auth.views import LogoutView
 from django.views.decorators.cache import cache_page
 from django.views.static import serve
 
-from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, ResultsView,
-                           SearchExisting, ResultsListingView, FilterSelector,
+from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, ResultsSankeyView,
+                           ResultsBubbleView, SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
                            CriteriaView, CountDataView, AbstractDataView,
                            JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
     url(r'^help/$', HelpView.as_view(), name='help'),
+
     url(r'^search/$', SelectSearchTypeView.as_view(), name='search'),
     url(r'^search/select/$', ReuseSearchView.as_view(), name='reuse_search'),
     url(r'^search/ovidmedline/$', SearchOvidMEDLINE.as_view(), name='search_ovid_medline'),
@@ -35,22 +36,27 @@ urlpatterns = [
     url(r'^mediator/(?P<pk>\d+)/$', MediatorSelector.as_view(), name="mediator_selector"),
     url(r'^outcome/(?P<pk>\d+)/$', OutcomeSelector.as_view(), name="outcome_selector"),
     url(r'^filter/(?P<pk>\d+)/$', FilterSelector.as_view(), name="filter_selector"),
-    url(r'^results/(?P<pk>\d+)/$', ResultsView.as_view(), name='results'),
+
+    url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh_terms_as_json"),
+    url(r'^mesh_terms_search_json/$', MeshTermSearchJSON.as_view(), name="mesh_terms_search_json"),
+    url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),
+
+    url(r'^results/(?P<pk>\d+)/$', ResultsSankeyView.as_view(), name='results'),
+    url(r'^results/bubble/(?P<pk>\d+)/$', ResultsBubbleView.as_view(), name='results_bubble'),
     url(r'^results/$', ResultsListingView.as_view(), name='results_listing'),
+
     url(r'^search-criteria/(?P<pk>\d+)/$', CriteriaView.as_view(), name='criteria'),
+
     url(r'^data/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count_data'),
     url(r'^data/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts_data'),
     url(r'^data/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json_data'),
     url(r'^data/delete/(?P<pk>\d+)/$', DeleteSearch.as_view(), name='delete_data'),
+
     url(r'^account/$', UserAccountView.as_view(), name='account'),
     url(r'^close-account/(?P<pk>\d+)/$', CloseAccount.as_view(), name='close_account'),
     url(r'^account-closed/$', AccountClosedConfirmation.as_view(), name='account_closed'),
     url(r'^manage-users/$', UsersListingView.as_view(), name='manage_users'),
     url(r'^delete-user/(?P<pk>\d+)/$', DeleteUser.as_view(), name='delete_user'),
-
-    url(r'^mesh-terms-json/$', cache_page(60 * 60 * 24 * 355)(MeshTermsAllAsJSON.as_view()), name="mesh_terms_as_json"),
-    url(r'^mesh_terms_search_json/$', MeshTermSearchJSON.as_view(), name="mesh_terms_search_json"),
-    url(r'^mesh-terms-json-for-criteria/(?P<pk>\d+)/(?P<type>(exposure|mediator|outcome))/$', MeshTermsAsJSON.as_view(), name="mesh_terms_as_json_for_criteria"),
 
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
