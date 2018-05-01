@@ -437,5 +437,5 @@ def add_missing_csv_headers_to_scores():
             csv_files = run('find . -name "*%(file_extension)s"' % info)
             for csv_file in csv_files.splitlines():
                 if not files.contains(csv_file, info['headers'], exact=False):
-                    run('cat headers%s %s > tmp-csv-file.txt && mv tmp-csv-file.txt %s' % (info['file_extension'], csv_file, csv_file))
+                    run('cat "headers%s" "%s" > tmp-csv-file.txt && mv tmp-csv-file.txt "%s"' % (info['file_extension'], csv_file, csv_file))
             run("rm headers%(file_extension)s" % info)
