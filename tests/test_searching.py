@@ -542,6 +542,47 @@ class SearchingTestCase(BaseTestCase):
                                                     "Apoptosis", "TRPC1",
                                                     "test-abstract.txt", ])
 
+    def test_matches_counts(self):
+        """Test rendering of the view of a SearchCriteria instance."""
+        search_criteria = self._set_up_test_search_criteria()
+        # Run the search, by posting filter and gene selection form
+        self._login_user()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, {'mesh_filter': MeshTerm.objects.get(year=TEST_YEAR, term="Glomerular Basement Membrane").id}, follow=True) # Need to investigate filter not working
+
+        # Assert no matches
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        with open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r') as test_results_edge_csv:
+            edge_file_lines = test_results_edge_csv.readlines()
+            count = len(edge_file_lines)
+            self.assertEqual(count, 1)
+
+        # Test for expected output on results page
+        self._find_expected_content(reverse("results_listing"), msg_list=["No matches found", ])
+        # Test for expected output on Sankey chart page
+        self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["No matches found", ])
+        # Test for expected output on Bubble chart page
+        self._find_expected_content(reverse("results_bubble", kwargs={'pk': search_result.id}), msg_list=["No matches found", ])
+
+    def test_bubble_chart_inclusions(self):
+        search_criteria = self._set_up_test_search_criteria()
+        # Run the search, by posting filter and gene selection form
+        self._login_user()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, follow=True) # Need to investigate filter not working
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        self._find_expected_content(reverse("results_bubble", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('count_data', kwargs={'pk': search_result.id})])
+
+    def test_bubble_chart_inclusions(self):
+        search_criteria = self._set_up_test_search_criteria()
+        # Run the search, by posting filter and gene selection form
+        self._login_user()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, follow=True) # Need to investigate filter not working
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('json_data', kwargs={'pk': search_result.id})])
+
+
     # TODO: Test results JSON exports
     # def test_json_data(self):
     #     pass
