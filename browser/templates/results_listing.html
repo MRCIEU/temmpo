@@ -23,7 +23,7 @@ $(document).ready(function() {
     $('#results').DataTable({
         responsive: true,
         "columnDefs": [
-            { "orderable": false, "targets": [ -1, -2, -3, -4, -5, -6 ],
+            { "orderable": false, "targets": [2, 3, 4, 5, 6, 7],
              }
             ],
         "order": [ 1, 'desc' ],   {# NB: Ensure remains in sync with ListView queryset ordering #}
@@ -50,10 +50,10 @@ $(document).ready(function() {
     <thead>
         <tr>
             <th scope="col" class="dt-left">Abstract file</th>
-            <th scope="col" class="dt-left">Date uploaded</th>
+            <th scope="col" class="dt-left" title="Date search was initiated">Date</th>
             <th scope="col" class="dt-left">View search criteria</th>
-            <th scope="col" class="dt-left">Mechanism visualisation</th>
-            <th scope="col" class="dt-left">Score visualisation</th>
+            <th scope="col" class="dt-left">Mechanism visualisations</th>
+            <th scope="col" class="dt-left">Score visualisations</th>
             <th scope="col" class="dt-left">Score data [<a href="{% url 'help' %}#navigate">help</a>]</th>
             <th scope="col" class="dt-left">Abstract IDs</th>
             <th scope="col">Delete</th>
@@ -65,32 +65,45 @@ $(document).ready(function() {
             <th scope="row" class="dt-left">{{ result.criteria.upload }}</th>
             <td>{{ result.criteria.created|date:"d M Y H:i" }}</td>
             <th scope="row" class="dt-left"><a href="{% url 'criteria' pk=result.criteria.pk %}" title="Search criteria for resultset '{{ result.pk }}'">Search criteria</a></th>
-            {% if result.has_completed %}
+            {% if result.mediator_match_counts %}
+                {% if result.has_completed %} 
+                    <td>
+                        <a href="{% url 'results' pk=result.pk %}" title="Sankey visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View Sankey diagram</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'results_bubble' pk=result.pk %}" title="Bubble chart visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View bubble chart</a>
+                    </td>
+                {% else %}
+                    <td colspan="2">
+                        {% if result.has_failed %}
+                        <em>Search failed</em>
+                        {% else %}
+                        <em>Processing</em> (started {{ result.started_processing|naturaltime}})</em>
+                        {% endif %}
+                    </td>
+                {% endif %}
                 <td>
-                    <a href="{% url 'results' pk=result.pk %}" title="Sankey visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View Sankey diagram</a>
+                    {% if result.has_completed %}
+                    <a href="{% url 'count_data' pk=result.pk %}" title="Count data for resultset '{{ result.pk }}'">Score data</a> (CSV)
+                    {% endif%}
                 </td>
                 <td>
-                    <a href="{% url 'results_bubble' pk=result.pk %}" title="Bubble chart visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View bubble chart</a>
-                </td>
-            {% else %}
-                <td colspan="2">
-                    {% if result.has_failed %}
-                    <em>Search failed</em>
-                    {% else %}
-                    <em>Processing</em> (started {{ result.started_processing|naturaltime}})</em>
+                    {% if result.has_completed %}
+                    <a href="{% url 'abstracts_data' pk=result.pk %}" title="Abstract data for resultset '{{ result.pk }}'">Abstract IDs</a> (CSV)
                     {% endif %}
                 </td>
+            {% else %}
+                {# NB: Data tables cannot handle colspans #}
+                <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">
+                    N/A
+                </td>
+                <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">N/A
+                </td>
+                <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">N/A
+                </td>
+                <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">N/A
+                </td>
             {% endif %}
-            <td>
-                {% if result.has_completed %}
-                <a href="{% url 'count_data' pk=result.pk %}" title="Count data for resultset '{{ result.pk }}'">Score data</a> (CSV)
-                {% endif%}
-            </td>
-            <td>
-                {% if result.has_completed %}
-                <a href="{% url 'abstracts_data' pk=result.pk %}" title="Abstract data for resultset '{{ result.pk }}'">Abstract IDs</a> (CSV)
-                {% endif %}
-            </td>
             <td><div class="controls">
                     {% if result.has_completed or result.has_failed %}
                     <a href="{% url 'delete_data' pk=result.pk %}" class="btn btn-danger">Delete</a>

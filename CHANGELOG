@@ -1,4 +1,6 @@
-2.6.1   TMMA-266 & TMMA-267 Bug fix and improve bubble chart
+2.7.0	TMMA-157 Make is clear when no results were found.
+
+2.6.1   TMMA-266 & TMMA-267 Bug fix and improve bubble chart.
 
 2.6.0   TMMA-228 12. Implementation of bubble charts
         TMMA-262 Add Fabric helper script 'fab add_missing_csv_headers_to_scores'

@@ -231,7 +231,7 @@ class SearchResult(models.Model):
     filename_stub = models.CharField(max_length=100, blank=True, null=True)
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
-    # mediator_match_counts # TODO TMMA-157 needed to support displaying mediator match count table
+    mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
 
     @property
     def has_started(self):

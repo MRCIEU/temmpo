@@ -101,6 +101,13 @@ A database of existing gene terms can be imported into the Django application da
 
     python manage.py test --settings=temmpo.settings.test_sqlite
 
+
+#### Running specfific tests
+
+e.g. Just the searching related tests and fail at the first error
+
+    python manage.py test tests.test_searching --settings=temmpo.settings.test_mysql --failfast
+
 ### Database migrations
 
 NB: If you want to manually run migrations you need to use the --database flag
