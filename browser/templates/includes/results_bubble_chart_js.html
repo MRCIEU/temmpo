@@ -17,11 +17,12 @@
         if (score_data.length > max_results) {
           score_data = score_data.slice(0, max_results)
         }
+        // TMMA-267 Ensure data is sorted by score.
+        score_data.sort(function(a, b){return b['Scores']-a['Scores']});
         for (var i = 0; i < score_data.length; i++) {
           id = String(i+1);
           data.addRow([id, Number(score_data[i]["Exposure counts"]), Number(score_data[i]["Outcome counts"]), id + ". " + score_data[i]['Mediators'], Number(score_data[i]['Scores'])]);
         }
-
         drawBubbleChart(data);
       });
     }
