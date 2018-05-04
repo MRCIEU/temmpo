@@ -30,23 +30,25 @@ Results
 Total {{ article_count }} papers.
 </p>
 -->
-{% if sankey_is_active %}
-<div id="threshold-controller">
-    <p>
-      <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly> {% if search_result.mesh_filter %} filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term{% endif %}.
-    </p>
-    <div id="slider"></div>
-</div>
-<div id="sankey_multiple"></div>
+{% if not search_result.mediator_match_counts %}
+    <p>No matches found{% if search_result.mesh_filter %} filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term{% endif %}.</p>
+{% else %}
+    {% if search_result.mesh_filter %}<p>Filtered by <strong>{{ search_result.mesh_filter }}</strong> MeSH® term.</p>{% endif %}
+    {% if sankey_is_active %}
+        <div id="threshold-controller">
+            <p>
+              <label for="chart-slider-label">Top matches:</label> <input type="text" id="chart-slider-label" readonly>
+            </p>
+            <div id="slider"></div>
+        </div>
+        <div id="sankey_multiple"></div>
+    {% elif bubble_is_active %}
+        <div id="bubble_chart"></div>
+    {% endif %}
+    <div id="results-buttons" class="form-group">
+        <a href="{{ score_csv_url }}" class="btn btn-outline btn-default">Download scores as CSV</a> <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default">Download abstract IDs as CSV</a>
+    </div>
 {% endif %}
-
-{% if bubble_is_active %}
-<div id="bubble_chart"></div>
-{% endif %}
-
-<div id="results-buttons" class="form-group">
-    <a href="{{ score_csv_url }}" class="btn btn-outline btn-default">Download scores as CSV</a> <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default">Download abstract IDs as CSV</a>
-</div>
 
 {% endblock %}
 
@@ -55,7 +57,7 @@ Total {{ article_count }} papers.
     <script src="{{ STATIC_URL}}js/d3.min.js"></script>
     <script src="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
-    {% include chart_js %}
+    {% if search_result.mediator_match_counts %}{% include chart_js %}{% endif %}
 {% endblock %}
 
 
