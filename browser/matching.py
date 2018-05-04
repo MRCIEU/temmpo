@@ -98,8 +98,8 @@ def perform_search(search_result_stub_id):
     print "Created results"
 
     # Print edges
-    printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename)
-    print "Printed edges"
+    mediator_match_counts = printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename)
+    print "Printed %s edges" % mediator_match_counts
 
     createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename)
     print "Created JSON"
@@ -110,13 +110,14 @@ def perform_search(search_result_stub_id):
     search_result_stub.filename_stub = resultfilename
     # 2 - Give end time
     search_result_stub.ended_processing = timezone.now()
-    search_result_stub.save()
-
-    # 3 - Email user
+    # 3 - Record number of mediator matches
+    search_result_stub.mediator_match_counts = mediator_match_counts
+    # X - Email user
     # user_email = search_result_stub.criteria.upload.user.email
     # send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
     # [user_email,])
-
+    # 4 - Save completed search result
+    search_result_stub.save()
     print "Done housekeeping"
 
 
@@ -610,6 +611,7 @@ def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
     # edgeexpfile = open('%s%s_edge_expanded.csv' % (results_path,resultfilename),'w')
     # edgeexpfile.write(expanded_edge_score)
     # edgeexpfile.close()
+    return len(edge_score)
 
 
 def createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename):
