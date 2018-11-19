@@ -12,7 +12,7 @@
       data.addColumn('number', 'Number of abstracts linking exposure to outcome');
       data.addColumn('string', 'Mechanism');
       data.addColumn('number', 'Score');
-      d3.csv("{{ score_csv_url }}", function(score_data) {
+      d3.csv("{{ score_csv_url }}").then(function(score_data) {
         // Only use the top results
         if (score_data.length > max_results) {
           score_data = score_data.slice(0, max_results)

@@ -19,7 +19,7 @@
         var int_out = [];
         var oLinks = [];
         var sData = [];
-        d3.json("{{ json_url }}", function (matches) {
+        d3.json("{{ json_url }}").then(function (matches) {
             //create arrays of target and sources
             matches.links = matches.links.filter(function (link) {
                 exp_int.push(link.target);
@@ -89,7 +89,7 @@
             }
 
             drawSankeyDiagram(sData);
-        })
+        });
     }
 
     function drawSankeyDiagram(sData) {

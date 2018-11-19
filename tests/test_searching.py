@@ -540,7 +540,7 @@ class SearchingTestCase(BaseTestCase):
         self._login_user()
         self._find_expected_content(path, msg_list=["Humans", "Phenotype",
                                                     "Apoptosis", "TRPC1",
-                                                    "test-abstract.txt", ])
+                                                    search_criteria.upload, ])
 
     def test_matches_counts(self):
         """Test rendering of the view of a SearchCriteria instance."""
