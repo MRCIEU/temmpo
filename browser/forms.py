@@ -18,7 +18,7 @@ class OvidMedLineFileUploadForm(forms.ModelForm):
     file_format = forms.CharField(widget=forms.HiddenInput, initial=OVID)
     abstracts_upload = forms.FileField(
         validators=[MimetypeValidator(mimetypes=('text/plain',)),
-                    SizeValidator(max_size=1000),
+                    SizeValidator(max_size=2000),
                     OvidMedLineFormatValidator(), ],
         help_text="<br />Ovid MEDLINE® formatted plain text files (*.txt) which includes MeSH Subject Headings. \
                    Example format <a href=\"" + settings.STATIC_URL + "text/example-file-upload.txt\">with MeSH Subject \
@@ -33,7 +33,7 @@ class PubMedFileUploadForm(forms.ModelForm):
     file_format = forms.CharField(widget=forms.HiddenInput, initial=PUBMED)
     abstracts_upload = forms.FileField(
         validators=[MimetypeValidator(mimetypes=('text/plain',)),
-                    SizeValidator(max_size=1000),
+                    SizeValidator(max_size=2000),
                     PubMedFormatValidator(), ],
         help_text="<br />PubMed® formatted plain text files (*.txt) which includes MH (Mesh Headers). \
                    Example format <a href=\"" + settings.STATIC_URL + "text/example-file-upload-b.txt\">with MH (Mesh Headers)</a>. \
