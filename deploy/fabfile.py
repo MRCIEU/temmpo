@@ -9,7 +9,7 @@ from fabric.contrib import files
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
-PIP_VERSION = '9.0.1'
+PIP_VERSION = '9.0.3'
 SETUPTOOLS_VERSION = '38.2.5'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
@@ -129,7 +129,9 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         caller('git pull origin %s' % branch)
 
     with change_dir(venv_dir):
-        # Ensure setup tools is up to expected version for existing environments.
+
+        # Ensure pip and setup tools is up to expected version for existing environments.
+        caller('./bin/pip install -U pip==%s' % PIP_VERSION)
         caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
 
         if use_pip_sync:
