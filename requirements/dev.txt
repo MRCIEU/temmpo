@@ -5,34 +5,32 @@
 #    pip-compile --output-file requirements/dev.txt requirements/dev.in
 #
 backports.shutil-get-terminal-size==1.0.0  # via ipython
-click==6.7
-decorator==4.1.2          # via ipython, traitlets
-django-debug-toolbar-template-timings==0.7
-django-debug-toolbar==1.9.1
-django-js-asset==0.1.1
+click==7.0
+decorator==4.4.0          # via ipython, traitlets
+django-debug-toolbar==1.11
+django-js-asset==1.2.2
 django-mptt==0.9.0
 django-registration-redux==1.9
 django-simple-autocomplete==1.11
 django==1.11.20
 enum34==1.1.6             # via traitlets
-first==2.0.1
 ipython-genutils==0.2.0   # via traitlets
-ipython==5.5.0
-lxml==3.8.0
+ipython==5.8.0
+lxml==4.3.3
 mysqlclient==1.3.10
-pathlib2==2.3.0           # via ipython, pickleshare
-pexpect==4.3.1            # via ipython
-pickleshare==0.7.4        # via ipython
-pip-tools==1.11.0
-prompt-toolkit==1.0.15    # via ipython
-ptyprocess==0.5.2         # via pexpect
-pygments==2.2.0           # via ipython
+pathlib2==2.3.3           # via ipython, pickleshare
+pexpect==4.7.0            # via ipython
+pickleshare==0.7.5        # via ipython
+pip-tools==3.6.0
+prompt-toolkit==1.0.16    # via ipython
+ptyprocess==0.6.0         # via pexpect
+pygments==2.3.1           # via ipython
 python-magic==0.4.13
-pytz==2017.2
-scandir==1.6              # via pathlib2
+pytz==2019.1
+scandir==1.10.0           # via pathlib2
 simplegeneric==0.8.1      # via ipython
-six==1.10.0
-sqlparse==0.2.4           # via django-debug-toolbar
+six==1.12.0
+sqlparse==0.3.0           # via django-debug-toolbar
 traitlets==4.3.2          # via ipython
 unicodecsv==0.14.1
 wcwidth==0.1.7            # via prompt-toolkit

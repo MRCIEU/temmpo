@@ -13,10 +13,9 @@ DEBUG_TOOLBAR_PANELS = [
     # 'debug_toolbar.panels.signals.SignalsPanel',
     # 'debug_toolbar.panels.logging.LoggingPanel',
     # 'debug_toolbar.panels.redirects.RedirectsPanel',
-    'template_timings_panel.panels.TemplateTimings.TemplateTimings',
 ]
 
-# DEV_APPS = ['debug_toolbar', 'template_timings_panel', ]
+# DEV_APPS = ['debug_toolbar', ]
 # INSTALLED_APPS.extend(DEV_APPS)
 
 # DEV_MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
