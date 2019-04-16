@@ -1,11 +1,11 @@
-image: python:2.7.13
+image: python:2.7.5
 
 pipelines:
   branches:
     '{TMMA-*,master}':
     - step:
         script:
-          - pip install -U pip==9.0.1
+          - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - mkdir -p /opt/var/results
           - mkdir -p /opt/var/abstracts
