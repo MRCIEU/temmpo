@@ -195,7 +195,11 @@ TEMPLATES = [
 X_FRAME_OPTIONS = 'DENY'
 CSRF_COOKIE_HTTPONLY = True
 
-SIMPLE_AUTOCOMPLETE = {'browser.meshterm': {'search_field': 'term', 'max_items': 10}}
+SIMPLE_AUTOCOMPLETE = {'browser.meshterm':
+    {'search_field': 'term',
+     'max_items': 10,
+     'duplicate_format_function': lambda obj, model, content_type: '%s'.strip() % " > ".join([x.term for x in obj.parent.get_ancestors() if x.parent != None])
+     }}
 
 # Number of days of inactivity before warning of deletion
 # Gives 60 days of grace before deletion

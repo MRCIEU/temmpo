@@ -85,6 +85,31 @@ class SearchingTestCase(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
 
+    def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
+        """Upload file and try to bulk select mesh terms."""
+        with open(abstract_file_path, 'r') as upload:
+            response = self.client.post(search_url,
+                                        {'abstracts_upload': upload,
+                                         'file_format': file_format},
+                                        follow=True)
+
+            self.assertContains(response, "Select exposures")
+            self.assertContains(response, "Bulk edit")
+            search_criteria = SearchCriteria.objects.latest("created")
+            self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
+            exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
+            response = self.client.post(exposure_url,
+                                        {"term_names": "Genetic Markers;Serogroup; Penetrance",
+                                         "btn_submit": "replace"},
+                                        follow=True)
+            search_criteria.refresh_from_db()
+            # NB: Only a limited set of mesh terms are available for testing, for speed purposes
+            exposure_terms = search_criteria.exposure_terms.all()
+            unique_exposure_terms = set(exposure_terms.values_list("term", flat=True))
+            self.assertEqual(exposure_terms.count(), 4) # NB: Penetrance appears twice in this test mesh tree subset
+            self.assertEqual(len(unique_exposure_terms), 3)
+            self.assertNotContains(response, " could not be found")
+
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.
 
@@ -136,31 +161,6 @@ class SearchingTestCase(BaseTestCase):
         new_gene_count = Gene.objects.filter(name="HTR1A").count()
         self.assertEqual(existing_gene_count, original_gene_count)
         self.assertEqual(new_gene_count, 1)
-
-    def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
-        """Upload file and try to bulk select mesh terms."""
-        with open(abstract_file_path, 'r') as upload:
-            response = self.client.post(search_url,
-                                        {'abstracts_upload': upload,
-                                         'file_format': file_format},
-                                        follow=True)
-
-            self.assertContains(response, "Select exposures")
-            self.assertContains(response, "Bulk edit")
-            search_criteria = SearchCriteria.objects.latest("created")
-            self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
-            exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
-            response = self.client.post(exposure_url,
-                                        {"term_names": "Genetic Markers;Serogroup; Penetrance",
-                                         "btn_submit": "replace"},
-                                        follow=True)
-            search_criteria.refresh_from_db()
-            # NB: Only a limited set of mesh terms are available for testing, for speed purposes
-            exposure_terms = search_criteria.exposure_terms.all()
-            unique_exposure_terms = set(exposure_terms.values_list("term", flat=True))
-            self.assertEqual(exposure_terms.count(), 4) # NB: Penetrance appears twice in this test mesh tree subset
-            self.assertEqual(len(unique_exposure_terms), 3)
-            self.assertNotContains(response, " could not be found")
 
     def test_ovid_search_bulk_term_edit(self):
         """Test Ovid MEDLINE formatted search and bulk edit style searching."""

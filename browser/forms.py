@@ -146,8 +146,9 @@ class FilterForm(forms.ModelForm):
                             required=False,
                             label='Enter genes (optional)',
                             help_text='Separated by commas')
-
-    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.all(),
+    
+    # NB: Filtering of terms needs to happen in the class definition when using the form in a browser
+    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None),
                                          required=False,
                                          label='Filter',
                                          help_text="Enter a MeSH Term, e.g. Humans")
@@ -158,6 +159,7 @@ class FilterForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(FilterForm, self).__init__(*args, **kwargs)
+        # NB: Filtering of terms needs to also happen in the __init__ for the test suite
         self.fields['mesh_filter'].queryset = MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None)
 
     def clean_genes(self):
