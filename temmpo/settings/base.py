@@ -208,6 +208,12 @@ ACCOUNT_CLOSURE_WARNING = 305
 DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'
 
 SITE_ID = 1
+
+FILE_UPLOAD_HANDLERS = ["browser.uploadhandler.ExtractUpload",
+                        "django.core.files.uploadhandler.MemoryFileUploadHandler",
+                        "django.core.files.uploadhandler.TemporaryFileUploadHandler",]
+
+
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:
