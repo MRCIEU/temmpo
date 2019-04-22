@@ -37,7 +37,7 @@ class ExtractorFileField(forms.FileField):
         if mime_type == "application/x-bzip2":
             if is_in_memory:
                 print("InMemoryUploadedFile archive extraction is not currently supported")
-                raise forms.ValidationError("Archive files below 2.5MB are not supported.") # TODO Used settings vslue not hard coded amount
+                raise forms.ValidationError("Archive files below 2.5MB are not currently supported.") # TODO Used settings vslue not hard coded amount
 
                 # # Write in memory file to disk so can extract contents
                 # temp_file = self.create_temp_file_from_in_memory(value)
@@ -61,7 +61,7 @@ class ExtractorFileField(forms.FileField):
         elif mime_type == "application/x-gzip":
             if is_in_memory:
                 print("InMemoryUploadedFile archive extraction is not currently supported")
-                raise forms.ValidationError("Archive files below 2.5MB are not supported.") # TODO Used settings value not hard coded amount
+                raise forms.ValidationError("Archive files below 2.5MB are not currently supported.") # TODO Used settings value not hard coded amount
                 # # Write in memory file to disk so can extract contents
                 # temp_file = self.create_temp_file_from_in_memory(value)
                 # file_path = temp_file.name
