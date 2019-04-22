@@ -55,6 +55,7 @@ import json
 import os
 from datetime import datetime, timedelta
 import glob
+import magic
 
 from django.conf import settings
 from django.core.files import File
@@ -68,8 +69,10 @@ from tests.base_test_case import BaseTestCase
 
 BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
-TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'pubmed-abstract.txt')
+TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt')
 TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
+TEST_BZ_FILE = os.path.join(BASE_DIR, '10-40-56-prostatic_neoplasms.txt.bz2')
+TEST_GZIP_FILE = os.path.join(BASE_DIR, '10-40-56-prostatic_neoplasms.txt.gz')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
@@ -230,6 +233,31 @@ class SearchingTestCase(BaseTestCase):
 
             self.assertContains(response, "errorlist")
             self.assertContains(response, "is not an acceptable file type")
+
+    def _assert_archive_file_is_uploaded_and_extracted(self, test_archive_file):
+        """Is this test file an archive we can process"""
+        self._login_user()
+        search_path = reverse('search_pubmed')
+        previous_upload_count = Upload.objects.all().count()
+
+        with open(test_archive_file, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': PUBMED},
+                                        follow=True)
+
+            self.assertNotContains(response, "is not an acceptable file type")
+            self.assertNotContains(response, "is not a plain text file")
+            self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
+            uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
+            mime_type = magic.from_buffer(uploaded_file.read(1024), mime=True)
+            self.assertEqual(mime_type, "text/plain")
+
+    def test_bz2_upload_is_allowable(self):
+        self._assert_archive_file_is_uploaded_and_extracted(TEST_BZ_FILE)
+
+    def test_gzip_upload_is_allowable(self):
+        self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_FILE)
 
     def test_pubmed_readcitations_parsing_bug(self):
         """Test to capture a specific bug in file formats."""
