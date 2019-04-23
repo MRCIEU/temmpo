@@ -208,6 +208,12 @@ ACCOUNT_CLOSURE_WARNING = 305
 DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'
 
 SITE_ID = 1
+
+# Remove option to use in memory upload handler to allow for extraction via the file system and in future scanning before extraction.
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:
