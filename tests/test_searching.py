@@ -258,7 +258,6 @@ class SearchingTestCase(BaseTestCase):
         """Is this test file an archive we can process"""
         previous_upload_count = Upload.objects.all().count()
         response = self._setup_file_upload_response(test_archive_file)
-        print(response.content)
         self.assertNotContains(response, "is not an acceptable file type")
         self.assertNotContains(response, "is not a plain text file")
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
