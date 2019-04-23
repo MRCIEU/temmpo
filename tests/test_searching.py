@@ -68,20 +68,31 @@ from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID,
 from tests.base_test_case import BaseTestCase
 
 BASE_DIR = os.path.dirname(__file__)
+# Valid file uploads
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
-TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt')
-TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
-TEST_BZ_PUB_MED_ARCHIVE = os.path.join(BASE_DIR, '10-40-56-prostatic_neoplasms.txt.bz2')
-TEST_GZIP_PUB_MED_ARCHIVE = os.path.join(BASE_DIR, '10-40-56-prostatic_neoplasms.txt.gz')
-TEST_BZ_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt.bz2')
-TEST_GZIP_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt.gz')
-TEST_BZ_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract-large.txt.bz2')
-TEST_GZIP_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract-large.txt.gz')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
+
+# Valid archive uploads
+TEST_BZ_PUB_MED_ARCHIVE = os.path.join(BASE_DIR, '10-40-56-prostatic_neoplasms.txt.bz2')
+TEST_GZIP_PUB_MED_ARCHIVE = os.path.join(BASE_DIR, '10-40-56-prostatic_neoplasms.txt.gz')
+TEST_BZ_PUB_MED_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'pubmed_result_100.txt.bz2')
+TEST_GZIP_PUB_MED_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'pubmed_result_100.txt.gz')
+
+#Invalid file uploads
+TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt')
+TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
+
+#Invalid archive uploads
+TEST_BZ_SMALL_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt.bz')
+TEST_GZIP_SMALL_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt.gz')
+TEST_BZ_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract-large.txt.bz2')
+TEST_GZIP_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract-large.txt.gz')
+
 PREVIOUS_TEST_YEAR = 2015
 TEST_YEAR = 2018
+
 TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes' # mtrees2015.bin 47978:Cell Physiological Processes;G04.299
 TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processes, G0 Phase'  # mtrees2015.bin 47980:Cell Aging;G04.299.119 - 48025:G0 Phase;G04.299.134.500.300
 TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
@@ -271,6 +282,12 @@ class SearchingTestCase(BaseTestCase):
     def test_gzip_pub_med_upload_is_allowable(self):
         self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_PUB_MED_ARCHIVE)
 
+    def test_small_bz2_pub_med_upload_is_allowable(self):
+        self._assert_archive_file_is_uploaded_and_extracted(TEST_BZ_PUB_MED_SMALL_ARCHIVE)
+
+    def test_small_gzip_pub_med_upload_is_allowable(self):
+        self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_PUB_MED_SMALL_ARCHIVE)
+
     def _assert_invalid_pub_med_archive_fail(self, test_archive_file):
         previous_upload_count = Upload.objects.all().count()
         response = self._setup_file_upload_response(test_archive_file)
@@ -284,18 +301,6 @@ class SearchingTestCase(BaseTestCase):
 
     def test_bz_with_invalid_pub_med_file(self):
         self._assert_invalid_pub_med_archive_fail(TEST_BZ_ARCHIVE_BADLY_FORMATTED_FILE)
-
-    def _assert_small_archive_fails_gracefully(self, test_archive_file):
-        previous_upload_count = Upload.objects.all().count()
-        response = self._setup_file_upload_response(test_archive_file)
-        self.assertEqual(Upload.objects.all().count(), previous_upload_count)
-        self.assertContains(response, "Archive files below 2.5MB are not currently supported")
-
-    def test_small_bz2_pub_med_upload_fails_gracefully(self):
-        self._assert_small_archive_fails_gracefully(TEST_BZ_SMALL_ARCHIVE)
-
-    def test_small_gzip_pub_med_upload_fails_gracefully(self):
-        self._assert_small_archive_fails_gracefully(TEST_GZIP_SMALL_ARCHIVE)
 
     def test_pubmed_readcitations_parsing_bug(self):
         """Test to capture a specific bug in file formats."""
