@@ -5,6 +5,9 @@ pipelines:
     '{TMMA-*,master}':
     - step:
         script:
+          - python --version
+          - pip --version
+          - pip freeze
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt
