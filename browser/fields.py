@@ -33,8 +33,6 @@ class ExtractorFileField(forms.FileField):
         value = super(ExtractorFileField, self).to_python(value)
         mime_type = magic.from_buffer(value.read(1024), mime=True)
         is_in_memory = isinstance(value, InMemoryUploadedFile)
-        print("ExtractorFileField.to_python:mime_type")
-        print(mime_type)
         if mime_type == "application/x-bzip2":
             if is_in_memory:
                 print("InMemoryUploadedFile archive extraction is not currently supported")
@@ -59,7 +57,7 @@ class ExtractorFileField(forms.FileField):
                 print(e)
                 raise forms.ValidationError("There were problems extracting your bz2 file")
 
-        elif mime_type == "application/x-gzip":
+        elif mime_type in ("application/x-gzip", "application/gzip"):
             if is_in_memory:
                 print("InMemoryUploadedFile archive extraction is not currently supported")
                 raise forms.ValidationError("Archive files below 2.5MB are not currently supported.") # TODO Used settings value not hard coded amount
