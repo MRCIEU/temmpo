@@ -85,10 +85,11 @@ TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
 
 #Invalid archive uploads
-TEST_BZ_SMALL_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt.bz')
-TEST_GZIP_SMALL_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt.gz')
 TEST_BZ_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract-large.txt.bz2')
 TEST_GZIP_ARCHIVE_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract-large.txt.gz')
+TEST_ZIP_PUB_MED_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'pubmed_result_100.txt.zip')
+TEST_BZ_DOC_ARCHIVE = os.path.join(BASE_DIR, 'test.docx.bz2')
+TEST_GZIP_DOC_ARCHIVE = os.path.join(BASE_DIR, 'test.docx.gz')
 
 PREVIOUS_TEST_YEAR = 2015
 TEST_YEAR = 2018
@@ -205,6 +206,16 @@ class SearchingTestCase(BaseTestCase):
                                          file_format=PUBMED,
                                          search_url=reverse('search_pubmed'))
 
+    def _assert_upload_is_invalid_file_type(self, file, search_path):
+        with open(file, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': PUBMED},
+                                        follow=True)
+
+            self.assertContains(response, "errorlist")
+            self.assertContains(response, "is not an acceptable file type")
+
     def test_ovid_medline_file_upload_validation(self):
         """Test form validation for Ovid MEDLINE formatted abstracts files."""
         self._login_user()
@@ -218,14 +229,9 @@ class SearchingTestCase(BaseTestCase):
             self.assertContains(response, "errorlist")
             self.assertContains(response, "does not appear to be a Ovid MEDLINE® formatted")
 
-        with open(TEST_DOC_FILE, 'r') as upload:
-            response = self.client.post(search_path,
-                                        {'abstracts_upload': upload,
-                                         'file_format': OVID},
-                                        follow=True)
-
-            self.assertContains(response, "errorlist")
-            self.assertContains(response, "is not an acceptable file type")
+        self._assert_upload_is_invalid_file_type(TEST_DOC_FILE, search_path)
+        self._assert_upload_is_invalid_file_type(TEST_GZIP_DOC_ARCHIVE, search_path)
+        self._assert_upload_is_invalid_file_type(TEST_BZ_DOC_ARCHIVE, search_path)
 
     def test_pubmed_medline_file_upload_validation(self):
         """Test form validation for PubMed formatted abstracts files."""
@@ -240,17 +246,11 @@ class SearchingTestCase(BaseTestCase):
             self.assertContains(response, "errorlist")
             self.assertContains(response, "does not appear to be a PubMed/MEDLINE® formatted")
 
-        with open(TEST_DOC_FILE, 'r') as upload:
-            response = self.client.post(search_path,
-                                        {'abstracts_upload': upload,
-                                         'file_format': PUBMED},
-                                        follow=True)
-
-            self.assertContains(response, "errorlist")
-            self.assertContains(response, "is not an acceptable file type")
+        self._assert_upload_is_invalid_file_type(TEST_DOC_FILE, search_path)
+        self._assert_upload_is_invalid_file_type(TEST_GZIP_DOC_ARCHIVE, search_path)
+        self._assert_upload_is_invalid_file_type(TEST_BZ_DOC_ARCHIVE, search_path)
 
     #TODO:Test medline in archives
-    #TODO ensure all archive tests are with file < 2.5MB and more than 2.5MB
     #TODO Test archive with non text file inside
     #TODO perform text for full search life cycle??
 
@@ -273,7 +273,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertNotContains(response, "is not a plain text file")
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
         uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
-        mime_type = magic.from_buffer(uploaded_file.read(1024), mime=True)
+        mime_type = magic.from_buffer(uploaded_file.read(2048), mime=True)
         self.assertEqual(mime_type, "text/plain")
 
     def test_bz2_pub_med_upload_is_allowable(self):
@@ -301,6 +301,12 @@ class SearchingTestCase(BaseTestCase):
 
     def test_bz_with_invalid_pub_med_file(self):
         self._assert_invalid_pub_med_archive_fail(TEST_BZ_ARCHIVE_BADLY_FORMATTED_FILE)
+
+    def test_small_zip_pub_med_is_unsupported(self):
+        previous_upload_count = Upload.objects.all().count()
+        response = self._setup_file_upload_response(TEST_ZIP_PUB_MED_SMALL_ARCHIVE)
+        self.assertEqual(Upload.objects.all().count(), previous_upload_count)
+        self.assertContains(response, "is not an acceptable file type")
 
     def test_pubmed_readcitations_parsing_bug(self):
         """Test to capture a specific bug in file formats."""
