@@ -1,13 +1,20 @@
-image: centos/python-27-centos7:2.7
+image: python:2.7.16
 
 pipelines:
   branches:
     '{TMMA-*,master}':
     - step:
         script:
-          - python --version
-          - pip --version
-          - pip freeze
+          - apt-get install python-devel
+          - apt-get install python-wheel
+          - apt-get install python-magic
+          - apt-get install python-pip
+          - apt-get install python-virtualenv
+          - apt-get install libxml2-python
+          - apt-get install libxml2-devel
+          - apt-get install libxslt-python
+          - apt-get install libxslt-devel
+          - apt-get install python-lxml
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt
