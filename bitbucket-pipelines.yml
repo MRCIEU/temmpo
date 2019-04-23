@@ -5,7 +5,7 @@ pipelines:
     '{TMMA-*,master}':
     - step:
         script:
-          - apt-get install python-dev
+          - apt-get install python2.7-dev
           # - apt-get install python-wheel
           # - apt-get install python-magic
           # - apt-get install python-pip
