@@ -5,7 +5,6 @@ pipelines:
     '{TMMA-*,master}':
     - step:
         script:
-          - apt-get install gzip
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt
