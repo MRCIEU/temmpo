@@ -33,7 +33,8 @@ class ExtractorFileField(forms.FileField):
         value = super(ExtractorFileField, self).to_python(value)
         mime_type = magic.from_buffer(value.read(1024), mime=True)
         is_in_memory = isinstance(value, InMemoryUploadedFile)
-
+        print("ExtractorFileField.to_python:mime_type")
+        print(mime_type)
         if mime_type == "application/x-bzip2":
             if is_in_memory:
                 print("InMemoryUploadedFile archive extraction is not currently supported")
