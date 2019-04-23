@@ -5,16 +5,6 @@ pipelines:
     '{TMMA-*,master}':
     - step:
         script:
-          - apt-get install python2.7-dev
-          # - apt-get install python-wheel
-          # - apt-get install python-magic
-          # - apt-get install python-pip
-          # - apt-get install python-virtualenv
-          # - apt-get install libxml2-python
-          # - apt-get install libxml2-devel
-          # - apt-get install libxslt-python
-          # - apt-get install libxslt-devel
-          # - apt-get install python-lxml
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt
@@ -23,4 +13,4 @@ pipelines:
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - python manage.py test --settings=temmpo.settings.test_sqlite
+          - python manage.py test --verbose --settings=temmpo.settings.test_sqlite
