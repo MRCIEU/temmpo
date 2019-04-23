@@ -1,11 +1,10 @@
-image: python:2.7.16
+image: centos/python-27-centos7:2.7
 
 pipelines:
   branches:
     '{TMMA-*,master}':
     - step:
         script:
-          - apt-get install zlib1g-dev
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt
