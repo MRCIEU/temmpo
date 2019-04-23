@@ -1,4 +1,4 @@
-2.9.0   ...
+2.9.0   TMMA-275 Add support for uploading bz2 and gzip files
         TMMA-278 Bug fix filtering searches when multiple years have been imported
         TMMA-277 Increase file upload limit to 2000MB
         TMMA-276 Update third party eggs
