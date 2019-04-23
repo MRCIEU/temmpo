@@ -13,4 +13,4 @@ pipelines:
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - python manage.py test -v --settings=temmpo.settings.test_sqlite
+          - python manage.py test -v3 --settings=temmpo.settings.test_sqlite
