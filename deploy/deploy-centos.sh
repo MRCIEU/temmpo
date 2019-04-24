@@ -39,6 +39,19 @@ sudo setsebool -P httpd_can_sendmail 1
 
 # Production tools
 sudo yum -y install clamav
+sudo yum -y install clamd
+sudo cp scan.conf /etc/clamd.d/scan.conf
+sudo cp freshclam.conf /etc/freshclam.conf
+sudo touch /var/log/clamd.scan
+sudo chown clamscan:clamscan /var/log/clamd.scan
+# Ensure the clamav daemon is running
+# sudo yum -y install clamav-daemon
+# sudo yum -y install clamav-freshclam
+# sudo yum -y install clamav-unofficial-sigs
+# sudo freshclam
+# sudo service clamav-daemon start
+
+#  yum -y install clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd
 
 # install fabric for deployment scripts
 sudo pip install fabric==1.13.1

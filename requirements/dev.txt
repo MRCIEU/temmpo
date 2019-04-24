@@ -5,6 +5,7 @@
 #    pip-compile --output-file requirements/dev.txt requirements/dev.in
 #
 backports.shutil-get-terminal-size==1.0.0  # via ipython
+clamd==1.0.2
 click==7.0
 decorator==4.4.0          # via ipython, traitlets
 django-debug-toolbar==1.11
