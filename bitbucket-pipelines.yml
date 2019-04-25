@@ -10,7 +10,6 @@ pipelines:
           - service redis-server restart
           - redis-cli ping
           - redis-server -v
-          - rq info
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt
