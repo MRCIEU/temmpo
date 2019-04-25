@@ -5,11 +5,12 @@ pipelines:
     '{TMMA-*,master}':
     - step:
         script:
-          - sudo apt-get -y install redis-server
-          - sudo sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
-          - sudo service redis-server restart
+          - apt-get -y install redis-server
+          - sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
+          - service redis-server restart
           - redis-cli ping
           - redis-server -v
+          - rq info
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt
