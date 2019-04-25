@@ -65,6 +65,9 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(), name="logout"),
     url(r'^', include('registration.backends.default.urls')),
     url(r'^', include('django.contrib.auth.urls')),
+
+    # django-rq redis message queue
+    url(r'^django-rq/', include('django_rq.urls')),
 ]
 
 # For non Apache fronted Django development server scenarios.

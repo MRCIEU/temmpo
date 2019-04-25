@@ -45,6 +45,16 @@ sudo pip install fabric==1.13.1
 
 # sudo pip install pip==9.0.1
 
+
+# Install redis
+sudo yum -y install redis
+
+sudo sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
+
+sudo systemctl start redis.service
+sudo systemctl enable redis
+redis-cli ping
+
 # Confirm install list
 yum list installed 
 pip freeze
