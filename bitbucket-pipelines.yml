@@ -5,6 +5,7 @@ pipelines:
     '{TMMA-*,master}':
     - step:
         script:
+          - apt-get install -y software-properties-common
           - add-apt-repository universe
           - apt-get -y install redis-server
           - sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
