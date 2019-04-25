@@ -55,6 +55,22 @@ sudo systemctl start redis.service
 sudo systemctl enable redis
 redis-cli ping
 
+cat > /etc/systemd/system/rqworker.service <<MESSAGE_QUEUE_WORKER
+[Unit]
+Description=Django-RQ Worker
+After=network.target
+
+[Service]
+WorkingDirectory=/usr/local/projects/temmpo/lib/dev/src/temmpo
+ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python manage.py rqworker default
+
+[Install]
+WantedBy=multi-user.target
+MESSAGE_QUEUE_WORKER
+
+sudo systemctl enable rqworker
+sudo systemctl start rqworker
+
 # Confirm install list
 yum list installed 
 pip freeze

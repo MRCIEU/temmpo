@@ -51,6 +51,7 @@ $(document).ready(function() {
         <tr>
             <th scope="col" class="dt-left">Abstract file</th>
             <th scope="col" class="dt-left" title="Date search was initiated">Date</th>
+            <th scope="col" class="dt-left">Status</th>
             <th scope="col" class="dt-left">View search criteria</th>
             <th scope="col" class="dt-left">Mechanism visualisations</th>
             <th scope="col" class="dt-left">Score visualisations</th>
@@ -64,6 +65,7 @@ $(document).ready(function() {
         <tr>
             <th scope="row" class="dt-left">{{ result.criteria.upload }}</th>
             <td>{{ result.criteria.created|date:"d M Y H:i" }}</td>
+            <td>{{ result.status }}</td>
             <th scope="row" class="dt-left"><a href="{% url 'criteria' pk=result.criteria.pk %}" title="Search criteria for resultset '{{ result.pk }}'">Search criteria</a></th>
             {% if result.mediator_match_counts %}
                 {% if result.has_completed %} 

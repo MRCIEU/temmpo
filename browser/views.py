@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import logging
+import django_rq
 
 from django.conf import settings
 from django.contrib import messages
@@ -338,8 +338,8 @@ class FilterSelector(UpdateView):
         search_result.mesh_filter = mesh_filter
         search_result.save()
 
-        # Run the search
-        perform_search(search_result.id)
+        # Run the search via message queue
+        django_rq.enqueue(perform_search, search_result.id)
 
         return super(FilterSelector, self).form_valid(form)
 

@@ -234,6 +234,18 @@ class SearchResult(models.Model):
     mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
 
     @property
+    def status(self):
+        """Property identifying failed jobs"""
+        if self.has_failed:
+            return "Failed"
+        elif self.has_completed:
+            return "Completed"
+        elif self.has_started:
+            return "Processing"
+        else:
+            return "Not started" 
+
+    @property
     def has_started(self):
         """Property identifying failed jobs"""
         if self.started_processing:
