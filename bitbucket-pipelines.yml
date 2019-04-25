@@ -7,7 +7,6 @@ pipelines:
         script:
           - apt update
           - apt install -y redis-server
-          - sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
           - service redis-server restart
           - redis-cli ping
           - redis-server -v
