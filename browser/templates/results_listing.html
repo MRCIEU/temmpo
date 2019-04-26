@@ -76,12 +76,11 @@ $(document).ready(function() {
                         <a href="{% url 'results_bubble' pk=result.pk %}" title="Bubble chart visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View bubble chart</a>
                     </td>
                 {% else %}
-                    <td colspan="2">
-                        {% if result.has_failed %}
-                        <em>Search failed</em>
-                        {% else %}
-                        <em>Processing</em> (started {{ result.started_processing|naturaltime}})</em>
-                        {% endif %}
+                    <td>
+                        N/A
+                    </td>
+                    <td>
+                        N/A
                     </td>
                 {% endif %}
                 <td>

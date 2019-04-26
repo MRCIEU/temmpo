@@ -237,11 +237,11 @@ class SearchResult(models.Model):
     def status(self):
         """Property identifying failed jobs"""
         if self.has_failed:
-            return "Failed"
+            return "Search failed"
         elif self.has_completed:
             return "Completed"
         elif self.has_started:
-            return "Processing"
+            return "Processing (started %s)" % naturaltime(self.started_processing)
         else:
             return "Not started" 
 

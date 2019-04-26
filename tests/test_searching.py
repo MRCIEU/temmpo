@@ -831,6 +831,7 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
         self.assertContains(response, 'Delete', count=1)
         self.assertContains(response, 'Processing', count=1)
+        self.assertContains(response, "started", count=1)
 
         # Check failed job, delete button
         orig_date = search_result.started_processing
