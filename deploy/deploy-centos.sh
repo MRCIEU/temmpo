@@ -61,6 +61,7 @@ Description=Django-RQ Worker
 After=network.target
 
 [Service]
+User=vagrant
 WorkingDirectory=/usr/local/projects/temmpo/lib/dev/src/temmpo
 ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temmpo/lib/dev/src/temmpo/manage.py rqworker default
 
