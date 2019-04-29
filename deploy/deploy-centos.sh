@@ -62,7 +62,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/usr/local/projects/temmpo/lib/dev/src/temmpo
-ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python manage.py rqworker default
+ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temmpo/lib/dev/src/temmpo/manage.py rqworker default
 
 [Install]
 WantedBy=multi-user.target
