@@ -11,3 +11,5 @@ if DATABASES:
     # Ensure test runner does not create a test database for the legacy SQLite DB config
     if 'sqlite' in DATABASES:
         del DATABASES['sqlite']
+
+RQ_QUEUES['default']['ASYNC'] = False
