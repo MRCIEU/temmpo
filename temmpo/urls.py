@@ -66,7 +66,7 @@ urlpatterns = [
     url(r'^', include('registration.backends.default.urls')),
     url(r'^', include('django.contrib.auth.urls')),
 
-    # django-rq redis message queue
+    # django-rq Redis backed message queue
     url(r'^django-rq/', include('django_rq.urls')),
 ]
 

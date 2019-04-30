@@ -80,6 +80,7 @@ class ArchiveUploadTestCase(BaseTestCase):
         self._assert_upload_is_invalid_file_type(TEST_BZ_DOC_ARCHIVE, search_path)
 
     # #TODO perform text for full search life cycle from small/large zip fie to matching
+    # see: https://docs.djangoproject.com/en/1.11/topics/testing/tools/#django.test.override_settings
 
     def _setup_file_upload_response(self, test_archive_file, search_path):
         """Defaults to using pub med formatted search form"""
