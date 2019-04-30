@@ -219,7 +219,7 @@ RQ_QUEUES = {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
-        'DEFAULT_TIMEOUT': 3600, # TODO: Profile a reasonable time out length for this, ref: https://github.com/rq/rq/blob/master/docs/docs/index.md
+        'DEFAULT_TIMEOUT': 360000, # TODO: Profile a reasonable time out length for this, ref: https://github.com/rq/rq/blob/master/docs/docs/index.md
     },
 }
 
