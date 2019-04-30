@@ -425,7 +425,7 @@ class ResultsListingView(ListView):
     def get_context_data(self, **kwargs):
         context = super(ResultsListingView, self).get_context_data(**kwargs)
         context['active'] = 'results'
-        context['unprocessed'] = SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=False)
+        context['unprocessed'] = SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=False).order_by("-criteria__created")
         return context
 
 
