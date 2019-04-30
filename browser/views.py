@@ -420,11 +420,12 @@ class ResultsListingView(ListView):
 
     def get_queryset(self):
         # Ensure only listing users results and no stub search results that have not been started.
-        return SearchResult.objects.filter(criteria__upload__user=self.request.user).exclude(started_processing=None)
+        return SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=True)
 
     def get_context_data(self, **kwargs):
         context = super(ResultsListingView, self).get_context_data(**kwargs)
         context['active'] = 'results'
+        context['unprocessed'] = SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=False)
         return context
 
 

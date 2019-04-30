@@ -93,7 +93,8 @@ class UserDeletionTest(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         search_result = SearchResult.objects.all()[0]
         search_result_id = search_result.id
@@ -130,7 +131,6 @@ class UserDeletionTest(BaseTestCase):
         search_result.has_completed = False
         search_result.save()
         response = self.client.get(reverse('results_listing'))
-        self.assertContains(response, 'Delete', count=1)
         self.assertContains(response, 'Processing', count=1)
         response = self.client.get(reverse('close_account', kwargs={'pk': test_user.id}))
         self.assertContains(response, 'You have a search that is still running.')
@@ -210,7 +210,8 @@ class UserDeletionTest(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         search_result = SearchResult.objects.all()[0]
         search_result_id = search_result.id

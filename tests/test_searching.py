@@ -704,25 +704,28 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         # Fake still processing, no button
         search_result = SearchResult.objects.all()[0]
         search_result.has_completed = False
         search_result.save()
         response = self.client.get(reverse('results_listing'))
-        self.assertContains(response, 'Delete', count=1)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertNotContains(response, 'delete-button')
         self.assertContains(response, 'Processing', count=1)
         self.assertContains(response, "started", count=1)
 
-        # Check failed job, delete button
+        # Check failed job, abort button
         orig_date = search_result.started_processing
         time_in_past = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(days=3)
         search_result.started_processing = time_in_past
         search_result.save()
 
         response = self.client.get(reverse('results_listing'))
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'abort-search-label', count=1)
+        self.assertContains(response, 'abort-button', count=1)
         self.assertContains(response, 'Search failed', count=1)
 
         # Reset search results
@@ -819,7 +822,8 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         # Log out user
         self._logout_user()
@@ -830,7 +834,8 @@ class SearchingTestCase(BaseTestCase):
         # Check no delete button etc
         response = self.client.get(reverse('results_listing'))
         # Should only be one instance (the table heading)
-        self.assertContains(response, 'Delete', count=1)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertNotContains(response, 'delete-button')
 
         # Test deletion
         # Should not be shown a confirmation screen
@@ -856,5 +861,6 @@ class SearchingTestCase(BaseTestCase):
         # Go to results page
         response = self.client.get(reverse('results_listing'))
 
-        # Ensure stub search results objects are not shown
+        # Ensure stub search results objects are shown in the unprocessed listing area
         self.assertNotContains(response, "Search criteria for resultset '%s'" % search_result.id)
+        self.assertContains(response, "Search criteria for search '%s'" % search_result.id)

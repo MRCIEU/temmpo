@@ -45,6 +45,37 @@ $(document).ready(function() {
     </ul>
 {% endif %}
 
+{% if unprocessed %}
+<table id="un-processed-results" class="table table-striped table-bordered table-hover">
+    <caption>Unprocessed matches</caption>
+    <thead>
+        <tr>
+            <th scope="col" class="dt-left">Abstract file</th>
+            <th scope="col" class="dt-left" title="Date search was initiated">Date</th>
+            <th scope="col" class="dt-left">Status</th>
+            <th scope="col" class="dt-left">View search criteria</th>
+            <th scope="col" data-test="abort-search-label">Cancel search</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for result_stub in unprocessed %}
+        <tr>
+            <th scope="row" class="dt-left">{{ result_stub.criteria.upload }}</th>
+            <td>{{ result_stub.criteria.created|date:"d M Y H:i" }}</td>
+            <td>{{ result_stub.status }}</td>
+            <th scope="row" class="dt-left"><a href="{% url 'criteria' pk=result_stub.criteria.pk %}" title="Search criteria for search '{{ result_stub.pk }}'">Search criteria</a></th>
+            <td><div class="controls">
+                    {% if result_stub.has_failed %}
+                    <a href="{% url 'delete_data' pk=result_stub.pk %}" class="btn btn-danger" data-test="abort-button">Abort</a>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
 <table id="results" class="table table-striped table-bordered table-hover">
     <caption>Results</caption>
     <thead>
@@ -57,7 +88,7 @@ $(document).ready(function() {
             <th scope="col" class="dt-left">Score visualisations</th>
             <th scope="col" class="dt-left">Score data [<a href="{% url 'help' %}#navigate">help</a>]</th>
             <th scope="col" class="dt-left">Abstract IDs</th>
-            <th scope="col">Delete</th>
+            <th scope="col" data-test="delete-label">Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -107,7 +138,7 @@ $(document).ready(function() {
             {% endif %}
             <td><div class="controls">
                     {% if result.has_completed or result.has_failed %}
-                    <a href="{% url 'delete_data' pk=result.pk %}" class="btn btn-danger">Delete</a>
+                    <a href="{% url 'delete_data' pk=result.pk %}" class="btn btn-danger" data-test="delete-button">Delete</a>
                     {% endif %}
                 </div>
             </td>
