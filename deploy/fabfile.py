@@ -400,7 +400,8 @@ def _change_rqworker_service(use_local_mode, action):
     caller("sudo service rqworker %s" % action)
 
 def restart_rqworker_service(use_local_mode):
-    _change_rqworker_service(use_local_mode, action="restart")
+    _change_rqworker_service(use_local_mode, action="stop")
+    _change_rqworker_service(use_local_mode, action="start")
 
 def stop_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="stop")
