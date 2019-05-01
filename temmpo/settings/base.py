@@ -216,7 +216,7 @@ FILE_UPLOAD_HANDLERS = [
 
 RQ_QUEUES = {
     'default': {
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 360000, # TODO: Profile a reasonable time out length for this, ref: https://github.com/rq/rq/blob/master/docs/docs/index.md
