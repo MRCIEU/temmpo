@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import logging
+import django_rq
 
 from django.conf import settings
 from django.contrib import messages
@@ -338,8 +338,8 @@ class FilterSelector(UpdateView):
         search_result.mesh_filter = mesh_filter
         search_result.save()
 
-        # Run the search
-        perform_search(search_result.id)
+        # Run the search via message queue
+        django_rq.enqueue(perform_search, search_result.id)
 
         return super(FilterSelector, self).form_valid(form)
 
@@ -420,11 +420,12 @@ class ResultsListingView(ListView):
 
     def get_queryset(self):
         # Ensure only listing users results and no stub search results that have not been started.
-        return SearchResult.objects.filter(criteria__upload__user=self.request.user).exclude(started_processing=None)
+        return SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=True)
 
     def get_context_data(self, **kwargs):
         context = super(ResultsListingView, self).get_context_data(**kwargs)
         context['active'] = 'results'
+        context['unprocessed'] = SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=False).order_by("-criteria__created")
         return context
 
 

@@ -5,6 +5,11 @@ pipelines:
     '{TMMA-*,master}':
     - step:
         script:
+          - apt update
+          - apt install -y redis-server
+          - service redis-server restart
+          - redis-cli ping
+          - redis-server -v
           - pip install -U pip==9.0.3
           - pip install -r requirements/base.txt
           - pip-sync requirements/base.txt

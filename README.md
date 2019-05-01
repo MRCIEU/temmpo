@@ -297,3 +297,13 @@ NB: The Jenkins jobs are configured to use the CI server's temmpo user account's
     (1048, "Column 'mesh_terms_year_of_release' cannot be null")
 
 This suggests attempting to create a search when no mesh terms have been imported.
+
+## Debugging issues
+
+The project needs the following additional services to be running:
+
+sudo systemctl status redis
+sudo systemctl status rqworker
+sudo systemctl status httpd  # Not on Django vagrant VMs
+
+

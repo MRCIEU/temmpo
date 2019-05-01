@@ -59,7 +59,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', 'django_rq', ]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -213,6 +213,15 @@ SITE_ID = 1
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360000, # TODO: Profile a reasonable time out length for this, ref: https://github.com/rq/rq/blob/master/docs/docs/index.md
+    },
+}
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.

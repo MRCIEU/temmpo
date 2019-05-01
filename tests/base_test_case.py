@@ -2,8 +2,10 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
+from browser.utils import delete_user_content
 
 class BaseTestCase(TestCase):
+
 
     def setUp(self):
         """Override set up to create test users of each Django default role type."""
@@ -32,6 +34,13 @@ class BaseTestCase(TestCase):
                                                     password='12345#abc')
         self.inactive_user.is_active = False
         self.inactive_user.save()
+
+    def tearDown(self):
+        """Clean up user content on the file system."""
+        users = (self.user, self.staff_user, self.super_user_user, self.inactive_user)
+        for user in users:
+            delete_user_content(user.id)
+        super(BaseTestCase, self).tearDown()
 
     def _login_user(self):
         self.client.login(username='may', password='12345#abc')
