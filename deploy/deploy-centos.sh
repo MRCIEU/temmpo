@@ -69,8 +69,8 @@ ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temm
 WantedBy=multi-user.target
 MESSAGE_QUEUE_WORKER
 
-sudo systemctl enable rqworker
 sudo systemctl start rqworker
+sudo systemctl enable rqworker
 
 # Confirm install list
 yum list installed 
