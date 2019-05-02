@@ -223,6 +223,9 @@ RQ_QUEUES = {
     },
 }
 
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0775
+FILE_UPLOAD_PERMISSIONS = 0664
+
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:
