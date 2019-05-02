@@ -67,6 +67,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     caller('mkdir -p %svar/results' % PROJECT_ROOT)
     caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
 
+    stop_rqworker_service(use_local_mode)
+
     with change_dir(PROJECT_ROOT + 'lib/'):
         caller('virtualenv %s' % env)
 
@@ -104,6 +106,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         collect_static(env, use_local_mode)
         setup_apache(env, use_local_mode)
 
+    start_rqworker_service(use_local_mode)
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
     """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"."""
@@ -148,6 +151,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
+    restart_rqworker_service(use_local_mode)
 
 def setup_apache(env="dev", use_local_mode=False):
     """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
@@ -391,6 +395,19 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
         caller("rm -f %s" % old_flag)
         caller("touch %s" % new_flag)
 
+def _change_rqworker_service(use_local_mode, action):
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    caller("sudo service rqworker %s" % action)
+
+def restart_rqworker_service(use_local_mode):
+    _change_rqworker_service(use_local_mode, action="stop")
+    _change_rqworker_service(use_local_mode, action="start")
+
+def stop_rqworker_service(use_local_mode):
+    _change_rqworker_service(use_local_mode, action="stop")
+
+def start_rqworker_service(use_local_mode):
+    _change_rqworker_service(use_local_mode, action="start")
 
 def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""

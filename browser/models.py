@@ -236,6 +236,21 @@ class SearchResult(models.Model):
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
     mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
+    # Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
+    # redis restarts and should be used only for information when tracking processing.
+    # job_id = models.CharField(max_length=32, blank=True, null=True)
+
+    @property
+    def status(self):
+        """Property identifying failed jobs"""
+        if self.has_failed:
+            return "Search failed"
+        elif self.has_completed:
+            return "Completed"
+        elif self.has_started:
+            return "Processing (started %s)" % naturaltime(self.started_processing)
+        else:
+            return "Not started" 
 
     @property
     def has_started(self):

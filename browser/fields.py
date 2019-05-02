@@ -5,7 +5,7 @@ import os
 import tempfile
 
 from django import forms
-from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
+from django.core.files.uploadedfile import TemporaryUploadedFile
 
 
 class ExtractorFileField(forms.FileField):
