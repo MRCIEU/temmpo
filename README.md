@@ -81,8 +81,10 @@ A database of existing gene terms can be imported into the Django application da
 
     python manage.py import_genes
 
-### Run the development server
+### Run the development server and workers
 
+    sudo systemctl stop rqworker        # Ensure matching code is reloaded
+    sudo systemctl start rqworker
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ### View application in your local browser
@@ -302,8 +304,8 @@ This suggests attempting to create a search when no mesh terms have been importe
 
 The project needs the following additional services to be running:
 
-sudo systemctl status redis
-sudo systemctl status rqworker
-sudo systemctl status httpd  # Not on Django vagrant VMs
+    sudo systemctl status redis
+    sudo systemctl status rqworker
+    sudo systemctl status httpd      # Not relevant for the django Vagrant VM
 
 
