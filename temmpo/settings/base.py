@@ -116,7 +116,7 @@ REGISTRATION_OPEN = True
 #  Logging
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -134,20 +134,16 @@ LOGGING = {
             'class': 'logging.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
         'local_file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': '%s/var/log/django.log' % PROJECT_ROOT,
             'maxBytes': 1024 * 1024 * 10,
-        },
-        'syslog': {
-            'level': 'INFO',
-            'class': 'logging.handlers.SysLogHandler',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -157,21 +153,12 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django': {
-            'handlers': ['null'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-        'django.request': {
+        '': {
             'handlers': ['mail_admins', 'console', 'local_file'],
-            'level': 'ERROR',
-            'propagate': False,
+            'propagate': True,
+            'level': 'DEBUG',
         },
     },
-    'root': {
-        'handlers': ['console', 'local_file'],
-        'level': 'DEBUG',
-    }
 }
 
 TEMPLATES = [
