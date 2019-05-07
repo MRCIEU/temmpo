@@ -84,7 +84,7 @@ A database of existing gene terms can be imported into the Django application da
 ### Run the development server and workers
 
     sudo systemctl stop rqworker        # Ensure matching code is reloaded
-    sudo systemctl start rqworker
+    python manage.py rqworker default &
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ### View application in your local browser
