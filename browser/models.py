@@ -3,6 +3,7 @@
 NB: Abstract files are not reproduced in the database.  Instead matching is performed from the text files directly.
 """
 
+import logging
 import re
 import unicodedata
 import os
@@ -19,6 +20,7 @@ from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+logger = logging.getLogger(__name__)
 
 def get_user_upload_location(instance, filename):
     """Based on slugify code - from django.utils.text import slugify."""
@@ -82,7 +84,7 @@ class MeshTerm(MPTTModel):
             data = cls.objects.root_nodes().aggregate(Max('year'))
             return data['year__max']
         except:
-            print("Retuning current year for get_latest_mesh_term_release_year, as exception when querying the database")
+            logger.warning("Retuning current year for get_latest_mesh_term_release_year, as exception when querying the database")
             return datetime.datetime.now().year
 
     @classmethod

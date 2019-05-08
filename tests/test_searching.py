@@ -50,7 +50,7 @@ Test data used frequently in tests set up in the _set_up_test_search_criteria he
                 mtrees2015.bin:48033:Apoptosis;G04.299.139.160
                 mtrees2015.bin:48034:Anoikis;G04.299.139.160.060
 """
-
+import logging
 import json
 import os
 from datetime import datetime, timedelta
@@ -67,6 +67,7 @@ from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID,
 
 from tests.base_test_case import BaseTestCase
 
+logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
 
 # Valid file uploads
@@ -150,9 +151,9 @@ class SearchingTestCase(BaseTestCase):
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
-        print("RESULTS ARE IN THE THESE FILES: ")
-        print(test_results_edge_csv.name)
-        print(test_results_abstract_csv.name)
+        logger.debug("RESULTS ARE IN THE THESE FILES: ")
+        logger.debug(test_results_edge_csv.name)
+        logger.debug(test_results_abstract_csv.name)
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings

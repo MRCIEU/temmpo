@@ -14,4 +14,4 @@ if DATABASES:
 
 RQ_QUEUES['default']['ASYNC'] = False
 
-LOGGING['handlers']['console']['level'] = 'DEBUG'
+LOGGING['handlers']['console']['level'] = 'ERROR'
