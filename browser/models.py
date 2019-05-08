@@ -205,9 +205,9 @@ class SearchCriteria(models.Model):
             input_variables = self.genes.values_list('name', flat=True)
 
         if input_variables:
-            return list(set(input_variables))
+            return tuple(set(input_variables))
         else:
-            return []
+            return tuple()
 
     def __unicode__(self):
         """Provide a flexible method for determining he search criteria's name.
