@@ -213,6 +213,16 @@ RQ_QUEUES = {
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0775
 FILE_UPLOAD_PERMISSIONS = 0664
 
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+        'OPTIONS': {
+            'DB': 1,
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+        },
+    },
+}
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:
