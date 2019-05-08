@@ -1,7 +1,7 @@
 import logging
 import math
 import os
-from pympler import asizeof, tracker
+# from pympler import asizeof, tracker
 import re
 import string
 import sys
@@ -47,8 +47,7 @@ def perform_search(search_result_stub_id):
 
     """
     logger.info("BEGIN: perform_search")
-    if settings.DEBUG:
-        tr = tracker.SummaryTracker()
+    # tr = tracker.SummaryTracker()
     # Get search result
     search_result_stub = SearchResult.objects.get(pk=int(search_result_stub_id))
 
@@ -69,10 +68,10 @@ def perform_search(search_result_stub_id):
     logger.debug("EXP length: %d", len(exposuremesh))
     logger.debug("OUT length: %d", len(outcomemesh))
     logger.debug("MED length: %d", len(mediatormesh))
-    logger.debug("GENE size: %d", asizeof.asizeof(genelist))
-    logger.debug("EXP size: %d", asizeof.asizeof(exposuremesh))
-    logger.debug("OUT size: %d", asizeof.asizeof(outcomemesh))
-    logger.debug("MED size: %d", asizeof.asizeof(mediatormesh))
+    # logger.debug("GENE size: %d", asizeof.asizeof(genelist))
+    # logger.debug("EXP size: %d", asizeof.asizeof(exposuremesh))
+    # logger.debug("OUT size: %d", asizeof.asizeof(outcomemesh))
+    # logger.debug("MED size: %d", asizeof.asizeof(mediatormesh))
 
     # Constants
     WEIGHTFILTER = 2
@@ -87,14 +86,14 @@ def perform_search(search_result_stub_id):
     edges, identifiers = createedgelist(genelist, synonymlookup, exposuremesh, outcomemesh, mediatormesh)
     logger.debug("EDGES length: %d", len(edges))
     logger.debug("IDENTIFIERS length: %d", len(identifiers))
-    logger.debug("EDGES size: %d", asizeof.asizeof(edges))
-    logger.debug("IDENTIFIERS size: %d", asizeof.asizeof(identifiers))
+    # logger.debug("EDGES size: %d", asizeof.asizeof(edges))
+    # logger.debug("IDENTIFIERS size: %d", asizeof.asizeof(identifiers))
     logger.debug("Done edges and identifiers")
 
     abstract_file_path = search_result_stub.criteria.upload.abstracts_upload.path
     abstract_file_format = search_result_stub.criteria.upload.file_format
     citations = readcitations(file_path=abstract_file_path, file_format=abstract_file_format)
-    logger.debug("citations size:%d", asizeof.asizeof(citations))
+    # logger.debug("citations size:%d", asizeof.asizeof(citations))
     logger.info("Read citations")
 
     # Count edges
@@ -134,8 +133,7 @@ def perform_search(search_result_stub_id):
     # [user_email,])
     # 4 - Save completed search result
     search_result_stub.save()
-    if settings.DEBUG:
-        tr.print_diff()
+    # tr.print_diff()
     logger.debug("Done housekeeping")
     logger.info("END: perform_search")
 
