@@ -8,6 +8,7 @@ DEBUG_TOOLBAR_CONFIG = {
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
     'debug_toolbar.panels.timer.TimerPanel',
+    'pympler.panels.MemoryPanel',
     'debug_toolbar.panels.settings.SettingsPanel',
     'debug_toolbar.panels.headers.HeadersPanel',
     'debug_toolbar.panels.request.RequestPanel',
@@ -20,7 +21,7 @@ DEBUG_TOOLBAR_PANELS = [
     # 'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
 
-DEV_APPS = ['debug_toolbar', ]
+DEV_APPS = ['debug_toolbar', 'pympler', ]
 INSTALLED_APPS.extend(DEV_APPS)
 
 DEV_MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware', ]

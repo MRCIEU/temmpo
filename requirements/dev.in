@@ -2,3 +2,4 @@
 
 django-debug-toolbar==1.11
 ipython==5.8.0
+pympler==0.7
