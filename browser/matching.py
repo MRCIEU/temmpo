@@ -454,9 +454,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
                      synonymlookup, edges, WEIGHTFILTER, mediatormesh,
                      mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
-    """Gephi input.
-       NB: These files are is not in use in the web application and are not covered by the test suite.
-    """
+    """Generates CSV and Gephi (.gv) files.
+       NB: Gephi input files are is not in use in the web application and are not covered by the test suite."""
 
     resultfile = open('%s%s.csv' % (results_path, resultfilename), 'w')
 
@@ -475,14 +474,14 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
                 if edges[gene][0][exposure] > WEIGHTFILTER:
                     exposureprint = "_".join(exposure.split())
                     exposureandoutcome[0] = 1
-                    for i in range(edges[gene][0][exposure]):
+                    for i in xrange(edges[gene][0][exposure]):
                         exposurecounter[exposureprint] += 1
                         thisresult += gene + "," + exposureprint + "\n"
             for outcome in outcomemesh:
                 if edges[gene][1][outcome] > WEIGHTFILTER:
                     outcomeprint = "_".join(outcome.split())
                     exposureandoutcome[1] = 1
-                    for i in range(edges[gene][1][outcome]):
+                    for i in xrange(edges[gene][1][outcome]):
                         outcomecounter[outcomeprint] += 1
                         thisresult += gene + "," + outcomeprint + "\n"
         except:
@@ -498,7 +497,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
                     exposureprint = "_".join(exposure.split())
                     mediatorprint = "_".join(mediator.split())
                     exposureandoutcome[0] = 1
-                    for i in range(edges[mediator][0][exposure]):
+                    for i in xrange(edges[mediator][0][exposure]):
                         exposurecounter[exposureprint] += 1
                         thisresult += mediatorprint + "," + exposureprint + "\n"
             for outcome in outcomemesh:
@@ -506,7 +505,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
                     outcomeprint = "_".join(outcome.split())
                     mediatorprint = "_".join(mediator.split())
                     exposureandoutcome[1] = 1
-                    for i in range(edges[mediator][1][outcome]):
+                    for i in xrange(edges[mediator][1][outcome]):
                         outcomecounter[outcomeprint] += 1
                         thisresult += mediatorprint + "," + outcomeprint + "\n"
         except:
@@ -514,10 +513,10 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
         if exposureandoutcome == [1, 1]:
             resultfile.write(thisresult)
     for exposure in exposurecounter.keys():
-        for i in range(exposurecounter[exposure]):
+        for i in xrange(exposurecounter[exposure]):
             resultfile.write("EXPOSURE," + exposure + "\n")
     for outcome in outcomecounter.keys():
-        for i in range(outcomecounter[outcome]):
+        for i in xrange(outcomecounter[outcome]):
             resultfile.write("OUTCOME," + outcome + "\n")
     resultfile.close()
 
@@ -689,10 +688,10 @@ def createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename):
                 edgesout.append(thisedge)
                 counter[1] += 1
         if counter[0] == 0:
-            for i in range(counter[1]):
+            for i in xrange(counter[1]):
                 edgesout.pop(-1)
         if counter[1] == 0:
-            for i in range(counter[0]):
+            for i in xrange(counter[0]):
                 edgesout.pop(-1)
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
