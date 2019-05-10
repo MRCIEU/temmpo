@@ -1,4 +1,5 @@
-3.0.0   TMMA-286 Ensure only one citation in stored in memory at once
+3.0.0   TMMA-286 Reduce size of data structures when matching; 
+                 e.g. Ensure only one citation in stored in memory at once
         TMMA-279 Add message queue to trigger running matching in the background 
                  Add some caching
 
@@ -14,7 +15,7 @@
         TMMA-108 Add google analytics
         TMMA-269 Upgrade Django to 1.11.x
 
-2.7.0	TMMA-157 Make is clear when no results were found.
+2.7.0   TMMA-157 Make is clear when no results were found.
 
 2.6.1   TMMA-266 & TMMA-267 Bug fix and improve bubble chart.
 

@@ -71,9 +71,8 @@ urlpatterns = [
 ]
 
 # For non Apache fronted Django development server scenarios.
-if settings.DEBUG:
+if "debug_toolbar" in settings.INSTALLED_APPS and settings.DEBUG:
     import debug_toolbar
-
     urlpatterns += [
         url(r'^media/(?P<path>.*)$', serve, {
             'document_root': settings.MEDIA_ROOT,
