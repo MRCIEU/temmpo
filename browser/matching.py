@@ -1,6 +1,8 @@
 import logging
 import math
+# import numpy as np 
 import os
+# import pandas as pd 
 # from pympler import asizeof, tracker
 import re
 import string
@@ -18,11 +20,11 @@ ERROR_TEXT = "Error occurred"
 logger = logging.getLogger(__name__)
 
 
-class citation:
+class Citation:
 
-    def __init__(self, ID):
+    def __init__(self, id):
         self.fields = {}
-        self.ID = ID
+        self.id = id
 
     def addfield(self, fieldname):
         self.currentfield = fieldname
@@ -48,6 +50,7 @@ def perform_search(search_result_stub_id):
     """
     logger.info("BEGIN: perform_search")
     # tr = tracker.SummaryTracker()
+
     # Get search result
     search_result_stub = SearchResult.objects.get(pk=int(search_result_stub_id))
 
@@ -80,9 +83,10 @@ def perform_search(search_result_stub_id):
     results_path = settings.RESULTS_PATH
 
     logger.debug("Set constants")
-    # Get synonyms, edges and identifiers - NOT CURRENTLY IN USE, citations
+    # Get synonyms, edges, identifiers (NOT CURRENTLY IN USE), and citations
     synonymlookup, synonymlisting = cache.get_or_set("temmpo:generate_synonyms", generate_synonyms, timeout=None)
     logger.debug("Done synonyms")
+
     edges, identifiers = createedgelist(genelist, synonymlookup, exposuremesh, outcomemesh, mediatormesh)
     logger.debug("EDGES length: %d", len(edges))
     logger.debug("IDENTIFIERS length: %d", len(identifiers))
@@ -186,6 +190,11 @@ def generate_synonyms():
 def createedgelist(genelist, synonymlookup, exposuremesh, outcomemesh, mediatormesh):
     # edges contains a dictionary of edges to be weighted
     # TODO Needs re-factoring as failing here with large numbers of mediators
+
+    # test = pd.DataFrame()
+    # TODO test replacing data structure with an nArray - document indexes 
+    # test_ndarray = np.zeros(shape=(len(genelist)+len(mediatormesh), len(exposuremesh) + len(outcomemesh)), dtype=np.dtype(int))
+
     edges = dict()
     identifiers = dict()
 
@@ -228,62 +237,77 @@ def readcitations(file_path, file_format=OVID):
 
 
 def _ovid_medline_readcitations(abstract_file_path):
-    """ Read the data in as a list of citations (citation class) """
-    citations = list()
-    counter = -1
+    """ Read the Abstract data from an OVID Medline formatted text file.
+        Create a generator and yield an instance of the Citation class per item """
+
     infile = open(abstract_file_path, 'r')
+    citation = None
 
     for line in infile:
         line = line.strip("\r\n")
         if len(line) == 0:
-            nothing = 0
+            pass
         elif line[0] == "<":
-            ID = int(line.strip("<").strip(">"))
-            citations.append(citation(ID))
-            counter += 1
+            # Starting a new citation, yield if one has already been set up
+            if citation:
+                yield citation
+
+            citation_id = int(line.strip("<").strip(">"))
+            citation = Citation(citation_id)
         elif line[0] != " ":
-            citations[counter].addfield(line)
+            citation.addfield(line)
         else:
-            citations[counter].addfieldcontent(line.lstrip() + " ")
+            citation.addfieldcontent(line.lstrip() + " ")
+
+    # Yield last citation
+    if citation:
+        yield citation
+
     infile.close()
-    return citations
 
 
 def _pubmed_readcitations(abstract_file_path):
-    """ Process PubMed MEDLINE formatted abstracts
-        - code to parse file supplied by Benjamin Elsworth"""
+    """ Process PubMed MEDLINE formatted abstracts text file
+        - code to parse file originally supplied by Benjamin Elsworth
 
-    # TODO Review if can read n number of citations at a time
-    # PubMed MesH term sub headings appear to be lower cased.  Plus any parentheses ()[] are replaced by spaces
-    # Read the data in as a list of citations (citation class)
-    citations = list()
+        PubMed MesH term sub headings appear to be lower cased.  Plus any parentheses ()[] are replaced by spaces
+        Create a generator and yield an instance of the citation class per item """
 
+    citation = None
     counter = -1
     infile = open(abstract_file_path, 'r')
+
     for line in infile:
         line = line.strip("\r\n")
         if len(line) == 0 or ERROR_TEXT in line:
             nothing = 0
         elif line[0:4] == "PMID":
+            # Starting a new citation, yield if one has already been set up
+            if citation:
+                yield citation
+
             in_mesh = False
-            ID = counter + 1
-            citations.append(citation(ID))
+            citation_id = counter + 1
+            citation = Citation(citation_id)
             counter += 1
-            citations[counter].addfield(line.split("-", 1)[0].strip())
-            citations[counter].addfieldcontent(line.split("-", 1)[1].strip())
+            citation.addfield(line.split("-", 1)[0].strip())
+            citation.addfieldcontent(line.split("-", 1)[1].strip())
         elif line[0:2] == "MH":
             if in_mesh == False:
-                citations[counter].addfield(line.split("-", 1)[0].strip())
+                citation.addfield(line.split("-", 1)[0].strip())
             in_mesh = True
-            citations[counter].addfieldcontent(line.split("-", 1)[1].strip() + " ")
+            citation.addfieldcontent(line.split("-", 1)[1].strip() + " ")
         elif line[0] != " ":
-            citations[counter].addfield(line.split("-", 1)[0].strip())
-            citations[counter].addfieldcontent(line.split("-", 1)[1].strip() + " ")
+            citation.addfield(line.split("-", 1)[0].strip())
+            citation.addfieldcontent(line.split("-", 1)[1].strip() + " ")
         else:
-            citations[counter].addfieldcontent(line.strip() + " ")
-    infile.close()
+            citation.addfieldcontent(line.strip() + " ")
 
-    return citations
+    # Yield last citation
+    if citation:
+        yield citation
+
+    infile.close()
 
 
 def searchgene(texttosearch, searchstring):

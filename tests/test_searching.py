@@ -62,7 +62,7 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
-from browser.matching import _pubmed_readcitations
+from browser.matching import readcitations, Citation
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
 from tests.base_test_case import BaseTestCase
@@ -198,9 +198,20 @@ class SearchingTestCase(BaseTestCase):
 
     def test_pubmed_readcitations_parsing_bug(self):
         """Test to capture a specific bug in file formats."""
-        citations = _pubmed_readcitations(TEST_BADLY_FORMATTED_FILE)
-        self.assertEqual(type(citations), list)
-        self.assertEqual(len(citations), 23)
+        citations = readcitations(TEST_BADLY_FORMATTED_FILE, PUBMED)
+        count = 0
+        for c in citations:
+            count += 1
+            self.assertTrue(isinstance(c, Citation))
+        self.assertEqual(count, 23)
+
+    def teat_ovid_medline_citation_reading(self):
+        citations = _ovid_(TEST_OVID_MEDLINE_ABSTRACTS, OVID)
+        count = 0
+        for c in citations:
+            count += 1
+            self.assertTrue(isinstance(c, Citation))
+        self.assertEqual(count, 100)
 
     def _assert_toggle_selecting_child_terms(self, search_criteria):
         """Helper function to test form toggle selection of child MeshTerms."""
