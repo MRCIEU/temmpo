@@ -1,4 +1,6 @@
-3.0.0   TMMA-279 Add message queue to trigger running matching in the background 
+3.0.0   TMMA-286 Ensure only one citation in stored in memory at once
+        TMMA-279 Add message queue to trigger running matching in the background 
+                 Add some caching
 
 2.9.0   TMMA-275 Add support for uploading bz2 and gzip files
         TMMA-278 Bug fix filtering searches when multiple years have been imported
