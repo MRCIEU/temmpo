@@ -189,7 +189,7 @@ class FilterForm(forms.ModelForm):
                     unmatched_genes.append(ind_gene)
                     new_gene = Gene(name=ind_gene)
                     new_gene.save()
-                    print "Added gene: ", new_gene.name
+                    logger.info("Added gene: %s", new_gene.name)
 
 #                 else:
 #                     matched_genes.append(ind_gene)

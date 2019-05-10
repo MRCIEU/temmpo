@@ -1,11 +1,14 @@
 import bz2
 import gzip
+import logging
 import magic
 import os
 import tempfile
 
 from django import forms
 from django.core.files.uploadedfile import TemporaryUploadedFile
+
+logger = logging.getLogger(__name__)
 
 
 class ExtractorFileField(forms.FileField):
@@ -36,8 +39,8 @@ class ExtractorFileField(forms.FileField):
                 return self.create_upload_file(extracted_file)
 
             except Exception as e:
-                print("Cannot extract bz2")
-                print(e)
+                logger.error("Cannot extract bz2")
+                logger.error(e)
                 raise forms.ValidationError("There were problems extracting your bz2 file")
 
         elif mime_type in ("application/x-gzip", "application/gzip"):
@@ -52,8 +55,8 @@ class ExtractorFileField(forms.FileField):
                 return self.create_upload_file(extracted_file)
 
             except Exception as e:
-                print("Cannot extract gzip")
-                print(e)
+                logger.error("Cannot extract gzip")
+                logger.error(e)
                 raise forms.ValidationError("There were problems extracting your gz file")
 
         return value

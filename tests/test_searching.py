@@ -50,7 +50,7 @@ Test data used frequently in tests set up in the _set_up_test_search_criteria he
                 mtrees2015.bin:48033:Apoptosis;G04.299.139.160
                 mtrees2015.bin:48034:Anoikis;G04.299.139.160.060
 """
-
+import logging
 import json
 import os
 from datetime import datetime, timedelta
@@ -62,11 +62,12 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
-from browser.matching import _pubmed_readcitations
+from browser.matching import readcitations, Citation
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
 from tests.base_test_case import BaseTestCase
 
+logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
 
 # Valid file uploads
@@ -150,9 +151,9 @@ class SearchingTestCase(BaseTestCase):
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
-        print("RESULTS ARE IN THE THESE FILES: ")
-        print(test_results_edge_csv.name)
-        print(test_results_abstract_csv.name)
+        logger.debug("RESULTS ARE IN THE THESE FILES: ")
+        logger.debug(test_results_edge_csv.name)
+        logger.debug(test_results_abstract_csv.name)
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
@@ -197,9 +198,20 @@ class SearchingTestCase(BaseTestCase):
 
     def test_pubmed_readcitations_parsing_bug(self):
         """Test to capture a specific bug in file formats."""
-        citations = _pubmed_readcitations(TEST_BADLY_FORMATTED_FILE)
-        self.assertEqual(type(citations), list)
-        self.assertEqual(len(citations), 23)
+        citations = readcitations(TEST_BADLY_FORMATTED_FILE, PUBMED)
+        count = 0
+        for c in citations:
+            count += 1
+            self.assertTrue(isinstance(c, Citation))
+        self.assertEqual(count, 23)
+
+    def teat_ovid_medline_citation_reading(self):
+        citations = _ovid_(TEST_OVID_MEDLINE_ABSTRACTS, OVID)
+        count = 0
+        for c in citations:
+            count += 1
+            self.assertTrue(isinstance(c, Citation))
+        self.assertEqual(count, 100)
 
     def _assert_toggle_selecting_child_terms(self, search_criteria):
         """Helper function to test form toggle selection of child MeshTerms."""
