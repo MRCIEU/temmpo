@@ -1,3 +1,5 @@
+"""Test server specific general settings file."""
+
 from base import *
 
 DEBUG = False

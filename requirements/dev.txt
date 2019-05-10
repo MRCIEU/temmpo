@@ -10,11 +10,13 @@ decorator==4.4.0          # via ipython, traitlets
 django-debug-toolbar==1.11
 django-js-asset==1.2.2
 django-mptt==0.9.0
+django-redis-cache==2.0.0
 django-registration-redux==1.9
 django-rq==2.0
 django-simple-autocomplete==1.11
 django==1.11.20
 enum34==1.1.6             # via traitlets
+hiredis==1.0.0
 ipython-genutils==0.2.0   # via traitlets
 ipython==5.8.0
 lxml==4.3.3
@@ -26,6 +28,7 @@ pip-tools==3.6.0
 prompt-toolkit==1.0.16    # via ipython
 ptyprocess==0.6.0         # via pexpect
 pygments==2.3.1           # via ipython
+pympler==0.7
 python-magic==0.4.13
 pytz==2019.1
 redis==3.2.1

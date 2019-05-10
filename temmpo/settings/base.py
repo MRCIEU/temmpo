@@ -116,7 +116,7 @@ REGISTRATION_OPEN = True
 #  Logging
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -134,20 +134,16 @@ LOGGING = {
             'class': 'logging.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
         'local_file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': '%s/var/log/django.log' % PROJECT_ROOT,
             'maxBytes': 1024 * 1024 * 10,
-        },
-        'syslog': {
-            'level': 'INFO',
-            'class': 'logging.handlers.SysLogHandler',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -157,21 +153,12 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django': {
-            'handlers': ['null'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-        'django.request': {
+        '': {
             'handlers': ['mail_admins', 'console', 'local_file'],
-            'level': 'ERROR',
-            'propagate': False,
+            'propagate': True,
+            'level': 'DEBUG',
         },
     },
-    'root': {
-        'handlers': ['console', 'local_file'],
-        'level': 'DEBUG',
-    }
 }
 
 TEMPLATES = [
@@ -226,6 +213,16 @@ RQ_QUEUES = {
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0775
 FILE_UPLOAD_PERMISSIONS = 0664
 
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+        'OPTIONS': {
+            'DB': 1,
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+        },
+    },
+}
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:

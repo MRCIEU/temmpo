@@ -13,3 +13,5 @@ if DATABASES:
         del DATABASES['sqlite']
 
 RQ_QUEUES['default']['ASYNC'] = False
+
+LOGGING['handlers']['console']['level'] = 'ERROR'

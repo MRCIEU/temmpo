@@ -4,6 +4,8 @@ pipelines:
   branches:
     '{TMMA-*,master}':
     - step:
+        caches:
+          - pip
         script:
           - apt update
           - apt install -y redis-server

@@ -11,3 +11,5 @@ python-magic==0.4.13
 unicodecsv==0.14.1
 django-rq==2.0
 redis==3.2.1
+django-redis-cache==2.0.0
+hiredis==1.0.0
