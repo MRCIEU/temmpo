@@ -1,5 +1,5 @@
-3.0.0   TMMA-286 Reduce size of data structures when matching; 
-                 e.g. Ensure only one citation in stored in memory at once
+3.0.0   TMMA-286 Reduce size of data structures when matching
+                 Dropped support for generating .gv files
         TMMA-279 Add message queue to trigger running matching in the background 
                  Add some caching
 
