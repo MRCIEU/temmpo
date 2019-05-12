@@ -62,7 +62,7 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
-from browser.matching import readcitations, Citation
+from browser.matching import read_citations, Citation
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
 from tests.base_test_case import BaseTestCase
@@ -196,17 +196,17 @@ class SearchingTestCase(BaseTestCase):
                                          search_url=reverse('search_pubmed'))
 
 
-    def test_pubmed_readcitations_parsing_bug(self):
+    def test_pubmed_read_citations_parsing_bug(self):
         """Test to capture a specific bug in file formats."""
-        citations = readcitations(TEST_BADLY_FORMATTED_FILE, PUBMED)
+        citations = read_citations(TEST_BADLY_FORMATTED_FILE, PUBMED)
         count = 0
         for c in citations:
             count += 1
             self.assertTrue(isinstance(c, Citation))
         self.assertEqual(count, 23)
 
-    def teat_ovid_medline_citation_reading(self):
-        citations = _ovid_(TEST_OVID_MEDLINE_ABSTRACTS, OVID)
+    def test_ovid_medline_citation_reading(self):
+        citations = read_citations(TEST_OVID_MEDLINE_ABSTRACTS, OVID)
         count = 0
         for c in citations:
             count += 1
