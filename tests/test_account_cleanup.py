@@ -109,7 +109,7 @@ class UserDeletionTest(BaseTestCase):
         # Check results files
         base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 4)
+        self.assertEqual(len(files_to_delete), 8)
 
         # Check account page
         response = self.client.get(reverse('account'))
@@ -226,7 +226,7 @@ class UserDeletionTest(BaseTestCase):
         # Check results files
         base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 4)
+        self.assertEqual(len(files_to_delete), 8)
 
         # Check can't access manage users page
         response = self.client.get(reverse('manage_users'))

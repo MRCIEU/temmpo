@@ -2,6 +2,7 @@ import logging
 import math
 import numpy as np 
 import os
+# from pympler import tracker
 import re
 import string
 import sys
@@ -32,6 +33,52 @@ class Citation:
         self.fields[self.currentfield] += fieldcontent
 
 
+def _record_terms_to_file(search_result, term_type):
+    """term_type = 'gene'|'exposure'|'mediator'|'outcome'"""
+    term_file_path = "%s%s_%ss.txt" % (settings.RESULTS_PATH, search_result.filename_stub, term_type)
+    term_file = open(term_file_path, "w")
+    terms = search_result.criteria.get_wcrf_input_variables(term_type)
+    for term in terms:
+        term_file.write(term + "\n")
+    term_file.close()
+    return len(terms)
+
+
+def _get_terms(search_result, term_types):
+    """term_types = Tuple of e.g. ('gene', 'exposure', 'mediator', 'outcome', )"""
+    for term_type in term_types:
+        term_file_path = "%s%s_%ss.txt" % (settings.RESULTS_PATH, search_result.filename_stub, term_type)
+
+        with open(term_file_path, "r") as term_file:
+            for term in term_file:
+                yield term.strip()
+
+
+def get_genes_and_mediators(search_result):
+    """Retrieve y axis of matching matrix, genes then mediators"""
+    return _get_terms(search_result, ('gene', 'mediator', ))
+
+
+def get_exposures(search_result):
+    """Retrieve y axis of matching matrix, exposures then outcomes"""
+    return _get_terms(search_result, ('exposure', ))
+
+
+def get_outcomes(search_result):
+    """Retrieve generator of outcome mesh term strings"""
+    return _get_terms(search_result, ('outcome', ))
+
+
+def get_genes(search_result):
+    """Retrieve generator of outcome mesh term strings"""
+    return _get_terms(search_result, ('gene', ))
+
+
+def get_mediators(search_result):
+    """Retrieve generator of outcome mesh term strings"""
+    return _get_terms(search_result, ('mediator', ))
+
+
 def perform_search(search_result_stub_id):
     """
     Main function for performing the term search.
@@ -45,34 +92,39 @@ def perform_search(search_result_stub_id):
     printedges()
     createjson()
 
+
+    Results data structure 2D integer array of matches
+
+    Rows - distinct mediator terms and genes
+    Columns - distinct exposures and distinct outcomes
+    Each cell contains the number times this mediator/gene and exposure/outcome pairing appear together the given set of
+    citations.
     """
     logger.info("BEGIN: perform_search")
-
     # Get search result
     search_result_stub = SearchResult.objects.get(pk=int(search_result_stub_id))
     search_result_stub.started_processing = timezone.now()
     search_result_stub.has_completed = False
-    search_result_stub.save()
-
-    # Get main data
-    genelist = search_result_stub.criteria.get_wcrf_input_variables('gene')
-    exposuremesh = search_result_stub.criteria.get_wcrf_input_variables('exposure')
-    outcomemesh = search_result_stub.criteria.get_wcrf_input_variables('outcome')
-    mediatormesh = search_result_stub.criteria.get_wcrf_input_variables('mediator')
     mesh_filter = search_result_stub.mesh_filter or ""  # Previously hard coded to Human then Humans
+    search_result_stub.filename_stub = 'results_' + str(search_result_stub.id) + '_' + mesh_filter.replace(" ", "_").lower() + "_topresults"
+    search_result_stub.save()
 
     # Constants
     WEIGHTFILTER = 2
-    GRAPHVIZEDGEMULTIPLIER = 3
-    resultfilename = 'results_' + str(search_result_stub.id) + '_' + mesh_filter.replace(" ", "_").lower() + "_topresults"
-    results_path = settings.RESULTS_PATH
-
     logger.debug("Set constants")
+
+    # Get main data
+    gene_count = _record_terms_to_file(search_result_stub, 'gene')
+    exposure_count = _record_terms_to_file(search_result_stub, 'exposure')
+    outcome_count = _record_terms_to_file(search_result_stub, 'outcome')
+    mediator_count = _record_terms_to_file(search_result_stub, 'mediator')
+    logger.debug("Store mediators terms to local files for generator retrieval while matching")
+
     # Get synonyms, edges, identifiers (NOT CURRENTLY IN USE), and citations
     synonymlookup, synonymlisting = cache.get_or_set("temmpo:generate_synonyms", generate_synonyms, timeout=None)
     logger.debug("Done synonyms")
 
-    edges, identifiers = create_edge_matrix(len(genelist), len(mediatormesh), len(exposuremesh), len(outcomemesh))
+    edges, identifiers = create_edge_matrix(gene_count, mediator_count, exposure_count, outcome_count)
     logger.debug("Done edges and identifiers (TODO)")
 
     abstract_file_path = search_result_stub.criteria.upload.abstracts_upload.path
@@ -81,32 +133,33 @@ def perform_search(search_result_stub_id):
     logger.info("Read citations")
 
     # Count edges
-    papercounter, edges, identifiers = countedges(citations, genelist,
-                                                  synonymlookup, synonymlisting,
-                                                  exposuremesh, identifiers,
-                                                  edges, outcomemesh,
-                                                  mediatormesh, mesh_filter,
-                                                  results_path, resultfilename, abstract_file_format)
+    papercounter, edges, identifiers = countedges(citations,
+                                                  synonymlookup,
+                                                  synonymlisting,
+                                                  identifiers,
+                                                  edges,
+                                                  search_result_stub,
+                                                  mesh_filter,
+                                                  abstract_file_format)
     logger.info("Counted edges")
 
     # Create results
-    createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename)
-
+    createresultfile(search_result_stub,
+                     synonymlookup,
+                     edges,
+                     WEIGHTFILTER)
     logger.info("Created results")
 
     # Print edges
-    mediator_match_counts = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
-    logger.info("Printed %s edges", mediator_match_counts)
+    mediator_match_counts = printedges(edges, search_result_stub)
+    logger.info("Printed %s edges CSV file.", mediator_match_counts)
 
-    createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
-    logger.info("Created JSON")
+    createjson(edges, search_result_stub)
+    logger.info("Created JSON file")
 
     # Housekeeping
     # 1 - Mark results done
     search_result_stub.has_completed = True
-    search_result_stub.filename_stub = resultfilename
     # 2 - Give end time
     search_result_stub.ended_processing = timezone.now()
     # 3 - Record number of mediator matches
@@ -117,7 +170,6 @@ def perform_search(search_result_stub_id):
     # [user_email,])
     # 4 - Save completed search result
     search_result_stub.save()
-    # tr.print_diff()
     logger.debug("Done housekeeping")
     logger.info("END: perform_search")
 
@@ -143,6 +195,7 @@ def generate_synonyms2():
 
     return synonymlookup, synonymlisting
 
+
 def generate_synonyms():
     # Create a dictionary of synoynms
     base_dir = os.path.dirname(__file__)
@@ -166,29 +219,14 @@ def generate_synonyms():
     genefile.close()
     return synonymlookup, synonymlisting
 
-def _get_genes_and_mediators(genelist, mediatormesh):
-    """Retrieve y axis of matching matrix, genes then mediators"""
-    for gene in genelist:
-        yield gene
-
-    for mediator in mediatormesh:
-        yield mediator
-
-# def _get_exposures_and_outcomes(exposuremesh, outcomemesh):
-#     """Retrieve y axis of matching matrix, exposures then outcomes"""
-#     for exposure in exposuremesh:
-#         yield exposure
-
-#     for outcome in outcomemesh:
-#         yield outcome
 
 def create_edge_matrix(gene_count, mediator_count, exposure_count, outcome_count):
     """edges represented as a 2D nArray"""
     edges = np.zeros(shape=(gene_count + mediator_count, exposure_count + outcome_count), 
                      dtype=np.dtype(int))
     identifiers = dict()
-
     return edges, identifiers
+
 
 def read_citations(file_path, file_format=OVID):
     """ Read the data from either OVID or PUBMED MEDLINE format files """
@@ -293,10 +331,7 @@ def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
 # TODO: TMMA-161 Could re-rerun searches and email users where any changes exist
 
 
-def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
-               identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
-               results_file_path, results_file_name, file_format=OVID):
-
+def countedges(citations, synonymlookup, synonymlisting, identifiers, edges, search_result, mesh_filter, file_format=OVID):
     # Go through and count edges
     papercounter = 0
     citation_id = set()
@@ -324,7 +359,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         if mesh_subject_headings in citation.fields:
             # TODO HIGH - Review if expected behaviour - if no mesh filter no gene comparisons are made
             if not mesh_filter or matches(citation.fields[mesh_subject_headings], mesh_filter) >= 0:
-                for gene in genelist:
+                for gene in get_genes(search_result):
                     try:
                         edge_row_id += 1
                         edge_column_id = -1
@@ -334,7 +369,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                 citation_id.add(citation.fields[unique_id].strip())
                                 if searchgene(citation.fields[abstract], genesyn):
                                     countthis = 1
-                                    for exposure in exposuremesh:
+                                    for exposure in get_exposures(search_result):
                                         edge_column_id += 1
                                         exposurel = exposure.split(" AND ")
                                         if len(exposurel) == 2:
@@ -349,12 +384,12 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                             if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
                                                 edges[edge_row_id][edge_column_id] += 1
                                                 # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                    for outcome in outcomemesh:
+                                    for outcome in get_outcomes(search_result):
                                         edge_column_id += 1
                                         outcomel = outcome.split(" AND ")
                                         if len(outcomel) > 1:
                                             if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
-                                               edges[edge_row_id][edge_column_id] += 1
+                                                edges[edge_row_id][edge_column_id] += 1
                                                 # identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                         else:
                                             if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
@@ -370,14 +405,14 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                         logger.info(" for gene: %s", gene)
 
                 # Repeat for other mediators
-                for mediator in mediatormesh:
+                for mediator in get_mediators(search_result):
                     edge_row_id += 1
                     edge_column_id = -1
                     try:
                         if matches(citation.fields[mesh_subject_headings], mediator) >= 0:
                             countthis = 1
                             citation_id.add(citation.fields[unique_id].strip())
-                            for exposure in exposuremesh:
+                            for exposure in get_exposures(search_result):
                                 edge_column_id += 1
                                 exposurel = exposure.split(" AND ")
                                 if len(exposurel) == 2:
@@ -392,7 +427,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
                                         edges[edge_row_id][edge_column_id] += 1
                                         # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
-                            for outcome in outcomemesh:
+                            for outcome in get_outcomes(search_result):
                                 edge_column_id += 1
                                 outcomel = outcome.split(" AND ")
                                 if len(outcomel) > 1:
@@ -419,7 +454,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     # Output citation ids
     if citation_id:
-        resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
+        resultfile = open('%s%s_abstracts.csv' % (settings.RESULTS_PATH, search_result.filename_stub), 'w')
         csv_writer = unicodecsv.writer(resultfile)
         csv_writer.writerow(("Abstract IDs", ))
         csv_writer.writerows([(cid, ) for cid in citation_id])
@@ -428,28 +463,26 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
     return papercounter, edges, identifiers
 
 
-def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
+def createresultfile(search_result, synonymlookup, edges, WEIGHTFILTER):
     """Generates CSV file."""
-
-    resultfile = open('%s%s.csv' % (results_path, resultfilename), 'w')
+    # TODO Review efficiency of this function
+    resultfile = open('%s%s.csv' % (settings.RESULTS_PATH, search_result.filename_stub), 'w')
     edge_row_id = -1
 
     exposurecounter = {}
     outcomecounter = {}
-    for exposure in exposuremesh:
+    for exposure in get_exposures(search_result):
         exposurecounter["_".join(exposure.split())] = 0
-    for outcome in outcomemesh:
+    for outcome in get_outcomes(search_result):
         outcomecounter["_".join(outcome.split())] = 0
-    for genel in genelist:
+    for genel in get_genes(search_result):
         edge_row_id += 1
         edge_column_id = -1
         thisresult = ""
         exposureandoutcome = [0, 0]
         try:
             gene = synonymlookup[genel]
-            for exposure in exposuremesh:
+            for exposure in get_exposures(search_result):
                 edge_column_id += 1
                 if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
                     exposureprint = "_".join(exposure.split())
@@ -457,7 +490,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
                     for i in xrange(edges[edge_row_id][edge_column_id]):
                         exposurecounter[exposureprint] += 1
                         thisresult += gene + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
+            for outcome in get_outcomes(search_result):
                 edge_column_id += 1
                 if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
                     outcomeprint = "_".join(outcome.split())
@@ -469,13 +502,13 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
             nothing = 0
         if exposureandoutcome == [1, 1]:
             resultfile.write(thisresult)
-    for mediator in mediatormesh:
+    for mediator in get_mediators(search_result):
         edge_row_id += 1
         edge_column_id = -1
         thisresult = ""
         exposureandoutcome = [0, 0]
         try:
-            for exposure in exposuremesh:
+            for exposure in get_exposures(search_result):
                 if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
                     exposureprint = "_".join(exposure.split())
                     mediatorprint = "_".join(mediator.split())
@@ -483,7 +516,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
                     for i in xrange(edges[edge_row_id][edge_column_id]):
                         exposurecounter[exposureprint] += 1
                         thisresult += mediatorprint + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
+            for outcome in get_outcomes(search_result):
                 if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
                     outcomeprint = "_".join(outcome.split())
                     mediatorprint = "_".join(mediator.split())
@@ -503,26 +536,27 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
             resultfile.write("OUTCOME," + outcome + "\n")
     resultfile.close()
 
-def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
+
+def printedges(edges, search_result):
     """Write out edge file (*_edge.csv)"""
-    edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
+    edgefile = open('%s%s_edge.csv' % (settings.RESULTS_PATH, search_result.filename_stub), 'w')
     csv_writer = unicodecsv.writer(edgefile)
     csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
     edge_score = 0
     edge_row_id = -1
 
-    for mediator in _get_genes_and_mediators(genelist, mediatormesh):
+    for mediator in get_genes_and_mediators(search_result):
         edge_col_id = -1
         edge_row_id += 1
 
         b, d = 0, 0
-        for exposure in exposuremesh:
+        for exposure in get_exposures(search_result):
             edge_col_id += 1
             try:
                 b += edges[edge_row_id][edge_col_id]
             except:
                 b = b
-        for outcome in outcomemesh:
+        for outcome in get_outcomes(search_result):
             edge_col_id += 1
             try:
                 d += edges[edge_row_id][edge_col_id]
@@ -535,57 +569,56 @@ def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
             edge_score += 1
 
     edgefile.close()
-
     return edge_score
 
 
-def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
+def createjson(edges, search_result):
     """Create JSON formatted resulted file
        TODO - can this be transformed from the CSV more efficiently?"""
-    resultfile = open('%s%s.json' % (results_path, resultfilename), 'w')
+    resultfile = open('%s%s.json' % (settings.RESULTS_PATH, search_result.filename_stub), 'w')
     nodes = []
     mnodes = []
     edgesout = []
     nodesout = []
     edge_row_id = -1
 
-    for mediator in _get_genes_and_mediators(genelist, mediatormesh):
+    for mediator in get_genes_and_mediators(search_result):
         edge_col_id = -1
         edge_row_id += 1
 
         counter = [0, 0]
-        for exposure in exposuremesh:
+        for exposure in get_exposures(search_result):
             edge_col_id += 1
             if edges[edge_row_id][edge_col_id] > 0:
                 counter[0] += 1
-        for outcome in outcomemesh:
+        for outcome in get_outcomes(search_result):
             edge_col_id += 1
             if edges[edge_row_id][edge_col_id] > 0:
                 counter[1] += 1
         if counter[0] > 0 and counter[1] > 0:
             nodes.append(mediator)
             mnodes.append(mediator)
-    for exposure in exposuremesh:
+    for exposure in get_exposures(search_result):
         nodes.append(exposure)
-    for outcome in outcomemesh:
+    for outcome in get_outcomes(search_result):
         nodes.append(outcome)
     for node in nodes:
         thisnode = """{"name":"%s"}""" % node
         nodesout.append(thisnode)
 
     edge_row_id = -1
-    for mediator in _get_genes_and_mediators(genelist, mediatormesh):
+    for mediator in get_genes_and_mediators(search_result):
         edge_col_id = -1
         edge_row_id += 1
         if mediator in mnodes:
             counter = [0, 0]
-            for exposure in exposuremesh:
+            for exposure in get_exposures(search_result):
                 edge_col_id += 1
                 if edges[edge_row_id][edge_col_id] > 0:
                     thisedge = """{"source":%s,"target":%s,"value":%s}""" % (str(nodes.index(exposure)), str(nodes.index(mediator)), str(edges[edge_row_id][edge_col_id]))
                     edgesout.append(thisedge)
                     counter[0] += 1
-            for outcome in outcomemesh:
+            for outcome in get_outcomes(search_result):
                 edge_col_id += 1
                 if edges[edge_row_id][edge_col_id] > 0:
                     thisedge = """{"source":%s,"target":%s,"value":%s}""" % (str(nodes.index(mediator)), str(nodes.index(outcome)), str(edges[edge_row_id][edge_col_id]))
@@ -600,3 +633,6 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
     resultfile.close()
+
+
+# TODO has this change saved memory or not.  IT is worth commiting; Are results the same.
