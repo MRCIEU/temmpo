@@ -198,16 +198,16 @@ class SearchCriteria(models.Model):
         """Helper function to return terms in format that suits the matching code."""
         input_variables = None
         if codename == 'exposure':
-            input_variables = self.exposure_terms.values_list('term', flat=True).distinct()
+            input_variables = self.exposure_terms.order_by('term').values_list('term', flat=True).distinct()
         elif codename == 'outcome':
-            input_variables = self.outcome_terms.values_list('term', flat=True).distinct()
+            input_variables = self.outcome_terms.order_by('term').values_list('term', flat=True).distinct()
         elif codename == 'mediator':
-            input_variables = self.mediator_terms.values_list('term', flat=True).distinct()
+            input_variables = self.mediator_terms.order_by('term').values_list('term', flat=True).distinct()
         elif codename == 'gene':
-            input_variables = self.genes.values_list('name', flat=True).distinct()
+            input_variables = self.genes.order_by('name').values_list('name', flat=True).distinct()
 
         if input_variables:
-            return input_variables
+            return set(input_variables)
         else:
             return tuple()
 
