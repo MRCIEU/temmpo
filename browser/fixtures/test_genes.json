@@ -6,5 +6,44 @@
     },
     "model": "browser.gene",
     "pk": 21899
+},{
+    "fields": {
+        "synonym_for": null,
+        "name": "ACAT1"
+    },
+    "model": "browser.gene",
+    "pk": 38
+},
+{
+    "fields": {
+        "synonym_for": 38,
+        "name": "ACAT"
+    },
+    "model": "browser.gene",
+    "pk": 4
+},
+{
+    "fields": {
+        "synonym_for": 38,
+        "name": "MAT"
+    },
+    "model": "browser.gene",
+    "pk": 1
+},
+{
+    "fields": {
+        "synonym_for": 38,
+        "name": "T2"
+    },
+    "model": "browser.gene",
+    "pk": 2
+},
+{
+    "fields": {
+        "synonym_for": 38,
+        "name": "THIL"
+    },
+    "model": "browser.gene",
+    "pk": 3
 }
 ]
