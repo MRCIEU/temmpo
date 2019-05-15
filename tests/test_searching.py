@@ -549,7 +549,7 @@ class SearchingTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(criteria=search_criteria)
         self._find_expected_content(reverse("results_bubble", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('count_data', kwargs={'pk': search_result.id})])
 
-    def test_bubble_chart_inclusions(self):
+    def test_sankey_inclusions(self):
         search_criteria = self._set_up_test_search_criteria()
         # Run the search, by posting filter and gene selection form
         self._login_user()
@@ -772,12 +772,12 @@ class SearchingTestCase(BaseTestCase):
         # Check files...
         # Check abstract
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
-        # Check results files
+        # Check results and terms files
         base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 4)
+        self.assertEqual(len(files_to_delete), 8)
 
-        # DO deletion
+        # Do deletion
         response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}), follow=True)
         self.assertContains(response, 'Search results deleted', count=1)
 
