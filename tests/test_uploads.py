@@ -35,8 +35,8 @@ class ArchiveUploadTestCase(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
 
-    def _assert_upload_is_invalid_file_type(self, file, search_path):
-        with open(file, 'r') as upload:
+    def _assert_upload_is_invalid_file_type(self, upload_file, search_path):
+        with open(upload_file, 'r') as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': PUBMED},
