@@ -61,9 +61,10 @@ Description=Django-RQ Worker
 After=network.target
 
 [Service]
-User=vagrant
+User=apache
+Group=vagrant
 WorkingDirectory=/usr/local/projects/temmpo/lib/dev/src/temmpo
-ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temmpo/lib/dev/src/temmpo/manage.py rqworker default
+ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temmpo/lib/dev/src/temmpo/manage.py rqworker default --settings=temmpo.settings.dev
 
 [Install]
 WantedBy=multi-user.target

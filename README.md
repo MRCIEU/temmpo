@@ -64,7 +64,7 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
     NB: this can take a few minutes.
 
-        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json
+        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json  --settings=temmpo.settings.dev
 
 2. Management command
 
@@ -72,19 +72,19 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
     NB: These commands each take over 20 minutes to run.
 
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015  --settings=temmpo.settings.dev
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018  --settings=temmpo.settings.dev
 
 ### Importing Genes - optional
 
 A database of existing gene terms can be imported into the Django application database.  A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
 
-    python manage.py import_genes
+    python manage.py import_genes --settings=temmpo.settings.dev
 
 ### Run the development server and workers
 
     sudo systemctl stop rqworker        # Ensure matching code is reloaded
-    python manage.py rqworker default
+    python manage.py rqworker default --settings=temmpo.settings.dev
 
     # In a separate terminal window run the development server
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
@@ -118,7 +118,7 @@ e.g. Just the searching related tests and fail at the first error
 
 NB: If you want to manually run migrations you need to use the --database flag
 
-    python manage.py migrate --database=admin
+    python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
 ### Development deployment commands when working with the apache Vagrant VM.
 
