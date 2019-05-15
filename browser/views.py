@@ -330,7 +330,7 @@ class FilterSelector(UpdateView):
     def form_valid(self, form):
         """Store genes and filter."""
         # Save genes to search criteria
-        form.save()
+        response = super(FilterSelector, self).form_valid(form)
 
         # Create search result object and save mesh filter term
         search_result = SearchResult(criteria=self.object)
@@ -341,7 +341,7 @@ class FilterSelector(UpdateView):
         # Run the search via message queue
         django_rq.enqueue(perform_search, search_result.id)
 
-        return super(FilterSelector, self).form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse('results_listing')
