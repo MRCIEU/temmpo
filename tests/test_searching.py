@@ -549,7 +549,7 @@ class SearchingTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(criteria=search_criteria)
         self._find_expected_content(reverse("results_bubble", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('count_data', kwargs={'pk': search_result.id})])
 
-    def test_bubble_chart_inclusions(self):
+    def test_sankey_inclusions(self):
         search_criteria = self._set_up_test_search_criteria()
         # Run the search, by posting filter and gene selection form
         self._login_user()
@@ -772,12 +772,12 @@ class SearchingTestCase(BaseTestCase):
         # Check files...
         # Check abstract
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
-        # Check results files
+        # Check results and terms files
         base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
         self.assertEqual(len(files_to_delete), 4)
 
-        # DO deletion
+        # Do deletion
         response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}), follow=True)
         self.assertContains(response, 'Search results deleted', count=1)
 
@@ -876,3 +876,41 @@ class SearchingTestCase(BaseTestCase):
         # Ensure stub search results objects are shown in the unprocessed listing area
         self.assertNotContains(response, "Search criteria for resultset '%s'" % search_result.id)
         self.assertContains(response, "Search criteria for search '%s'" % search_result.id)
+
+    def _set_up_duplicate_mesh_term_criteria(self):
+        year = TEST_YEAR
+        test_file = open(TEST_FILE, 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
+        upload.save()
+        test_file.close()
+
+        exposure_terms = MeshTerm.objects.filter(term="5' Flanking Region", year=year)
+        mediator_terms = MeshTerm.objects.filter(term="Abnormal Karyotype", year=year)
+        outcome_terms = MeshTerm.objects.filter(term="Zona Pellucida", year=year)
+
+        criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
+        criteria.save()
+        criteria.exposure_terms = exposure_terms
+        criteria.outcome_terms = outcome_terms
+        criteria.mediator_terms = mediator_terms
+        criteria.save()
+
+        return criteria
+
+    def test_get_unique_exposure_term_names(self):
+        criteria = self._set_up_duplicate_mesh_term_criteria()
+        terms = criteria.get_wcrf_input_variables('exposure')
+        self.assertEqual(len(terms), 1)
+        self.assertNotEqual(len(terms), criteria.exposure_terms.count())
+
+    def test_get_unique_mediator_term_names(self):
+        criteria = self._set_up_duplicate_mesh_term_criteria()
+        terms = criteria.get_wcrf_input_variables('mediator')
+        self.assertEqual(len(terms), 1)
+        self.assertNotEqual(len(terms), criteria.mediator_terms.count())
+
+    def test_get_unique_outcome_term_names(self):
+        criteria = self._set_up_duplicate_mesh_term_criteria()
+        terms = criteria.get_wcrf_input_variables('outcome')
+        self.assertEqual(len(terms), 1)
+        self.assertNotEqual(len(terms), criteria.outcome_terms.count())
