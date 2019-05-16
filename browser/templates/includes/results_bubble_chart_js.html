@@ -9,7 +9,7 @@
       var data = new google.visualization.DataTable();
       data.addColumn('string', 'ID');
       data.addColumn('number', 'Number of abstracts linking exposure to mechanism');
-      data.addColumn('number', 'Number of abstracts linking exposure to outcome');
+      data.addColumn('number', 'Number of abstracts linking mechanism to outcome');
       data.addColumn('string', 'Mechanism');
       data.addColumn('number', 'Score');
       d3.csv("{{ score_csv_url }}").then(function(score_data) {
