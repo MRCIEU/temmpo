@@ -1,9 +1,11 @@
 import logging
 import math
+# from memory_profiler import profile
 import numpy as np 
 import os
 # from pympler import tracker
 import re
+# import resource
 import string
 import sys
 import unicodecsv
@@ -78,7 +80,6 @@ def get_mediators(search_result):
     """Retrieve generator of outcome mesh term strings"""
     return _get_terms(search_result, ('mediator', ))
 
-
 def perform_search(search_result_stub_id):
     """
     Main function for performing the term search.
@@ -130,6 +131,7 @@ def perform_search(search_result_stub_id):
     abstract_file_path = search_result_stub.criteria.upload.abstracts_upload.path
     abstract_file_format = search_result_stub.criteria.upload.file_format
     citations = read_citations(file_path=abstract_file_path, file_format=abstract_file_format)
+
     logger.info("Read citations")
 
     # Count edges
@@ -239,7 +241,6 @@ def read_citations(file_path, file_format=OVID):
 
     return citations
 
-
 def _ovid_medline_read_citations(abstract_file_path):
     """ Read the Abstract data from an OVID Medline formatted text file.
         Create a generator and yield an instance of the Citation class per item """
@@ -268,7 +269,6 @@ def _ovid_medline_read_citations(abstract_file_path):
         yield citation
 
     infile.close()
-
 
 def _pubmed_read_citations(abstract_file_path):
     """ Process PubMed MEDLINE formatted abstracts text file
@@ -633,6 +633,3 @@ def createjson(edges, search_result):
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
     resultfile.close()
-
-
-# TODO has this change saved memory or not.  IT is worth commiting; Are results the same.
