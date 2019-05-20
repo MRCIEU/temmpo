@@ -45,6 +45,34 @@ sudo pip install fabric==1.13.1
 
 # sudo pip install pip==9.0.1
 
+
+# Install redis
+sudo yum -y install redis
+
+sudo sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
+
+sudo systemctl start redis.service
+sudo systemctl enable redis
+redis-cli ping
+
+cat > /etc/systemd/system/rqworker.service <<MESSAGE_QUEUE_WORKER
+[Unit]
+Description=Django-RQ Worker
+After=network.target
+
+[Service]
+User=apache
+Group=vagrant
+WorkingDirectory=/usr/local/projects/temmpo/lib/dev/src/temmpo
+ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temmpo/lib/dev/src/temmpo/manage.py rqworker default --settings=temmpo.settings.dev
+
+[Install]
+WantedBy=multi-user.target
+MESSAGE_QUEUE_WORKER
+
+sudo systemctl start rqworker
+sudo systemctl enable rqworker
+
 # Confirm install list
 yum list installed 
 pip freeze
