@@ -1,3 +1,5 @@
+2.8.1   TMMA-298 Bug fix sorting Bubble chart by top scores correctly
+
 2.8.0   TMMA-268 Bug fix broken Sankey chart
         TMMA-270 Import 2019 MeSH Terms
         TMMA-108 Add google analytics

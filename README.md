@@ -70,10 +70,9 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
     Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
 
-    NB: These commands each take over 20 minutes to run.
+    NB: This command each take over 20 minutes to run.
 
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2019.bin 2019
 
 ### Importing Genes - optional
 
