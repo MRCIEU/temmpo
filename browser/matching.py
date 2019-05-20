@@ -322,7 +322,6 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
         # Ensure we only test citations with associated mesh headings
         if mesh_subject_headings in citation.fields:
-            # TODO HIGH - Review if expected behaviour - if no mesh filter no gene comparisons are made
             if not mesh_filter or matches(citation.fields[mesh_subject_headings], mesh_filter) >= 0:
                 for gene in genelist:
                     try:
