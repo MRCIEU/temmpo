@@ -13,12 +13,15 @@
       data.addColumn('string', 'Mechanism');
       data.addColumn('number', 'Score');
       d3.csv("{{ score_csv_url }}").then(function(score_data) {
+        // TMMA-267 Ensure data is sorted by score.
+        // TMMA-298 Ensure bubble chart is sorted before any slicing
+        score_data.sort(function(a, b){return b['Scores']-a['Scores']});
+
         // Only use the top results
         if (score_data.length > max_results) {
           score_data = score_data.slice(0, max_results)
         }
-        // TMMA-267 Ensure data is sorted by score.
-        score_data.sort(function(a, b){return b['Scores']-a['Scores']});
+
         for (var i = 0; i < score_data.length; i++) {
           id = String(i+1);
           data.addRow([id, Number(score_data[i]["Exposure counts"]), Number(score_data[i]["Outcome counts"]), id + ". " + score_data[i]['Mediators'], Number(score_data[i]['Scores'])]);
@@ -33,7 +36,7 @@
         hAxis: { title: 'Number of abstracts linking exposure to mechanism',
                  titleTextStyle: { bold: true }
         },
-        vAxis: { title: 'Number of abstracts linking exposure to outcome',
+        vAxis: { title: 'Number of abstracts linking mechanism to outcome',
                  titleTextStyle: { bold: true }
         },
         bubble: { textStyle: 
