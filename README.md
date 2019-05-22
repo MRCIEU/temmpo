@@ -102,7 +102,6 @@ A database of existing gene terms can be imported into the Django application da
 
     python manage.py test --settings=temmpo.settings.test_sqlite
 
-
 #### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
@@ -114,6 +113,10 @@ e.g. Just the searching related tests and fail at the first error
 NB: If you want to manually run migrations you need to use the --database flag
 
     python manage.py migrate --database=admin
+
+### Updating the requirements file using pip-sync (via Vagrnat VM)
+
+    fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 ### Development deployment commands when working with the apache Vagrant VM.
 
