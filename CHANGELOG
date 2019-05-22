@@ -1,3 +1,17 @@
+3.0.1   TMMA-302 Add support for selenium testing
+
+3.0.0   TMMA-286 Reduce size of data structures when matching
+                 Dropped support for generating .gv files
+        TMMA-279 Add message queue to trigger running matching in the background 
+                 Add some caching
+
+2.9.0   TMMA-275 Add support for uploading bz2 and gzip files
+        TMMA-278 Bug fix filtering searches when multiple years have been imported
+        TMMA-277 Increase file upload limit to 2000MB
+        TMMA-276 Update third party eggs
+
+2.8.2   TMMA-274 Upgrade Django to 1.11.20
+
 2.8.1   TMMA-298 Bug fix sorting Bubble chart by top scores correctly
 
 2.8.0   TMMA-268 Bug fix broken Sankey chart
@@ -5,7 +19,7 @@
         TMMA-108 Add google analytics
         TMMA-269 Upgrade Django to 1.11.x
 
-2.7.0	TMMA-157 Make is clear when no results were found.
+2.7.0   TMMA-157 Make is clear when no results were found.
 
 2.6.1   TMMA-266 & TMMA-267 Bug fix and improve bubble chart.
 

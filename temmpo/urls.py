@@ -65,12 +65,25 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(), name="logout"),
     url(r'^', include('registration.backends.default.urls')),
     url(r'^', include('django.contrib.auth.urls')),
+
+    # django-rq Redis backed message queue
+    url(r'^django-rq/', include('django_rq.urls')),
 ]
 
 # For non Apache fronted Django development server scenarios.
 if settings.DEBUG:
+
     urlpatterns += [
         url(r'^media/(?P<path>.*)$', serve, {
             'document_root': settings.MEDIA_ROOT,
         }),
     ]
+
+    if "debug_toolbar" in settings.INSTALLED_APPS:
+        import debug_toolbar
+
+        urlpatterns += [
+            url(r'^__debug__/', include(debug_toolbar.urls)),
+        ]
+
+

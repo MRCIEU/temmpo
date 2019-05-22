@@ -86,8 +86,8 @@ sudo unzip chromedriver_linux64.zip
 sudo mv chromedriver /usr/bin/
 chromedriver -v
 
-#Install testing and image comparison tools
-sudo yum install -y scrot
+# Install testing and image comparison tools
+# sudo yum install -y scrot
 
 # Confirm install list
 yum list installed 

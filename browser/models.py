@@ -3,6 +3,7 @@
 NB: Abstract files are not reproduced in the database.  Instead matching is performed from the text files directly.
 """
 
+import logging
 import re
 import unicodedata
 import os
@@ -19,6 +20,7 @@ from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+logger = logging.getLogger(__name__)
 
 def get_user_upload_location(instance, filename):
     """Based on slugify code - from django.utils.text import slugify."""
@@ -78,8 +80,12 @@ class MeshTerm(MPTTModel):
     @classmethod
     def get_latest_mesh_term_release_year(cls):
         """Retrieve the a latest release year or MeshTerms recorded."""
-        data = cls.objects.root_nodes().aggregate(Max('year'))
-        return data['year__max']
+        try:
+            data = cls.objects.root_nodes().aggregate(Max('year'))
+            return data['year__max']
+        except:
+            logger.warning("Retuning current year for get_latest_mesh_term_release_year, as exception when querying the database")
+            return datetime.datetime.now().year
 
     @classmethod
     def get_latest_mesh_term_filter_year_term(cls):
@@ -192,18 +198,18 @@ class SearchCriteria(models.Model):
         """Helper function to return terms in format that suits the matching code."""
         input_variables = None
         if codename == 'exposure':
-            input_variables = self.exposure_terms.values_list('term', flat=True)
+            input_variables = self.exposure_terms.order_by('term').values_list('term', flat=True)
         elif codename == 'outcome':
-            input_variables = self.outcome_terms.values_list('term', flat=True)
+            input_variables = self.outcome_terms.order_by('term').values_list('term', flat=True)
         elif codename == 'mediator':
-            input_variables = self.mediator_terms.values_list('term', flat=True)
+            input_variables = self.mediator_terms.order_by('term').values_list('term', flat=True)
         elif codename == 'gene':
-            input_variables = self.genes.values_list('name', flat=True)
+            input_variables = self.genes.order_by('name').values_list('name', flat=True)
 
         if input_variables:
-            return list(set(input_variables))
+            return set(input_variables)
         else:
-            return []
+            return tuple()
 
     def __unicode__(self):
         """Provide a flexible method for determining he search criteria's name.
@@ -232,6 +238,21 @@ class SearchResult(models.Model):
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
     mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
+    # Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
+    # redis restarts and should be used only for information when tracking processing.
+    # job_id = models.CharField(max_length=32, blank=True, null=True)
+
+    @property
+    def status(self):
+        """Property identifying failed jobs"""
+        if self.has_failed:
+            return "Search failed"
+        elif self.has_completed:
+            return "Completed"
+        elif self.has_started:
+            return "Processing (started %s)" % naturaltime(self.started_processing)
+        else:
+            return "Not started" 
 
     @property
     def has_started(self):

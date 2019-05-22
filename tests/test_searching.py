@@ -50,31 +50,39 @@ Test data used frequently in tests set up in the _set_up_test_search_criteria he
                 mtrees2015.bin:48033:Apoptosis;G04.299.139.160
                 mtrees2015.bin:48034:Anoikis;G04.299.139.160.060
 """
-
+import logging
 import json
 import os
 from datetime import datetime, timedelta
 import glob
+import magic
 
 from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
-from browser.matching import _pubmed_readcitations  # perform_search
+from browser.matching import read_citations, Citation
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
 from tests.base_test_case import BaseTestCase
 
+logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
+
+# Valid file uploads
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
-TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'pubmed-abstract.txt')
-TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
+
+#Invalid file uploads
+TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt')
+TEST_DOC_FILE = os.path.join(BASE_DIR, 'test.docx')
 TEST_BADLY_FORMATTED_FILE = os.path.join(BASE_DIR, 'test-badly-formatted-abstracts.txt')
+
 PREVIOUS_TEST_YEAR = 2015
 TEST_YEAR = 2018
+
 TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes' # mtrees2015.bin 47978:Cell Physiological Processes;G04.299
 TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processes, G0 Phase'  # mtrees2015.bin 47980:Cell Aging;G04.299.119 - 48025:G0 Phase;G04.299.134.500.300
 TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
@@ -84,6 +92,31 @@ class SearchingTestCase(BaseTestCase):
     """Run tests for browsing the TeMMPo application."""
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
+
+    def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
+        """Upload file and try to bulk select mesh terms."""
+        with open(abstract_file_path, 'r') as upload:
+            response = self.client.post(search_url,
+                                        {'abstracts_upload': upload,
+                                         'file_format': file_format},
+                                        follow=True)
+
+            self.assertContains(response, "Select exposures")
+            self.assertContains(response, "Bulk edit")
+            search_criteria = SearchCriteria.objects.latest("created")
+            self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
+            exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
+            response = self.client.post(exposure_url,
+                                        {"term_names": "Genetic Markers;Serogroup; Penetrance",
+                                         "btn_submit": "replace"},
+                                        follow=True)
+            search_criteria.refresh_from_db()
+            # NB: Only a limited set of mesh terms are available for testing, for speed purposes
+            exposure_terms = search_criteria.exposure_terms.all()
+            unique_exposure_terms = set(exposure_terms.values_list("term", flat=True))
+            self.assertEqual(exposure_terms.count(), 4) # NB: Penetrance appears twice in this test mesh tree subset
+            self.assertEqual(len(unique_exposure_terms), 3)
+            self.assertNotContains(response, " could not be found")
 
     def test_ovid_medline_matching(self):
         """Testing matching using OVID formatted abstracts file.
@@ -118,14 +151,14 @@ class SearchingTestCase(BaseTestCase):
 
         test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
         test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
-        print("RESULTS ARE IN THE THESE FILES: ")
-        print(test_results_edge_csv.name)
-        print(test_results_abstract_csv.name)
+        logger.debug("RESULTS ARE IN THE THESE FILES: ")
+        logger.debug(test_results_edge_csv.name)
+        logger.debug(test_results_abstract_csv.name)
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
@@ -136,31 +169,6 @@ class SearchingTestCase(BaseTestCase):
         new_gene_count = Gene.objects.filter(name="HTR1A").count()
         self.assertEqual(existing_gene_count, original_gene_count)
         self.assertEqual(new_gene_count, 1)
-
-    def _test_search_bulk_term_edit(self, abstract_file_path, file_format, search_url):
-        """Upload file and try to bulk select mesh terms."""
-        with open(abstract_file_path, 'r') as upload:
-            response = self.client.post(search_url,
-                                        {'abstracts_upload': upload,
-                                         'file_format': file_format},
-                                        follow=True)
-
-            self.assertContains(response, "Select exposures")
-            self.assertContains(response, "Bulk edit")
-            search_criteria = SearchCriteria.objects.latest("created")
-            self.assertEqual(search_criteria.exposure_terms.all().count(), 0)
-            exposure_url = reverse('exposure_selector', kwargs={'pk': search_criteria.id})
-            response = self.client.post(exposure_url,
-                                        {"term_names": "Genetic Markers;Serogroup; Penetrance",
-                                         "btn_submit": "replace"},
-                                        follow=True)
-            search_criteria.refresh_from_db()
-            # NB: Only a limited set of mesh terms are available for testing, for speed purposes
-            exposure_terms = search_criteria.exposure_terms.all()
-            unique_exposure_terms = set(exposure_terms.values_list("term", flat=True))
-            self.assertEqual(exposure_terms.count(), 4) # NB: Penetrance appears twice in this test mesh tree subset
-            self.assertEqual(len(unique_exposure_terms), 3)
-            self.assertNotContains(response, " could not be found")
 
     def test_ovid_search_bulk_term_edit(self):
         """Test Ovid MEDLINE formatted search and bulk edit style searching."""
@@ -187,55 +195,23 @@ class SearchingTestCase(BaseTestCase):
                                          file_format=PUBMED,
                                          search_url=reverse('search_pubmed'))
 
-    def test_ovid_medline_file_upload_validation(self):
-        """Test form validation for Ovid MEDLINE formatted abstracts files."""
-        self._login_user()
-        search_path = reverse('search_ovid_medline')
 
-        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
-            response = self.client.post(search_path,
-                                        {'abstracts_upload': upload,
-                                         'file_format': OVID},
-                                        follow=True)
-            self.assertContains(response, "errorlist")
-            self.assertContains(response, "does not appear to be a Ovid MEDLINE® formatted")
-
-        with open(TEST_DOC_FILE, 'r') as upload:
-            response = self.client.post(search_path,
-                                        {'abstracts_upload': upload,
-                                         'file_format': OVID},
-                                        follow=True)
-
-            self.assertContains(response, "errorlist")
-            self.assertContains(response, "is not an acceptable file type")
-
-    def test_pubmed_medline_file_upload_validation(self):
-        """Test form validation for PubMed formatted abstracts files."""
-        self._login_user()
-        search_path = reverse('search_pubmed')
-
-        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
-            response = self.client.post(search_path,
-                                        {'abstracts_upload': upload,
-                                         'file_format': PUBMED},
-                                        follow=True)
-            self.assertContains(response, "errorlist")
-            self.assertContains(response, "does not appear to be a PubMed/MEDLINE® formatted")
-
-        with open(TEST_DOC_FILE, 'r') as upload:
-            response = self.client.post(search_path,
-                                        {'abstracts_upload': upload,
-                                         'file_format': PUBMED},
-                                        follow=True)
-
-            self.assertContains(response, "errorlist")
-            self.assertContains(response, "is not an acceptable file type")
-
-    def test_pubmed_readcitations_parsing_bug(self):
+    def test_pubmed_read_citations_parsing_bug(self):
         """Test to capture a specific bug in file formats."""
-        citations = _pubmed_readcitations(TEST_BADLY_FORMATTED_FILE)
-        self.assertEqual(type(citations), list)
-        self.assertEqual(len(citations), 23)
+        citations = read_citations(TEST_BADLY_FORMATTED_FILE, PUBMED)
+        count = 0
+        for c in citations:
+            count += 1
+            self.assertTrue(isinstance(c, Citation))
+        self.assertEqual(count, 23)
+
+    def test_ovid_medline_citation_reading(self):
+        citations = read_citations(TEST_OVID_MEDLINE_ABSTRACTS, OVID)
+        count = 0
+        for c in citations:
+            count += 1
+            self.assertTrue(isinstance(c, Citation))
+        self.assertEqual(count, 100)
 
     def _assert_toggle_selecting_child_terms(self, search_criteria):
         """Helper function to test form toggle selection of child MeshTerms."""
@@ -573,7 +549,7 @@ class SearchingTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(criteria=search_criteria)
         self._find_expected_content(reverse("results_bubble", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('count_data', kwargs={'pk': search_result.id})])
 
-    def test_bubble_chart_inclusions(self):
+    def test_sankey_inclusions(self):
         search_criteria = self._set_up_test_search_criteria()
         # Run the search, by posting filter and gene selection form
         self._login_user()
@@ -729,7 +705,7 @@ class SearchingTestCase(BaseTestCase):
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
@@ -740,24 +716,28 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         # Fake still processing, no button
         search_result = SearchResult.objects.all()[0]
         search_result.has_completed = False
         search_result.save()
         response = self.client.get(reverse('results_listing'))
-        self.assertContains(response, 'Delete', count=1)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertNotContains(response, 'delete-button')
         self.assertContains(response, 'Processing', count=1)
+        self.assertContains(response, "started", count=1)
 
-        # Check failed job, delete button
+        # Check failed job, abort button
         orig_date = search_result.started_processing
         time_in_past = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(days=3)
         search_result.started_processing = time_in_past
         search_result.save()
 
         response = self.client.get(reverse('results_listing'))
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'abort-search-label', count=1)
+        self.assertContains(response, 'abort-button', count=1)
         self.assertContains(response, 'Search failed', count=1)
 
         # Reset search results
@@ -792,12 +772,12 @@ class SearchingTestCase(BaseTestCase):
         # Check files...
         # Check abstract
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
-        # Check results files
+        # Check results and terms files
         base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 5)
+        self.assertEqual(len(files_to_delete), 4)
 
-        # DO deletion
+        # Do deletion
         response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}), follow=True)
         self.assertContains(response, 'Search results deleted', count=1)
 
@@ -843,7 +823,7 @@ class SearchingTestCase(BaseTestCase):
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
@@ -854,7 +834,8 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         # Log out user
         self._logout_user()
@@ -865,7 +846,8 @@ class SearchingTestCase(BaseTestCase):
         # Check no delete button etc
         response = self.client.get(reverse('results_listing'))
         # Should only be one instance (the table heading)
-        self.assertContains(response, 'Delete', count=1)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertNotContains(response, 'delete-button')
 
         # Test deletion
         # Should not be shown a confirmation screen
@@ -891,5 +873,44 @@ class SearchingTestCase(BaseTestCase):
         # Go to results page
         response = self.client.get(reverse('results_listing'))
 
-        # Ensure stub search results objects are not shown
+        # Ensure stub search results objects are shown in the unprocessed listing area
         self.assertNotContains(response, "Search criteria for resultset '%s'" % search_result.id)
+        self.assertContains(response, "Search criteria for search '%s'" % search_result.id)
+
+    def _set_up_duplicate_mesh_term_criteria(self):
+        year = TEST_YEAR
+        test_file = open(TEST_FILE, 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
+        upload.save()
+        test_file.close()
+
+        exposure_terms = MeshTerm.objects.filter(term="5' Flanking Region", year=year)
+        mediator_terms = MeshTerm.objects.filter(term="Abnormal Karyotype", year=year)
+        outcome_terms = MeshTerm.objects.filter(term="Zona Pellucida", year=year)
+
+        criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
+        criteria.save()
+        criteria.exposure_terms = exposure_terms
+        criteria.outcome_terms = outcome_terms
+        criteria.mediator_terms = mediator_terms
+        criteria.save()
+
+        return criteria
+
+    def test_get_unique_exposure_term_names(self):
+        criteria = self._set_up_duplicate_mesh_term_criteria()
+        terms = criteria.get_wcrf_input_variables('exposure')
+        self.assertEqual(len(terms), 1)
+        self.assertNotEqual(len(terms), criteria.exposure_terms.count())
+
+    def test_get_unique_mediator_term_names(self):
+        criteria = self._set_up_duplicate_mesh_term_criteria()
+        terms = criteria.get_wcrf_input_variables('mediator')
+        self.assertEqual(len(terms), 1)
+        self.assertNotEqual(len(terms), criteria.mediator_terms.count())
+
+    def test_get_unique_outcome_term_names(self):
+        criteria = self._set_up_duplicate_mesh_term_criteria()
+        terms = criteria.get_wcrf_input_variables('outcome')
+        self.assertEqual(len(terms), 1)
+        self.assertNotEqual(len(terms), criteria.outcome_terms.count())

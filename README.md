@@ -64,7 +64,7 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
     NB: this can take a few minutes.
 
-        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json
+        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json  --settings=temmpo.settings.dev
 
 2. Management command
 
@@ -78,10 +78,14 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
 A database of existing gene terms can be imported into the Django application database.  A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
 
-    python manage.py import_genes
+    python manage.py import_genes --settings=temmpo.settings.dev
 
-### Run the development server
+### Run the development server and workers
 
+    sudo systemctl stop rqworker        # Ensure matching code is reloaded
+    python manage.py rqworker default --settings=temmpo.settings.dev
+
+    # In a separate terminal window run the development server
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ### View application in your local browser
@@ -112,7 +116,7 @@ e.g. Just the searching related tests and fail at the first error
 
 NB: If you want to manually run migrations you need to use the --database flag
 
-    python manage.py migrate --database=admin
+    python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
 ### Updating the requirements file using pip-sync (via Vagrnat VM)
 
@@ -245,11 +249,11 @@ Below are the shell commands that each part of the CI pipeline runs from the CI 
 1. Project 1-run-tests
 
         # Build test environment
-        fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=test -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
         # Clear database
         fab recreate_db:env=test,database_name=temmpo_test -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
         # Run tests
-        fab run_tests:env=test,use_local_mode=False,reuse_db=True,db_type=mysql -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        fab run_tests:env=test,use_local_mode=False,reuse_db=True,db_type=mysql,run_selenium_tests=True -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
 
 2. Project 2-update-last-known-good-branch
 
@@ -299,3 +303,13 @@ NB: The Jenkins jobs are configured to use the CI server's temmpo user account's
     (1048, "Column 'mesh_terms_year_of_release' cannot be null")
 
 This suggests attempting to create a search when no mesh terms have been imported.
+
+## Debugging issues
+
+The project needs the following additional services to be running:
+
+    sudo systemctl status redis
+    sudo systemctl status rqworker
+    sudo systemctl status httpd      # Not relevant for the django Vagrant VM
+
+

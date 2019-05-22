@@ -9,7 +9,9 @@ from fabric.contrib import files
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
+
 PIP_VERSION = '19.1.1'
+
 SETUPTOOLS_VERSION = '38.2.5'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',

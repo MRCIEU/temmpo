@@ -82,7 +82,7 @@ class UserDeletionTest(BaseTestCase):
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
@@ -93,7 +93,8 @@ class UserDeletionTest(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         search_result = SearchResult.objects.all()[0]
         search_result_id = search_result.id
@@ -108,7 +109,7 @@ class UserDeletionTest(BaseTestCase):
         # Check results files
         base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 5)
+        self.assertEqual(len(files_to_delete), 4)
 
         # Check account page
         response = self.client.get(reverse('account'))
@@ -130,7 +131,6 @@ class UserDeletionTest(BaseTestCase):
         search_result.has_completed = False
         search_result.save()
         response = self.client.get(reverse('results_listing'))
-        self.assertContains(response, 'Delete', count=1)
         self.assertContains(response, 'Processing', count=1)
         response = self.client.get(reverse('close_account', kwargs={'pk': test_user.id}))
         self.assertContains(response, 'You have a search that is still running.')
@@ -199,7 +199,7 @@ class UserDeletionTest(BaseTestCase):
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
@@ -210,7 +210,8 @@ class UserDeletionTest(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         search_result = SearchResult.objects.all()[0]
         search_result_id = search_result.id
@@ -225,7 +226,7 @@ class UserDeletionTest(BaseTestCase):
         # Check results files
         base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 5)
+        self.assertEqual(len(files_to_delete), 4)
 
         # Check can't access manage users page
         response = self.client.get(reverse('manage_users'))
@@ -503,7 +504,7 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")

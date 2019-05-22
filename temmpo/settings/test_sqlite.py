@@ -9,3 +9,6 @@ DATABASES = {
         'NAME': '/usr/local/projects/temmpo/var/data/db.sqlite3',
     }
 }
+
+RQ_QUEUES['default']['ASYNC'] = False
+LOGGING['handlers']['console']['level'] = 'ERROR'
