@@ -106,7 +106,6 @@ A database of existing gene terms can be imported into the Django application da
 
     python manage.py test --settings=temmpo.settings.test_sqlite
 
-
 #### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
@@ -118,6 +117,10 @@ e.g. Just the searching related tests and fail at the first error
 NB: If you want to manually run migrations you need to use the --database flag
 
     python manage.py migrate --database=admin --settings=temmpo.settings.dev
+
+### Updating the requirements file using pip-sync (via Vagrnat VM)
+
+    fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 ### Development deployment commands when working with the apache Vagrant VM.
 
@@ -246,11 +249,11 @@ Below are the shell commands that each part of the CI pipeline runs from the CI 
 1. Project 1-run-tests
 
         # Build test environment
-        fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=test -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
         # Clear database
         fab recreate_db:env=test,database_name=temmpo_test -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
         # Run tests
-        fab run_tests:env=test,use_local_mode=False,reuse_db=True,db_type=mysql -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        fab run_tests:env=test,use_local_mode=False,reuse_db=True,db_type=mysql,run_selenium_tests=True -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
 
 2. Project 2-update-last-known-good-branch
 
