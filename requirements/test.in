@@ -1,0 +1,6 @@
+-r base.txt
+
+selenium==3.141.0
+requests==2.22.0
+pyvirtualdisplay==0.2.1
+pyscreenshot==0.5.1

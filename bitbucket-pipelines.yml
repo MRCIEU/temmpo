@@ -12,12 +12,12 @@ pipelines:
           - service redis-server restart
           - redis-cli ping
           - redis-server -v
-          - pip install -U pip==9.0.3
-          - pip install -r requirements/base.txt
-          - pip-sync requirements/base.txt
+          - pip install -U pip==19.1.1
+          - pip install -r requirements/test.txt
+          - pip-sync requirements/test.txt
           - mkdir -p /opt/var/results
           - mkdir -p /opt/var/abstracts
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - python manage.py test --settings=temmpo.settings.test_sqlite
+          - python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
