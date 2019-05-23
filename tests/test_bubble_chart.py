@@ -1,6 +1,7 @@
 import os
 from selenium.common.exceptions import WebDriverException
 
+from django.conf import settings
 from django.core.files import File
 from django.urls import reverse
 from django.test import tag
@@ -18,36 +19,14 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
 
     def _set_up_test_search_result(self):
         year = 2018
-        test_file = open(os.path.join(os.path.dirname(__file__), 'test-abstract.txt'), 'r')
-        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
+        test_file = open(os.path.join(os.path.dirname(__file__), 'test-abstract-ovid-test-sample-5.txt'), 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract-ovid-test-sample-5.txt'), file_format=OVID)
         upload.save()
         test_file.close()
 
-        exposure_terms = MeshTerm.objects.get(term="Humans", year=year).get_descendants(include_self=True)
+        exposure_terms = MeshTerm.objects.filter(term__in=("Humans", "Cells"), year=year)
         mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=year).get_descendants(include_self=True)
-        """
-    Actins/me [Metabolism]
-    Androgens/me [Metabolism]
-    Apoptosis
-    *Calcium/me [Metabolism]
-    *Calcium Channels/me [Metabolism]
-    Cell Differentiation
-    Cell Line, Tumor
-    Cytochalasin D/pd [Pharmacology]
-    *Cytoskeleton/me [Metabolism]
-    DNA Primers/ge [Genetics]
-    Electrophysiology/mt [Methods]
-    Humans
-    Male
-    Membrane Proteins/me [Metabolism]
-    Neoplasm Proteins/me [Metabolism]
-    *Neuroendocrine Cells/cy [Cytology]
-    Oxazoles/pd [Pharmacology]
-    Phenotype
-    Prostatic Neoplasms/th [Therapy]
-    TRPC Cation Channels/me [Metabolism]
-    """
 
         gene = Gene.objects.get(name="TRPC1")
 
@@ -71,31 +50,27 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
 
         return SearchResult.objects.get(id=search_result.id)
 
-
-    # def setUp(self):
-    #     super(BubbleChartJSTestCase, self).setUp()
-
-
     def test_bubble_chart(self):
         search_result = self._set_up_test_search_result()
-        print search_result
         self.assertTrue(search_result.mediator_match_counts > 0)
+
+        # print [x.term for x in search_result.criteria.exposure_terms.all()]
+        # print [x.term for x in search_result.criteria.mediator_terms.all()]
+        # print [x.term for x in search_result.criteria.outcome_terms.all()]
+        # print MeshTerm.objects.filter(year=2018).all()
 
         # Bubble chart page
         self.sel_open(reverse("results_bubble",  kwargs={'pk': search_result.id}))
 
         self.assertTrue("No matches found" not in self.driver.page_source)
-        print self.driver.page_source
+        self.assertTrue("Filtered by " not in self.driver.page_source)
 
         try:
-            # chart = self.driver.find_element_by_id('bubble_chart')
-            # chart_svg = self.driver.find_element_by_css_selector("#bubble_chart svg")
             chart_header_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(3) > text")
-            print(dir(chart_header_label))
             self.assertEqual(chart_header_label.text, "Focused search results based on original score (Top 20)")
 
-            # // u'Focused search results based on' != 'Focused search results based on original score (Top 20)'
-
+            legend_item_1_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(2)")
+            self.assertEqual(legend_item_1_label.get_attribute("column-id"), "1. Serogroup")  # Appears last in the file of matches but has the higher score.
 
         except WebDriverException:
             self.fail("A selenium exception occurred")
