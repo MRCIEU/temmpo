@@ -1,4 +1,4 @@
-3.0.1   TMMA-302 Add support for selenium testing
+3.0.1   TMMA-302 Add support for selenium acceptance testing
 
 3.0.0   TMMA-286 Reduce size of data structures when matching
                  Dropped support for generating .gv files
