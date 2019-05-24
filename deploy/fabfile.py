@@ -7,16 +7,17 @@ from fabric.api import *
 from fabric.contrib import files
 
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
+
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
-
-PIP_VERSION = '19.1.1'
-
-SETUPTOOLS_VERSION = '38.2.5'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
                  'bitbucket.org',)
+
+PIP_VERSION = '19.1.1'
+SETUPTOOLS_VERSION = '41.0.1'
+
 
 
 def _add_file_local(path, contents, use_local_mode):

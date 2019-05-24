@@ -360,6 +360,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                             if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
                                                 edges[edge_row_id][edge_column_id] += 1
                                                 # identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                    # Stop comparing synonyms once a match is found
                                     break
                     except KeyError:
                         # Some citations have no Abstract section
@@ -403,7 +404,6 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
                                         edges[edge_row_id][edge_column_id] += 1
                                         # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
-                            break
                     except KeyError:
                         # Some citations have no Abstract section
                         pass
