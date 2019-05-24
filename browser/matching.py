@@ -144,12 +144,9 @@ def generate_synonyms2():
     return synonymlookup, synonymlisting
 
 def generate_synonyms():
-    # Create a dictionary of synoynms
-    base_dir = os.path.dirname(__file__)
-    full_path = "%s%s%s" % (base_dir, '/static/data-files/', 'Homo_sapiens.gene_info')
-    genefile = open(full_path, 'r')
+    # Create a dictionary of synonyms
+    genefile = open(settings.GENE_FILE_LOCATION, 'r')
     synonymlookup = dict()
-    # synonymresults = dict()
     synonymlisting = dict()
     for line in genefile:
         line = line.strip().split()
@@ -160,6 +157,7 @@ def generate_synonyms():
             synonyms = line[4].split("|")
         fulllist = synonyms + [genename]
         for synonym in synonyms:
+            # TODO Need to ensure we do not overwrite an existing entry for a synonym which is an alias for more than one gene.
             synonymlookup[synonym] = genename
         synonymlookup[genename] = genename
         synonymlisting[genename] = fulllist
@@ -173,14 +171,6 @@ def _get_genes_and_mediators(genelist, mediatormesh):
 
     for mediator in mediatormesh:
         yield mediator
-
-# def _get_exposures_and_outcomes(exposuremesh, outcomemesh):
-#     """Retrieve y axis of matching matrix, exposures then outcomes"""
-#     for exposure in exposuremesh:
-#         yield exposure
-
-#     for outcome in outcomemesh:
-#         yield outcome
 
 def create_edge_matrix(gene_count, mediator_count, exposure_count, outcome_count):
     """edges represented as a 2D nArray"""
