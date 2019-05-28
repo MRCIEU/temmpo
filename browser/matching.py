@@ -121,35 +121,15 @@ def perform_search(search_result_stub_id):
     logger.debug("Done housekeeping")
     logger.info("END: perform_search")
 
-
-def generate_synonyms2():
-    """
-    Generate a list of gene synonyms
-    """
-
-    all_genes = Gene.objects.filter(synonym_for__exact=None)
-    synonymlookup = dict()
-    synonymlisting = dict()
-
-    for each_gene in all_genes:
-        synonymlookup[each_gene.name] = each_gene.name
-
-        # Get synonyms
-        all_synonyms = list(Gene.objects.filter(synonym_for=each_gene).values_list('name', flat=True))
-        if all_synonyms:
-            for syn in all_synonyms:
-                synonymlookup[syn] = each_gene.name
-            synonymlisting[each_gene.name] = all_synonyms + [each_gene.name]
-
-    return synonymlookup, synonymlisting
-
 def generate_synonyms():
-    # Create a dictionary of synoynms
-    base_dir = os.path.dirname(__file__)
-    full_path = "%s%s%s" % (base_dir, '/static/data-files/', 'Homo_sapiens.gene_info')
-    genefile = open(full_path, 'r')
+    """Create dictionaries of synonyms, genes and look ups.
+       NB: A synonym can be used for multiple genes.
+       ->
+       synonymlookup: dict synonym name => list of one or more gene names
+       synonymlisting: dict gene name  => list of possible synonyms and itself
+    """
+    genefile = open(settings.GENE_FILE_LOCATION, 'r')
     synonymlookup = dict()
-    # synonymresults = dict()
     synonymlisting = dict()
     for line in genefile:
         line = line.strip().split()
@@ -160,10 +140,14 @@ def generate_synonyms():
             synonyms = line[4].split("|")
         fulllist = synonyms + [genename]
         for synonym in synonyms:
-            synonymlookup[synonym] = genename
-        synonymlookup[genename] = genename
+            # TMMA-307 A gene synonym can be an alias for more than one gene.
+            matched_gene_names = synonymlookup.get(synonym, [])
+            matched_gene_names.append(genename)
+            synonymlookup[synonym] = matched_gene_names
+        synonymlookup[genename] = [genename, ]
         synonymlisting[genename] = fulllist
     genefile.close()
+    # TODO test strucutre is created as expected.
     return synonymlookup, synonymlisting
 
 def _get_genes_and_mediators(genelist, mediatormesh):
@@ -173,14 +157,6 @@ def _get_genes_and_mediators(genelist, mediatormesh):
 
     for mediator in mediatormesh:
         yield mediator
-
-# def _get_exposures_and_outcomes(exposuremesh, outcomemesh):
-#     """Retrieve y axis of matching matrix, exposures then outcomes"""
-#     for exposure in exposuremesh:
-#         yield exposure
-
-#     for outcome in outcomemesh:
-#         yield outcome
 
 def create_edge_matrix(gene_count, mediator_count, exposure_count, outcome_count):
     """edges represented as a 2D nArray"""
@@ -328,39 +304,47 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     try:
                         edge_row_id += 1
                         edge_column_id = -1
-                        gene = synonymlookup[gene]
-                        for genesyn in synonymlisting[gene]:
-                            if matches(citation.fields[abstract], genesyn) >= 0:
-                                citation_id.add(citation.fields[unique_id].strip())
-                                if searchgene(citation.fields[abstract], genesyn):
-                                    countthis = 1
-                                    for exposure in exposuremesh:
-                                        edge_column_id += 1
-                                        exposurel = exposure.split(" AND ")
-                                        if len(exposurel) == 2:
-                                            if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                        elif len(exposurel) == 3:
-                                            if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                        else:
-                                            if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                    for outcome in outcomemesh:
-                                        edge_column_id += 1
-                                        outcomel = outcome.split(" AND ")
-                                        if len(outcomel) > 1:
-                                            if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
-                                               edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][1][outcome].append(citation.fields[unique_id])
-                                        else:
-                                            if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][1][outcome].append(citation.fields[unique_id])
-                                    break
+                        gene_matches = synonymlookup[gene]
+                        found_gene_match = False
+                        for gene in gene_matches:
+                            for genesyn in synonymlisting[gene]:
+                                if matches(citation.fields[abstract], genesyn) >= 0:
+                                    citation_id.add(citation.fields[unique_id].strip())
+                                    if searchgene(citation.fields[abstract], genesyn):
+                                        found_gene_match = True
+                                        countthis = 1
+                                        for exposure in exposuremesh:
+                                            edge_column_id += 1
+                                            exposurel = exposure.split(" AND ")
+                                            if len(exposurel) == 2:
+                                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                            elif len(exposurel) == 3:
+                                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                            else:
+                                                if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                        for outcome in outcomemesh:
+                                            edge_column_id += 1
+                                            outcomel = outcome.split(" AND ")
+                                            if len(outcomel) > 1:
+                                                if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
+                                                   edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                            else:
+                                                if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                        # Stop comparing synonyms once a match is found
+                                        break
+                            # Stop comparing synonyms once a match is found
+                            if found_gene_match:
+                                break
+
                     except KeyError:
                         # Some citations have no Abstract section
                         pass
@@ -403,7 +387,6 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
                                         edges[edge_row_id][edge_column_id] += 1
                                         # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
-                            break
                     except KeyError:
                         # Some citations have no Abstract section
                         pass
@@ -448,7 +431,7 @@ def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
         thisresult = ""
         exposureandoutcome = [0, 0]
         try:
-            gene = synonymlookup[genel]
+            gene = "/".join(synonymlookup[genel])  # TMMA-307 It is possible that a gene synonym that is used for more than one gene has been matched against. In this case ensure this is referenced.
             for exposure in exposuremesh:
                 edge_column_id += 1
                 if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:

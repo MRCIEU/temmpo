@@ -21,7 +21,8 @@ sudo yum -y install git
 sudo yum -y install nano
 sudo yum -y install wget
 sudo yum -y install mariadb # Database client - adds mysql alias to command line
-# 
+sudo yum -y install unzip
+
 sudo yum -y install mariadb-devel
 
 # Web server setup
@@ -72,6 +73,20 @@ MESSAGE_QUEUE_WORKER
 
 sudo systemctl start rqworker
 sudo systemctl enable rqworker
+
+# Install components for Selenium testing using Chrome and the accompanying chromedriver
+sudo yum -y install Xvfb
+sudo cd /tmp
+sudo wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+sudo yum -y localinstall google-chrome-stable_current_x86_64.rpm
+google-chrome --version
+sudo wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
+sudo unzip chromedriver_linux64.zip
+sudo mv chromedriver /usr/bin/
+chromedriver -v
+
+# Install testing and image comparison tools
+# sudo yum install -y scrot
 
 # Confirm install list
 yum list installed 

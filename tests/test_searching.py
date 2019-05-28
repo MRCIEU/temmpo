@@ -60,6 +60,7 @@ import magic
 from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
+from django.test import tag
 from django.utils import timezone
 
 from browser.matching import read_citations, Citation
@@ -87,7 +88,7 @@ TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes' # mtrees2015.bi
 TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processes, G0 Phase'  # mtrees2015.bin 47980:Cell Aging;G04.299.119 - 48025:G0 Phase;G04.299.134.500.300
 TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 
-
+@tag('matching-test')
 class SearchingTestCase(BaseTestCase):
     """Run tests for browsing the TeMMPo application."""
 

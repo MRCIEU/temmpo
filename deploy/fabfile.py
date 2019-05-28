@@ -7,14 +7,17 @@ from fabric.api import *
 from fabric.contrib import files
 
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
+
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
-PIP_VERSION = '9.0.3'
-SETUPTOOLS_VERSION = '38.2.5'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
                  'bitbucket.org',)
+
+PIP_VERSION = '19.1.1'
+SETUPTOOLS_VERSION = '41.0.1'
+
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -409,14 +412,18 @@ def stop_rqworker_service(use_local_mode):
 def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
+    run_selenium_tests = (str(reuse_db).lower() == 'true')
     cmd_suffix = ''
     if reuse_db:
         cmd_suffix = " --keepdb"
+
+    if not run_selenium_tests:
+        cmd_suffix = " --exclude-tag=selenium-test"
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
@@ -458,3 +465,15 @@ def add_missing_csv_headers_to_scores():
                 if not files.contains(csv_file, info['headers'], exact=False):
                     run('cat "headers%s" "%s" > tmp-csv-file.txt && mv tmp-csv-file.txt "%s"' % (info['file_extension'], csv_file, csv_file))
             run("rm headers%(file_extension)s" % info)
+
+def pip_sync_requirements_file(env="dev", use_local_mode=True):
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    with change_dir(venv_dir+"src/temmpo/"):
+        caller('../../bin/pip-compile --output-file requirements/base.txt requirements/base.in')
+        caller('../../bin/pip-compile --output-file requirements/test.txt requirements/test.in')
+        caller('../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in')
