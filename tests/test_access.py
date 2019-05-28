@@ -40,8 +40,16 @@ class AccessTestCase(BaseTestCase):
         """Test can view the results page."""
         path = reverse('results', kwargs={'pk': RESULT_ID})
         self._find_expected_content(path=path, msg="login to use this tool")
-        # TODO Add results rendering tests
         self._login_user()
+        # Object does not exist
+        self._find_expected_content(path=path, msg='Page not found', status_code=404)
+
+    def test_results_bubble_chart_page(self):
+        """Test can view the results page."""
+        path = reverse('results_bubble', kwargs={'pk': RESULT_ID})
+        self._find_expected_content(path=path, msg="login to use this tool")
+        self._login_user()
+        # Object does not exist
         self._find_expected_content(path=path, msg='Page not found', status_code=404)
 
     def test_results_listing_page(self):
@@ -51,7 +59,6 @@ class AccessTestCase(BaseTestCase):
         self._find_expected_content(path=reverse("results_listing"), msg="My list")
 
     # Additional features
-
     def test_register_page(self):
         """Test can use the register page."""
         self._find_expected_content(path=reverse("registration_register"),
