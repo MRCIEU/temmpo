@@ -58,7 +58,7 @@ class MatchingTestCase(BaseTestCase):
         self.assertEqual(synonymlookup["A1B"][0], "A1BG")
         self.assertEqual(synonymlookup["A1B"][1], "SNTB1")
         self.assertEqual(len(synonymlookup["A1B"]), 2)  # TMMA-307: Testing a synonym that is used for two different genes.
-        self.assertEqual(synonymlookup["ABG"][0], "A1BG")  
+        self.assertEqual(synonymlookup["ABG"][0], "A1BG")
         self.assertEqual(len(synonymlookup["ABG"]), 1) # Is a synonym that is used for 1 gene
         self.assertEqual(synonymlookup["GAB"][0], "A1BG")
         self.assertEqual(synonymlookup["HYST2477"][0], "A1BG")

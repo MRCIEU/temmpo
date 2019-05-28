@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 
+from browser.utils import delete_user_content
 
 class SeleniumBaseTestCase(StaticLiveServerTestCase):
     """A base test case for Selenium, providing helper methods."""
@@ -65,3 +66,8 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
                                      email=email,
                                      password=password)
         self.login_user(user=username, password=password)
+
+    def tearDown(self):
+        """Clean up user content on the file system."""
+        delete_user_content(self.user)
+        super(SeleniumBaseTestCase, self).tearDown()
