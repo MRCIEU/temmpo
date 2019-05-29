@@ -67,7 +67,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     # Create application specific directories
-    caller('mkdir -p %svar/results' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v1' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v3' % PROJECT_ROOT)
     caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
 
     stop_rqworker_service(use_local_mode)
