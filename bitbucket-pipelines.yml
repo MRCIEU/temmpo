@@ -7,15 +7,14 @@ pipelines:
         caches:
           - pip
         script:
-          # Put source code and settings where build scripts expect
+          # Put source code where build scripts expect
           - mkdir -p /usr/local/projects/temmpo/lib/test/src/temmpo
           - cp -r . /usr/local/projects/temmpo/lib/test/src/temmpo
-          - ls /usr/local/projects/temmpo/lib/test/src/temmpo
-          - mkdir -p /usr/local/projects/temmpo/.settings
-          - cp /usr/local/projects/temmpo/lib/test/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/.settings/private_settings.py
           # Run development set up scripts which mimics puppet additions in test, demo and production HyperV VMs
           - adduser vagrant
           - sh /usr/local/projects/temmpo/lib/test/src/temmpo/deploy/deploy-centos.sh
+          # Put pipelines settings where the application expects
+          - cp /usr/local/projects/temmpo/lib/test/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/.settings/private_settings.py
           - fab -V
           # Run the Fabric build script; NB: sudo usage means that rqworker service will be restarted separately.
           - fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False -f /usr/local/projects/temmpo/lib/test/src/temmpo/deploy/fabfile.py
