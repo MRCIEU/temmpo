@@ -7,16 +7,17 @@ pipelines:
         caches:
           - pip
         script:
-          # Put source code where build scripts expect
+          # Put source code and settings where build scripts expect
           - mkdir -p /usr/local/projects/temmpo/lib/dev/src/temmpo
           - cp -r . /usr/local/projects/temmpo/lib/dev/src/temmpo
           - ls /usr/local/projects/temmpo/lib/dev/src/temmpo
+          - cp /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings/private_settings.py
           # Run development set up scripts which mimics puppet additions in test, demo and production HyperV VMs
           - adduser vagrant
           - sh /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/deploy-centos.sh
           - fab -V
           # Run the development version of the Fabric build scripts; NB: sudo usage means that rqworker service will be restarted separately.
-          - fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev,restart_rqworker=False -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+          - fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
           - service rqworker restart
           # Run tests including those using a headless browser
           - cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
