@@ -1,4 +1,4 @@
-image: python:2.7.16
+image: centos:7.6.1810
 
 pipelines:
   branches:
@@ -7,18 +7,16 @@ pipelines:
         caches:
           - pip
         script:
-          - apt update
-          - apt install -y redis-server
-          - service redis-server restart
-          - redis-cli ping
-          - redis-server -v
-          - pip install -U pip==19.1.1
-          - pip install -r requirements/test.txt
-          - pip-sync requirements/test.txt
-          - mkdir -p /opt/var/results/v1
-          - mkdir -p /opt/var/results/v3
-          - mkdir -p /opt/var/abstracts
-          - mkdir -p /opt/var/data
-          - mkdir -p /opt/var/log
-          - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
+          # Put source code where build scripts expect
+          - mkdir -p /usr/local/projects/temmpo/lib/dev/src/temmpo
+          - cp -r . /usr/local/projects/temmpo/lib/dev/src/temmpo
+          - ls /usr/local/projects/temmpo/src/temmpo
+          # Run development set up scripts which mimics puppet additions in test, demo and production HyperV VMs
+          - sh /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/deploy-centos.sh
+          - fab -V
+          # Run the development version of the Fabric build scripts
+          - fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+          # Run tests including those using a headless browser
+          - cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+          - python -v
+          - python manage.py test --settings=temmpo.settings.test_sqlite
