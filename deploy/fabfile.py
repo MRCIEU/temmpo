@@ -96,6 +96,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
             caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip freeze')
 
         sym_link_private_settings(env, use_local_mode)
 
