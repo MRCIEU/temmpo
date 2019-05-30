@@ -11,7 +11,7 @@ pipelines:
           - mkdir -p /usr/local/projects/temmpo/lib/dev/src/temmpo
           - cp -r . /usr/local/projects/temmpo/lib/dev/src/temmpo
           - ls /usr/local/projects/temmpo/lib/dev/src/temmpo
-          - cp /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings/private_settings.py
+          - cp /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/.settings/private_settings.py
           # Run development set up scripts which mimics puppet additions in test, demo and production HyperV VMs
           - adduser vagrant
           - sh /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/deploy-centos.sh
