@@ -1,4 +1,4 @@
-echo "Build script for TeMMPo"
+echo "Build script for a development TeMMPo environment on Centos"
 timedatectl set-timezone Europe/London
 yum -y install epel-release
 yum -y update
@@ -44,9 +44,6 @@ yum -y install clamav
 # install fabric for deployment scripts
 pip install fabric==1.13.1
 
-# pip install pip==9.0.1
-
-
 # Install redis
 yum -y install redis
 
@@ -84,9 +81,6 @@ wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/bin/
 chromedriver -v
-
-# Install testing and image comparison tools
-# yum install -y scrot
 
 # Confirm install list
 yum list installed 
