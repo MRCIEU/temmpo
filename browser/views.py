@@ -485,7 +485,7 @@ class CountDataView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/%s_edge.csv' % search_result.filename_stub
+        url = settings.RESULTS_URL + '%s_edge.csv' % search_result.filename_stub
         return url
 
 
@@ -510,7 +510,7 @@ class AbstractDataView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/%s_abstracts.csv' % search_result.filename_stub
+        url = settings.RESULTS_URL + '%s_abstracts.csv' % search_result.filename_stub
         return url
 
 
@@ -535,7 +535,7 @@ class JSONDataView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/%s.json' % search_result.filename_stub
+        url = settings.RESULTS_URL + '%s.json' % search_result.filename_stub
         return url
 
 

@@ -52,12 +52,7 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
 
     def test_bubble_chart(self):
         search_result = self._set_up_test_search_result()
-        self.assertTrue(search_result.mediator_match_counts > 0)
-
-        # print [x.term for x in search_result.criteria.exposure_terms.all()]
-        # print [x.term for x in search_result.criteria.mediator_terms.all()]
-        # print [x.term for x in search_result.criteria.outcome_terms.all()]
-        # print MeshTerm.objects.filter(year=2018).all()
+        self.assertTrue(search_result.mediator_match_counts_v3 > 0)
 
         # Bubble chart page
         self.sel_open(reverse("results_bubble",  kwargs={'pk': search_result.id}))

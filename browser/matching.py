@@ -110,7 +110,7 @@ def perform_search(search_result_stub_id):
     # 2 - Give end time
     search_result_stub.ended_processing = timezone.now()
     # 3 - Record number of mediator matches
-    search_result_stub.mediator_match_counts = mediator_match_counts
+    search_result_stub.mediator_match_counts_v3 = mediator_match_counts
     # X - Email user
     # user_email = search_result_stub.criteria.upload.user.email
     # send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
