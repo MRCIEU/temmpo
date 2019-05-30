@@ -16,10 +16,10 @@ pipelines:
           # TODO: Bug fix - Put pipelines settings where the application expects
           - cp /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/.settings/private_settings.py
           - fab -V
-          # Run the Fabric build script; NB: sudo usage means that rqworker service will be restarted separately.
+          # Run the Fabric build script; NB: rqworker service will not be used.
           - fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=False,use_local_mode=True,requirements=dev,restart_rqworker=False -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
-          - service rqworker restart
           # Run tests including those using a headless browser; NB: Need to explicitly use test_sqlite as there is s bug using bitbucket_pipelines_private_settings.py
           - cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+          - pip -V
           - python -v
           - python manage.py test --settings=temmpo.settings.test_sqlite
