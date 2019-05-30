@@ -15,7 +15,8 @@ pipelines:
           - pip install -U pip==19.1.1
           - pip install -r requirements/test.txt
           - pip-sync requirements/test.txt
-          - mkdir -p /opt/var/results
+          - mkdir -p /opt/var/results/v1
+          - mkdir -p /opt/var/results/v3
           - mkdir -p /opt/var/abstracts
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
