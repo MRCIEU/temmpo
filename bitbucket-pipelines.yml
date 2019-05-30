@@ -10,7 +10,7 @@ pipelines:
           # Put source code where build scripts expect
           - mkdir -p /usr/local/projects/temmpo/lib/dev/src/temmpo
           - cp -r . /usr/local/projects/temmpo/lib/dev/src/temmpo
-          - ls /usr/local/projects/temmpo/src/temmpo
+          - ls /usr/local/projects/temmpo/lib/dev/src/temmpo
           # Run development set up scripts which mimics puppet additions in test, demo and production HyperV VMs
           - sh /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/deploy-centos.sh
           - fab -V
