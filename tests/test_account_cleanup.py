@@ -107,7 +107,7 @@ class UserDeletionTest(BaseTestCase):
 
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
         # Check results files
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
         self.assertEqual(len(files_to_delete), 4)
 
@@ -224,7 +224,7 @@ class UserDeletionTest(BaseTestCase):
 
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
         # Check results files
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
         self.assertEqual(len(files_to_delete), 4)
 
@@ -517,7 +517,7 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         upload_record = Upload.objects.get(pk=upload_id)
 
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
 
         # Now make user in line for deletion
         self.user.last_login = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(days=366)

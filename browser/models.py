@@ -230,7 +230,7 @@ class SearchResult(models.Model):
     # Abstracting out mesh filter and results as more likely to change the filter
     # but use the same set of other search criteria
     mesh_filter = models.CharField("MeSH filter", max_length=300, blank=True, null=True)
-    results = models.FileField(blank=True, null=True,)  # JSON file for output
+    results = models.FileField(blank=True, null=True,)  # NOT IN USE
     has_completed = models.BooleanField(default=False)
 
     # Store the unique part of the results filenames
@@ -238,7 +238,10 @@ class SearchResult(models.Model):
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
     mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
-    # Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
+    # After a substantial change to the matching code record in separate field for historic comparisons where required.
+    mediator_match_counts_v3 = models.PositiveIntegerField(blank=True, null=True)
+
+    # TMMA-288 Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
     # redis restarts and should be used only for information when tracking processing.
     # job_id = models.CharField(max_length=32, blank=True, null=True)
 
@@ -297,7 +300,7 @@ class SearchResult(models.Model):
 
         # Delete associated results files (if completed)
         if self.has_completed:
-            base_path = settings.MEDIA_ROOT + '/results/' + self.filename_stub + '*'
+            base_path = settings.RESULTS_PATH + self.filename_stub + '*'
             files_to_delete = glob.glob(base_path)
 
             for delfile in files_to_delete:

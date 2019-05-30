@@ -300,7 +300,7 @@ class SearchingTestCase(BaseTestCase):
         exposure_terms = MeshTerm.objects.get(term="Humans", year=year).get_descendants(include_self=True)
         mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=year).get_descendants(include_self=True)
-        gene = Gene.objects.get(name="TRPC1")
+        gene = Gene.objects.get(name="TRPC1") # Extend gene testing to include STIM1 or a synonym or two
 
         search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
         search_criteria.save()
@@ -519,8 +519,8 @@ class SearchingTestCase(BaseTestCase):
                                                     "Apoptosis", "TRPC1",
                                                     search_criteria.upload, ])
 
-    def test_matches_counts(self):
-        """Test rendering of the view of a SearchCriteria instance."""
+    def test_no_matches_rendering(self):
+        """Test rendering of a SearchResult with no matches."""
         search_criteria = self._set_up_test_search_criteria()
         # Run the search, by posting filter and gene selection form
         self._login_user()
@@ -558,19 +558,6 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.post(path, follow=True) # Need to investigate filter not working
         search_result = SearchResult.objects.get(criteria=search_criteria)
         self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('json_data', kwargs={'pk': search_result.id})])
-
-
-    # TODO: Test results JSON exports
-    # def test_json_data(self):
-    #     pass
-
-    # TODO: (TMMA-227) Test result count data
-    # def test_count_data(self):
-    #     pass
-
-    # TODO: (TMMA-222) Test abstracts data
-    # def test_abstracts_data(self):
-    #     pass
 
     # Test JSON MeSH Term exports
 
@@ -774,7 +761,7 @@ class SearchingTestCase(BaseTestCase):
         # Check abstract
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
         # Check results and terms files
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
         self.assertEqual(len(files_to_delete), 4)
 

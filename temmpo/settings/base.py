@@ -101,9 +101,11 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = "%s/var" % PROJECT_ROOT
 STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/var/www/static
 
-RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
+ORIGINAL_RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
+RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', 'v3', '')
+RESULTS_URL = "/media/results/v3/"
 
-LOGIN_REDIRECT_URL = 'results_listing'  # 'search'
+LOGIN_REDIRECT_URL = 'results_listing'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
