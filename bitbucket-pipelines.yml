@@ -15,6 +15,8 @@ pipelines:
           - sh /usr/local/projects/temmpo/lib/test/src/temmpo/deploy/deploy-centos.sh
           # Put pipelines settings where the application expects
           - cp /usr/local/projects/temmpo/lib/test/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/.settings/private_settings.py
+          - cat /usr/local/projects/temmpo/.settings/private_settings.py
+          - ls -l /usr/local/projects/temmpo/.settings/
           - fab -V
           # Run the Fabric build script; NB: sudo usage means that rqworker service will be restarted separately.
           - fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False -f /usr/local/projects/temmpo/lib/test/src/temmpo/deploy/fabfile.py
