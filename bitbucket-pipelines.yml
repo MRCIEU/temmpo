@@ -1,4 +1,4 @@
-image: centos:7.6.1810
+image: python:2.7.16
 
 pipelines:
   branches:
@@ -7,19 +7,18 @@ pipelines:
         caches:
           - pip
         script:
-          # Put source code where build scripts expect
-          - mkdir -p /usr/local/projects/temmpo/lib/dev/src/temmpo
-          - cp -r . /usr/local/projects/temmpo/lib/dev/src/temmpo
-          # Run development set up scripts which mimics puppet additions in test, demo and production HyperV VMs
-          - adduser vagrant
-          - sh /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/deploy-centos.sh
-          # TODO: Bug fix - Put pipelines settings where the application expects
-          - cp /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings/bitbucket_pipelines_private_settings.py /usr/local/projects/temmpo/.settings/private_settings.py
-          - fab -V
-          # Run the Fabric build script; NB: rqworker service will not be used.
-          - fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=False,use_local_mode=True,requirements=dev,restart_rqworker=False -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
-          # Run tests including those using a headless browser; NB: Need to explicitly use test_sqlite as there is s bug using bitbucket_pipelines_private_settings.py
-          - cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-          - pip -V
-          - python -v
-          - python manage.py test --settings=temmpo.settings.test_sqlite
+          - apt update
+          - apt install -y redis-server
+          - service redis-server restart
+          - redis-cli ping
+          - redis-server -v
+          - pip install -U pip==19.1.1
+          - pip install -r requirements/test.txt
+          - pip-sync requirements/test.txt
+          - mkdir -p /opt/var/results/v1
+          - mkdir -p /opt/var/results/v3
+          - mkdir -p /opt/var/abstracts
+          - mkdir -p /opt/var/data
+          - mkdir -p /opt/var/log
+          - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
+          - python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
