@@ -12,3 +12,6 @@ DATABASES = {
 
 RQ_QUEUES['default']['ASYNC'] = False
 LOGGING['handlers']['console']['level'] = 'ERROR'
+
+RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', 'testing', '')
+RESULTS_URL = "/media/results/testing/"
