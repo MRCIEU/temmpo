@@ -14,3 +14,4 @@ redis==3.2.1
 django-redis-cache==2.0.0
 hiredis==1.0.0
 numpy==1.16.3
+pandas==0.24.2

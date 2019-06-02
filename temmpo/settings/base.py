@@ -102,6 +102,7 @@ MEDIA_ROOT = "%s/var" % PROJECT_ROOT
 STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/var/www/static
 
 ORIGINAL_RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
+RESULTS_PATH_V1 = os.path.join(MEDIA_ROOT, 'results', 'v1', '')
 RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', 'v3', '')
 RESULTS_URL = "/media/results/v3/"
 
