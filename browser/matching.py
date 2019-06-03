@@ -1,7 +1,8 @@
 import logging
 import math
-import numpy as np 
+import numpy as np
 import os
+import pandas as pd
 import re
 import string
 import sys
@@ -583,3 +584,107 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
     resultfile.close()
+
+
+def record_differences_between_match_runs(search_result_id):
+    """Compare edge CSV file for difference.
+
+    Header: Mediators,Exposure counts,Outcome counts,Scores
+
+    v1 unsorted mediators
+    v3 mediator column is sorted by gene then mesh terms
+    """
+    logger.info("START comparing results edge file for %d, e.g. results_%d__topresults_edge.csv" % (search_result_id, search_result_id))
+    from browser.models import SearchResult
+    search_result = SearchResult.objects.get(id=search_result_id)
+
+    if search_result.mediator_match_counts is not None:
+        v1_filepath = settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv"
+        try:
+            v1_df = pd.read_csv(v1_filepath,
+                                sep=',',
+                                delimiter=None,
+                                header=0,
+                                names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                index_col=0,
+                                dtype= {"Mediators": np.str,
+                                        "Exposure counts": np.int32,
+                                        "Outcome counts": np.int32,
+                                        "Scores": np.int32,
+                                        },
+                                engine='python')
+            v1_df = v1_df.sort_values("Mediators")
+            v3_filepath = settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv"
+            try:
+                v3_df = pd.read_csv(v3_filepath,
+                                    sep=',',
+                                    delimiter=None,
+                                    header=0,
+                                    names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                    index_col=0,
+                                    dtype= {"Mediators": np.str,
+                                            "Exposure counts": np.int32,
+                                            "Outcome counts": np.int32,
+                                            "Scores": np.int32,
+                                            },
+                                    engine='python')
+                v3_df = v3_df.sort_values("Mediators")
+                is_different = not v1_df.equals(v3_df)
+                if is_different:
+                    search_result.has_edge_file_changed = True
+                    search_result.save()
+                    logger.info("%d has CHANGED" % search_result_id)
+            except IOError:
+                raise IOError("No version 3 edge file found for search result %d." % search_result_id)
+
+            except:
+                raise
+
+        except IOError:
+            raise IOError("No previous edge file found for search result %d" % search_result_id)
+
+        except:
+            raise
+    else:
+        logger.info("No previous match results have been recorded for search result %d" % search_result_id)
+    logger.info("END comparing results files")
+
+    # pd.read_csv(filepath)
+    # memory_map=True
+
+    # filecmp.cmp(f1, f2[, shallow])
+    # np.array_equal
+
+    # np.loadtxt("test2.txt", delimiter=",") skip first line?
+    # np.loadtxt('iris_numbers.csv',delimiter=",", skiprows=1)
+
+    # np.fromfile(file, dtype=float, count=-1, sep='')
+    # np.ndarray.sort(axis=-1, kind='quicksort', order=None)
+
+    # np.savetxt("test2.txt", x, fmt="%2.3f", delimiter=",")
+    # np.savetxt("saved_numpy_data.csv", my_array, delimiter=",")
+    # Both files need sorting on column 0 Mediator term
+
+    # pandas can keep header, however nArray is leaner on memory
+    # df = pd.read_csv('iris.csv')
+    # df.to_csv('my_pandas_dataframe
+
+    # sort -o a.sorted.txt a.txt
+    # sort -o b.sorted.txt b.txt
+    # diff a.sorted.txt b.sorted.txt > a-b-changes.txt
+
+    # # Hmm will linux file diff tests handle missing mediator/genes better in diff results.  As hunks can be compared, could just allow end users to download both for local comparisons and record if these difference exist
+
+    # RESULTS_PATH_V1
+
+    # SearchResult = apps.get_model("browser", "SearchResult")
+    #     result_ids = SearchResult.objects.all().values_list("id", flat=True)
+    #  import os
+    # import shutil
+    #     logger.info("Start moving results files")
+    #     files = glob.glob(settings.ORIGINAL_RESULTS_PATH + '*.csv')
+    #     files.extend(glob.glob(settings.ORIGINAL_RESULTS_PATH + '*.gv'))
+    #     files.extend(glob.glob(settings.ORIGINAL_RESULTS_PATH + '*.json'))
+    #     for result_file in files:
+    #         shutil.move(result_file, settings.ORIGINAL_RESULTS_PATH + 'v1/')
+    #     logger.info("Finished moving results files")"""

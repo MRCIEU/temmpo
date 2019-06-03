@@ -240,6 +240,7 @@ class SearchResult(models.Model):
     mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
     # After a substantial change to the matching code record in separate field for historic comparisons where required.
     mediator_match_counts_v3 = models.PositiveIntegerField(blank=True, null=True)
+    has_edge_file_changed = models.BooleanField(default=False)
 
     # TMMA-288 Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
     # redis restarts and should be used only for information when tracking processing.
@@ -307,3 +308,12 @@ class SearchResult(models.Model):
                 os.remove(delfile)
 
         super(SearchResult, self).delete()
+
+    @property
+    def has_changed(self):
+        return self.has_match_counts_changed or self.has_edge_file_changed
+
+    @property
+    def has_match_counts_changed(self):
+        return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3)
+

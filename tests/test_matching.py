@@ -5,12 +5,15 @@
 import logging
 import numpy as np
 import os
+import shutil
 
 from django.conf import settings
+from django.core.files import File
 from django.test import tag
 
 from browser.matching import create_edge_matrix, generate_synonyms # ,read_citations, countedges, createresultfile, printedges, createjson
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
+from browser.matching import record_differences_between_match_runs, perform_search
 from tests.base_test_case import BaseTestCase
 
 logger = logging.getLogger(__name__)
@@ -100,3 +103,223 @@ class MatchingTestCase(BaseTestCase):
 
     # def test_createjson(self):
     #     assert False
+
+    def _prepare_search_result(self):
+        """Generates a search result object and associated edge file
+
+        Mediators,Exposure counts,Outcome counts,Scores
+        Genetic Markers,2,1,1.5
+        Genetic Pleiotropy,1,1,2.0
+        Serogroup,2,1,1.5
+        """
+        year = 2018
+        BASE_DIR = os.path.dirname(__file__)
+        test_file_path = os.path.join(BASE_DIR, 'test-abstract-ovid-test-sample-5.txt')
+
+        test_file = open(test_file_path, 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract-ovid-test-sample-5.txt'), file_format=OVID)
+        upload.save()
+        test_file.close()
+
+        exposure_term = MeshTerm.objects.get(term="Cells", year=year).get_descendants(include_self=True)
+        mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
+        outcome_terms = MeshTerm.objects.get(term="Public Health Systems Research", year=year).get_descendants(include_self=True)
+        # gene = Gene.objects.get(name="TRPC1") # Extend gene testing to include STIM1 or a synonym or two
+
+        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
+        search_criteria.save()
+
+        # search_criteria.genes.add(gene)
+        search_criteria.exposure_terms = exposure_term
+        search_criteria.outcome_terms = outcome_terms
+        search_criteria.mediator_terms = mediator_terms
+        search_criteria.save()
+
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        # Run the search via message queue
+        perform_search(search_result.id)
+
+        return search_result.id
+
+        # Copy and amend edge results files for testing
+
+    def test_record_differences_between_match_runs_no_previous_search(self):
+        """No version 1 search results"""
+        search_result_id = self._prepare_search_result()
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertEqual(search_result.mediator_match_counts, None)
+        self.assertFalse(search_result.has_changed)
+        self.assertFalse(search_result.has_match_counts_changed)
+        self.assertFalse(search_result.has_edge_file_changed)
+
+        record_differences_between_match_runs(search_result_id)
+
+        search_result = SearchResult.objects.get(id=search_result_id)
+        self.assertEqual(search_result.mediator_match_counts, None)
+        self.assertFalse(search_result.has_changed)
+        self.assertFalse(search_result.has_match_counts_changed)
+        self.assertFalse(search_result.has_edge_file_changed)
+
+    def test_record_differences_between_match_runs_missing_v1_edge_file(self):
+        """Previous search results but missing edge file"""
+        search_result_id = self._prepare_search_result()
+        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result.mediator_match_counts = 0
+        search_result.save()
+
+        self.assertTrue(search_result.has_changed)
+        self.assertTrue(search_result.has_match_counts_changed)
+
+        try:
+            record_differences_between_match_runs(search_result_id)
+            # Expected to throw an exception and not reach the next line
+            assert False
+        except IOError:
+            assert True
+            search_result = SearchResult.objects.get(id=search_result_id)
+            self.assertTrue(search_result.has_changed)
+            self.assertTrue(search_result.has_match_counts_changed)
+        except:
+            raise
+
+    def test_record_differences_between_match_runs_missing_v3_edge_file(self):
+        """Previous search results but missing edge file"""
+        search_result_id = self._prepare_search_result()
+        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result.mediator_match_counts = 0
+        search_result.save()
+        shutil.move(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
+
+        try:
+            record_differences_between_match_runs(search_result_id)
+            # Expected to throw an exception and not reach the next line
+            assert False
+        except IOError:
+            assert True
+            search_result = SearchResult.objects.get(id=search_result_id)
+            self.assertTrue(search_result.has_changed)
+            self.assertTrue(search_result.has_match_counts_changed)
+        except:
+            raise
+
+    def test_record_differences_between_match_runs_no_changes_expected(self):
+        """Previous search, edge file and no changes expected"""
+        search_result_id = self._prepare_search_result()
+        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result.mediator_match_counts = search_result.mediator_match_counts_v3
+        search_result.save()
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
+
+        record_differences_between_match_runs(search_result_id)
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertFalse(search_result.has_match_counts_changed)
+        self.assertFalse(search_result.has_changed)
+        self.assertFalse(search_result.has_edge_file_changed)
+
+
+    def test_record_differences_between_match_runs_when_changes_exist(self):
+        """Previous search, edge file and change in counts and scores expected in line 1, n/2, and n"""
+        search_result_id = self._prepare_search_result()
+        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result.mediator_match_counts = search_result.mediator_match_counts_v3
+        search_result.save()
+
+        #Amend line 1 found in the v1 results file
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            file.write("Genetic Markers,1,1,1\n")
+            file.write("Genetic Pleiotropy,1,1,2.0\n")
+            file.write("Serogroup,2,1,1.5\n")
+
+        record_differences_between_match_runs(search_result_id)
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertTrue(search_result.has_changed)
+        self.assertFalse(search_result.has_match_counts_changed)
+        self.assertTrue(search_result.has_edge_file_changed)
+
+        # Amend line n/2 found in the v1 results file
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            file.write("Genetic Markers,2,1,1.5\n")
+            file.write("Genetic Pleiotropy,2,1,1.5\n")
+            file.write("Serogroup,2,1,1.5\n")
+
+        record_differences_between_match_runs(search_result_id)
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertTrue(search_result.has_changed)
+        self.assertFalse(search_result.has_match_counts_changed)
+        self.assertTrue(search_result.has_edge_file_changed)
+
+        # Amend last line found in the v1 results file
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            file.write("Genetic Markers,2,1,1.5\n")
+            file.write("Genetic Pleiotropy,1,1,2.0\n")
+            file.write("Serogroup,1,1,1\n")
+
+        record_differences_between_match_runs(search_result_id)
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertTrue(search_result.has_changed)
+        self.assertFalse(search_result.has_match_counts_changed)
+        self.assertTrue(search_result.has_edge_file_changed)
+
+    def test_record_differences_between_match_runs_when_new_meditors(self):
+        """Previous search, edge file and new mediators expected in line 1, n/2, and n"""
+        search_result_id = self._prepare_search_result()
+        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result.mediator_match_counts = search_result.mediator_match_counts_v3 - 1
+        search_result.save()
+
+        #Remove line 1 found in the v1 results file
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            file.write("Genetic Pleiotropy,1,1,2.0\n")
+            file.write("Serogroup,2,1,1.5\n")
+
+        record_differences_between_match_runs(search_result_id)
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertTrue(search_result.has_changed)
+        self.assertTrue(search_result.has_match_counts_changed)
+        self.assertTrue(search_result.has_edge_file_changed)
+
+        # Remove line n/2 found in the v1 results file
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            file.write("Genetic Markers,2,1,1.5\n")
+            file.write("Serogroup,2,1,1.5\n")
+
+        record_differences_between_match_runs(search_result_id)
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertTrue(search_result.has_changed)
+        self.assertTrue(search_result.has_match_counts_changed)
+        self.assertTrue(search_result.has_edge_file_changed)
+
+        # Remove last line found in the v1 results file
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            file.write("Genetic Markers,2,1,1.5\n")
+            file.write("Genetic Pleiotropy,1,1,2.0\n")
+
+        record_differences_between_match_runs(search_result_id)
+        search_result = SearchResult.objects.get(id=search_result_id)
+
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertTrue(search_result.has_changed)
+        self.assertTrue(search_result.has_match_counts_changed)
+        self.assertTrue(search_result.has_edge_file_changed)
+

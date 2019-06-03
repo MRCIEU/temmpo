@@ -902,3 +902,37 @@ class SearchingTestCase(BaseTestCase):
         terms = criteria.get_wcrf_input_variables('outcome')
         self.assertEqual(len(terms), 1)
         self.assertNotEqual(len(terms), criteria.outcome_terms.count())
+
+    def test_highlighting_matching_changes(self):
+        """Ensure new version 3 matching code results, are not marked as changes"""
+        self._login_user()
+        search_criteria = self._set_up_test_search_criteria()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        expected_text = ["Mediator match counts", "View bubble chart", ]
+        revised_text = ['data-results-change="%d"' % search_result.id, "Revised result"]
+        response = self.client.get(reverse('results_listing'))
+
+        for text in revised_text:
+            self.assertNotContains(response, text)
+
+        for text in expected_text:
+            self.assertContains(response, text)
+
+        # Fake up a previous results
+        search_result.mediator_match_counts = 0
+        search_result.save()
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+
+        response = self.client.get(reverse('results_listing'))
+        for text in revised_text:
+            self.assertContains(response, text)
+
+        search_result.mediator_match_counts = 1
+        search_result.save()
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+
+        response = self.client.get(reverse('results_listing'))
+        for text in revised_text:
+            self.assertContains(response, text)
