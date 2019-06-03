@@ -1,4 +1,5 @@
-3.0.0   TMMA-307 Bug fix handling a gene synonym being an alias to more than one gene
+3.0.0   TMMA-315 Highlight where there are differences between v1 and v3 matching on the results pages
+        TMMA-307 Bug fix handling a gene synonym being an alias to more than one gene
         TMMA-295 Bug fixed wording on the Bubble chart labels
         TMMA-306 Not matching more than one mediator MeSH term in an article
         TMMA-302 Add support for selenium acceptance testing
