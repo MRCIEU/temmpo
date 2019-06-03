@@ -1,4 +1,8 @@
-2.8.1   TMMA-298 Bug fix sorting Bubble chart by top scores correctly
+2.8.3   TMMA-320 Upgrade Django to 1.11.21
+
+2.8.2   TMMA-298 Bug fix sorting Bubble chart by top scores correctly
+
+2.8.1   TMMA-274 Upgrade Django to 1.11.20
 
 2.8.0   TMMA-268 Bug fix broken Sankey chart
         TMMA-270 Import 2019 MeSH Terms
