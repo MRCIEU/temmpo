@@ -34,11 +34,8 @@ MeSH Subject Headings
     Prostatic Neoplasms/me [Metabolism]
     Prostatic Neoplasms/pa [Pathology]
     Public Health Systems Research
-    Research Design
     Serogroup
-    Systems Theory
     *Transcriptome
-
 Abstract
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex.
 Registry Number/Name of Substance
@@ -239,7 +236,6 @@ MeSH Subject Headings
     Prostatic Neoplasms/ge [Genetics]
     Prostatic Neoplasms/me [Metabolism]
     Prostatic Neoplasms/pa [Pathology]
-    Research Design
     Serogroup
     *Transcriptome
 Abstract
