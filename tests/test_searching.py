@@ -763,7 +763,7 @@ class SearchingTestCase(BaseTestCase):
         # Check results and terms files
         base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 4)
+        self.assertEqual(len(files_to_delete), 3)
 
         # Do deletion
         response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}), follow=True)

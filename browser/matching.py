@@ -39,10 +39,10 @@ def perform_search(search_result_stub_id):
 
     Original structure:
     createsynonyms()
-    createedgelist()  Now create_edge_matrix()
+    createedgelist()        Now create_edge_matrix()
     read_citations()
     countedges()
-    createresultfile()
+    createresultfile()      No longer in the codebase, was never used in the application.
     printedges()
     createjson()
 
@@ -89,13 +89,6 @@ def perform_search(search_result_stub_id):
                                                   mediatormesh, mesh_filter,
                                                   results_path, resultfilename, abstract_file_format)
     logger.info("Counted edges")
-
-    # Create results
-    createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename)
-
-    logger.info("Created results")
 
     # Print edges
     mediator_match_counts = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
@@ -412,81 +405,6 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
     return papercounter, edges, identifiers
 
 
-def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
-    """Generates CSV file."""
-
-    resultfile = open('%s%s.csv' % (results_path, resultfilename), 'w')
-    edge_row_id = -1
-
-    exposurecounter = {}
-    outcomecounter = {}
-    for exposure in exposuremesh:
-        exposurecounter["_".join(exposure.split())] = 0
-    for outcome in outcomemesh:
-        outcomecounter["_".join(outcome.split())] = 0
-    for genel in genelist:
-        edge_row_id += 1
-        edge_column_id = -1
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            gene = "/".join(synonymlookup[genel])  # TMMA-307 It is possible that a gene synonym that is used for more than one gene has been matched against. In this case ensure this is referenced.
-            for exposure in exposuremesh:
-                edge_column_id += 1
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    exposureandoutcome[0] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += gene + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                edge_column_id += 1
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    exposureandoutcome[1] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += gene + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for mediator in mediatormesh:
-        edge_row_id += 1
-        edge_column_id = -1
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            for exposure in exposuremesh:
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[0] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += mediatorprint + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[1] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += mediatorprint + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for exposure in exposurecounter.keys():
-        for i in xrange(exposurecounter[exposure]):
-            resultfile.write("EXPOSURE," + exposure + "\n")
-    for outcome in outcomecounter.keys():
-        for i in xrange(outcomecounter[outcome]):
-            resultfile.write("OUTCOME," + outcome + "\n")
-    resultfile.close()
-
 def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
     """Write out edge file (*_edge.csv)"""
     edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
@@ -648,43 +566,3 @@ def record_differences_between_match_runs(search_result_id):
     else:
         logger.info("No previous match results have been recorded for search result %d" % search_result_id)
     logger.info("END comparing results files")
-
-    # pd.read_csv(filepath)
-    # memory_map=True
-
-    # filecmp.cmp(f1, f2[, shallow])
-    # np.array_equal
-
-    # np.loadtxt("test2.txt", delimiter=",") skip first line?
-    # np.loadtxt('iris_numbers.csv',delimiter=",", skiprows=1)
-
-    # np.fromfile(file, dtype=float, count=-1, sep='')
-    # np.ndarray.sort(axis=-1, kind='quicksort', order=None)
-
-    # np.savetxt("test2.txt", x, fmt="%2.3f", delimiter=",")
-    # np.savetxt("saved_numpy_data.csv", my_array, delimiter=",")
-    # Both files need sorting on column 0 Mediator term
-
-    # pandas can keep header, however nArray is leaner on memory
-    # df = pd.read_csv('iris.csv')
-    # df.to_csv('my_pandas_dataframe
-
-    # sort -o a.sorted.txt a.txt
-    # sort -o b.sorted.txt b.txt
-    # diff a.sorted.txt b.sorted.txt > a-b-changes.txt
-
-    # # Hmm will linux file diff tests handle missing mediator/genes better in diff results.  As hunks can be compared, could just allow end users to download both for local comparisons and record if these difference exist
-
-    # RESULTS_PATH_V1
-
-    # SearchResult = apps.get_model("browser", "SearchResult")
-    #     result_ids = SearchResult.objects.all().values_list("id", flat=True)
-    #  import os
-    # import shutil
-    #     logger.info("Start moving results files")
-    #     files = glob.glob(settings.ORIGINAL_RESULTS_PATH + '*.csv')
-    #     files.extend(glob.glob(settings.ORIGINAL_RESULTS_PATH + '*.gv'))
-    #     files.extend(glob.glob(settings.ORIGINAL_RESULTS_PATH + '*.json'))
-    #     for result_file in files:
-    #         shutil.move(result_file, settings.ORIGINAL_RESULTS_PATH + 'v1/')
-    #     logger.info("Finished moving results files")"""
