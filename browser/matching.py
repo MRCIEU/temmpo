@@ -1,7 +1,8 @@
 import logging
 import math
-import numpy as np 
+import numpy as np
 import os
+import pandas as pd
 import re
 import string
 import sys
@@ -38,10 +39,10 @@ def perform_search(search_result_stub_id):
 
     Original structure:
     createsynonyms()
-    createedgelist()  Now create_edge_matrix()
+    createedgelist()        Now create_edge_matrix()
     read_citations()
     countedges()
-    createresultfile()
+    createresultfile()      No longer in the codebase, was never used in the application.
     printedges()
     createjson()
 
@@ -88,13 +89,6 @@ def perform_search(search_result_stub_id):
                                                   mediatormesh, mesh_filter,
                                                   results_path, resultfilename, abstract_file_format)
     logger.info("Counted edges")
-
-    # Create results
-    createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename)
-
-    logger.info("Created results")
 
     # Print edges
     mediator_match_counts = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
@@ -411,81 +405,6 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
     return papercounter, edges, identifiers
 
 
-def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
-    """Generates CSV file."""
-
-    resultfile = open('%s%s.csv' % (results_path, resultfilename), 'w')
-    edge_row_id = -1
-
-    exposurecounter = {}
-    outcomecounter = {}
-    for exposure in exposuremesh:
-        exposurecounter["_".join(exposure.split())] = 0
-    for outcome in outcomemesh:
-        outcomecounter["_".join(outcome.split())] = 0
-    for genel in genelist:
-        edge_row_id += 1
-        edge_column_id = -1
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            gene = "/".join(synonymlookup[genel])  # TMMA-307 It is possible that a gene synonym that is used for more than one gene has been matched against. In this case ensure this is referenced.
-            for exposure in exposuremesh:
-                edge_column_id += 1
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    exposureandoutcome[0] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += gene + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                edge_column_id += 1
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    exposureandoutcome[1] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += gene + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for mediator in mediatormesh:
-        edge_row_id += 1
-        edge_column_id = -1
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            for exposure in exposuremesh:
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[0] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += mediatorprint + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[1] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += mediatorprint + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for exposure in exposurecounter.keys():
-        for i in xrange(exposurecounter[exposure]):
-            resultfile.write("EXPOSURE," + exposure + "\n")
-    for outcome in outcomecounter.keys():
-        for i in xrange(outcomecounter[outcome]):
-            resultfile.write("OUTCOME," + outcome + "\n")
-    resultfile.close()
-
 def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
     """Write out edge file (*_edge.csv)"""
     edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
@@ -583,3 +502,67 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
     resultfile.close()
+
+
+def record_differences_between_match_runs(search_result_id):
+    """Compare edge CSV file for difference.
+
+    Header: Mediators,Exposure counts,Outcome counts,Scores
+
+    v1 unsorted mediators
+    v3 mediator column is sorted by gene then mesh terms
+    """
+    logger.info("START comparing results edge file for %d, e.g. results_%d__topresults_edge.csv" % (search_result_id, search_result_id))
+    from browser.models import SearchResult
+    search_result = SearchResult.objects.get(id=search_result_id)
+
+    if search_result.mediator_match_counts is not None:
+        v1_filepath = settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv"
+        try:
+            v1_df = pd.read_csv(v1_filepath,
+                                sep=',',
+                                delimiter=None,
+                                header=0,
+                                names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                index_col=0,
+                                dtype= {"Mediators": np.str,
+                                        "Exposure counts": np.int32,
+                                        "Outcome counts": np.int32,
+                                        "Scores": np.int32,
+                                        },
+                                engine='python')
+            v1_df = v1_df.sort_values("Mediators")
+            v3_filepath = settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv"
+            try:
+                v3_df = pd.read_csv(v3_filepath,
+                                    sep=',',
+                                    delimiter=None,
+                                    header=0,
+                                    names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                    index_col=0,
+                                    dtype= {"Mediators": np.str,
+                                            "Exposure counts": np.int32,
+                                            "Outcome counts": np.int32,
+                                            "Scores": np.int32,
+                                            },
+                                    engine='python')
+                v3_df = v3_df.sort_values("Mediators")
+                is_different = not v1_df.equals(v3_df)
+                if is_different:
+                    search_result.has_edge_file_changed = True
+                    search_result.save()
+                    logger.info("%d has CHANGED" % search_result_id)
+            except IOError:
+                raise IOError("No version 3 edge file found for search result %d." % search_result_id)
+
+            except:
+                raise
+
+        except IOError:
+            raise IOError("No previous edge file found for search result %d" % search_result_id)
+
+        except:
+            raise
+    else:
+        logger.info("No previous match results have been recorded for search result %d" % search_result_id)
+    logger.info("END comparing results files")

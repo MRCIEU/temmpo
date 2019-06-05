@@ -15,7 +15,9 @@
     <li role="presentation"><a href="#genefilter">Genes and filter section <span class="glyphicon glyphicon-filter"></span></a></li>
     <li role="presentation"><a href="#navigate">Navigate results <span class="glyphicon glyphicon-globe"></span></a></li>
     <li role="presentation"><a href="#reuse">Re-use searches/abstracts <span class="glyphicon glyphicon-repeat"></span></a></li>
+    <li role="presentation"><a href="#matchingchanges">Changes <span class="glyphicon glyphicon-repeat"></span></a></li>
 </ul>
+
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><a id="overview">Overview</a></h3>
@@ -414,16 +416,17 @@ SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
   </div>
   <div class="panel-body">
         <p>Once your analysis is complete you are presented with a table of results. If this is your first analysis only one row will show. The results table contains:</p>
-        <table id="results" class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline collapsed" role="grid" style="width: 100%;">
-            <thead>
-                        <tr><th scope="col" class="dt-left sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Abstract file: activate to sort column ascending">Abstract file</th><th scope="col" class="dt-left sorting_desc" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-sort="descending" aria-label="Date: activate to sort column ascending">Date</th><th scope="col" class="dt-left sorting_disabled" tabindex="0" aria-controls="results" rowspan="1" colspan="1">View search criteria</th><th scope="col" class="dt-left">Mechanism visualisations</th><th scope="col" class="dt-left">Score visualisations</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score data">Score data</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Abstract IDs">Abstract IDs</th></tr>
-            </thead>
-            </table>
+        <table id="results" class="table table-striped table-bordered table-hover compact dataTable no-footer dtr-inline" role="grid" style="width: 100%;">
+          <thead>
+            <tr role="row"><th scope="col" class="dt-left sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Abstract file: activate to sort column ascending" style="width: 166px;">Abstract file</th><th scope="col" class="dt-left sorting_desc" title="Date search was initiated" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-sort="descending" aria-label="Date: activate to sort column ascending" style="width: 99px;">Date</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Status" style="width: 50px;">Status</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="View search criteria" style="width: 129px;">View search criteria</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Mechanism visualisations" style="width: 169px;">Mechanism visualisations</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score visualisations" style="width: 131px;">Score visualisations</th><th scope="col" class="dt-right sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Mediator match counts: activate to sort column ascending" style="width: 161px;">Mediator match counts</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score data [help]" style="width: 113px;">Score data [<a href="#">help</a>]</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Abstract IDs" style="width: 95px;">Abstract IDs</th><th scope="col" data-test="delete-label" class="sorting_disabled" rowspan="1" colspan="1" aria-label="Delete" style="width: 46px;">Delete</th></tr>
+          </thead>
+        </table>
         <ul>
             <li><strong>Abstract file</strong>: the name of the file containing the abstracts used in this search</li>
             <li><strong>Date uploaded</strong>: the date the abstract file was uploaded or, if being reused, the date the search was run</li>
             <li><strong>View search criteria</strong>: allows you to see which terms were selected. This is useful for reproducibility, allowing you too view a record of the analytical parameters. In addition, you can copy and edit any of the lists and enter them into the text box on any of the MeSH selection pages</li>
             <li><strong>Visualisations</strong>: this provides a Sankey visualisation of the highest priority mechanisms (full results can be downloaded)</li>
+            <li><strong>Mechanism match counts</strong>: this is the number of MeSH terms and genes that have been found to be mediators in the search.</li>
             <li><strong>Score data</strong>: contains the full set of results as a csv file. For each mechanism the columns contain:
                 <ul>
                     <li><em>Mediators</em> = mechanism MeSH term</li>
@@ -451,4 +454,15 @@ SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
         <p><span class="btn btn-default">Reuse abstracts only</span>  will allow you to define an entirely new search on an existing set of articles.</p>
 </div>
 </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a id="matchingchanges">Changes</a></h3>
+  </div>
+  <div class="panel-body">
+    <p>In May 2019 bugs were found in the results sorting of visualisations used on this website and fixes were released.</p>
+    <p><i class="fa fa-info-circle" title="Revised result" style="color:#337ab7;" data-results-change="#"></i> - denotes a result where recent revisions to the matching code uncovered additional mediator matches.</p>
+</div>
+</div>
+
 {% endblock %}

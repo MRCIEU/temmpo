@@ -94,10 +94,10 @@ mkdir -p /usr/local/projects/temmpo/var/log/httpd
 mkdir -p /usr/local/projects/temmpo/var/www
 mkdir -p /usr/local/projects/temmpo/var/data
 mkdir -p /usr/local/projects/temmpo/var/abstracts
-mkdir -p /usr/local/projects/temmpo/var/results
 mkdir -p /usr/local/projects/temmpo/var/results/v1
 mkdir -p /usr/local/projects/temmpo/var/results/v3
-mkdir -p /usr/local/projects/temmpo/var/results/testing
+mkdir -p /usr/local/projects/temmpo/var/results/testing/v1
+mkdir -p /usr/local/projects/temmpo/var/results/testing/v3
 
 echo "Add directory for development emails"
 mkdir -p /usr/local/projects/temmpo/var/email

@@ -23,7 +23,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         cls.display = Display(visible=0, size=(1024, 768))
         cls.display.start()
         cls.driver = webdriver.Chrome()
-        cls.driver.implicitly_wait(15)
+        cls.driver.implicitly_wait(20)
 
     @classmethod
     def tearDownClass(cls):
@@ -34,7 +34,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
     def sel_open(self, url):
         """Universal helper functions."""
         self.driver.get("%s%s" % (self.live_server_url, url))
-        self.driver.implicitly_wait(5)
+        self.driver.implicitly_wait(10)
 
     def sel_find_by_css(self, css):
         return self.driver.find_element_by_css_selector(css)
@@ -55,7 +55,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         self.driver.find_element_by_id("id_password").send_keys(password)
 
         self.driver.find_element_by_id("id_password").send_keys(Keys.RETURN)
-        self.driver.implicitly_wait(5)
+        self.driver.implicitly_wait(10)
 
     def setUp(self):
         username = 'may'
