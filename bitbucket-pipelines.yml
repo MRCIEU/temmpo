@@ -13,6 +13,8 @@ pipelines:
           - redis-cli ping
           - redis-server -v
           - pip install -U pip==19.1.1
+          - pip install -U pip-tools==3.7.0
+          - pip install -U setuptools==41.0.1
           - pip install -r requirements/test.txt
           - pip-sync requirements/test.txt
           - mkdir -p /opt/var/results/testing/v1
