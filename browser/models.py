@@ -308,7 +308,7 @@ class SearchResult(models.Model):
                 os.remove(delfile)
 
         # If version 1 files exists delete as well.
-        if self.mediator_match_counts:
+        if self.mediator_match_counts is not None:
             base_path = settings.RESULTS_PATH_V1 + self.filename_stub + '*'
             files_to_delete = glob.glob(base_path)
 

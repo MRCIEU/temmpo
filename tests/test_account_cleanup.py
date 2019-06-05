@@ -562,7 +562,7 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         self.assertEqual((self.total_users - 1), User.objects.all().count())
 
 
-    def test_delete_user_content_version_1_mathcing(self):
+    def test_delete_user_content_version_1_matching(self):
         """Ensure version 1 files are also deleted"""
         search_criteria = self._set_up_test_search_criteria()
         search_result = SearchResult(criteria=search_criteria)
@@ -573,8 +573,6 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
 
         # Retrieve results object
         search_result = SearchResult.objects.get(id=search_result.id)
-        search_result.mediator_match_counts = search_result.mediator_match_counts_v3 
-        search_result.save()
 
         # Check v3 matching results files
         base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
@@ -582,6 +580,8 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         self.assertEqual(len(files_to_delete), 3)
 
         # Mock up some v1 results files
+        search_result.mediator_match_counts = search_result.mediator_match_counts_v3 
+        search_result.save()
         shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
         shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_abstracts.csv")
         shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + ".json", settings.RESULTS_PATH_V1 + search_result.filename_stub + ".json")
@@ -603,3 +603,48 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         files_to_delete = glob.glob(base_path)
         self.assertEqual(len(files_to_delete), 0)
 
+
+    def test_delete_user_content_version_1_matching_no_hits(self):
+        """Ensure version 1 files are also deleted"""
+        search_criteria = self._set_up_test_search_criteria()
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        # Run the search via message queue
+        perform_search(search_result.id)
+
+        # Retrieve results object
+        search_result = SearchResult.objects.get(id=search_result.id)
+
+        # Check v3 matching results files are created.
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 3)
+
+        # Mock up some v1 stub results files where mediator matches were 0
+        search_result.mediator_match_counts = 0 
+        search_result.save()
+        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
+        file_stub.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_abstracts.csv", "w")
+        file_stub.write("Abstract IDs\n")
+        file_stub.close()
+        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + ".json", "w")
+        file_stub.close()
+
+        # Check v1 matching results files exist
+        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 3)
+
+        delete_user_content(search_criteria.upload.user.id)
+
+        # Check v1 matching results files are deleted.
+        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
+
+        # Check v3 matching results files are deleted.
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
