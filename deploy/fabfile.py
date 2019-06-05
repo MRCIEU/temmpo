@@ -419,7 +419,7 @@ def stop_rqworker_service(use_local_mode):
 
 def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
-# Finish testing function changes and run branch tests on CI server, NB tests now failing locally too, Chrome or other package update???
+
 def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
     # Convert any command line arguments from strings to boolean values where necessary.
