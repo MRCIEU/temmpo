@@ -11,7 +11,7 @@ from django.conf import settings
 from django.core.files import File
 from django.test import tag
 
-from browser.matching import create_edge_matrix, generate_synonyms # ,read_citations, countedges, createresultfile, printedges, createjson
+from browser.matching import create_edge_matrix, generate_synonyms # ,read_citations, countedges, printedges, createjson
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from browser.matching import record_differences_between_match_runs, perform_search
 from tests.base_test_case import BaseTestCase
@@ -274,6 +274,7 @@ class MatchingTestCase(BaseTestCase):
         self.assertFalse(search_result.has_match_counts_changed)
         self.assertTrue(search_result.has_edge_file_changed)
 
+
     def test_record_differences_between_match_runs_when_new_meditors(self):
         """Previous search, edge file and new mediators expected in line 1, n/2, and n"""
         search_result_id = self._prepare_search_result()
@@ -322,4 +323,3 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_result.has_changed)
         self.assertTrue(search_result.has_match_counts_changed)
         self.assertTrue(search_result.has_edge_file_changed)
-

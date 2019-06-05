@@ -1,16 +1,17 @@
-3.0.0   TMMA-315 Highlight where there are differences between v1 and v3 matching on the results pages
-        TMMA-307 Bug fix handling a gene synonym being an alias to more than one gene
-        TMMA-295 Bug fixed wording on the Bubble chart labels
-        TMMA-306 Not matching more than one mediator MeSH term in an article
-        TMMA-302 Add support for selenium acceptance testing
-        TMMA-286 Reduce size of data structures when matching
-                 Dropped support for generating .gv files
+3.0.0   TMMA-276 Update third party eggs
+        TMMA-277 Increase file upload limit to 2000MB
+        TMMA-278 Bug fix filtering searches when multiple years have been imported
+        TMMA-275 Add support for uploading bz2 and gzip files
         TMMA-279 Add message queue to trigger running matching in the background
                  Add some caching
-        TMMA-275 Add support for uploading bz2 and gzip files
-        TMMA-278 Bug fix filtering searches when multiple years have been imported
-        TMMA-277 Increase file upload limit to 2000MB
-        TMMA-276 Update third party eggs
+        TMMA-286 Reduce size of data structures when matching
+                 Dropped support for generating .gv files
+        TMMA-302 Add support for selenium acceptance testing
+        TMMA-306 Bug fix matching more than one mediator MeSH term in an article
+        TMMA-295 Bug fixed wording on the Bubble chart labels
+        TMMA-307 Bug fix handling a gene synonym being an alias to more than one gene
+        TMMA-315 Highlight where there are differences between v1 and v3 matching on the results pages
+                 Dropped support for generating unused .csv files
 
 2.8.3   TMMA-320 Upgrade Django to 1.11.21
 
