@@ -14,7 +14,8 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
                            JSONDataView, SearchExistingUpload, MeshTermsAsJSON,
                            MeshTermsAllAsJSON, MeshTermSearchJSON, SelectSearchTypeView,
                            SearchPubMedView, ReuseSearchView, DeleteSearch, UserAccountView,
-                           CloseAccount, AccountClosedConfirmation, UsersListingView, DeleteUser)
+                           CloseAccount, AccountClosedConfirmation, UsersListingView, DeleteUser,
+                           CountDataViewV1, AbstractDataViewV1, JSONDataViewV1)
 
 urlpatterns = [
 
@@ -51,6 +52,10 @@ urlpatterns = [
     url(r'^data/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts_data'),
     url(r'^data/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json_data'),
     url(r'^data/delete/(?P<pk>\d+)/$', DeleteSearch.as_view(), name='delete_data'),
+
+    url(r'^data/v1/count/(?P<pk>\d+)/$', CountDataViewV1.as_view(), name='count_data_v1'),
+    url(r'^data/v1/abstracts/(?P<pk>\d+)/$', AbstractDataViewV1.as_view(), name='abstracts_data_v1'),
+    url(r'^data/v1/json/(?P<pk>\d+)/$', JSONDataViewV1.as_view(), name='json_data_v1'),
 
     url(r'^account/$', UserAccountView.as_view(), name='account'),
     url(r'^close-account/(?P<pk>\d+)/$', CloseAccount.as_view(), name='close_account'),

@@ -375,6 +375,9 @@ class ResultsView(TemplateView):
         context['json_url'] = reverse('json_data', kwargs=kwargs)
         context['score_csv_url'] = reverse('count_data', kwargs=kwargs)
         context['abstract_ids_csv_url'] = reverse('abstracts_data', kwargs=kwargs)
+        context['json_url_v1'] = reverse('json_data_v1', kwargs=kwargs)
+        context['score_csv_url_v1'] = reverse('count_data_v1', kwargs=kwargs)
+        context['abstract_ids_csv_url_v1'] = reverse('abstracts_data_v1', kwargs=kwargs)
         context['criteria_url'] = reverse('criteria', kwargs={'pk': self.search_result.criteria.id})
         context['results_sankey_url'] = reverse('results', kwargs=kwargs)
         context['results_bubble_url'] = reverse('results_bubble', kwargs=kwargs)
@@ -488,6 +491,12 @@ class CountDataView(RedirectView):
         url = settings.RESULTS_URL + '%s_edge.csv' % search_result.filename_stub
         return url
 
+class CountDataViewV1(CountDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V1 + '%s_edge.csv' % search_result.filename_stub
+        return url
 
 class AbstractDataView(RedirectView):
     permanent = True
@@ -514,6 +523,14 @@ class AbstractDataView(RedirectView):
         return url
 
 
+class AbstractDataViewV1(AbstractDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V1 + '%s_abstracts.csv' % search_result.filename_stub
+        return url
+
+
 class JSONDataView(RedirectView):
     permanent = True
     query_string = False
@@ -536,6 +553,14 @@ class JSONDataView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
         url = settings.RESULTS_URL + '%s.json' % search_result.filename_stub
+        return url
+
+
+class JSONDataViewV1(JSONDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V1 + '%s.json' % search_result.filename_stub
         return url
 
 

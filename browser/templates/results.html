@@ -45,9 +45,17 @@ Total {{ article_count }} papers.
     {% elif bubble_is_active %}
         <div id="bubble_chart"></div>
     {% endif %}
+    {% if search_result.has_changed %} <h2>Revised results <i class="fa fa-info-circle" title="Revised result" style="color:#337ab7;" data-results-change="{{ search_result.id }}"></i></h2>{% endif %}
     <div id="results-buttons" class="form-group">
         <a href="{{ score_csv_url }}" class="btn btn-outline btn-default">Download scores as CSV</a> <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default">Download abstract IDs as CSV</a>
     </div>
+
+    {% if search_result.has_changed %} <h2>Original results <i class="fa fa-code-fork" title="Previous version" style="color:#337ab7;" data-results-change="{{ search_result.id }}"></i></h2>
+    <p>These are for comparison purposes only.</p>
+    <div id="results-buttons-v1" class="form-group">
+        <a href="{{ score_csv_url_v1 }}" class="btn btn-outline btn-danger">Download version 1 scores as CSV</a> <a href="{{ abstract_ids_csv_url_v1 }}" class="btn btn-outline btn-danger">Download version 1 abstract IDs as CSV</a>
+    </div>
+    {% endif %}
 {% endif %}
 
 {% endblock %}
