@@ -39,8 +39,7 @@ class BaseTestCase(TestCase):
         """Clean up user content on the file system."""
         users = (self.user, self.staff_user, self.super_user_user, self.inactive_user)
         for user in users:
-            # delete_user_content(user.id)
-            pass
+            delete_user_content(user.id)
         super(BaseTestCase, self).tearDown()
 
     def _login_user(self):
