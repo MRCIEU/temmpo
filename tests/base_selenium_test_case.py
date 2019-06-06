@@ -8,13 +8,13 @@ import time
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 
 from browser.utils import delete_user_content
+
 logger = logging.getLogger(__name__)
 
 class SeleniumBaseTestCase(StaticLiveServerTestCase):
@@ -25,7 +25,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         super(SeleniumBaseTestCase, cls).setUpClass()
         cls.display = Display(visible=0, size=(1920, 1080))
         cls.display.start()
-        cls.driver = webdriver.Chrome()  # desired_capabilities=options
+        cls.driver = webdriver.Chrome()
         cls.driver.implicitly_wait(10)
 
     @classmethod
