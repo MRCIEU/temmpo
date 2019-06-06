@@ -48,9 +48,9 @@ urlpatterns = [
 
     url(r'^search-criteria/(?P<pk>\d+)/$', CriteriaView.as_view(), name='criteria'),
 
-    url(r'^data/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count_data'),
-    url(r'^data/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts_data'),
-    url(r'^data/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json_data'),
+    url(r'^data/v3/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count_data'),
+    url(r'^data/v3/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts_data'),
+    url(r'^data/v3/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json_data'),
     url(r'^data/delete/(?P<pk>\d+)/$', DeleteSearch.as_view(), name='delete_data'),
 
     url(r'^data/v1/count/(?P<pk>\d+)/$', CountDataViewV1.as_view(), name='count_data_v1'),
