@@ -1,3 +1,5 @@
+from datetime import datetime
+import logging
 import os
 from selenium.common.exceptions import WebDriverException
 
@@ -10,6 +12,7 @@ from browser.matching import perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_selenium_test_case import SeleniumBaseTestCase
 
+logger = logging.getLogger(__name__)
 
 @tag('selenium-test')
 class BubbleChartJSTestCase(SeleniumBaseTestCase):
@@ -60,13 +63,17 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
         self.assertTrue("No matches found" not in self.driver.page_source)
         self.assertTrue("Filtered by " not in self.driver.page_source)
 
+        # screen_shot_name = "%stest_bubble_chart_%s.png" % (settings.RESULTS_PATH, datetime.now().isoformat())
+        # self.driver.save_screenshot(screen_shot_name)
+        # logger.debug("Saved a screen shot here: %s" % screen_shot_name)
+
         try:
             legend_item_1_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(2)")
             self.assertEqual(legend_item_1_label.get_attribute("column-id"), "1. Serogroup")  # Appears last in the file of matches but has the higher score.
         except WebDriverException as e:
             print e
             print self.driver.page_source
-            self.fail("A selenium exception occurred")
+            self.fail("A selenium exception occurred trying to access an legend element in a bubble chart")
 
         try:
             chart_header_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(3) > text")
@@ -75,4 +82,4 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
         except WebDriverException as e:
             print e
             print self.driver.page_source
-            self.fail("A selenium exception occurred")
+            self.fail("A selenium exception occurred trying to access the chart label element in a bubble chart")

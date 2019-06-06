@@ -2,17 +2,20 @@
 """Acceptance test helper using Django's StaticLiveServerTestCase test
 case to combine Selenium and Chrome webdriver for headless browser tests.
 """
+import logging
+import time
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import time
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 
 from browser.utils import delete_user_content
+logger = logging.getLogger(__name__)
 
 class SeleniumBaseTestCase(StaticLiveServerTestCase):
     """A base test case for Selenium, providing helper methods."""
@@ -20,10 +23,10 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super(SeleniumBaseTestCase, cls).setUpClass()
-        cls.display = Display(visible=0, size=(1024, 768))
+        cls.display = Display(visible=0, size=(1920, 1080))
         cls.display.start()
-        cls.driver = webdriver.Chrome()
-        cls.driver.implicitly_wait(20)
+        cls.driver = webdriver.Chrome()  # desired_capabilities=options
+        cls.driver.implicitly_wait(10)
 
     @classmethod
     def tearDownClass(cls):
@@ -34,7 +37,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
     def sel_open(self, url):
         """Universal helper functions."""
         self.driver.get("%s%s" % (self.live_server_url, url))
-        self.driver.implicitly_wait(10)
+        time.sleep(3)
 
     def sel_find_by_css(self, css):
         return self.driver.find_element_by_css_selector(css)
@@ -55,7 +58,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         self.driver.find_element_by_id("id_password").send_keys(password)
 
         self.driver.find_element_by_id("id_password").send_keys(Keys.RETURN)
-        self.driver.implicitly_wait(10)
+        time.sleep(3)
 
     def setUp(self):
         username = 'may'
@@ -66,8 +69,18 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
                                      email=email,
                                      password=password)
         self.login_user(user=username, password=password)
+        time.sleep(3)
 
     def tearDown(self):
         """Clean up user content on the file system."""
+        # self.create_debug_logs()
         delete_user_content(self.user)
         super(SeleniumBaseTestCase, self).tearDown()
+
+    # def create_debug_logs(self, also_print=False):
+    #     """Chrome console logs"""
+    #     for entry in self.driver.get_log('browser'):
+    #         logger.info(entry)
+    #         if also_print:
+    #             print entry
+
