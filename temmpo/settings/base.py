@@ -10,6 +10,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import random
 import string
+import sys
+
+USING_APACHE = False
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Dynamic config based on server host, vebuild and if dev, user name

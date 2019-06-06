@@ -76,7 +76,7 @@ urlpatterns = [
 ]
 
 # For non Apache fronted Django development server scenarios.
-if settings.DEBUG:
+if not settings.USING_APACHE:
 
     urlpatterns += [
         url(r'^media/(?P<path>.*)$', serve, {
@@ -84,11 +84,9 @@ if settings.DEBUG:
         }),
     ]
 
-    if "debug_toolbar" in settings.INSTALLED_APPS:
+if settings.DEBUG and "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
 
         urlpatterns += [
             url(r'^__debug__/', include(debug_toolbar.urls)),
         ]
-
-
