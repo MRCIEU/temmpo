@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 """ TeMMPo unit test suite for matching code
 """
-
+import csv
+import io
+import json
 import logging
 import numpy as np
 import os
 import shutil
 
+from csvvalidator import *
+
 from django.conf import settings
 from django.core.files import File
+from django.core.urlresolvers import reverse
 from django.test import tag
 
 from browser.matching import create_edge_matrix, generate_synonyms # ,read_citations, countedges, printedges, createjson
@@ -95,9 +100,6 @@ class MatchingTestCase(BaseTestCase):
     # def test_countedges(self):
     #     assert False
 
-    # def test_createresultfile(self):
-    #     assert False
-
     # def test_printedges(self):
     #     assert False
 
@@ -138,12 +140,10 @@ class MatchingTestCase(BaseTestCase):
         search_result = SearchResult(criteria=search_criteria)
         search_result.save()
 
-        # Run the search via message queue
         perform_search(search_result.id)
 
         return search_result.id
 
-        # Copy and amend edge results files for testing
 
     def test_record_differences_between_match_runs_no_previous_search(self):
         """No version 1 search results"""
@@ -323,3 +323,133 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_result.has_changed)
         self.assertTrue(search_result.has_match_counts_changed)
         self.assertTrue(search_result.has_edge_file_changed)
+
+    def _get_egde_csv_data_validation_issues(self, data):
+        field_names = ('Mediators',
+                       'Exposure counts',
+                       'Outcome counts',
+                       'Scores',
+                       )
+        validator = CSVValidator(field_names)
+        validator.add_value_check('Exposure counts', float,
+                          'EX1', 'exposure count must be a float')
+        validator.add_value_check('Outcome counts', float,
+                          'EX2', 'outcome count must be a float')
+        validator.add_value_check('Scores', float,
+                          'EX3', 'scores must be a float')
+        validator.add_value_check('Mediators', str,
+                          'EX4', 'mediators must be a string')
+        return validator.validate(data)
+
+    def test_serving_results_edge_csv_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        path = reverse('count_data', kwargs={'pk': search_result_id })
+        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL, file_name_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        # Check for expected content
+        self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
+        self.assertTrue("Genetic Pleiotropy,1,1,2.0" in content)
+        # Validate CSV data
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
+
+    def test_serving_v1_results_edge_csv_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result.mediator_match_counts = 1
+        search_result.save()
+        # Create a test version 1 file
+        v1_file = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
+        v1_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v1 file,0,0,0\n")
+        v1_file.close()
+        path = reverse('count_data_v1', kwargs={'pk': search_result_id })
+        expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V1, search_result.filename_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        # Check for expected content
+        self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
+        self.assertTrue("TESITNG v1 file,0,0,0" in content)
+        # Validate CSV data
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
+
+    def test_serving_results_json_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        path = reverse('json_data', kwargs={'pk': search_result_id })
+        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        expected_url = "%s%s.json" % (settings.RESULTS_URL, file_name_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertTrue("Genetic Pleiotropy" in content)
+        # Validate contents is valid JSON
+        result_json_data = json.loads(content)
+
+    def test_serving_v1_results_json_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        # Mock up a version 1 matching result file
+        shutil.copyfile(settings.RESULTS_PATH + file_name_stub + ".json", settings.RESULTS_PATH_V1 + file_name_stub + ".json")
+        path = reverse('json_data_v1', kwargs={'pk': search_result_id })
+        expected_url = "%s%s.json" % (settings.RESULTS_URL_V1, file_name_stub)
+        self.assertTrue("v1" in expected_url)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertTrue("Genetic Pleiotropy" in content)
+        # Validate contents is valid JSON
+        result_json_data = json.loads(content)
+
+    def _get_abstract_csv_data_validation_issues(self, data):
+        field_names = ('Abstract IDs',)
+        validator = CSVValidator(field_names)
+        validator.add_value_check('Abstract IDs', int,
+                          'EX1', 'Abstract IDs must be an integer')
+        return validator.validate(data)
+
+    def test_serving_results_abstract_ids_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        path = reverse('abstracts_data', kwargs={'pk': search_result_id })
+        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        expected_url = "%s%s_abstracts.csv" % (settings.RESULTS_URL, file_name_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertTrue("999991" in content)
+        self.assertTrue("999992" in content)
+        self.assertTrue("999993" in content)
+        self.assertTrue("999995" in content)
+        # Validate CSV data
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+
+    def test_serving_v1_results_abstract_ids_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        path = reverse('abstracts_data_v1', kwargs={'pk': search_result_id })
+        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        # Mock up a version 1 matching result file
+        shutil.copyfile(settings.RESULTS_PATH + file_name_stub + "_abstracts.csv", settings.RESULTS_PATH_V1 + file_name_stub + "_abstracts.csv")
+        expected_url = "%s%s_abstracts.csv" % (settings.RESULTS_URL_V1, file_name_stub)
+        self.assertTrue("v1" in expected_url)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertTrue("999991" in content)
+        self.assertTrue("999992" in content)
+        self.assertTrue("999993" in content)
+        self.assertTrue("999995" in content)
+        # Should not have matched with any mediator terms
+        self.assertFalse("999994" in content)
+        # Validate CSV data
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])

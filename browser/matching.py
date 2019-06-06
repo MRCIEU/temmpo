@@ -394,7 +394,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         if countthis == 1:
             papercounter += 1
 
-    # Output citation ids
+    # Output all citation ids where a gene or mediator MeSH term match is found in the abstract
     if citation_id:
         resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
         csv_writer = unicodecsv.writer(resultfile)
