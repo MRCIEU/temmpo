@@ -3,6 +3,7 @@
 """
 import csv
 import io
+import json
 import logging
 import numpy as np
 import os
@@ -349,7 +350,7 @@ class MatchingTestCase(BaseTestCase):
         file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
         expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL, file_name_stub)
         response = self.client.get(path, follow=True)
-        content = list(response.streaming_content)[0]
+        content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
         self.assertTrue("Genetic Pleiotropy,1,1,2.0" in content)
@@ -369,21 +370,45 @@ class MatchingTestCase(BaseTestCase):
         path = reverse('count_data_v1', kwargs={'pk': search_result_id })
         expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V1, search_result.filename_stub)
         response = self.client.get(path, follow=True)
-        content = list(response.streaming_content)[0]
+        content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
         self.assertTrue("TESITNG v1 file,0,0,0" in content)
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_csv_data_validation_issues(csv_data), [])
 
-    # def test_serving_results_json_file(self):
-    #     search_result_id = self._prepare_search_result()
+    def test_serving_results_json_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        path = reverse('json_data', kwargs={'pk': search_result_id })
+        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        expected_url = "%s%s.json" % (settings.RESULTS_URL, file_name_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertTrue("Genetic Pleiotropy" in content)
+        # Validate contents is valid JSON
+        result_json_data = json.loads(content)
 
-    # def test_serving_v1_results_json_file(self):
-    #     search_result_id = self._prepare_search_result()
+    def test_serving_v1_results_json_file(self):
+        self._login_user()
+        search_result_id = self._prepare_search_result()
+        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        shutil.copyfile(settings.RESULTS_PATH + file_name_stub + ".json", settings.RESULTS_PATH_V1 + file_name_stub + ".json")
+        path = reverse('json_data_v1', kwargs={'pk': search_result_id })
+        expected_url = "%s%s.json" % (settings.RESULTS_URL_V1, file_name_stub)
+        self.assertTrue("v1" in expected_url)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertTrue("Genetic Pleiotropy" in content)
+        # Validate contents is valid JSON
+        result_json_data = json.loads(content)
 
     # def test_serving_results_abstract_ids_file(self):
+        # self._login_user()
     #     search_result_id = self._prepare_search_result()
 
     # def test_serving_v1_results_abstract_ids_file(self):
+    #     self._login_user()
     #     search_result_id = self._prepare_search_result()
