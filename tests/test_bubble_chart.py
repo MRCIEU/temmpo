@@ -73,7 +73,7 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
         except WebDriverException as e:
             print e
             print self.driver.page_source
-            self.fail("A selenium exception occurred trying to access an legend element in a bubble chart")
+            self.fail("A selenium exception occurred trying to access a legend element in a bubble chart")
 
         try:
             chart_header_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(3) > text")
