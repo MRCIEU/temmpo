@@ -71,16 +71,56 @@ MESSAGE_QUEUE_WORKER
 systemctl start rqworker
 systemctl enable rqworker
 
-# Install components for Selenium testing using Chrome and the accompanying chromedriver
+# Install components for Selenium testing
 yum -y install Xvfb
+
+# Install Chrome and chromedriver
 cd /tmp
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 yum -y localinstall google-chrome-stable_current_x86_64.rpm
 google-chrome --version
+# As per test server
 wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
+# wget https://chromedriver.storage.googleapis.com/75.0.3770.8/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/bin/
+chmod g+rw /usr/bin/chromedriver
+chmod o+rw /usr/bin/chromedriver
 chromedriver -v
+
+# # Install Firefox and geckodriver
+# yum -y install firefox
+# cd /opt
+# wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+# tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+# ln -s /opt/geckodriver /usr/local/bin/geckodriver
+# geckodriver --version
+
+# # Install PhantomJS NB: Deprecated usage with selenium
+# cd /opt
+# wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+# tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
+# ln -s /opt/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs
+# phantomjs --version
+
+# # Install Opera and operadriver
+# rpm --import https://rpm.opera.com/rpmrepo.key
+# tee /etc/yum.repos.d/opera.repo <<REPO
+# [opera]
+# name=Opera packages
+# type=rpm-md
+# baseurl=https://rpm.opera.com/rpm
+# gpgcheck=1
+# gpgkey=https://rpm.opera.com/rpmrepo.key
+# enabled=1
+# REPO
+# yum -y install opera-stable
+# cd /opt
+# wget https://github.com/operasoftware/operachromiumdriver/releases/download/v.2.45/operadriver_linux64.zip
+# unzip operadriver_linux64.zip
+# ls
+# ln -s /opt/operadriver_linux64/operadriver /usr/local/bin/operadriver
+# operadriver --version
 
 # Confirm install list
 yum list installed 

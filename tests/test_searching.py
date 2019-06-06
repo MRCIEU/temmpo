@@ -936,3 +936,8 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
         for text in revised_text:
             self.assertContains(response, text)
+
+        # Test the change is highlighted on the individual results pages
+        path = reverse('results', kwargs={'pk': search_result.id})
+        expected_text = ["Download version 1 scores as CSV", "Download version 1 abstract IDs as CSV", "Revised results"]
+        self._find_expected_content(path=path, msg_list=expected_text)
