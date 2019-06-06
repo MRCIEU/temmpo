@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 """ TeMMPo unit test suite for matching code
 """
+import csv
+import io
 import logging
 import numpy as np
 import os
 import shutil
+
+from csvvalidator import *
 
 from django.conf import settings
 from django.core.files import File
@@ -319,6 +323,25 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_result.has_match_counts_changed)
         self.assertTrue(search_result.has_edge_file_changed)
 
+    def _get_csv_data_validation_issues(self, data):
+        field_names = (
+                       'Mediators',
+                       'Exposure counts',
+                       'Outcome counts',
+                       'Scores',
+                       )
+
+        validator = CSVValidator(field_names)
+        validator.add_value_check('Exposure counts', float,
+                          'EX1', 'exposure count must be a float')
+        validator.add_value_check('Outcome counts', float,
+                          'EX2', 'outcome count must be a float')
+        validator.add_value_check('Scores', float,
+                          'EX3', 'scores must be a float')
+        validator.add_value_check('Mediators', str,
+                          'EX4', 'mediators must be a string')
+        return validator.validate(data)
+
     def test_serving_results_edge_csv_file(self):
         self._login_user()
         search_result_id = self._prepare_search_result()
@@ -330,6 +353,8 @@ class MatchingTestCase(BaseTestCase):
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
         self.assertTrue("Genetic Pleiotropy,1,1,2.0" in content)
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_csv_data_validation_issues(csv_data), [])
 
     def test_serving_v1_results_edge_csv_file(self):
         self._login_user()
@@ -348,6 +373,8 @@ class MatchingTestCase(BaseTestCase):
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
         self.assertTrue("TESITNG v1 file,0,0,0" in content)
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_csv_data_validation_issues(csv_data), [])
 
     # def test_serving_results_json_file(self):
     #     search_result_id = self._prepare_search_result()
