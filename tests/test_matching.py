@@ -211,7 +211,13 @@ class MatchingTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(id=search_result_id)
         search_result.mediator_match_counts = search_result.mediator_match_counts_v3
         search_result.save()
-        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
+        # Add trailing commas to the V1 file no longer present in v3 files
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r") as v3_csv:
+            data = v3_csv.readlines()
+            for i in range(1, len(data)):
+                data[i] = data[i].strip() + ",\n"
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as v1_csv:
+            v1_csv.writelines(data)
 
         record_differences_between_match_runs(search_result_id)
         search_result = SearchResult.objects.get(id=search_result_id)
@@ -232,9 +238,9 @@ class MatchingTestCase(BaseTestCase):
         #Amend line 1 found in the v1 results file
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,1,1,1\n")
-            file.write("Genetic Pleiotropy,1,1,2.0\n")
-            file.write("Serogroup,2,1,1.5\n")
+            file.write("Genetic Markers,1,1,1,\n")
+            file.write("Genetic Pleiotropy,1,1,2.0,\n")
+            file.write("Serogroup,2,1,1.5,\n")
 
         record_differences_between_match_runs(search_result_id)
         search_result = SearchResult.objects.get(id=search_result_id)
@@ -247,9 +253,9 @@ class MatchingTestCase(BaseTestCase):
         # Amend line n/2 found in the v1 results file
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,2,1,1.5\n")
-            file.write("Genetic Pleiotropy,2,1,1.5\n")
-            file.write("Serogroup,2,1,1.5\n")
+            file.write("Genetic Markers,2,1,1.5,\n")
+            file.write("Genetic Pleiotropy,2,1,1.5,\n")
+            file.write("Serogroup,2,1,1.5,\n")
 
         record_differences_between_match_runs(search_result_id)
         search_result = SearchResult.objects.get(id=search_result_id)
@@ -262,9 +268,9 @@ class MatchingTestCase(BaseTestCase):
         # Amend last line found in the v1 results file
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,2,1,1.5\n")
-            file.write("Genetic Pleiotropy,1,1,2.0\n")
-            file.write("Serogroup,1,1,1\n")
+            file.write("Genetic Markers,2,1,1.5,\n")
+            file.write("Genetic Pleiotropy,1,1,2.0,\n")
+            file.write("Serogroup,1,1,1,\n")
 
         record_differences_between_match_runs(search_result_id)
         search_result = SearchResult.objects.get(id=search_result_id)
@@ -285,8 +291,8 @@ class MatchingTestCase(BaseTestCase):
         #Remove line 1 found in the v1 results file
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Pleiotropy,1,1,2.0\n")
-            file.write("Serogroup,2,1,1.5\n")
+            file.write("Genetic Pleiotropy,1,1,2.0,\n")
+            file.write("Serogroup,2,1,1.5,\n")
 
         record_differences_between_match_runs(search_result_id)
         search_result = SearchResult.objects.get(id=search_result_id)
@@ -299,8 +305,8 @@ class MatchingTestCase(BaseTestCase):
         # Remove line n/2 found in the v1 results file
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,2,1,1.5\n")
-            file.write("Serogroup,2,1,1.5\n")
+            file.write("Genetic Markers,2,1,1.5,\n")
+            file.write("Serogroup,2,1,1.5,\n")
 
         record_differences_between_match_runs(search_result_id)
         search_result = SearchResult.objects.get(id=search_result_id)
@@ -313,8 +319,8 @@ class MatchingTestCase(BaseTestCase):
         # Remove last line found in the v1 results file
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,2,1,1.5\n")
-            file.write("Genetic Pleiotropy,1,1,2.0\n")
+            file.write("Genetic Markers,2,1,1.5,\n")
+            file.write("Genetic Pleiotropy,1,1,2.0,\n")
 
         record_differences_between_match_runs(search_result_id)
         search_result = SearchResult.objects.get(id=search_result_id)
@@ -365,7 +371,7 @@ class MatchingTestCase(BaseTestCase):
         search_result.save()
         # Create a test version 1 file
         v1_file = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
-        v1_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v1 file,0,0,0\n")
+        v1_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v1 file,0,0,0,\n")
         v1_file.close()
         path = reverse('count_data_v1', kwargs={'pk': search_result_id })
         expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V1, search_result.filename_stub)

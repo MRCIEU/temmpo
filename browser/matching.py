@@ -519,16 +519,16 @@ def record_differences_between_match_runs(search_result_id):
     if search_result.mediator_match_counts is not None:
         v1_filepath = settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv"
         try:
+            # NB: V1 files have trailing commas in body rows
             v1_df = pd.read_csv(v1_filepath,
                                 sep=',',
-                                delimiter=None,
                                 header=0,
                                 names=("Mediators","Exposure counts","Outcome counts","Scores",),
-                                index_col=0,
+                                index_col=False,
                                 dtype= {"Mediators": np.str,
                                         "Exposure counts": np.int32,
                                         "Outcome counts": np.int32,
-                                        "Scores": np.int32,
+                                        "Scores": np.float,
                                         },
                                 engine='python')
             v1_df = v1_df.sort_values("Mediators")
@@ -536,14 +536,13 @@ def record_differences_between_match_runs(search_result_id):
             try:
                 v3_df = pd.read_csv(v3_filepath,
                                     sep=',',
-                                    delimiter=None,
                                     header=0,
                                     names=("Mediators","Exposure counts","Outcome counts","Scores",),
-                                    index_col=0,
+                                    index_col=False,
                                     dtype= {"Mediators": np.str,
                                             "Exposure counts": np.int32,
                                             "Outcome counts": np.int32,
-                                            "Scores": np.int32,
+                                            "Scores": np.float,
                                             },
                                     engine='python')
                 v3_df = v3_df.sort_values("Mediators")
