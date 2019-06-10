@@ -480,10 +480,15 @@ def add_missing_csv_headers_to_scores():
 def apply_csv_misquoting_fix():
     """To be run remotely only: TMMA-324 Bug fix edge files CSV misquoting"""
     affected_files = [
+        "results_95__topresults_edge.csv",
+        "results_113__topresults_edge.csv",
+        "results_114__topresults_edge.csv",
+        "results_123__topresults_edge.csv",
         "results_170__topresults_edge.csv",
         "results_173__topresults_edge.csv",
         "results_216__topresults_edge.csv",
         "results_316__topresults_edge.csv",
+        "results_317__topresults_edge.csv",
         "results_318__topresults_edge.csv",
         "results_319__topresults_edge.csv",
         "results_320__topresults_edge.csv",
@@ -502,6 +507,10 @@ def apply_csv_misquoting_fix():
         "results_429__topresults_edge.csv",
         "results_430__topresults_edge.csv",
         ]
+    """Estrogens     Conjugated (USP)
+    Paget's Disease  Mammary
+    Arthroplasty, Replacement    Knee
+    """
     replacement_pairs = {
         '"Anemia, Hemolytic", Autoimmune,': '"Anemia, Hemolytic, Autoimmune",',
         '"Antibodies, Monoclonal", Murine-Derived,': '"Antibodies, Monoclonal, Murine-Derived",',
@@ -514,6 +523,8 @@ def apply_csv_misquoting_fix():
         '"Receptors, Antigen, T-Cell", alpha-beta,': '"Receptors, Antigen, T-Cell, alpha-beta",',
         '"Receptors, Tumor Necrosis Factor", Member 25,': '"Receptors, Tumor Necrosis Factor, Member 25",',
         '"Receptors, Tumor Necrosis Factor", Type II,': '"Receptors, Tumor Necrosis Factor, Type II",',
+        'Estrogens, Conjugated (USP),':'"Estrogens, Conjugated (USP)",',
+        's Disease, Mammary,':'s Disease, Mammary",',
         }
     # Allow function to be run locally or remotely
     results_directories = (PROJECT_ROOT + "var/results/v1", PROJECT_ROOT + "var/results")
