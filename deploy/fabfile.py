@@ -507,10 +507,7 @@ def apply_csv_misquoting_fix():
         "results_429__topresults_edge.csv",
         "results_430__topresults_edge.csv",
         ]
-    """Estrogens     Conjugated (USP)
-    Paget's Disease  Mammary
-    Arthroplasty, Replacement    Knee
-    """
+
     replacement_pairs = {
         '"Anemia, Hemolytic", Autoimmune,': '"Anemia, Hemolytic, Autoimmune",',
         '"Antibodies, Monoclonal", Murine-Derived,': '"Antibodies, Monoclonal, Murine-Derived",',
@@ -524,7 +521,6 @@ def apply_csv_misquoting_fix():
         '"Receptors, Tumor Necrosis Factor", Member 25,': '"Receptors, Tumor Necrosis Factor, Member 25",',
         '"Receptors, Tumor Necrosis Factor", Type II,': '"Receptors, Tumor Necrosis Factor, Type II",',
         'Estrogens, Conjugated (USP),':'"Estrogens, Conjugated (USP)",',
-        's Disease, Mammary,':'s Disease, Mammary",',
         }
     # Allow function to be run locally or remotely
     results_directories = (PROJECT_ROOT + "var/results/v1", PROJECT_ROOT + "var/results")
