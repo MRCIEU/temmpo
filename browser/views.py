@@ -19,7 +19,7 @@ from django.contrib.auth import logout
 
 
 from browser.forms import OvidMedLineFileUploadForm, PubMedFileUploadForm, TermSelectorForm, FilterForm
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload  # Gene,
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, Message
 from browser.matching import perform_search
 from browser.utils import delete_user_content
 
@@ -65,6 +65,7 @@ class SelectSearchTypeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SelectSearchTypeView, self).get_context_data(**kwargs)
         context['active'] = 'search'
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
@@ -81,6 +82,7 @@ class ReuseSearchView(TemplateView):
         context['active'] = 'search'
         context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
         context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
@@ -106,6 +108,7 @@ class SearchOvidMEDLINE(CreateView):
         context['active'] = 'search'
         context['form_action'] = reverse('search_ovid_medline')
         context['file_type'] = "Ovid MEDLINE®"
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
     def get_initial(self):
@@ -125,6 +128,7 @@ class SearchPubMedView(SearchOvidMEDLINE):
         context = super(SearchPubMedView, self).get_context_data(**kwargs)
         context['file_type'] = "PubMed MEDLINE®"
         context['form_action'] = reverse('search_pubmed')
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
@@ -386,6 +390,7 @@ class ResultsView(TemplateView):
         context['sankey_is_active'] = False
         context['bubble_is_active'] = False
         context['results_page_title'] = 'TeMMPo: Results'
+        context['system_messages'] = Message.objects.get_current_messages()
 
         return context
 
@@ -429,6 +434,7 @@ class ResultsListingView(ListView):
         context = super(ResultsListingView, self).get_context_data(**kwargs)
         context['active'] = 'results'
         context['unprocessed'] = SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=False).order_by("-criteria__created")
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
