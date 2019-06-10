@@ -2,10 +2,12 @@
 
 from django.contrib import admin
 
-from browser.models import Gene, MeshTerm, Upload, SearchCriteria, SearchResult
+from browser.models import Gene, MeshTerm, Upload, SearchCriteria, SearchResult, Message
 
 admin.site.register(Gene)
 admin.site.register(MeshTerm)
 admin.site.register(Upload)
 admin.site.register(SearchCriteria)
 admin.site.register(SearchResult)
+
+admin.site.register(Message)

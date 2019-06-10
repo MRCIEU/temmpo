@@ -16,6 +16,7 @@ def enqueue_comparisons(apps, schema_editor):
     for search_result_id in SearchResult.objects.all().values_list("id", flat=True):
         django_rq.enqueue(record_differences_between_match_runs, search_result_id)
 
+
 class Migration(migrations.Migration):
 
     dependencies = [

@@ -11,7 +11,7 @@ import datetime
 import glob
 
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
@@ -325,3 +325,26 @@ class SearchResult(models.Model):
     def has_match_counts_changed(self):
         return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3)
 
+
+class MessageManager(models.Manager):
+
+    def get_current_messages(self):
+        return self.filter(is_disabled=False).filter(Q(end__isnull=True) | Q(end__gte=timezone.now())).filter(start__lte=timezone.now()).order_by("start").values_list('body', flat=True)
+
+
+class Message(models.Model):
+
+    body = models.CharField(max_length=500)
+    start = models.DateTimeField(default=timezone.now)
+    end = models.DateTimeField(blank=True, null=True)
+    is_disabled = models.BooleanField(default=False)
+    user = models.ForeignKey(User, null=False, blank=False,
+                             related_name="author")
+
+    objects = MessageManager()
+
+    def __unicode__(self):
+        if self.body:
+            return self.body
+        else:
+            return naturaltime(self.start)
