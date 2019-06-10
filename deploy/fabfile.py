@@ -507,10 +507,7 @@ def apply_csv_misquoting_fix():
         "results_429__topresults_edge.csv",
         "results_430__topresults_edge.csv",
         ]
-    """Estrogens     Conjugated (USP)
-    Paget's Disease  Mammary
-    Arthroplasty, Replacement    Knee
-    """
+
     replacement_pairs = {
         '"Anemia, Hemolytic", Autoimmune,': '"Anemia, Hemolytic, Autoimmune",',
         '"Antibodies, Monoclonal", Murine-Derived,': '"Antibodies, Monoclonal, Murine-Derived",',
