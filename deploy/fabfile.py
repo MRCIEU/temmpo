@@ -477,6 +477,55 @@ def add_missing_csv_headers_to_scores():
                     run('cat "headers%s" "%s" > tmp-csv-file.txt && mv tmp-csv-file.txt "%s"' % (info['file_extension'], csv_file, csv_file))
             run("rm headers%(file_extension)s" % info)
 
+def apply_csv_misquoting_fix():
+    """To be run remotely only: TMMA-324 Bug fix edge files CSV misquoting"""
+    affected_files = [
+        "results_170__topresults_edge.csv",
+        "results_173__topresults_edge.csv",
+        "results_216__topresults_edge.csv",
+        "results_316__topresults_edge.csv",
+        "results_318__topresults_edge.csv",
+        "results_319__topresults_edge.csv",
+        "results_320__topresults_edge.csv",
+        "results_322__topresults_edge.csv",
+        "results_324__topresults_edge.csv",
+        "results_325__topresults_edge.csv",
+        "results_336__topresults_edge.csv",
+        "results_339__topresults_edge.csv",
+        "results_344__topresults_edge.csv",
+        "results_348__topresults_edge.csv",
+        "results_351__topresults_edge.csv",
+        "results_352__topresults_edge.csv",
+        "results_353__topresults_edge.csv",
+        "results_356__topresults_edge.csv",
+        "results_428__topresults_edge.csv",
+        "results_429__topresults_edge.csv",
+        "results_430__topresults_edge.csv",
+        ]
+    replacement_pairs = {
+        '"Anemia, Hemolytic", Autoimmune,': '"Anemia, Hemolytic, Autoimmune",',
+        '"Antibodies, Monoclonal", Murine-Derived,': '"Antibodies, Monoclonal, Murine-Derived",',
+        '"Antigens, Differentiation", T-Lymphocyte,': '"Antigens, Differentiation, T-Lymphocyte",',
+        '"Arthroplasty, Replacement", Hip,': '"Arthroplasty, Replacement, Hip",',
+        '"Arthroplasty, Replacement", Knee,': '"Arthroplasty, Replacement, Knee",',
+        '"Carcinoma, Ductal", Breast,': '"Carcinoma, Ductal, Breast",',
+        '"Contraceptives, Oral", Hormonal,': '"Contraceptives, Oral, Hormonal",',
+        '"Death, Sudden", Cardiac,': '"Death, Sudden, Cardiac",',
+        '"Receptors, Antigen, T-Cell", alpha-beta,': '"Receptors, Antigen, T-Cell, alpha-beta",',
+        '"Receptors, Tumor Necrosis Factor", Member 25,': '"Receptors, Tumor Necrosis Factor, Member 25",',
+        '"Receptors, Tumor Necrosis Factor", Type II,': '"Receptors, Tumor Necrosis Factor, Type II",',
+        }
+    # Allow function to be run locally or remotely
+    results_directories = (PROJECT_ROOT + "var/results/v1", PROJECT_ROOT + "var/results")
+
+    for results_directory in results_directories:
+        with cd(results_directory):
+            for affected_file in affected_files:
+                if files.exists(affected_file):
+                    print "About to replace text in %s/%s" % (results_directory, affected_file)
+                    for find_str in replacement_pairs.keys():
+                        run("sed -i -e 's/%s/%s/g\' %s" % (find_str, replacement_pairs[find_str], affected_file))
+
 def pip_sync_requirements_file(env="dev", use_local_mode=True):
     use_local_mode = (str(use_local_mode).lower() == 'true')
 

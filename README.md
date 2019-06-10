@@ -300,6 +300,22 @@ NB: The Jenkins jobs are configured to use the CI server's temmpo user account's
 
 6. Build new Python virtual environment, see steps for building production, demo or test for example commands.
 
+## Running one off remote fabric scripts
+
+e.g. CSV misquoting bug fix
+
+### On dev
+
+Run from your local OS into your vagrant VM
+
+    fab apply_csv_misquoting_fix -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+### On demo
+
+Run from the CI server ci-p0.rit.bris.ac.uk
+
+    fab apply_csv_misquoting_fix -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
+
 ## Warnings
 
     IntegrityError at /search/ovidmedline/
