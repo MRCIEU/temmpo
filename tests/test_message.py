@@ -69,3 +69,21 @@ class MessageTestCase(BaseTestCase):
         self._logout_user()
         self._login_super_user()
         self._find_expected_content('/admin/browser/message/', msg_list=["Django administration", "Select message to change", ])
+
+    def test_cannot_see_disabled_msg(self):
+        """Test cannot view disabled system messages on the search page."""
+        response = self.client.get(reverse("search"), follow=True)
+        self.assertContains(response, self.msg.body)
+        self.msg.is_disabled = True
+        self.msg.save()
+        response = self.client.get(reverse("search"), follow=True)
+        self.assertNotContains(response, self.msg.body)
+
+    def test_cannot_see_expired_msg(self):
+        """Test cannot see expired system message on the search page."""
+        response = self.client.get(reverse("search"), follow=True)
+        self.assertContains(response, self.msg.body)
+        self.msg.end = timezone.now() - timedelta(seconds=5)
+        self.msg.save()
+        response = self.client.get(reverse("search"), follow=True)
+        self.assertNotContains(response, self.msg.body)
