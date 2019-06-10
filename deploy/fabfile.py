@@ -521,7 +521,6 @@ def apply_csv_misquoting_fix():
         '"Receptors, Tumor Necrosis Factor", Member 25,': '"Receptors, Tumor Necrosis Factor, Member 25",',
         '"Receptors, Tumor Necrosis Factor", Type II,': '"Receptors, Tumor Necrosis Factor, Type II",',
         'Estrogens, Conjugated (USP),':'"Estrogens, Conjugated (USP)",',
-        's Disease, Mammary,':'s Disease, Mammary",',
         }
     # Allow function to be run locally or remotely
     results_directories = (PROJECT_ROOT + "var/results/v1", PROJECT_ROOT + "var/results")
