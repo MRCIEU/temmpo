@@ -13,6 +13,7 @@
         TMMA-315 Highlight where there are differences between v1 and v3 matching on the results pages
                  Dropped support for generating unused .csv files
         TMMA-314 Support downloading both versions of matching results
+        TMMA-326 Add system message functionality around the search and results area.
 
 2.8.3   TMMA-320 Upgrade Django to 1.11.21
 
