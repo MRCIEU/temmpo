@@ -16,15 +16,13 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import tag
 
-from browser.matching import create_edge_matrix, generate_synonyms # ,read_citations, countedges, printedges, createjson
+from browser.matching import create_edge_matrix, generate_synonyms, read_citations  #, countedges, printedges, createjson
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from browser.matching import record_differences_between_match_runs, perform_search
 from tests.base_test_case import BaseTestCase
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
-TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
-TEST_YEAR = 2018
 
 @tag('matching-test')
 class MatchingTestCase(BaseTestCase):
@@ -94,8 +92,23 @@ class MatchingTestCase(BaseTestCase):
     # def test_createedgelist(self):
     #     assert False
 
-    # def read_citations(self):
-    #     assert False
+    def test_read_citations_ovid(self):
+        citations = read_citations(file_path=BASE_DIR + "/test-abstract-ovid-test-sample-5.txt", file_format=OVID)
+        self.assertEqual(len(list(citations)), 5)
+
+        expected_fields = ("Unique Identifier", "MeSH Subject Headings", "Abstract", )
+        for citation in citations:
+            for field in expected_fields:
+                self.assertTrue(citation.fields.has_key(field))
+
+    def test_read_citations_pubmed(self):
+        citations = read_citations(file_path=BASE_DIR + "/pubmed_result_100.txt", file_format=PUBMED)
+        self.assertEqual(len(list(citations)), 100)
+
+        expected_fields = ("PMID", "MH", "AB", )
+        for citation in citations:
+            for field in expected_fields:
+                self.assertTrue(citation.fields.has_key(field))
 
     # def test_countedges(self):
     #     assert False

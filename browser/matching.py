@@ -141,7 +141,6 @@ def generate_synonyms():
         synonymlookup[genename] = [genename, ]
         synonymlisting[genename] = fulllist
     genefile.close()
-    # TODO test strucutre is created as expected.
     return synonymlookup, synonymlisting
 
 def _get_genes_and_mediators(genelist, mediatormesh):
@@ -260,8 +259,6 @@ def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
     return string.find(pubmed_mesh_term_text.lower(), transformed_mesh_term)
 
 # TODO: TMMA-161 Review changing to accept zero indexed matches - may have affected previous live searches
-# TODO: TMMA-161 Could re-rerun searches and email users where any changes exist
-
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
@@ -287,12 +284,10 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         countthis = 0
         edge_row_id = -1
         # TODO: (Low priority) optimisation - check Abstract section exists sooner
-        # TODO: TMMA-161 HIGH PRIORITY - > should be >= to capture any zero indexed matches
         # https://docs.python.org/2/library/string.html#string.find
 
         # Ensure we only test citations with associated mesh headings
         if mesh_subject_headings in citation.fields:
-            # TODO HIGH - Review if expected behaviour - if no mesh filter no gene comparisons are made
             if not mesh_filter or matches(citation.fields[mesh_subject_headings], mesh_filter) >= 0:
                 for gene in genelist:
                     try:
