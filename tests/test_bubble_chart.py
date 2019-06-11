@@ -45,7 +45,6 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
 
         # Create search result object
         search_result = SearchResult(criteria=search_criteria)
-        # search_result.mesh_filter = "Humans"
         search_result.save()
 
         # Run the search
@@ -77,7 +76,9 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
 
         try:
             chart_header_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(3) > text")
-            self.assertEqual(chart_header_label.text, "Focused search results based on original score (Top 20)")
+            self.assertTrue(search_result.mediator_match_counts_v3 < 20)
+            self.assertEqual(chart_header_label.text, "Focused search results based on original score")
+            self.assertFalse("(Top 20)" in chart_header_label.text)
 
         except WebDriverException as e:
             print e
