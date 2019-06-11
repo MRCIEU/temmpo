@@ -54,9 +54,13 @@
                 return b.score - a.score;
             })
 
+            console.log(oLinksSort);
+
             if (threshold != -1 && oLinksSort.length > threshold) {
                 console.log("Limiting links to " + threshold + " instead of showing " + oLinksSort.length);
                 topLinks = oLinksSort.slice(0, threshold);
+                // TODO change the way it's counted to ensure we get n mediators
+                // TODO Would if JSON denoted mediators help?
             }
             else
             {
@@ -76,6 +80,8 @@
             nodeMatch = []
 
             matches.links = matches.links.filter(function (link) {
+                // TODO Maybe should look up missing data and expand to ensure we have
+
                 if (top_targets.indexOf(link.target) > -1 && top_sources.indexOf(link.source) > -1) {
                     nodeMatch.push(link.target, link.source);
                     target = matches.nodes[link.target].name;

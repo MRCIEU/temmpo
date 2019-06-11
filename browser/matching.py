@@ -1,7 +1,8 @@
 import logging
 import math
-import numpy as np 
+import numpy as np
 import os
+import pandas as pd
 import re
 import string
 import sys
@@ -38,10 +39,10 @@ def perform_search(search_result_stub_id):
 
     Original structure:
     createsynonyms()
-    createedgelist()  Now create_edge_matrix()
+    createedgelist()        Now create_edge_matrix()
     read_citations()
     countedges()
-    createresultfile()
+    createresultfile()      No longer in the codebase, was never used in the application.
     printedges()
     createjson()
 
@@ -89,13 +90,6 @@ def perform_search(search_result_stub_id):
                                                   results_path, resultfilename, abstract_file_format)
     logger.info("Counted edges")
 
-    # Create results
-    createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename)
-
-    logger.info("Created results")
-
     # Print edges
     mediator_match_counts = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
     logger.info("Printed %s edges", mediator_match_counts)
@@ -110,7 +104,7 @@ def perform_search(search_result_stub_id):
     # 2 - Give end time
     search_result_stub.ended_processing = timezone.now()
     # 3 - Record number of mediator matches
-    search_result_stub.mediator_match_counts = mediator_match_counts
+    search_result_stub.mediator_match_counts_v3 = mediator_match_counts
     # X - Email user
     # user_email = search_result_stub.criteria.upload.user.email
     # send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
@@ -121,35 +115,15 @@ def perform_search(search_result_stub_id):
     logger.debug("Done housekeeping")
     logger.info("END: perform_search")
 
-
-def generate_synonyms2():
-    """
-    Generate a list of gene synonyms
-    """
-
-    all_genes = Gene.objects.filter(synonym_for__exact=None)
-    synonymlookup = dict()
-    synonymlisting = dict()
-
-    for each_gene in all_genes:
-        synonymlookup[each_gene.name] = each_gene.name
-
-        # Get synonyms
-        all_synonyms = list(Gene.objects.filter(synonym_for=each_gene).values_list('name', flat=True))
-        if all_synonyms:
-            for syn in all_synonyms:
-                synonymlookup[syn] = each_gene.name
-            synonymlisting[each_gene.name] = all_synonyms + [each_gene.name]
-
-    return synonymlookup, synonymlisting
-
 def generate_synonyms():
-    # Create a dictionary of synoynms
-    base_dir = os.path.dirname(__file__)
-    full_path = "%s%s%s" % (base_dir, '/static/data-files/', 'Homo_sapiens.gene_info')
-    genefile = open(full_path, 'r')
+    """Create dictionaries of synonyms, genes and look ups.
+       NB: A synonym can be used for multiple genes.
+       ->
+       synonymlookup: dict synonym name => list of one or more gene names
+       synonymlisting: dict gene name  => list of possible synonyms and itself
+    """
+    genefile = open(settings.GENE_FILE_LOCATION, 'r')
     synonymlookup = dict()
-    # synonymresults = dict()
     synonymlisting = dict()
     for line in genefile:
         line = line.strip().split()
@@ -160,10 +134,14 @@ def generate_synonyms():
             synonyms = line[4].split("|")
         fulllist = synonyms + [genename]
         for synonym in synonyms:
-            synonymlookup[synonym] = genename
-        synonymlookup[genename] = genename
+            # TMMA-307 A gene synonym can be an alias for more than one gene.
+            matched_gene_names = synonymlookup.get(synonym, [])
+            matched_gene_names.append(genename)
+            synonymlookup[synonym] = matched_gene_names
+        synonymlookup[genename] = [genename, ]
         synonymlisting[genename] = fulllist
     genefile.close()
+    # TODO test strucutre is created as expected.
     return synonymlookup, synonymlisting
 
 def _get_genes_and_mediators(genelist, mediatormesh):
@@ -173,14 +151,6 @@ def _get_genes_and_mediators(genelist, mediatormesh):
 
     for mediator in mediatormesh:
         yield mediator
-
-# def _get_exposures_and_outcomes(exposuremesh, outcomemesh):
-#     """Retrieve y axis of matching matrix, exposures then outcomes"""
-#     for exposure in exposuremesh:
-#         yield exposure
-
-#     for outcome in outcomemesh:
-#         yield outcome
 
 def create_edge_matrix(gene_count, mediator_count, exposure_count, outcome_count):
     """edges represented as a 2D nArray"""
@@ -327,39 +297,47 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     try:
                         edge_row_id += 1
                         edge_column_id = -1
-                        gene = synonymlookup[gene]
-                        for genesyn in synonymlisting[gene]:
-                            if matches(citation.fields[abstract], genesyn) >= 0:
-                                citation_id.add(citation.fields[unique_id].strip())
-                                if searchgene(citation.fields[abstract], genesyn):
-                                    countthis = 1
-                                    for exposure in exposuremesh:
-                                        edge_column_id += 1
-                                        exposurel = exposure.split(" AND ")
-                                        if len(exposurel) == 2:
-                                            if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                        elif len(exposurel) == 3:
-                                            if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                        else:
-                                            if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                    for outcome in outcomemesh:
-                                        edge_column_id += 1
-                                        outcomel = outcome.split(" AND ")
-                                        if len(outcomel) > 1:
-                                            if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
-                                               edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][1][outcome].append(citation.fields[unique_id])
-                                        else:
-                                            if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
-                                                edges[edge_row_id][edge_column_id] += 1
-                                                # identifiers[gene][1][outcome].append(citation.fields[unique_id])
-                                    break
+                        gene_matches = synonymlookup[gene]
+                        found_gene_match = False
+                        for gene in gene_matches:
+                            for genesyn in synonymlisting[gene]:
+                                if matches(citation.fields[abstract], genesyn) >= 0:
+                                    citation_id.add(citation.fields[unique_id].strip())
+                                    if searchgene(citation.fields[abstract], genesyn):
+                                        found_gene_match = True
+                                        countthis = 1
+                                        for exposure in exposuremesh:
+                                            edge_column_id += 1
+                                            exposurel = exposure.split(" AND ")
+                                            if len(exposurel) == 2:
+                                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                            elif len(exposurel) == 3:
+                                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                            else:
+                                                if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                        for outcome in outcomemesh:
+                                            edge_column_id += 1
+                                            outcomel = outcome.split(" AND ")
+                                            if len(outcomel) > 1:
+                                                if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
+                                                   edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                            else:
+                                                if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
+                                                    edges[edge_row_id][edge_column_id] += 1
+                                                    # identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                        # Stop comparing synonyms once a match is found
+                                        break
+                            # Stop comparing synonyms once a match is found
+                            if found_gene_match:
+                                break
+
                     except KeyError:
                         # Some citations have no Abstract section
                         pass
@@ -402,7 +380,6 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
                                         edges[edge_row_id][edge_column_id] += 1
                                         # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
-                            break
                     except KeyError:
                         # Some citations have no Abstract section
                         pass
@@ -416,7 +393,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         if countthis == 1:
             papercounter += 1
 
-    # Output citation ids
+    # Output all citation ids where a gene or mediator MeSH term match is found in the abstract
     if citation_id:
         resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
         csv_writer = unicodecsv.writer(resultfile)
@@ -426,81 +403,6 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     return papercounter, edges, identifiers
 
-
-def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
-    """Generates CSV file."""
-
-    resultfile = open('%s%s.csv' % (results_path, resultfilename), 'w')
-    edge_row_id = -1
-
-    exposurecounter = {}
-    outcomecounter = {}
-    for exposure in exposuremesh:
-        exposurecounter["_".join(exposure.split())] = 0
-    for outcome in outcomemesh:
-        outcomecounter["_".join(outcome.split())] = 0
-    for genel in genelist:
-        edge_row_id += 1
-        edge_column_id = -1
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            gene = synonymlookup[genel]
-            for exposure in exposuremesh:
-                edge_column_id += 1
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    exposureandoutcome[0] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += gene + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                edge_column_id += 1
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    exposureandoutcome[1] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += gene + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for mediator in mediatormesh:
-        edge_row_id += 1
-        edge_column_id = -1
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            for exposure in exposuremesh:
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[0] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += mediatorprint + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                if edges[edge_row_id][edge_column_id] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[1] = 1
-                    for i in xrange(edges[edge_row_id][edge_column_id]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += mediatorprint + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for exposure in exposurecounter.keys():
-        for i in xrange(exposurecounter[exposure]):
-            resultfile.write("EXPOSURE," + exposure + "\n")
-    for outcome in outcomecounter.keys():
-        for i in xrange(outcomecounter[outcome]):
-            resultfile.write("OUTCOME," + outcome + "\n")
-    resultfile.close()
 
 def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
     """Write out edge file (*_edge.csv)"""
@@ -599,3 +501,66 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
     resultfile.close()
+
+
+def record_differences_between_match_runs(search_result_id):
+    """Compare edge CSV file for difference.
+
+    Header: Mediators,Exposure counts,Outcome counts,Scores
+
+    v1 unsorted mediators
+    v3 mediator column is sorted by gene then mesh terms
+    """
+    logger.info("START comparing results edge file for %d, e.g. results_%d__topresults_edge.csv" % (search_result_id, search_result_id))
+    from browser.models import SearchResult
+    search_result = SearchResult.objects.get(id=search_result_id)
+
+    if search_result.mediator_match_counts is not None:
+        v1_filepath = settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv"
+        try:
+            # NB: V1 files have trailing commas in body rows
+            v1_df = pd.read_csv(v1_filepath,
+                                sep=',',
+                                header=0,
+                                names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                index_col=False,
+                                dtype= {"Mediators": np.str,
+                                        "Exposure counts": np.int32,
+                                        "Outcome counts": np.int32,
+                                        "Scores": np.float,
+                                        },
+                                engine='python')
+            v1_df = v1_df.sort_values("Mediators")
+            v3_filepath = settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv"
+            try:
+                v3_df = pd.read_csv(v3_filepath,
+                                    sep=',',
+                                    header=0,
+                                    names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                    index_col=False,
+                                    dtype= {"Mediators": np.str,
+                                            "Exposure counts": np.int32,
+                                            "Outcome counts": np.int32,
+                                            "Scores": np.float,
+                                            },
+                                    engine='python')
+                v3_df = v3_df.sort_values("Mediators")
+                is_different = not v1_df.equals(v3_df)
+                if is_different:
+                    search_result.has_edge_file_changed = True
+                    search_result.save()
+                    logger.info("%d has CHANGED" % search_result_id)
+            except IOError:
+                raise IOError("No version 3 edge file found for search result %d." % search_result_id)
+
+            except:
+                raise
+
+        except IOError:
+            raise IOError("No previous edge file found for search result %d" % search_result_id)
+
+        except:
+            raise
+    else:
+        logger.info("No previous match results have been recorded for search result %d" % search_result_id)
+    logger.info("END comparing results files")

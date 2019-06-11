@@ -10,6 +10,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import random
 import string
+import sys
+
+USING_APACHE = False
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Dynamic config based on server host, vebuild and if dev, user name
@@ -101,9 +105,13 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = "%s/var" % PROJECT_ROOT
 STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/var/www/static
 
-RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
+ORIGINAL_RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
+RESULTS_PATH_V1 = os.path.join(MEDIA_ROOT, 'results', 'v1', '')
+RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', 'v3', '')
+RESULTS_URL_V1 = MEDIA_URL + "results/v1/"
+RESULTS_URL = MEDIA_URL + "results/v3/"
 
-LOGIN_REDIRECT_URL = 'results_listing'  # 'search'
+LOGIN_REDIRECT_URL = 'results_listing'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'

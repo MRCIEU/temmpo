@@ -11,7 +11,7 @@ import datetime
 import glob
 
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
@@ -230,7 +230,7 @@ class SearchResult(models.Model):
     # Abstracting out mesh filter and results as more likely to change the filter
     # but use the same set of other search criteria
     mesh_filter = models.CharField("MeSH filter", max_length=300, blank=True, null=True)
-    results = models.FileField(blank=True, null=True,)  # JSON file for output
+    results = models.FileField(blank=True, null=True,)  # NOT IN USE
     has_completed = models.BooleanField(default=False)
 
     # Store the unique part of the results filenames
@@ -238,7 +238,11 @@ class SearchResult(models.Model):
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
     mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
-    # Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
+    # After a substantial change to the matching code record in separate field for historic comparisons where required.
+    mediator_match_counts_v3 = models.PositiveIntegerField(blank=True, null=True)
+    has_edge_file_changed = models.BooleanField(default=False)
+
+    # TMMA-288 Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
     # redis restarts and should be used only for information when tracking processing.
     # job_id = models.CharField(max_length=32, blank=True, null=True)
 
@@ -297,10 +301,50 @@ class SearchResult(models.Model):
 
         # Delete associated results files (if completed)
         if self.has_completed:
-            base_path = settings.MEDIA_ROOT + '/results/' + self.filename_stub + '*'
+            base_path = settings.RESULTS_PATH + self.filename_stub + '*'
+            files_to_delete = glob.glob(base_path)
+
+            for delfile in files_to_delete:
+                os.remove(delfile)
+
+        # If version 1 files exists delete as well.
+        if self.mediator_match_counts is not None:
+            base_path = settings.RESULTS_PATH_V1 + self.filename_stub + '*'
             files_to_delete = glob.glob(base_path)
 
             for delfile in files_to_delete:
                 os.remove(delfile)
 
         super(SearchResult, self).delete()
+
+    @property
+    def has_changed(self):
+        return self.has_match_counts_changed or self.has_edge_file_changed
+
+    @property
+    def has_match_counts_changed(self):
+        return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3)
+
+
+class MessageManager(models.Manager):
+
+    def get_current_messages(self):
+        return self.filter(is_disabled=False).filter(Q(end__isnull=True) | Q(end__gte=timezone.now())).filter(start__lte=timezone.now()).order_by("start").values_list('body', flat=True)
+
+
+class Message(models.Model):
+
+    body = models.CharField(max_length=500)
+    start = models.DateTimeField(default=timezone.now)
+    end = models.DateTimeField(blank=True, null=True)
+    is_disabled = models.BooleanField(default=False)
+    user = models.ForeignKey(User, null=False, blank=False,
+                             related_name="author")
+
+    objects = MessageManager()
+
+    def __unicode__(self):
+        if self.body:
+            return self.body
+        else:
+            return naturaltime(self.start)

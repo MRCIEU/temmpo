@@ -60,6 +60,7 @@ import magic
 from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
+from django.test import tag
 from django.utils import timezone
 
 from browser.matching import read_citations, Citation
@@ -87,7 +88,7 @@ TERM_MISSING_IN_CURRENT_RELEASE = 'Cell Physiological Processes' # mtrees2015.bi
 TERM_NAMES_MISSING_IN_CURRENT_RELEASE = 'Cell Aging, Cell Physiological Processes, G0 Phase'  # mtrees2015.bin 47980:Cell Aging;G04.299.119 - 48025:G0 Phase;G04.299.134.500.300
 TERM_NEW_IN_CURRENT_RELEASE = 'Eutheria'
 
-
+@tag('matching-test')
 class SearchingTestCase(BaseTestCase):
     """Run tests for browsing the TeMMPo application."""
 
@@ -299,7 +300,7 @@ class SearchingTestCase(BaseTestCase):
         exposure_terms = MeshTerm.objects.get(term="Humans", year=year).get_descendants(include_self=True)
         mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=year).get_descendants(include_self=True)
-        gene = Gene.objects.get(name="TRPC1")
+        gene = Gene.objects.get(name="TRPC1") # Extend gene testing to include STIM1 or a synonym or two
 
         search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
         search_criteria.save()
@@ -518,8 +519,8 @@ class SearchingTestCase(BaseTestCase):
                                                     "Apoptosis", "TRPC1",
                                                     search_criteria.upload, ])
 
-    def test_matches_counts(self):
-        """Test rendering of the view of a SearchCriteria instance."""
+    def test_no_matches_rendering(self):
+        """Test rendering of a SearchResult with no matches."""
         search_criteria = self._set_up_test_search_criteria()
         # Run the search, by posting filter and gene selection form
         self._login_user()
@@ -557,19 +558,6 @@ class SearchingTestCase(BaseTestCase):
         response = self.client.post(path, follow=True) # Need to investigate filter not working
         search_result = SearchResult.objects.get(criteria=search_criteria)
         self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('json_data', kwargs={'pk': search_result.id})])
-
-
-    # TODO: Test results JSON exports
-    # def test_json_data(self):
-    #     pass
-
-    # TODO: (TMMA-227) Test result count data
-    # def test_count_data(self):
-    #     pass
-
-    # TODO: (TMMA-222) Test abstracts data
-    # def test_abstracts_data(self):
-    #     pass
 
     # Test JSON MeSH Term exports
 
@@ -773,9 +761,9 @@ class SearchingTestCase(BaseTestCase):
         # Check abstract
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
         # Check results and terms files
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 4)
+        self.assertEqual(len(files_to_delete), 3)
 
         # Do deletion
         response = self.client.post(reverse('delete_data', kwargs={'pk': search_result.id}), follow=True)
@@ -914,3 +902,42 @@ class SearchingTestCase(BaseTestCase):
         terms = criteria.get_wcrf_input_variables('outcome')
         self.assertEqual(len(terms), 1)
         self.assertNotEqual(len(terms), criteria.outcome_terms.count())
+
+    def test_highlighting_matching_changes(self):
+        """Ensure new version 3 matching code results, are not marked as changes"""
+        self._login_user()
+        search_criteria = self._set_up_test_search_criteria()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        expected_text = ["Mediator match counts", "View bubble chart", ]
+        revised_text = ['data-results-change="%d"' % search_result.id, "Revised result"]
+        response = self.client.get(reverse('results_listing'))
+
+        for text in revised_text:
+            self.assertNotContains(response, text)
+
+        for text in expected_text:
+            self.assertContains(response, text)
+
+        # Fake up a previous results
+        search_result.mediator_match_counts = 0
+        search_result.save()
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+
+        response = self.client.get(reverse('results_listing'))
+        for text in revised_text:
+            self.assertContains(response, text)
+
+        search_result.mediator_match_counts = 1
+        search_result.save()
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+
+        response = self.client.get(reverse('results_listing'))
+        for text in revised_text:
+            self.assertContains(response, text)
+
+        # Test the change is highlighted on the individual results pages
+        path = reverse('results', kwargs={'pk': search_result.id})
+        expected_text = ["Download version 1 scores as CSV", "Download version 1 abstract IDs as CSV", "Revised results"]
+        self._find_expected_content(path=path, msg_list=expected_text)

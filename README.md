@@ -70,10 +70,9 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
     Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
 
-    NB: These commands each take over 20 minutes to run.
+    NB: This command each take over 20 minutes to run.
 
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2015.bin 2015  --settings=temmpo.settings.dev
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2018.bin 2018  --settings=temmpo.settings.dev
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2019.bin 2019
 
 ### Importing Genes - optional
 
@@ -83,10 +82,13 @@ A database of existing gene terms can be imported into the Django application da
 
 ### Run the development server and workers
 
-    sudo systemctl stop rqworker        # Ensure matching code is reloaded
+    # Ensure matching code is reloaded
+
+    sudo systemctl stop rqworker
     python manage.py rqworker default --settings=temmpo.settings.dev
 
     # In a separate terminal window run the development server
+    
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ### View application in your local browser
@@ -107,7 +109,6 @@ A database of existing gene terms can be imported into the Django application da
 
     python manage.py test --settings=temmpo.settings.test_sqlite
 
-
 #### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
@@ -119,6 +120,10 @@ e.g. Just the searching related tests and fail at the first error
 NB: If you want to manually run migrations you need to use the --database flag
 
     python manage.py migrate --database=admin --settings=temmpo.settings.dev
+
+### Updating the requirements file using pip-sync (via Vagrant VM)
+
+    fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 ### Development deployment commands when working with the apache Vagrant VM.
 
@@ -247,11 +252,11 @@ Below are the shell commands that each part of the CI pipeline runs from the CI 
 1. Project 1-run-tests
 
         # Build test environment
-        fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=base -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        fab make_virtualenv:env=test,configure_apache=True,clone_repo=True,branch=master,migrate_db=False,use_local_mode=False,requirements=test -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
         # Clear database
         fab recreate_db:env=test,database_name=temmpo_test -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
         # Run tests
-        fab run_tests:env=test,use_local_mode=False,reuse_db=True,db_type=mysql -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
+        fab run_tests:env=test,use_local_mode=False,reuse_db=True,db_type=mysql,run_selenium_tests=True -u temmpo -H py-web-t0.epi.bris.ac.uk -f deploy/fabfile.py --forward-agent
 
 2. Project 2-update-last-known-good-branch
 
@@ -294,6 +299,22 @@ NB: The Jenkins jobs are configured to use the CI server's temmpo user account's
 5. Ensure an 'env'.py file exists, e.g. demo.py, prod.py, in the code's *temmpo/temmpo/settings* directory.
 
 6. Build new Python virtual environment, see steps for building production, demo or test for example commands.
+
+## Running one off remote fabric scripts
+
+e.g. CSV misquoting bug fix
+
+### On dev
+
+Run from your local OS into your vagrant VM
+
+    fab apply_csv_misquoting_fix -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
+
+### On demo
+
+Run from the CI server ci-p0.rit.bris.ac.uk
+
+    fab apply_csv_misquoting_fix -u temmpo -i /usr/local/projects/temmpo/.ssh/id_rsa.pub -H py-web-d0.epi.bris.ac.uk -f /srv/projects/temmpo/lib/git/temmpo/deploy/fabfile.py
 
 ## Warnings
 
