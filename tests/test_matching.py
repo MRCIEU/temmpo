@@ -89,26 +89,39 @@ class MatchingTestCase(BaseTestCase):
         self.assertEqual(len(synonymlookup["16S"]), 1)
         self.assertEqual(synonymlisting["16S"], ["16S",])
 
-    # def test_createedgelist(self):
-    #     assert False
-
     def test_read_citations_ovid(self):
         citations = read_citations(file_path=BASE_DIR + "/test-abstract-ovid-test-sample-5.txt", file_format=OVID)
-        self.assertEqual(len(list(citations)), 5)
 
+        # Check for expected structure
         expected_fields = ("Unique Identifier", "MeSH Subject Headings", "Abstract", )
+        citation_count = 0
         for citation in citations:
+            citation_count +=1
             for field in expected_fields:
                 self.assertTrue(citation.fields.has_key(field))
+            if citation_count == 2:
+                # Spot check for expected contents
+                self.assertEqual("999992", citation.fields["Unique Identifier"].strip())
+                self.assertTrue("Pyroptosis" in citation.fields["MeSH Subject Headings"])
+                self.assertTrue("pulvinar placerat exexex" in citation.fields["Abstract"])
+
+        self.assertEqual(citation_count, 5)
 
     def test_read_citations_pubmed(self):
         citations = read_citations(file_path=BASE_DIR + "/pubmed_result_100.txt", file_format=PUBMED)
-        self.assertEqual(len(list(citations)), 100)
-
-        expected_fields = ("PMID", "MH", "AB", )
+        citation_count = 0
+        expected_field = "PMID"
         for citation in citations:
-            for field in expected_fields:
-                self.assertTrue(citation.fields.has_key(field))
+            citation_count +=1
+            self.assertTrue(citation.fields.has_key(expected_field))
+            if citation.fields["PMID"] == "26124321":
+                print("In spot check")
+                self.assertTrue("Cell Line, Tumor" in citation.fields["MH"])
+                self.assertTrue("transfected with CYP27B" in citation.fields["AB"])
+        self.assertEqual(citation_count, 100)
+
+    # def test_createedgelist(self):
+    #     assert False
 
     # def test_countedges(self):
     #     assert False
