@@ -24,3 +24,5 @@ pipelines:
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
           - python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
+          - pip install -U Fabric==1.13.1
+          - fab -l -f deploy/fabfile.py
