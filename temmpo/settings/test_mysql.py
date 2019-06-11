@@ -11,3 +11,12 @@ if DATABASES:
     # Ensure test runner does not create a test database for the legacy SQLite DB config
     if 'sqlite' in DATABASES:
         del DATABASES['sqlite']
+
+RQ_QUEUES['default']['ASYNC'] = False
+
+LOGGING['handlers']['console']['level'] = 'ERROR'
+
+RESULTS_PATH_V1 = os.path.join(MEDIA_ROOT, 'results', 'testing', 'v1', '')
+RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', 'testing', 'v3', '')
+RESULTS_URL = MEDIA_URL + "results/testing/v3/"
+RESULTS_URL_V1 = MEDIA_URL + "results/testing/v1/"

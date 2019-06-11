@@ -1,15 +1,28 @@
-image: python:2.7.13
+image: python:2.7.16
 
 pipelines:
   branches:
     '{TMMA-*,master}':
     - step:
+        caches:
+          - pip
         script:
-          - pip install -U pip==9.0.1
-          - pip install -r requirements/base.txt
-          - mkdir -p /opt/var/results
+          - apt update
+          - apt install -y redis-server
+          - service redis-server restart
+          - redis-cli ping
+          - redis-server -v
+          - pip install -U pip==19.1.1
+          - pip install -U pip-tools==3.7.0
+          - pip install -U setuptools==41.0.1
+          - pip install -r requirements/test.txt
+          - pip-sync requirements/test.txt
+          - mkdir -p /opt/var/results/testing/v1
+          - mkdir -p /opt/var/results/testing/v3
           - mkdir -p /opt/var/abstracts
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - python manage.py test --settings=temmpo.settings.test_sqlite
+          - python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
+          - pip install -U Fabric==1.13.1
+          - fab -l -f deploy/fabfile.py

@@ -10,6 +10,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import random
 import string
+import sys
+
+USING_APACHE = False
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Dynamic config based on server host, vebuild and if dev, user name
@@ -59,7 +63,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', 'django_rq', ]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -101,9 +105,13 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = "%s/var" % PROJECT_ROOT
 STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/temmpo/var/www/static
 
-RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
+ORIGINAL_RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
+RESULTS_PATH_V1 = os.path.join(MEDIA_ROOT, 'results', 'v1', '')
+RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', 'v3', '')
+RESULTS_URL_V1 = MEDIA_URL + "results/v1/"
+RESULTS_URL = MEDIA_URL + "results/v3/"
 
-LOGIN_REDIRECT_URL = 'results_listing'  # 'search'
+LOGIN_REDIRECT_URL = 'results_listing'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
@@ -116,7 +124,7 @@ REGISTRATION_OPEN = True
 #  Logging
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -134,20 +142,16 @@ LOGGING = {
             'class': 'logging.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
         'local_file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'verbose',
             'filename': '%s/var/log/django.log' % PROJECT_ROOT,
             'maxBytes': 1024 * 1024 * 10,
-        },
-        'syslog': {
-            'level': 'INFO',
-            'class': 'logging.handlers.SysLogHandler',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -157,21 +161,12 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django': {
-            'handlers': ['null'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-        'django.request': {
+        '': {
             'handlers': ['mail_admins', 'console', 'local_file'],
-            'level': 'ERROR',
-            'propagate': False,
+            'propagate': True,
+            'level': 'DEBUG',
         },
     },
-    'root': {
-        'handlers': ['console', 'local_file'],
-        'level': 'DEBUG',
-    }
 }
 
 TEMPLATES = [
@@ -195,7 +190,11 @@ TEMPLATES = [
 X_FRAME_OPTIONS = 'DENY'
 CSRF_COOKIE_HTTPONLY = True
 
-SIMPLE_AUTOCOMPLETE = {'browser.meshterm': {'search_field': 'term', 'max_items': 10}}
+SIMPLE_AUTOCOMPLETE = {'browser.meshterm':
+    {'search_field': 'term',
+     'max_items': 10,
+     'duplicate_format_function': lambda obj, model, content_type: '%s'.strip() % " > ".join([x.term for x in obj.parent.get_ancestors() if x.parent != None])
+     }}
 
 # Number of days of inactivity before warning of deletion
 # Gives 60 days of grace before deletion
@@ -204,6 +203,34 @@ ACCOUNT_CLOSURE_WARNING = 305
 DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'
 
 SITE_ID = 1
+
+# Remove option to use in memory upload handler to allow for extraction via the file system and in future scanning before extraction.
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': '127.0.0.1',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360000, # TODO: Profile a reasonable time out length for this, ref: https://github.com/rq/rq/blob/master/docs/docs/index.md
+    },
+}
+
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0775
+FILE_UPLOAD_PERMISSIONS = 0664
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+        'OPTIONS': {
+            'DB': 1,
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+        },
+    },
+}
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:

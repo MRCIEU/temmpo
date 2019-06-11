@@ -1,3 +1,5 @@
+"""Test server specific general settings file."""
+
 from base import *
 
 DEBUG = False
@@ -9,3 +11,7 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_SSL_REDIRECT = True
 X_FRAME_OPTIONS = 'DENY'
 SITE_ID = 3
+
+USING_APACHE = True
+
+RQ_QUEUES['default']['ASYNC'] = False

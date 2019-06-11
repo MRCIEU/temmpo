@@ -7,14 +7,18 @@ from fabric.api import *
 from fabric.contrib import files
 
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
+
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
-PIP_VERSION = '9.0.1'
-SETUPTOOLS_VERSION = '38.2.5'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
                  'bitbucket.org',)
+
+# Tools not handled by pip-tools and/or requirements installs using pip
+PIP_VERSION = '19.1.1'
+SETUPTOOLS_VERSION = '41.0.1'
+PIP_TOOLS_VERSION = '3.7.0'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -50,13 +54,14 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base"):
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base", restart_rqworker=True):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
     clone_repo = (str(clone_repo).lower() == 'true')
     migrate_db = (str(migrate_db).lower() == 'true')
     use_local_mode = (str(use_local_mode).lower() == 'true')
+    restart_rqworker = (str(restart_rqworker).lower() == 'true')
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
@@ -64,8 +69,12 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     # Create application specific directories
-    caller('mkdir -p %svar/results' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v1' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v3' % PROJECT_ROOT)
     caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
+
+    if restart_rqworker:
+        stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
         caller('virtualenv %s' % env)
@@ -86,8 +95,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip install -U pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip freeze')
 
         sym_link_private_settings(env, use_local_mode)
 
@@ -104,6 +115,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         collect_static(env, use_local_mode)
         setup_apache(env, use_local_mode)
 
+    if restart_rqworker:
+        start_rqworker_service(use_local_mode)
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
     """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"."""
@@ -129,7 +142,10 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         caller('git pull origin %s' % branch)
 
     with change_dir(venv_dir):
-        # Ensure setup tools is up to expected version for existing environments.
+
+        # Ensure pip and setup tools is up to expected version for existing environments.
+        caller('./bin/pip install -U pip==%s' % PIP_VERSION)
+        caller('./bin/pip install -U pip-tools==%s' % PIP_TOOLS_VERSION)
         caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
 
         if use_pip_sync:
@@ -146,6 +162,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
+    restart_rqworker_service(use_local_mode)
 
 def setup_apache(env="dev", use_local_mode=False):
     """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
@@ -389,15 +406,35 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
         caller("rm -f %s" % old_flag)
         caller("touch %s" % new_flag)
 
+def _change_rqworker_service(use_local_mode, action):
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    caller("sudo service rqworker %s" % action)
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql"):
+def restart_rqworker_service(use_local_mode):
+    _change_rqworker_service(use_local_mode, action="stop")
+    _change_rqworker_service(use_local_mode, action="start")
+
+def stop_rqworker_service(use_local_mode):
+    _change_rqworker_service(use_local_mode, action="stop")
+
+def start_rqworker_service(use_local_mode):
+    _change_rqworker_service(use_local_mode, action="start")
+
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
-    # Convert any string command line arguments to boolean values, where required.
+    # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
+    run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
     cmd_suffix = ''
     if reuse_db:
         cmd_suffix = " --keepdb"
+    if tag and tag != "None":
+        cmd_suffix += " --tag=%s" % tag
+    if not run_selenium_tests:
+        cmd_suffix += " --exclude-tag=selenium-test"
+    elif tag and tag != "None":
+        cmd_suffix += " --tag=selenium-test"
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
@@ -418,7 +455,7 @@ def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir):
-        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin' % (database_name, database_name, venv_dir), pty=True)
+        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin --settings=temmpo.settings.%s' % (database_name, database_name, venv_dir, env), pty=True)
         caller('echo "TeMMPo database was recreated".')
 
 
@@ -439,3 +476,71 @@ def add_missing_csv_headers_to_scores():
                 if not files.contains(csv_file, info['headers'], exact=False):
                     run('cat "headers%s" "%s" > tmp-csv-file.txt && mv tmp-csv-file.txt "%s"' % (info['file_extension'], csv_file, csv_file))
             run("rm headers%(file_extension)s" % info)
+
+def apply_csv_misquoting_fix():
+    """To be run remotely only: TMMA-324 Bug fix edge files CSV misquoting"""
+    affected_files = [
+        "results_95__topresults_edge.csv",
+        "results_113__topresults_edge.csv",
+        "results_114__topresults_edge.csv",
+        "results_123__topresults_edge.csv",
+        "results_170__topresults_edge.csv",
+        "results_173__topresults_edge.csv",
+        "results_216__topresults_edge.csv",
+        "results_316__topresults_edge.csv",
+        "results_317__topresults_edge.csv",
+        "results_318__topresults_edge.csv",
+        "results_319__topresults_edge.csv",
+        "results_320__topresults_edge.csv",
+        "results_322__topresults_edge.csv",
+        "results_324__topresults_edge.csv",
+        "results_325__topresults_edge.csv",
+        "results_336__topresults_edge.csv",
+        "results_339__topresults_edge.csv",
+        "results_344__topresults_edge.csv",
+        "results_348__topresults_edge.csv",
+        "results_351__topresults_edge.csv",
+        "results_352__topresults_edge.csv",
+        "results_353__topresults_edge.csv",
+        "results_356__topresults_edge.csv",
+        "results_428__topresults_edge.csv",
+        "results_429__topresults_edge.csv",
+        "results_430__topresults_edge.csv",
+        ]
+
+    replacement_pairs = {
+        '"Anemia, Hemolytic", Autoimmune,': '"Anemia, Hemolytic, Autoimmune",',
+        '"Antibodies, Monoclonal", Murine-Derived,': '"Antibodies, Monoclonal, Murine-Derived",',
+        '"Antigens, Differentiation", T-Lymphocyte,': '"Antigens, Differentiation, T-Lymphocyte",',
+        '"Arthroplasty, Replacement", Hip,': '"Arthroplasty, Replacement, Hip",',
+        '"Arthroplasty, Replacement", Knee,': '"Arthroplasty, Replacement, Knee",',
+        '"Carcinoma, Ductal", Breast,': '"Carcinoma, Ductal, Breast",',
+        '"Contraceptives, Oral", Hormonal,': '"Contraceptives, Oral, Hormonal",',
+        '"Death, Sudden", Cardiac,': '"Death, Sudden, Cardiac",',
+        '"Receptors, Antigen, T-Cell", alpha-beta,': '"Receptors, Antigen, T-Cell, alpha-beta",',
+        '"Receptors, Tumor Necrosis Factor", Member 25,': '"Receptors, Tumor Necrosis Factor, Member 25",',
+        '"Receptors, Tumor Necrosis Factor", Type II,': '"Receptors, Tumor Necrosis Factor, Type II",',
+        'Estrogens, Conjugated (USP),':'"Estrogens, Conjugated (USP)",',
+        }
+    # Allow function to be run locally or remotely
+    results_directories = (PROJECT_ROOT + "var/results/v1", PROJECT_ROOT + "var/results")
+
+    for results_directory in results_directories:
+        with cd(results_directory):
+            for affected_file in affected_files:
+                if files.exists(affected_file):
+                    print "About to replace text in %s/%s" % (results_directory, affected_file)
+                    for find_str in replacement_pairs.keys():
+                        run("sed -i -e 's/%s/%s/g\' %s" % (find_str, replacement_pairs[find_str], affected_file))
+
+def pip_sync_requirements_file(env="dev", use_local_mode=True):
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    with change_dir(venv_dir+"src/temmpo/"):
+        caller('../../bin/pip-compile --output-file requirements/base.txt requirements/base.in')
+        caller('../../bin/pip-compile --output-file requirements/test.txt requirements/test.in')
+        caller('../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in')

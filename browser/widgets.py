@@ -23,6 +23,6 @@ class GeneTextarea(forms.widgets.Textarea):
             try:
                 value = ",".join([gene.name for gene in value])
             except:
-                print "Unexpected error handling rendering gene field:", sys.exc_info()
+                logger.error("Unexpected error handling rendering gene form field: %s", sys.exc_info())
 
         return super(GeneTextarea, self).format_value(value)

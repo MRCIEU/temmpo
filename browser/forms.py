@@ -7,6 +7,7 @@ from django.db.models import Max
 from django.conf import settings
 from django.contrib import messages
 
+from browser.fields import ExtractorFileField
 from browser.models import SearchCriteria, Upload, MeshTerm, Gene, OVID, PUBMED
 from browser.widgets import GeneTextarea
 from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator
@@ -16,13 +17,13 @@ logger = logging.getLogger(__name__)
 
 class OvidMedLineFileUploadForm(forms.ModelForm):
     file_format = forms.CharField(widget=forms.HiddenInput, initial=OVID)
-    abstracts_upload = forms.FileField(
-        validators=[MimetypeValidator(mimetypes=('text/plain',)),
-                    SizeValidator(max_size=1000),
+    abstracts_upload = ExtractorFileField(
+        validators=[MimetypeValidator(mimetypes=('text/plain', )),
+                    SizeValidator(max_size=2000),
                     OvidMedLineFormatValidator(), ],
-        help_text="<br />Ovid MEDLINE® formatted plain text files (*.txt) which includes MeSH Subject Headings. \
+        help_text="<br />Ovid MEDLINE® formatted plain text or archive file (*.txt, *.bz, *.gz) which includes MeSH Subject Headings. \
                    Example format <a href=\"" + settings.STATIC_URL + "text/example-file-upload.txt\">with MeSH Subject \
-                   Headings</a>. Maximum upload file size: 1000 MB.")
+                   Headings</a>. Maximum upload file size: 2000 MB.")
 
     class Meta:
         model = Upload
@@ -31,13 +32,13 @@ class OvidMedLineFileUploadForm(forms.ModelForm):
 
 class PubMedFileUploadForm(forms.ModelForm):
     file_format = forms.CharField(widget=forms.HiddenInput, initial=PUBMED)
-    abstracts_upload = forms.FileField(
-        validators=[MimetypeValidator(mimetypes=('text/plain',)),
-                    SizeValidator(max_size=1000),
+    abstracts_upload = ExtractorFileField(
+        validators=[MimetypeValidator(mimetypes=('text/plain', )),
+                    SizeValidator(max_size=2000),
                     PubMedFormatValidator(), ],
-        help_text="<br />PubMed® formatted plain text files (*.txt) which includes MH (Mesh Headers). \
+        help_text="<br />PubMed® formatted plain text or archive file (*.txt, *.bz, *.gz) which includes MH (Mesh Headers). \
                    Example format <a href=\"" + settings.STATIC_URL + "text/example-file-upload-b.txt\">with MH (Mesh Headers)</a>. \
-                   Maximum upload file size: 1000 MB.")
+                   Maximum upload file size: 2000 MB.")
 
     class Meta:
         model = Upload
@@ -146,8 +147,9 @@ class FilterForm(forms.ModelForm):
                             required=False,
                             label='Enter genes (optional)',
                             help_text='Separated by commas')
-
-    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.all(),
+    
+    # NB: Filtering of terms needs to happen in the class definition when using the form in a browser
+    mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None),
                                          required=False,
                                          label='Filter',
                                          help_text="Enter a MeSH Term, e.g. Humans")
@@ -158,6 +160,7 @@ class FilterForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(FilterForm, self).__init__(*args, **kwargs)
+        # NB: Filtering of terms needs to also happen in the __init__ for the test suite
         self.fields['mesh_filter'].queryset = MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None)
 
     def clean_genes(self):
@@ -186,7 +189,7 @@ class FilterForm(forms.ModelForm):
                     unmatched_genes.append(ind_gene)
                     new_gene = Gene(name=ind_gene)
                     new_gene.save()
-                    print "Added gene: ", new_gene.name
+                    logger.info("Added gene: %s", new_gene.name)
 
 #                 else:
 #                     matched_genes.append(ind_gene)
