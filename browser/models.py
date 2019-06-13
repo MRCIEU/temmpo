@@ -207,7 +207,8 @@ class SearchCriteria(models.Model):
             input_variables = self.genes.order_by('name').values_list('name', flat=True)
 
         if input_variables:
-            return set(input_variables)
+            #Ensure unique and sorted
+            return list(set(input_variables)) # Order should be maintained desc
         else:
             return tuple()
 

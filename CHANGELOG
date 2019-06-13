@@ -14,6 +14,8 @@
                  Dropped support for generating unused .csv files
         TMMA-314 Support downloading both versions of matching results
         TMMA-326 Add system message functionality around the search and results area.
+        TMMA-327 Bug fix term/gene matching. Stop matching items that are subsets of others,
+                 e.g. Genetic Markers matching with no longer match Genetic Markers/ge [Genetics]
 
 2.8.3   TMMA-320 Upgrade Django to 1.11.21
 
