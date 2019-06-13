@@ -160,8 +160,8 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
-        self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
+        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs") # 5 articles have Phenotype, [1 TRPC1 - 23049826 - same as Phenotype), 
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
         self.assertContains(response, "Search criteria for resultset '%s'" % search_result.id)
@@ -694,7 +694,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -812,7 +812,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)

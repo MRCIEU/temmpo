@@ -16,15 +16,13 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import tag
 
-from browser.matching import create_edge_matrix, generate_synonyms # ,read_citations, countedges, printedges, createjson
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
+from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson
 from browser.matching import record_differences_between_match_runs, perform_search
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_test_case import BaseTestCase
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
-TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
-TEST_YEAR = 2018
 
 @tag('matching-test')
 class MatchingTestCase(BaseTestCase):
@@ -91,20 +89,35 @@ class MatchingTestCase(BaseTestCase):
         self.assertEqual(len(synonymlookup["16S"]), 1)
         self.assertEqual(synonymlisting["16S"], ["16S",])
 
-    # def test_createedgelist(self):
-    #     assert False
+    def test_read_citations_ovid(self):
+        citations = read_citations(file_path=BASE_DIR + "/test-abstract-ovid-test-sample-5.txt", file_format=OVID)
 
-    # def read_citations(self):
-    #     assert False
+        # Check for expected structure
+        expected_fields = ("Unique Identifier", "MeSH Subject Headings", "Abstract", )
+        citation_count = 0
+        for citation in citations:
+            citation_count +=1
+            for field in expected_fields:
+                self.assertTrue(citation.fields.has_key(field))
+            if citation_count == 2:
+                # Spot check for expected contents
+                self.assertEqual("999992", citation.fields["Unique Identifier"].strip())
+                self.assertTrue("Pyroptosis" in citation.fields["MeSH Subject Headings"])
+                self.assertTrue("pulvinar placerat exexex" in citation.fields["Abstract"])
 
-    # def test_countedges(self):
-    #     assert False
+        self.assertEqual(citation_count, 5)
 
-    # def test_printedges(self):
-    #     assert False
-
-    # def test_createjson(self):
-    #     assert False
+    def test_read_citations_pubmed(self):
+        citations = read_citations(file_path=BASE_DIR + "/pubmed_result_100.txt", file_format=PUBMED)
+        citation_count = 0
+        expected_field = "PMID"
+        for citation in citations:
+            citation_count +=1
+            self.assertTrue(citation.fields.has_key(expected_field))
+            if citation.fields["PMID"] == "26124321":
+                self.assertTrue("Cell Line, Tumor" in citation.fields["MH"])
+                self.assertTrue("transfected with CYP27B" in citation.fields["AB"])
+        self.assertEqual(citation_count, 100)
 
     def _prepare_search_result(self):
         """Generates a search result object and associated edge file
@@ -459,3 +472,241 @@ class MatchingTestCase(BaseTestCase):
         # Validate CSV data
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+
+    def _get_genes_list(self):
+        """Mock up a generator function to return genes"""
+        return ["Example Gene A", "Example Gene B", "Example Gene B2", "Example Gene C", ]
+
+    def _get_exposure_list(self):
+        return ["Cells", "Fictional MeSH Term A", "Neoplasm Metastasis", ]
+
+    def _get_mediator_list(self):
+        return ["Fictional MeSH Term B", ]
+
+    def _get_outcome_list(self):
+        return ["Fictional MeSH Term AA", "Fictional MeSH Term C", "Serogroup", ]
+
+    def _get_ovid_citation_generator(self):
+        citation_1 = Citation(1)
+        citation_1.addfield("Unique Identifier")
+        citation_1.addfieldcontent("999991")
+        citation_1.addfield("MeSH Subject Headings")
+        citation_1.addfieldcontent(";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;")
+        citation_1.addfield("Abstract")
+        citation_1.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. Example Gene B. ")
+
+        citation_2 = Citation(2)
+        citation_2.addfield("Unique Identifier")
+        citation_2.addfieldcontent("999992")
+        citation_2.addfield("MeSH Subject Headings")
+        citation_2.addfieldcontent(";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Pyroptosis;;Serogroup;;*Transcriptome;")
+        citation_2.addfield("Abstract")
+        citation_2.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat exexex.")
+
+        citation_3 = Citation(3)
+        citation_3.addfield("Unique Identifier")
+        citation_3.addfieldcontent("999993")
+        citation_3.addfield("MeSH Subject Headings")
+        citation_3.addfieldcontent(";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Genetic Markers;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Serogroup;;*Transcriptome;")
+        citation_3.addfield("Abstract")
+        citation_3.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. ")
+
+        citation_4 = Citation(4)
+        citation_4.addfield("Unique Identifier")
+        citation_4.addfieldcontent("999994")
+        citation_4.addfield("MeSH Subject Headings")
+        citation_4.addfieldcontent(";Fictional MeSH Term A;;Fictional MeSH Term B;;Fictional MeSH Term C;")
+        citation_4.addfield("Abstract")
+        citation_4.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. Example Gene X, Example Gene B2, Example Gene A, Example Gene Sym C. ")
+
+        citation_5 = Citation(5)
+        citation_5.addfield("Unique Identifier")
+        citation_5.addfieldcontent("999995")
+        citation_5.addfield("MeSH Subject Headings")
+        citation_5.addfieldcontent(";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Genetic Markers;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Penetrance;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Serogroup;;*Transcriptome;")
+        citation_5.addfield("Abstract")
+        citation_5.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. ")
+
+        citations = [citation_1, citation_2, citation_3, citation_4, citation_5, ]
+
+        for citation in citations:
+            yield citation
+
+    def _get_pubmed_citation_generator(self):
+        for citation in self._get_ovid_citation_generator():
+            # Convert to PubMed headers
+            citation.fields["MH"] = citation.fields["MeSH Subject Headings"]
+            del citation.fields["MeSH Subject Headings"]
+            citation.fields["PMID"] = citation.fields["Unique Identifier"]
+            del citation.fields["Unique Identifier"]
+            citation.fields["AB"] = citation.fields["Abstract"]
+            del citation.fields["Abstract"]
+            yield citation
+
+    def _get_synonym_listing(self):
+        synonymlisting = dict()
+        synonymlisting["Example Gene A"] = ["Example Gene A",]
+        synonymlisting["Example Gene B"] = ["Example Gene B",]
+        synonymlisting["Example Gene B2"] = ["Example Gene B2",]
+        synonymlisting["Example Gene C"] = ["Example Gene Sym C", "Example Gene C",]
+        synonymlisting["Example Gene X"] = ["Example Gene X",]
+        return synonymlisting
+
+    def _get_synonym_lookup(self):
+        synonymlookup = dict()
+        synonymlookup["Example Gene Sym C"] = ["Example Gene C",]
+        synonymlookup["Example Gene A"] = ["Example Gene A",]
+        synonymlookup["Example Gene B"] = ["Example Gene B",]
+        synonymlookup["Example Gene B2"] = ["Example Gene B2",]
+        synonymlookup["Example Gene C"] = ["Example Gene C",]
+        synonymlookup["Example Gene X"] = ["Example Gene X",]
+        return synonymlookup
+
+    def test_count_edges_ovid(self):
+        """Unit test the temmpo.browser.matching.countedges function using OVID citation syntax
+        args: citations, genelist, synonymlookup, synonymlisting, exposuremesh,
+        identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+        results_file_path, results_file_name, file_format=OVID
+
+        Creates an abstracts CSV file
+
+        returns: papercounter, edges, identifiers"""
+        citations = self._get_ovid_citation_generator()
+        genelist = self._get_genes_list()
+        synonymlookup = self._get_synonym_lookup()
+        synonymlisting = self._get_synonym_listing()
+        exposuremesh = self._get_exposure_list()
+        identifiers = dict()
+        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        mesh_filter = None
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_count_edges_ovid"
+        file_format = OVID
+
+        papercounter, edges, identifiers = countedges(citations, genelist,
+                synonymlookup, synonymlisting, exposuremesh,
+                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+                results_file_path, results_file_name, file_format=file_format)
+
+        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+            csv_data = csv_file.readlines()
+            self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(len(csv_data), 3)
+            self.assertTrue("999991\r\n" in csv_data)
+            self.assertTrue("999994\r\n" in csv_data)
+
+        # Verify papercounter
+        self.assertTrue(type(papercounter), int)
+        self.assertEqual(papercounter, 2)
+
+        # Verify identifiers - currently not in use
+        self.assertEqual(identifiers, dict())
+
+        # Verify edges - expected matches below:
+        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A          0       1                       0                       0                        1                       0
+        # Example Gene B          1       0                       1                       1                        0                       1
+        # Example Gene B2         0       1                       0                       0                        1                       0
+        # Example Gene C          0       1                       0                       0                        1                       0
+        # Fictional MeSH Term B   1       1                       1                       1                        1                       1
+        expected_edges = np.array([
+            [0,1,0,0,1,0],
+            [1,0,1,1,0,1],
+            [0,1,0,0,1,0],
+            [0,1,0,0,1,0],
+            [1,1,1,1,1,1]]
+            )
+        self.assertTrue(np.array_equal(edges, expected_edges))
+
+        os.remove(results_file_path + results_file_name + "_abstracts.csv")
+
+        # TODO Rerun with mesh term filter set
+        # assert False
+
+    def test_count_edges_pub_med(self):
+        """Unit test the temmpo.browser.matching.countedges function using PubMed citation syntax.
+        citations, genelist, synonymlookup, synonymlisting, exposuremesh,
+        identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+        results_file_path, results_file_name, file_format=OVID
+
+        Creates a CSV edge file
+
+                returns: papercounter, edges, identifiers"""
+        citations = self._get_pubmed_citation_generator()
+        genelist = self._get_genes_list()
+        synonymlookup = self._get_synonym_lookup()
+        synonymlisting = self._get_synonym_listing()
+        exposuremesh = self._get_exposure_list()
+        identifiers = dict()
+        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        mesh_filter = None
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_count_edges_pub_med"
+        file_format = PUBMED
+
+        papercounter, edges, identifiers = countedges(citations, genelist,
+                synonymlookup, synonymlisting, exposuremesh,
+                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+                results_file_path, results_file_name, file_format=file_format)
+        # Verify CSV file is valid CSV
+        # Verify that is has a header
+        # Verify that it contains the expected matches and no more
+        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+            csv_data = csv_file.readlines()
+            self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(len(csv_data), 3)
+            self.assertTrue("999991\r\n" in csv_data)
+            self.assertTrue("999994\r\n" in csv_data)
+
+        # Verify papercounter
+        self.assertTrue(type(papercounter), int)
+        self.assertEqual(papercounter, 2)
+
+        # Verify edges
+        expected_edges = np.array([
+            [0,1,0,0,1,0],
+            [1,0,1,1,0,1],
+            [0,1,0,0,1,0],
+            [0,1,0,0,1,0],
+            [1,1,1,1,1,1]]
+            )
+        self.assertTrue(np.array_equal(edges, expected_edges))
+
+        # Verify identifiers - NB: currently not in use
+        self.assertEqual(identifiers, dict())
+
+        os.remove(results_file_path + results_file_name + "_abstracts.csv")
+
+        # TODO: Rerun with mesh term filter set
+        # assert False
+
+    # def test_createedgelist(self):
+    #     assert False
+
+    # def test_printedges(self):
+    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
+    #     assert False
+
+    # def test_createjson(self):
+    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
+    #     assert False
+
+    # def test_get_genes_and_mediators(self):
+    #     """genelist, mediatormesh"""
+    #     assert False
+
+    # def test_searchgene(self):
+    #     """texttosearch, searchstring"""
+    #     assert False
+
+    # def test_ovid_matching_function(self):
+    #     """ovid_mesh_term_text, mesh_term"""
+    #     assert False
+
+    # def test_pubmed_matching_function(self):
+    #     """pubmed_mesh_term_text, mesh_term"""
+    #     assert False
