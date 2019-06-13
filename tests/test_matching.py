@@ -16,7 +16,7 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import tag
 
-from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson
+from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson, _get_genes_and_mediators
 from browser.matching import record_differences_between_match_runs, perform_search, pubmed_matching_function, ovid_matching_function, searchgene
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_test_case import BaseTestCase
@@ -851,6 +851,22 @@ class MatchingTestCase(BaseTestCase):
         gene = "PRSS10"
         self.assertEqual(searchgene(search_text, gene), None)
 
+    def test_get_genes_and_mediators(self):
+        """genelist, mediatormesh"""
+        gene_list = [1, 5, 10, 15]
+        mediator_list = [2, 4, 6, 8]
+        returned_list = _get_genes_and_mediators(gene_list, mediator_list)
+        counter = 0
+        for item in returned_list:
+            if counter == 2:
+                self.assertEqual(item, 10)
+            if counter == 4:
+                self.assertEqual(item, 2)
+            if counter == 7:
+                self.assertEqual(item, 8)
+            counter +=1 
+        self.assertEqual(counter, 8)
+
     # def test_createedgelist(self):
     #     assert False
 
@@ -862,7 +878,5 @@ class MatchingTestCase(BaseTestCase):
     #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
     #     assert False
 
-    # def test_get_genes_and_mediators(self):
-    #     """genelist, mediatormesh"""
-    #     assert False
+
 
