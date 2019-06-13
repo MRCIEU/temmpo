@@ -17,7 +17,7 @@ from django.core.urlresolvers import reverse
 from django.test import tag
 
 from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson
-from browser.matching import record_differences_between_match_runs, perform_search, pubmed_matching_function, ovid_matching_function
+from browser.matching import record_differences_between_match_runs, perform_search, pubmed_matching_function, ovid_matching_function, searchgene
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_test_case import BaseTestCase
 
@@ -794,25 +794,6 @@ class MatchingTestCase(BaseTestCase):
 
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
-    # def test_createedgelist(self):
-    #     assert False
-
-    # def test_printedges(self):
-    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
-    #     assert False
-
-    # def test_createjson(self):
-    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
-    #     assert False
-
-    # def test_get_genes_and_mediators(self):
-    #     """genelist, mediatormesh"""
-    #     assert False
-
-    # def test_searchgene(self):
-    #     """texttosearch, searchstring"""
-    #     assert False
-
     def test_ovid_matching_function(self):
         """ovid_mesh_term_text, mesh_term"""
         search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
@@ -836,3 +817,52 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
         mesh_term = "Genetics"
         self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
+
+    def test_search_gene(self):
+        search_text = """A number of preclinical studies have shown that the activation of the vitamin D
+      receptor (VDR) reduces prostate cancer (PCa) cell and tumor growth. The majority 
+      of human PCas express a transmembrane protease serine 2 (TMPRSS2):erythroblast
+      transformation-specific (ETS) fusion gene, but most preclinical studies have been
+      performed in PCa models lacking TMPRSS2:ETS in part due to the limited
+      availability of model systems expressing endogenous TMPRSS2:ETS. The level of the
+      active metabolite of vitamin D, 1alpha,25-dihydroxyvitamin D3 (1,25D), is
+      controlled in part by VDR-dependent induction of cytochrome P450, family 24,
+      subfamily 1, polypeptide1 (CYP24A1), which metabolizes 1,25D to an inactive form.
+      Because ETS factors can cooperate with VDR to induce rat CYP24A1, we tested
+      whether TMPRSS2:ETS would cause aberrant induction of human CYP24A1 limiting the 
+      activity of VDR. In TMPRSS2:ETS positive VCaP cells, depletion of TMPRSS2:ETS
+      substantially reduced 1,25D-mediated CYP24A1 induction. Artificial expression of 
+      the type VI+72 TMPRSS2:ETS isoform in LNCaP cells synergized with 1,25D to
+      greatly increase CYP24A1 expression. Thus, one of the early effects of
+      TMPRSS2:ETS in prostate cells is likely a reduction in intracellular 1,25D, which
+      may lead to increased proliferation. Next, we tested the net effect of VDR action
+      in TMPRSS2:ETS containing PCa tumors in vivo. Unlike previous animal studies
+      performed on PCa tumors lacking TMPRSS2:ETS, EB1089 (seocalcitol) (a less
+      calcemic analog of 1,25D) did not inhibit the growth of TMPRSS2:ETS containing
+      VCaP tumors in vivo, suggesting that the presence of TMPRSS2:ETS may limit the
+      growth inhibitory actions of VDR. Our findings suggest that patients with
+      TMPRSS2:ETS negative tumors may be more responsive to VDR-mediated growth
+      inhibition and that TMPRSS2:ETS status should be considered in future clinical
+      trials."""
+        gene = "CYP24A1"
+        self.assertTrue(searchgene(search_text, gene) >= 0)
+        gene = "TMPRSS2"
+        self.assertTrue(searchgene(search_text, gene) >= 0)
+        gene = "PRSS10"
+        self.assertEqual(searchgene(search_text, gene), None)
+
+    # def test_createedgelist(self):
+    #     assert False
+
+    # def test_printedges(self):
+    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
+    #     assert False
+
+    # def test_createjson(self):
+    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
+    #     assert False
+
+    # def test_get_genes_and_mediators(self):
+    #     """genelist, mediatormesh"""
+    #     assert False
+
