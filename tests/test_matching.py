@@ -622,8 +622,61 @@ class MatchingTestCase(BaseTestCase):
 
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
-        # TODO Rerun with mesh term filter set
-        # assert False
+    def test_count_edges_ovid_with_filter(self):
+        """Unit test the temmpo.browser.matching.countedges function using OVID citation syntax
+        args: citations, genelist, synonymlookup, synonymlisting, exposuremesh,
+        identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+        results_file_path, results_file_name, file_format=OVID
+
+        Creates an abstracts CSV file
+
+        returns: papercounter, edges, identifiers"""
+        citations = self._get_ovid_citation_generator()
+        genelist = self._get_genes_list()
+        synonymlookup = self._get_synonym_lookup()
+        synonymlisting = self._get_synonym_listing()
+        exposuremesh = self._get_exposure_list()
+        identifiers = dict()
+        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        mesh_filter = "Fictional MeSH Term AA"
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_count_edges_ovid"
+        file_format = OVID
+
+        papercounter, edges, identifiers = countedges(citations, genelist,
+                synonymlookup, synonymlisting, exposuremesh,
+                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+                results_file_path, results_file_name, file_format=file_format)
+
+        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+            csv_data = csv_file.readlines()
+            self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(len(csv_data), 2)
+            self.assertTrue("999991\r\n" in csv_data)
+
+        # Verify papercounter
+        self.assertTrue(type(papercounter), int)
+        self.assertEqual(papercounter, 1)
+        # Verify identifiers - currently not in use
+        self.assertEqual(identifiers, dict())
+        # Verify edges - expected matches below:
+        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A          0       0                       0                       0                        0                       0
+        # Example Gene B          1       0                       1                       1                        0                       1
+        # Example Gene B2         0       0                       0                       0                        0                       0
+        # Example Gene C          0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B   1       0                       1                       1                        0                       1
+        expected_edges = np.array([
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1],
+            [0,0,0,0,0,0],
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1]]
+            )
+        self.assertTrue(np.array_equal(edges, expected_edges))
+        os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
     def test_count_edges_pub_med(self):
         """Unit test the temmpo.browser.matching.countedges function using PubMed citation syntax.
@@ -681,8 +734,65 @@ class MatchingTestCase(BaseTestCase):
 
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
-        # TODO: Rerun with mesh term filter set
-        # assert False
+    def test_count_edges_pub_med_with_filter(self):
+        """Unit test the temmpo.browser.matching.countedges function using PubMed citation syntax.
+        citations, genelist, synonymlookup, synonymlisting, exposuremesh,
+        identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+        results_file_path, results_file_name, file_format=OVID
+
+        Creates a CSV edge file
+
+                returns: papercounter, edges, identifiers"""
+        citations = self._get_pubmed_citation_generator()
+        genelist = self._get_genes_list()
+        synonymlookup = self._get_synonym_lookup()
+        synonymlisting = self._get_synonym_listing()
+        exposuremesh = self._get_exposure_list()
+        identifiers = dict()
+        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        mesh_filter = "Fictional MeSH Term AA"
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_count_edges_pub_med"
+        file_format = PUBMED
+
+        papercounter, edges, identifiers = countedges(citations, genelist,
+                synonymlookup, synonymlisting, exposuremesh,
+                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+                results_file_path, results_file_name, file_format=file_format)
+        # Verify CSV file is valid CSV
+        # Verify that is has a header
+        # Verify that it contains the expected matches and no more
+        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+            csv_data = csv_file.readlines()
+            self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(len(csv_data), 2)
+            self.assertTrue("999991\r\n" in csv_data)
+
+        # Verify papercounter
+        self.assertTrue(type(papercounter), int)
+        self.assertEqual(papercounter, 1)
+
+        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A          0       0                       0                       0                        0                       0
+        # Example Gene B          1       0                       1                       1                        0                       1
+        # Example Gene B2         0       0                       0                       0                        0                       0
+        # Example Gene C          0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B   1       0                       1                       1                        0                       1
+        expected_edges = np.array([
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1],
+            [0,0,0,0,0,0],
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1]]
+            )
+        self.assertTrue(np.array_equal(edges, expected_edges))
+
+        # Verify identifiers - NB: currently not in use
+        self.assertEqual(identifiers, dict())
+
+        os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
     # def test_createedgelist(self):
     #     assert False
