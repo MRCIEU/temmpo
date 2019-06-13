@@ -867,16 +867,33 @@ class MatchingTestCase(BaseTestCase):
             counter +=1 
         self.assertEqual(counter, 8)
 
-    # def test_createedgelist(self):
-    #     assert False
+    def test_printedges(self):
+        """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
+        edges = np.array([
+            [0,1,0,0,1,0],
+            [1,0,1,1,0,1],
+            [0,1,0,0,1,0],
+            [0,1,0,0,1,0],
+            [1,1,1,1,1,1]]
+            )
+        genelist = self._get_genes_list()
+        mediatormesh = self._get_mediator_list()
+        exposuremesh = self._get_exposure_list()
+        outcomemesh = self._get_outcome_list()
+        results_path = settings.RESULTS_PATH
+        resultfilename = "test_printedges"
+        edge_score = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
 
-    # def test_printedges(self):
-    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
+        with open(results_path + resultfilename + "_edge.csv", 'rb') as csvfile:
+            csv_data = csv.reader(csvfile)
+        
+            self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(edge_score, csv_data.line_num - 1)
+        # TODO some tests on Scores and column contents
+
+    # def test_createedgelist(self):
     #     assert False
 
     # def test_createjson(self):
     #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
     #     assert False
-
-
-
