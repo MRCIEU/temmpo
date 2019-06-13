@@ -17,7 +17,7 @@ from django.core.urlresolvers import reverse
 from django.test import tag
 
 from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson
-from browser.matching import record_differences_between_match_runs, perform_search
+from browser.matching import record_differences_between_match_runs, perform_search, pubmed_matching_function, ovid_matching_function
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_test_case import BaseTestCase
 
@@ -813,10 +813,26 @@ class MatchingTestCase(BaseTestCase):
     #     """texttosearch, searchstring"""
     #     assert False
 
-    # def test_ovid_matching_function(self):
-    #     """ovid_mesh_term_text, mesh_term"""
-    #     assert False
+    def test_ovid_matching_function(self):
+        """ovid_mesh_term_text, mesh_term"""
+        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
+        mesh_term = "Fictional MeSH Term A"
+        self.assertEqual(ovid_matching_function(search_text, mesh_term), None)
+        mesh_term = "Fictional MeSH Term AA"
+        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Transcriptome"
+        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Genetics"
+        self.assertEqual(ovid_matching_function(search_text, mesh_term), None)
 
-    # def test_pubmed_matching_function(self):
-    #     """pubmed_mesh_term_text, mesh_term"""
-    #     assert False
+    def test_pubmed_matching_function(self):
+        """pubmed_mesh_term_text, mesh_term"""
+        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
+        mesh_term = "Fictional MeSH Term A"
+        self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
+        mesh_term = "Fictional MeSH Term AA"
+        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Transcriptome"
+        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Genetics"
+        self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
