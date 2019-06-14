@@ -5,11 +5,12 @@ import csv
 import io
 import json
 import logging
-import numpy as np
 import os
 import shutil
 
 from csvvalidator import *
+import numpy as np
+import pandas as pd
 
 from django.conf import settings
 from django.core.files import File
@@ -869,6 +870,12 @@ class MatchingTestCase(BaseTestCase):
 
     def test_printedges(self):
         """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
+        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis |   Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A          0       1                       0                   |   0                        1                       0
+        # Example Gene B          1       0                       1                   |   1                        0                       1
+        # Example Gene B2         0       1                       0                   |   0                        1                       0
+        # Example Gene C          0       1                       0                   |   0                        1                       0
+        # Fictional MeSH Term B   1       1                       1                   |   1                        1                       1
         edges = np.array([
             [0,1,0,0,1,0],
             [1,0,1,1,0,1],
@@ -886,14 +893,34 @@ class MatchingTestCase(BaseTestCase):
 
         with open(results_path + resultfilename + "_edge.csv", 'rb') as csvfile:
             csv_data = csv.reader(csvfile)
-        
             self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
             self.assertEqual(edge_score, csv_data.line_num - 1)
-        # TODO some tests on Scores and column contents
 
+        # Tests on Count and Score values
+        # score = max(EM,MO) / min(EM,MO) x (EM + MO) from website Help page
+        # Expected results
+        # Mediator                  Exposure count  Outcome count   Scores  (Not testing as part of data frame as already tested above)
+        # Example Gene A            1               1               2
+        # Example Gene B            2               2               4
+        # Example Gene B2           1               1               2
+        # Example Gene C            1               1               2
+        # Fictional MeSH Term B     3               3               6
+        expected_results = [["Example Gene A", 1, 1, 2],
+                            ["Example Gene B", 2, 2, 4],
+                            ["Example Gene B2", 1, 1, 2],
+                            ["Example Gene C", 1, 1, 2],
+                            ["Fictional MeSH Term B", 3, 3, 6]]
+        df = pd.read_csv(results_path + resultfilename + "_edge.csv")
+        for i in range(0, 5):
+            for j in range(0, 4):
+                self.assertEqual(expected_results[i][j], df.iat[i, j])
+        self.assertEqual(csv_data.line_num, 6)
+
+    # @tag("test-it")
     # def test_createedgelist(self):
     #     assert False
 
+    # @tag("test-it")
     # def test_createjson(self):
     #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
     #     assert False
