@@ -49,8 +49,9 @@ YEAR, e.g. 2015
             ...
 """
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.management.base import BaseCommand, CommandError
 
 from browser.models import MeshTerm
 
@@ -150,5 +151,6 @@ class Command(BaseCommand):
                     else:
                         self.stdout.write("Already existed:" + term.get_term_with_details())
 
+            cache.clear()
         except Exception as e:
             raise CommandError(repr(e))

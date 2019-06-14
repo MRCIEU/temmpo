@@ -1,0 +1,7 @@
+-r base.txt
+
+csvvalidator==1.2
+pyvirtualdisplay==0.2.1
+pyscreenshot==0.5.1
+requests==2.22.0
+selenium==3.141.0

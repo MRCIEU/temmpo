@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test non mesh term functionality."""
+"""Test view authorisation"""
 
 from django.core.urlresolvers import reverse
 
@@ -40,8 +40,16 @@ class AccessTestCase(BaseTestCase):
         """Test can view the results page."""
         path = reverse('results', kwargs={'pk': RESULT_ID})
         self._find_expected_content(path=path, msg="login to use this tool")
-        # TODO Add results rendering tests
         self._login_user()
+        # Object does not exist
+        self._find_expected_content(path=path, msg='Page not found', status_code=404)
+
+    def test_results_bubble_chart_page(self):
+        """Test can view the results page."""
+        path = reverse('results_bubble', kwargs={'pk': RESULT_ID})
+        self._find_expected_content(path=path, msg="login to use this tool")
+        self._login_user()
+        # Object does not exist
         self._find_expected_content(path=path, msg='Page not found', status_code=404)
 
     def test_results_listing_page(self):
@@ -51,7 +59,6 @@ class AccessTestCase(BaseTestCase):
         self._find_expected_content(path=reverse("results_listing"), msg="My list")
 
     # Additional features
-
     def test_register_page(self):
         """Test can use the register page."""
         self._find_expected_content(path=reverse("registration_register"),
@@ -102,6 +109,20 @@ class AccessTestCase(BaseTestCase):
                               "Search criterias", "Search results", "Uploads", ]
         self._find_expected_content('/admin', msg_list=expected_dashboard)
 
-    # TODO: (Low priority) Give "search result" a better str representation
-    # TODO: (Low priority) Pluralise "search criteria" change field representation my R/A for choice fields? esp for genes - can this be more like terms??
-    # TODO: (Low priority) Maybe add year to str representation of mesh term
+    def test_anon_access_to_message_queue_admin(self):
+        """Test anon user needs to log in to access to the Django RQ dashboard."""
+        self.client.logout()
+        expected_dashboard = ["Django administration", "Log in", ]
+        self._find_expected_content('/django-rq', msg_list=expected_dashboard)
+
+    def test_user_access_to_message_queue_admin(self):
+        """Test normal user needs to log in to access to the Django RQ dashboard."""
+        expected_dashboard = ["Django administration", "Log in", ]
+        self._find_expected_content('/django-rq', msg_list=expected_dashboard)
+
+    def test_super_access_to_message_queue_admin(self):
+        """Test super user have access to the Django RQ dashboard."""
+        self.client.logout()
+        self._login_super_user()
+        expected_dashboard = ["RQ Queues", "Queued Jobs", ]
+        self._find_expected_content('/django-rq', msg_list=expected_dashboard)

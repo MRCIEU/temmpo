@@ -1,58 +1,56 @@
-echo "Build script for TeMMPo"
-sudo timedatectl set-timezone Europe/London
-sudo yum -y install epel-release
-sudo yum -y update
-sudo yum -y install python-devel
-sudo yum -y install python-wheel
-sudo yum -y install python-magic
-sudo yum -y install python-pip
-sudo yum -y install python-virtualenv
-sudo yum -y install libxml2-python
-sudo yum -y install libxml2-devel
-sudo yum -y install libxslt-python
-sudo yum -y install libxslt-devel
-sudo yum -y install python-lxml
+echo "Build script for a development TeMMPo environment on Centos"
+timedatectl set-timezone Europe/London
+yum -y install epel-release
+yum -y update
+yum -y install python-devel
+yum -y install python-wheel
+yum -y install python-magic
+yum -y install python-pip
+yum -y install python-virtualenv
+yum -y install libxml2-python
+yum -y install libxml2-devel
+yum -y install libxslt-python
+yum -y install libxslt-devel
+yum -y install python-lxml
 
 # install gcc
-sudo yum -y install gcc gcc-c++
+yum -y install gcc gcc-c++
 
 # dev tools
-sudo yum -y install git
-sudo yum -y install nano
-sudo yum -y install wget
-sudo yum -y install mariadb # Database client - adds mysql alias to command line
-# 
-sudo yum -y install mariadb-devel
+yum -y install git
+yum -y install nano
+yum -y install wget
+yum -y install mariadb # Database client - adds mysql alias to command line
+yum -y install unzip
+
+yum -y install mariadb-devel
 
 # Web server setup
-sudo yum -y install httpd 
-sudo yum -y install mod_wsgi
+yum -y install httpd
+yum -y install mod_wsgi
 
 # DB connectivity tools
-sudo yum -y install mysql-connector-python
-sudo yum -y install mysql-utilities
+yum -y install mysql-connector-python
+yum -y install mysql-utilities
 
 # Required to connect to DB successfully from web server and be able to send emails
-sudo setsebool -P httpd_can_network_connect 1
-sudo setsebool -P httpd_can_network_connect_db 1
-sudo setsebool -P httpd_can_sendmail 1
+setsebool -P httpd_can_network_connect 1
+setsebool -P httpd_can_network_connect_db 1
+setsebool -P httpd_can_sendmail 1
 
 # Production tools
-sudo yum -y install clamav
+yum -y install clamav
 
 # install fabric for deployment scripts
-sudo pip install fabric==1.13.1
-
-# sudo pip install pip==9.0.1
-
+pip install fabric==1.13.1
 
 # Install redis
-sudo yum -y install redis
+yum -y install redis
 
-sudo sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
+sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
 
-sudo systemctl start redis.service
-sudo systemctl enable redis
+systemctl start redis.service
+systemctl enable redis
 redis-cli ping
 
 cat > /etc/systemd/system/rqworker.service <<MESSAGE_QUEUE_WORKER
@@ -70,8 +68,59 @@ ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temm
 WantedBy=multi-user.target
 MESSAGE_QUEUE_WORKER
 
-sudo systemctl start rqworker
-sudo systemctl enable rqworker
+systemctl start rqworker
+systemctl enable rqworker
+
+# Install components for Selenium testing
+yum -y install Xvfb
+
+# Install Chrome and chromedriver
+cd /tmp
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+yum -y localinstall google-chrome-stable_current_x86_64.rpm
+google-chrome --version
+# As per test server
+wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
+# wget https://chromedriver.storage.googleapis.com/75.0.3770.8/chromedriver_linux64.zip
+unzip chromedriver_linux64.zip
+mv chromedriver /usr/bin/
+chmod g+rw /usr/bin/chromedriver
+chmod o+rw /usr/bin/chromedriver
+chromedriver -v
+
+# # Install Firefox and geckodriver
+# yum -y install firefox
+# cd /opt
+# wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+# tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+# ln -s /opt/geckodriver /usr/local/bin/geckodriver
+# geckodriver --version
+
+# # Install PhantomJS NB: Deprecated usage with selenium
+# cd /opt
+# wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+# tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
+# ln -s /opt/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs
+# phantomjs --version
+
+# # Install Opera and operadriver
+# rpm --import https://rpm.opera.com/rpmrepo.key
+# tee /etc/yum.repos.d/opera.repo <<REPO
+# [opera]
+# name=Opera packages
+# type=rpm-md
+# baseurl=https://rpm.opera.com/rpm
+# gpgcheck=1
+# gpgkey=https://rpm.opera.com/rpmrepo.key
+# enabled=1
+# REPO
+# yum -y install opera-stable
+# cd /opt
+# wget https://github.com/operasoftware/operachromiumdriver/releases/download/v.2.45/operadriver_linux64.zip
+# unzip operadriver_linux64.zip
+# ls
+# ln -s /opt/operadriver_linux64/operadriver /usr/local/bin/operadriver
+# operadriver --version
 
 # Confirm install list
 yum list installed 
@@ -85,48 +134,55 @@ mkdir -p /usr/local/projects/temmpo/var/log/httpd
 mkdir -p /usr/local/projects/temmpo/var/www
 mkdir -p /usr/local/projects/temmpo/var/data
 mkdir -p /usr/local/projects/temmpo/var/abstracts
-mkdir -p /usr/local/projects/temmpo/var/results
+mkdir -p /usr/local/projects/temmpo/var/results/v1
+mkdir -p /usr/local/projects/temmpo/var/results/v3
+mkdir -p /usr/local/projects/temmpo/var/results/testing/v1
+mkdir -p /usr/local/projects/temmpo/var/results/testing/v3
 
 echo "Add directory for development emails"
 mkdir -p /usr/local/projects/temmpo/var/email
 
 touch /usr/local/projects/temmpo/var/log/django.log
 
-sudo chown vagrant:vagrant /usr/local/projects/temmpo/
-sudo chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
-sudo chown apache:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
-sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/var
-sudo chown apache:vagrant /usr/local/projects/temmpo/var/abstracts
-sudo chown apache:vagrant /usr/local/projects/temmpo/var/data
-sudo chown apache:vagrant /usr/local/projects/temmpo/var/results
-sudo chown apache:vagrant /usr/local/projects/temmpo/var/email
-sudo chown apache:vagrant /usr/local/projects/temmpo/var/www
-sudo chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
-sudo chmod -R g+xw /usr/local/projects/temmpo/var/log
-sudo chmod -R g+xw /usr/local/projects/temmpo/var/data
-sudo chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
-sudo chmod -R g+xw /usr/local/projects/temmpo/var/results
-sudo chmod -R g+xw /usr/local/projects/temmpo/var/email
-sudo chmod g+xw /usr/local/projects/temmpo/var/www
-sudo chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
-sudo chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
-sudo chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
+chown vagrant:vagrant /usr/local/projects/temmpo/
+chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
+chown apache:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
+chown -R vagrant:vagrant /usr/local/projects/temmpo/var
+chown apache:vagrant /usr/local/projects/temmpo/var/abstracts
+chown apache:vagrant /usr/local/projects/temmpo/var/data
+chown apache:vagrant /usr/local/projects/temmpo/var/results
+chown apache:vagrant /usr/local/projects/temmpo/var/email
+chown apache:vagrant /usr/local/projects/temmpo/var/www
+chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
+chmod -R g+xw /usr/local/projects/temmpo/var/log
+chmod -R g+xw /usr/local/projects/temmpo/var/data
+chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
+chmod -R g+xw /usr/local/projects/temmpo/var/results
+chmod -R g+xw /usr/local/projects/temmpo/var/email
+chmod g+xw /usr/local/projects/temmpo/var/www
+chmod g+xw /usr/local/projects/temmpo/etc/apache/conf.d
+chcon -R -t httpd_config_t /usr/local/projects/temmpo/etc/apache/conf.d
+chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
 
-echo "Copy a deployment key to allow fabric script testing"
-if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa ]
-  then
-    cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa* /home/vagrant/.ssh/
-  else
-    cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
+if [ -d "/home/vagrant/.ssh/" ]; then
+
+  echo "Copy a deployment key to allow fabric script testing"
+  if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa ]
+    then
+      cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa* /home/vagrant/.ssh/
+    else
+      cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
+  fi
+
+  ssh-keyscan -H 104.192.143.1 >> /home/vagrant/.ssh/known_hosts
+  ssh-keyscan -H 104.192.143.2 >> /home/vagrant/.ssh/known_hosts
+  ssh-keyscan -H 104.192.143.3 >> /home/vagrant/.ssh/known_hosts
+  ssh-keyscan -H bitbucket.org >> /home/vagrant/.ssh/known_hosts
+
+  chown -R vagrant:vagrant /home/vagrant/.ssh/
+  chmod 700 /home/vagrant/.ssh/*
+
 fi
-
-ssh-keyscan -H 104.192.143.1 >> /home/vagrant/.ssh/known_hosts
-ssh-keyscan -H 104.192.143.2 >> /home/vagrant/.ssh/known_hosts
-ssh-keyscan -H 104.192.143.3 >> /home/vagrant/.ssh/known_hosts
-ssh-keyscan -H bitbucket.org >> /home/vagrant/.ssh/known_hosts
-
-sudo chown -R vagrant:vagrant /home/vagrant/.ssh/
-sudo chmod 700 /home/vagrant/.ssh/*
 
 echo "Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
@@ -155,7 +211,7 @@ WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 APACHE_CONF
 
 echo "Add placeholder private_settings.py"
-sudo mkdir -p /usr/local/projects/temmpo/.settings/
+mkdir -p /usr/local/projects/temmpo/.settings/
 cat > /usr/local/projects/temmpo/.settings/private_settings.py <<PRIVATE_SETTINGS
 DATABASES = {
     'mysql': {
@@ -189,7 +245,7 @@ DATABASES = {
 # Prepare for database migration
 DATABASES['default'] = DATABASES['mysql']
 PRIVATE_SETTINGS
-sudo chown -R vagrant:vagrant /usr/local/projects/temmpo/.settings/
-sudo chmod -R ug+rwx /usr/local/projects/temmpo/.settings/
+chown -R vagrant:vagrant /usr/local/projects/temmpo/.settings/
+chmod -R ug+rwx /usr/local/projects/temmpo/.settings/
 
 echo "See README.md for ways to create virtual environments"

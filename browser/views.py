@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import logging
+import django_rq
 
 from django.conf import settings
 from django.contrib import messages
@@ -19,7 +19,7 @@ from django.contrib.auth import logout
 
 
 from browser.forms import OvidMedLineFileUploadForm, PubMedFileUploadForm, TermSelectorForm, FilterForm
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload  # Gene,
+from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, Message
 from browser.matching import perform_search
 from browser.utils import delete_user_content
 
@@ -65,6 +65,7 @@ class SelectSearchTypeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SelectSearchTypeView, self).get_context_data(**kwargs)
         context['active'] = 'search'
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
@@ -81,6 +82,7 @@ class ReuseSearchView(TemplateView):
         context['active'] = 'search'
         context['uploads'] = Upload.objects.filter(user_id=self.request.user.id)
         context['criteria'] = SearchCriteria.objects.filter(upload__user_id=self.request.user.id).order_by('-created')
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
@@ -106,6 +108,7 @@ class SearchOvidMEDLINE(CreateView):
         context['active'] = 'search'
         context['form_action'] = reverse('search_ovid_medline')
         context['file_type'] = "Ovid MEDLINE®"
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
     def get_initial(self):
@@ -125,6 +128,7 @@ class SearchPubMedView(SearchOvidMEDLINE):
         context = super(SearchPubMedView, self).get_context_data(**kwargs)
         context['file_type'] = "PubMed MEDLINE®"
         context['form_action'] = reverse('search_pubmed')
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
@@ -330,7 +334,7 @@ class FilterSelector(UpdateView):
     def form_valid(self, form):
         """Store genes and filter."""
         # Save genes to search criteria
-        form.save()
+        response = super(FilterSelector, self).form_valid(form)
 
         # Create search result object and save mesh filter term
         search_result = SearchResult(criteria=self.object)
@@ -338,10 +342,10 @@ class FilterSelector(UpdateView):
         search_result.mesh_filter = mesh_filter
         search_result.save()
 
-        # Run the search
-        perform_search(search_result.id)
+        # Run the search via message queue
+        django_rq.enqueue(perform_search, search_result.id)
 
-        return super(FilterSelector, self).form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse('results_listing')
@@ -375,6 +379,9 @@ class ResultsView(TemplateView):
         context['json_url'] = reverse('json_data', kwargs=kwargs)
         context['score_csv_url'] = reverse('count_data', kwargs=kwargs)
         context['abstract_ids_csv_url'] = reverse('abstracts_data', kwargs=kwargs)
+        context['json_url_v1'] = reverse('json_data_v1', kwargs=kwargs)
+        context['score_csv_url_v1'] = reverse('count_data_v1', kwargs=kwargs)
+        context['abstract_ids_csv_url_v1'] = reverse('abstracts_data_v1', kwargs=kwargs)
         context['criteria_url'] = reverse('criteria', kwargs={'pk': self.search_result.criteria.id})
         context['results_sankey_url'] = reverse('results', kwargs=kwargs)
         context['results_bubble_url'] = reverse('results_bubble', kwargs=kwargs)
@@ -383,6 +390,7 @@ class ResultsView(TemplateView):
         context['sankey_is_active'] = False
         context['bubble_is_active'] = False
         context['results_page_title'] = 'TeMMPo: Results'
+        context['system_messages'] = Message.objects.get_current_messages()
 
         return context
 
@@ -420,11 +428,13 @@ class ResultsListingView(ListView):
 
     def get_queryset(self):
         # Ensure only listing users results and no stub search results that have not been started.
-        return SearchResult.objects.filter(criteria__upload__user=self.request.user).exclude(started_processing=None)
+        return SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=True)
 
     def get_context_data(self, **kwargs):
         context = super(ResultsListingView, self).get_context_data(**kwargs)
         context['active'] = 'results'
+        context['unprocessed'] = SearchResult.objects.filter(criteria__upload__user=self.request.user).filter(has_completed=False).order_by("-criteria__created")
+        context['system_messages'] = Message.objects.get_current_messages()
         return context
 
 
@@ -484,9 +494,15 @@ class CountDataView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/%s_edge.csv' % search_result.filename_stub
+        url = settings.RESULTS_URL + '%s_edge.csv' % search_result.filename_stub
         return url
 
+class CountDataViewV1(CountDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V1 + '%s_edge.csv' % search_result.filename_stub
+        return url
 
 class AbstractDataView(RedirectView):
     permanent = True
@@ -509,7 +525,15 @@ class AbstractDataView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/%s_abstracts.csv' % search_result.filename_stub
+        url = settings.RESULTS_URL + '%s_abstracts.csv' % search_result.filename_stub
+        return url
+
+
+class AbstractDataViewV1(AbstractDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V1 + '%s_abstracts.csv' % search_result.filename_stub
         return url
 
 
@@ -534,7 +558,15 @@ class JSONDataView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
-        url = settings.MEDIA_URL + 'results/%s.json' % search_result.filename_stub
+        url = settings.RESULTS_URL + '%s.json' % search_result.filename_stub
+        return url
+
+
+class JSONDataViewV1(JSONDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V1 + '%s.json' % search_result.filename_stub
         return url
 
 

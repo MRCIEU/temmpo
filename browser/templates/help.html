@@ -7,23 +7,25 @@
 {% block section %}
 
 <ul class="nav nav-pills">
-	<li role="presentation"><a href="#overview">Overview <span class="glyphicon glyphicon-info-sign"></span></a></li>
-	<li role="presentation"><a href="#upload">Upload articles <span class="glyphicon glyphicon-cloud-upload"></span></a></li>
-	<li role="presentation"><a href="#exposures">Specify exposures <span class="glyphicon glyphicon-align-left"></span></a></li>
-	<li role="presentation"><a href="#mechanisms">Specify mechanisms <span class="glyphicon glyphicon-align-center"></span></a></li>
-	<li role="presentation"><a href="#outcomes">Specify outcomes <span class="glyphicon glyphicon-align-right"></span></a></li>
-	<li role="presentation"><a href="#genefilter">Genes and filter section <span class="glyphicon glyphicon-filter"></span></a></li>
-	<li role="presentation"><a href="#navigate">Navigate results <span class="glyphicon glyphicon-globe"></span></a></li>
-	<li role="presentation"><a href="#reuse">Re-use searches/abstracts <span class="glyphicon glyphicon-repeat"></span></a></li>
+    <li role="presentation"><a href="#overview">Overview <span class="glyphicon glyphicon-info-sign"></span></a></li>
+    <li role="presentation"><a href="#upload">Upload articles <span class="glyphicon glyphicon-cloud-upload"></span></a></li>
+    <li role="presentation"><a href="#exposures">Specify exposures <span class="glyphicon glyphicon-align-left"></span></a></li>
+    <li role="presentation"><a href="#mechanisms">Specify mechanisms <span class="glyphicon glyphicon-align-center"></span></a></li>
+    <li role="presentation"><a href="#outcomes">Specify outcomes <span class="glyphicon glyphicon-align-right"></span></a></li>
+    <li role="presentation"><a href="#genefilter">Genes and filter section <span class="glyphicon glyphicon-filter"></span></a></li>
+    <li role="presentation"><a href="#navigate">Navigate results <span class="glyphicon glyphicon-globe"></span></a></li>
+    <li role="presentation"><a href="#reuse">Re-use searches/abstracts <span class="glyphicon glyphicon-repeat"></span></a></li>
+    <li role="presentation"><a href="#matchingchanges">Changes <span class="glyphicon glyphicon-repeat"></span></a></li>
 </ul>
+
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><a id="overview">Overview</a></h3>
   </div>
   <div class="panel-body">
-	<p>TeMMPo is a Django web application that expect a file of abstracts representing the articles linking exposure to outcome. It then expects you to specify MeSH terms for the exposure, MeSH terms for candidate mechanisms and MeSH terms for outcomes. This page describes each of these in more detail.</p>
-	<p>You must create an account to use TeMMPo. TeMMPo is provided as a free-to-use service, and the user registration and login is simply used to enable you to track jobs and re-use search criteria.</p>
-	</div>
+    <p>TeMMPo is a Django web application that expect a file of abstracts representing the articles linking exposure to outcome. It then expects you to specify MeSH terms for the exposure, MeSH terms for candidate mechanisms and MeSH terms for outcomes. This page describes each of these in more detail.</p>
+    <p>You must create an account to use TeMMPo. TeMMPo is provided as a free-to-use service, and the user registration and login is simply used to enable you to track jobs and re-use search criteria.</p>
+    </div>
 </div>
 
 <div class="panel panel-default">
@@ -31,75 +33,75 @@
     <h3 class="panel-title"><a id="upload">Upload articles</a></h3>
   </div>
   <div class="panel-body">
-		<p>The article upload page is the first link under "Search" after you have logged in to TeMMPo.</p>
-    <p>You can upload abstracts in either OVID MEDLINE&reg; or PubMed MEDLINE&reg; format. The following examples illustrate the required format. It is possible to exclude some fields to reduce file size, but it is essential that MeSH Subject Headings are included.  At present the file upload limit is set at 1000MB.</p>
+        <p>The article upload page is the first link under "Search" after you have logged in to TeMMPo.</p>
+    <p>You can upload abstracts in either OVID MEDLINE&reg; or PubMed MEDLINE&reg; format. The following examples illustrate the required format. It is possible to exclude some fields to reduce file size, but it is essential that MeSH Subject Headings are included.  At present the file upload limit is set at 2000MB.</p>
 
 
-		<!-- #accordion-ovid-medline -->
-		<div class="panel-group" id="accordion-ovid-medline">
-		    <div class="panel panel-default">
-		        <div class="panel-heading">
-		            <h4 class="panel-title">
-		                <a data-toggle="collapse" data-parent="#accordion-ovid-medline" href="#collapseOne">View an example OVID MEDLINE&reg; file</a>
-		            </h4>
-		        </div>
-		        <div id="collapseOne" class="panel-collapse collapse">
-		            <div class="panel-body">
-		              <p>&dash; Includes &quot;MeSH Subject Headings&quot;</p>
-		        <pre>&lt;1&gt;
-						Unique Identifier
-						  23482392
-						Record Owner
-						  From MEDLINE, a database of the U.S. National Library of Medicine.
-						Status
-						  MEDLINE
-						Authors
-						  Li C.  Han J.  Yao Q.  Zou C.  Xu Y.  Zhang C.  Shang D.  Zhou L.  Zou C.  Sun Z.  Li J.  Zhang Y.  Yang H.  Gao X.  Li X.
-						Authors Full Name
-						  Li, Chunquan.  Han, Junwei.  Yao, Qianlan.  Zou, Chendan.  Xu, Yanjun.  Zhang, Chunlong.  Shang, Desi.  Zhou, Lingyun.  Zou, Chaoxia.  Sun, Zeguo.  Li, Jing.  Zhang, Yunpeng.  Yang, Haixiu.  Gao, Xu.  Li, Xia.
-						Institution
-						  College of Bioinformatics Science and Technology, Harbin Medical University, Harbin 150081, PR China.
-						Title
-						  Subpathway-GM: identification of metabolic subpathways via joint power of interesting genes and metabolites and their topologies within pathways.
-						Source
-						  Nucleic Acids Research.  41(9):e101, 2013 May.
-						Other ID
-						  Source: NLM. PMC3643575
-						MeSH Subject Headings
-						    Colorectal Neoplasms/ge [Genetics]
-						    Colorectal Neoplasms/me [Metabolism]
-						    Histamine/me [Metabolism]
-						    Humans
-						    Male
-						    *Metabolic Networks and Pathways/ge [Genetics]
-						    *Metabolomics
-						    Neoplasm Metastasis
-						    Prostatic Neoplasms/ge [Genetics]
-						    Prostatic Neoplasms/me [Metabolism]
-						    Prostatic Neoplasms/pa [Pathology]
-						    *Transcriptome
-						Abstract
-						  Various 'omics' technologies, including microarrays and gas chromatography mass spectrometry, can be used to identify hundreds of interesting genes, proteins and metabolites, such as differential genes, proteins and metabolites associated with diseases. Identifying metabolic pathways has become an invaluable aid to understanding the genes and metabolites associated with studying conditions. However, the classical methods used to identify pathways fail to accurately consider joint power of interesting gene/metabolite and the key regions impacted by them within metabolic pathways. In this study, we propose a powerful analytical method referred to as Subpathway-GM for the identification of metabolic subpathways. This provides a more accurate level of pathway analysis by integrating information from genes and metabolites, and their positions and cascade regions within the given pathway. We analyzed two colorectal cancer and one metastatic prostate cancer data sets and demonstrated that Subpathway-GM was able to identify disease-relevant subpathways whose corresponding entire pathways might be ignored using classical entire pathway identification methods. Further analysis indicated that the power of a joint genes/metabolites and subpathway strategy based on their topologies may play a key role in reliably recalling disease-relevant subpathways and finding novel subpathways.
-						Registry Number/Name of Substance
-						  51-45-6 (Histamine).
-						Publication Type
-						  Journal Article.  Research Support, Non-U.S. Gov't.
-						Date Created
-						  20130506
-						Year of Publication
-						  2013
-						Link to the Ovid Full Text or citation
-						 http://ovidsp.ovid.com/ovidweb.cgi?T=JS&amp;CSC=Y&amp;NEWS=N&amp;PAGE=fulltext&amp;D=medl&amp;AN=23482392
-						Link to the External Link Resolver
-						 http://linkserver.bristol.ac.uk:9003/prod?sid=OVID:medline&amp;id=pmid:23482392&amp;id=doi:10.1093%2Fnar%2Fgkt161&amp;issn=0305-1048&amp;isbn=&amp;volume=41&amp;issue=9&amp;spage=e101&amp;pages=e101&amp;date=2013&amp;title=Nucleic+Acids+Research&amp;atitle=Subpathway-GM%3A+identification+of+metabolic+subpathways+via+joint+power+of+interesting+genes+and+metabolites+and+their+topologies+within+pathways.&amp;aulast=Li&amp;pid=%3Cauthor%3ELi+C%3C%2Fauthor%3E%3CAN%3E23482392%3C%2FAN%3E%3CDT%3EJournal+Article%3C%2FDT%3E</pre>
-		            </div>
-		        </div>
-		    </div>
-		</div>
-		<!-- / #accordion-ovid-medline -->
+        <!-- #accordion-ovid-medline -->
+        <div class="panel-group" id="accordion-ovid-medline">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion-ovid-medline" href="#collapseOne">View an example OVID MEDLINE&reg; file</a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <p>&dash; Includes &quot;MeSH Subject Headings&quot;</p>
+                <pre>&lt;1&gt;
+Unique Identifier
+  23482392
+Record Owner
+  From MEDLINE, a database of the U.S. National Library of Medicine.
+Status
+  MEDLINE
+Authors
+  Li C.  Han J.  Yao Q.  Zou C.  Xu Y.  Zhang C.  Shang D.  Zhou L.  Zou C.  Sun Z.  Li J.  Zhang Y.  Yang H.  Gao X.  Li X.
+Authors Full Name
+  Li, Chunquan.  Han, Junwei.  Yao, Qianlan.  Zou, Chendan.  Xu, Yanjun.  Zhang, Chunlong.  Shang, Desi.  Zhou, Lingyun.  Zou, Chaoxia.  Sun, Zeguo.  Li, Jing.  Zhang, Yunpeng.  Yang, Haixiu.  Gao, Xu.  Li, Xia.
+Institution
+  College of Bioinformatics Science and Technology, Harbin Medical University, Harbin 150081, PR China.
+Title
+  Subpathway-GM: identification of metabolic subpathways via joint power of interesting genes and metabolites and their topologies within pathways.
+Source
+  Nucleic Acids Research.  41(9):e101, 2013 May.
+Other ID
+  Source: NLM. PMC3643575
+MeSH Subject Headings
+    Colorectal Neoplasms/ge [Genetics]
+    Colorectal Neoplasms/me [Metabolism]
+    Histamine/me [Metabolism]
+    Humans
+    Male
+    *Metabolic Networks and Pathways/ge [Genetics]
+    *Metabolomics
+    Neoplasm Metastasis
+    Prostatic Neoplasms/ge [Genetics]
+    Prostatic Neoplasms/me [Metabolism]
+    Prostatic Neoplasms/pa [Pathology]
+    *Transcriptome
+Abstract
+  Various 'omics' technologies, including microarrays and gas chromatography mass spectrometry, can be used to identify hundreds of interesting genes, proteins and metabolites, such as differential genes, proteins and metabolites associated with diseases. Identifying metabolic pathways has become an invaluable aid to understanding the genes and metabolites associated with studying conditions. However, the classical methods used to identify pathways fail to accurately consider joint power of interesting gene/metabolite and the key regions impacted by them within metabolic pathways. In this study, we propose a powerful analytical method referred to as Subpathway-GM for the identification of metabolic subpathways. This provides a more accurate level of pathway analysis by integrating information from genes and metabolites, and their positions and cascade regions within the given pathway. We analyzed two colorectal cancer and one metastatic prostate cancer data sets and demonstrated that Subpathway-GM was able to identify disease-relevant subpathways whose corresponding entire pathways might be ignored using classical entire pathway identification methods. Further analysis indicated that the power of a joint genes/metabolites and subpathway strategy based on their topologies may play a key role in reliably recalling disease-relevant subpathways and finding novel subpathways.
+Registry Number/Name of Substance
+  51-45-6 (Histamine).
+Publication Type
+  Journal Article.  Research Support, Non-U.S. Gov't.
+Date Created
+  20130506
+Year of Publication
+  2013
+Link to the Ovid Full Text or citation
+ http://ovidsp.ovid.com/ovidweb.cgi?T=JS&amp;CSC=Y&amp;NEWS=N&amp;PAGE=fulltext&amp;D=medl&amp;AN=23482392
+Link to the External Link Resolver
+ http://linkserver.bristol.ac.uk:9003/prod?sid=OVID:medline&amp;id=pmid:23482392&amp;id=doi:10.1093%2Fnar%2Fgkt161&amp;issn=0305-1048&amp;isbn=&amp;volume=41&amp;issue=9&amp;spage=e101&amp;pages=e101&amp;date=2013&amp;title=Nucleic+Acids+Research&amp;atitle=Subpathway-GM%3A+identification+of+metabolic+subpathways+via+joint+power+of+interesting+genes+and+metabolites+and+their+topologies+within+pathways.&amp;aulast=Li&amp;pid=%3Cauthor%3ELi+C%3C%2Fauthor%3E%3CAN%3E23482392%3C%2FAN%3E%3CDT%3EJournal+Article%3C%2FDT%3E</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- / #accordion-ovid-medline -->
 
-		<!-- #accordion-pubmed -->
-		<div class="panel-group" id="accordion-pubmed">
+        <!-- #accordion-pubmed -->
+        <div class="panel-group" id="accordion-pubmed">
     <div class="panel panel-default">
         <div class="panel-heading">
             <h4 class="panel-title">
@@ -109,219 +111,219 @@
         <div id="collapsePubMed" class="panel-collapse collapse">
             <div class="panel-body">
               <p>&dash; Includes &quot;MH&quot;</p>
-				        <pre>PMID- 26010633
-				OWN - NLM
-				STAT- MEDLINE
-				DA  - 20150527
-				DCOM- 20150529
-				LR  - 20150708
-				IS  - 1538-3598 (Electronic)
-				IS  - 0098-7484 (Linking)
-				VI  - 313
-				IP  - 20
-				DP  - 2015 May 26
-				TI  - Copy number variations and cognitive phenotypes in unselected populations.
-				PG  - 2044-54
-				LID - 10.1001/jama.2015.4845 [doi]
-				AB  - IMPORTANCE: The association of copy number variations (CNVs), differing numbers
-				      of copies of genetic sequence at locations in the genome, with phenotypes such as
-				      intellectual disability has been almost exclusively evaluated using clinically
-				      ascertained cohorts. The contribution of these genetic variants to cognitive
-				      phenotypes in the general population remains unclear. OBJECTIVE: To investigate
-				      the clinical features conferred by CNVs associated with known syndromes in adult
-				      carriers without clinical preselection and to assess the genome-wide consequences
-				      of rare CNVs (frequency &lt;/=0.05%; size >/=250 kilobase pairs [kb]) on carriers'
-				      educational attainment and intellectual disability prevalence in the general
-				      population. DESIGN, SETTING, AND PARTICIPANTS: The population biobank of Estonia
-				      contains 52,000 participants enrolled from 2002 through 2010. General
-				      practitioners examined participants and filled out a questionnaire of health- and
-				      lifestyle-related questions, as well as reported diagnoses. Copy number variant
-				      analysis was conducted on a random sample of 7877 individuals and
-				      genotype-phenotype associations with education and disease traits were evaluated.
-				      Our results were replicated on a high-functioning group of 993 Estonians and 3
-				      geographically distinct populations in the United Kingdom, the United States, and
-				      Italy. MAIN OUTCOMES AND MEASURES: Phenotypes of genomic disorders in the general
-				      population, prevalence of autosomal CNVs, and association of these variants with
-				      educational attainment (from less than primary school through scientific degree)
-				      and prevalence of intellectual disability. RESULTS: Of the 7877 in the Estonian
-				      cohort, we identified 56 carriers of CNVs associated with known syndromes. Their
-				      phenotypes, including cognitive and psychiatric problems, epilepsy, neuropathies,
-				      obesity, and congenital malformations are similar to those described for carriers
-				      of identical rearrangements ascertained in clinical cohorts. A genome-wide
-				      evaluation of rare autosomal CNVs (frequency, &lt;/=0.05%; >/=250 kb) identified 831
-				      carriers (10.5%) of the screened general population. Eleven of 216 (5.1%)
-				      carriers of a deletion of at least 250 kb (odds ratio [OR], 3.16; 95% CI,
-				      1.51-5.98; P = 1.5e-03) and 6 of 102 (5.9%) carriers of a duplication of at least
-				      1 Mb (OR, 3.67; 95% CI, 1.29-8.54; P = .008) had an intellectual disability
-				      compared with 114 of 6819 (1.7%) in the Estonian cohort. The mean education
-				      attainment was 3.81 (P = 1.06e-04) among 248 (>/=250 kb) deletion carriers and
-				      3.69 (P = 5.024e-05) among 115 duplication carriers (>/=1 Mb). Of the deletion
-				      carriers, 33.5% did not graduate from high school (OR, 1.48; 95% CI, 1.12-1.95; P
-				      = .005) and 39.1% of duplication carriers did not graduate high school (OR, 1.89;
-				      95% CI, 1.27-2.8; P = 1.6e-03). Evidence for an association between rare CNVs and
-				      lower educational attainment was supported by analyses of cohorts of adults from
-				      Italy and the United States and adolescents from the United Kingdom. CONCLUSIONS
-				      AND RELEVANCE: Known pathogenic CNVs in unselected, but assumed to be healthy,
-				      adult populations may be associated with unrecognized clinical sequelae.
-				      Additionally, individually rare but collectively common intermediate-size CNVs
-				      may be negatively associated with educational attainment. Replication of these
-				      findings in additional population groups is warranted given the potential
-				      implications of this observation for genomics research, clinical care, and public
-				      health.
-				FAU - Mannik, Katrin
-				AU  - Mannik K
-				AD  - Center for Integrative Genomics, University of Lausanne, Lausanne,
-				      Switzerland2Estonian Genome Center, University of Tartu, Tartu.
-				FAU - Magi, Reedik
-				AU  - Magi R
-				AD  - Estonian Genome Center, University of Tartu, Tartu.
-				FAU - Mace, Aurelien
-				AU  - Mace A
-				AD  - Department of Medical Genetics, University of Lausanne, Lausanne,
-				      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland.
-				FAU - Cole, Ben
-				AU  - Cole B
-				AD  - Department of Laboratory Medicine and Pathology, University of Minnesota Medical
-				      School, Minneapolis.
-				FAU - Guyatt, Anna L
-				AU  - Guyatt AL
-				AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
-				      Medicine, University of Bristol, Bristol, United Kingdom.
-				FAU - Shihab, Hashem A
-				AU  - Shihab HA
-				AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
-				      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
-				      Epidemiology Unit, School of Social and Community Medicine, University of
-				      Bristol, Bristol, United Kingdom.
-				FAU - Maillard, Anne M
-				AU  - Maillard AM
-				AD  - Department of Medical Genetics, University of Lausanne, Lausanne, Switzerland.
-				FAU - Alavere, Helene
-				AU  - Alavere H
-				AD  - Estonian Genome Center, University of Tartu, Tartu.
-				FAU - Kolk, Anneli
-				AU  - Kolk A
-				AD  - Estonian Genome Center, University of Tartu, Tartu8Department of Neurology and
-				      Neurorehabilitation, Children's Clinic, Tartu University Hospital, Tartu,
-				      Estonia.
-				FAU - Reigo, Anu
-				AU  - Reigo A
-				AD  - Estonian Genome Center, University of Tartu, Tartu.
-				FAU - Mihailov, Evelin
-				AU  - Mihailov E
-				AD  - Estonian Genome Center, University of Tartu, Tartu.
-				FAU - Leitsalu, Liis
-				AU  - Leitsalu L
-				AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
-				      Cell Biology, University of Tartu, Tartu, Estonia.
-				FAU - Ferreira, Anne-Maud
-				AU  - Ferreira AM
-				AD  - Center for Integrative Genomics, University of Lausanne, Lausanne,
-				      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland.
-				FAU - Noukas, Margit
-				AU  - Noukas M
-				AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
-				      Cell Biology, University of Tartu, Tartu, Estonia.
-				FAU - Teumer, Alexander
-				AU  - Teumer A
-				AD  - Institute for Community Medicine, University Medicine Greifswald, Greifswald,
-				      Germany.
-				FAU - Salvi, Erika
-				AU  - Salvi E
-				AD  - Deparment of Health Sciences, University of Milan, Milan, Italy.
-				FAU - Cusi, Daniele
-				AU  - Cusi D
-				AD  - Deparment of Health Sciences, University of Milan, Milan, Italy12Institute of
-				      Biomedical Technologies, Italian National Research Council, Milan, Italy.
-				FAU - McGue, Matt
-				AU  - McGue M
-				AD  - Department of Psychology, University of Minnesota, Minneapolis.
-				FAU - Iacono, William G
-				AU  - Iacono WG
-				AD  - Department of Psychology, University of Minnesota, Minneapolis.
-				FAU - Gaunt, Tom R
-				AU  - Gaunt TR
-				AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
-				      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
-				      Epidemiology Unit, School of Social and Community Medicine, University of
-				      Bristol, Bristol, United Kingdom.
-				FAU - Beckmann, Jacques S
-				AU  - Beckmann JS
-				AD  - Swiss Institute of Bioinformatics, Lausanne, Switzerland.
-				FAU - Jacquemont, Sebastien
-				AU  - Jacquemont S
-				AD  - Department of Medical Genetics, University of Lausanne, Lausanne, Switzerland.
-				FAU - Kutalik, Zoltan
-				AU  - Kutalik Z
-				AD  - Department of Medical Genetics, University of Lausanne, Lausanne,
-				      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland14Institute
-				      of Social and Preventive Medicine, Lausanne University Hospital (CHUV), Lausanne,
-				      Switzerland.
-				FAU - Pankratz, Nathan
-				AU  - Pankratz N
-				AD  - Department of Laboratory Medicine and Pathology, University of Minnesota Medical
-				      School, Minneapolis.
-				FAU - Timpson, Nicholas
-				AU  - Timpson N
-				AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
-				      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
-				      Epidemiology Unit, School of Social and Community Medicine, University of
-				      Bristol, Bristol, United Kingdom.
-				FAU - Metspalu, Andres
-				AU  - Metspalu A
-				AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
-				      Cell Biology, University of Tartu, Tartu, Estonia.
-				FAU - Reymond, Alexandre
-				AU  - Reymond A
-				AD  - Center for Integrative Genomics, University of Lausanne, Lausanne, Switzerland.
-				LA  - eng
-				GR  - 102433/Z/13/Z/Wellcome Trust/United Kingdom
-				GR  - AA09367/AA/NIAAA NIH HHS/United States
-				GR  - AA11886/AA/NIAAA NIH HHS/United States
-				GR  - DA024417/DA/NIDA NIH HHS/United States
-				GR  - DA05147/DA/NIDA NIH HHS/United States
-				GR  - DA13240/DA/NIDA NIH HHS/United States
-				GR  - MH066140/MH/NIMH NIH HHS/United States
-				PT  - Journal Article
-				PT  - Research Support, N.I.H., Extramural
-				PT  - Research Support, Non-U.S. Gov't
-				PL  - United States
-				TA  - JAMA
-				JT  - JAMA
-				JID - 7501160
-				SB  - AIM
-				SB  - IM
-				CIN - JAMA. 2015 May 26;313(20):2029-30. PMID: 26010630
-				MH  - Adolescent
-				MH  - Adult
-				MH  - Cognition
-				MH  - *DNA Copy Number Variations
-				MH  - Educational Status
-				MH  - Epilepsy/genetics
-				MH  - Estonia
-				MH  - Female
-				MH  - Genome-Wide Association Study
-				MH  - Great Britain
-				MH  - *Heterozygote
-				MH  - Humans
-				MH  - Intellectual Disability/*genetics
-				MH  - Italy
-				MH  - Male
-				MH  - Mental Disorders/*genetics
-				MH  - Obesity/genetics
-				MH  - Phenotype
-				MH  - United States
-				EDAT- 2015/05/27 06:00
-				MHDA- 2015/05/30 06:00
-				CRDT- 2015/05/27 06:00
-				AID - 2297168 [pii]
-				AID - 10.1001/jama.2015.4845 [doi]
-				PST - ppublish
-				SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
+                        <pre>PMID- 26010633
+OWN - NLM
+STAT- MEDLINE
+DA  - 20150527
+DCOM- 20150529
+LR  - 20150708
+IS  - 1538-3598 (Electronic)
+IS  - 0098-7484 (Linking)
+VI  - 313
+IP  - 20
+DP  - 2015 May 26
+TI  - Copy number variations and cognitive phenotypes in unselected populations.
+PG  - 2044-54
+LID - 10.1001/jama.2015.4845 [doi]
+AB  - IMPORTANCE: The association of copy number variations (CNVs), differing numbers
+      of copies of genetic sequence at locations in the genome, with phenotypes such as
+      intellectual disability has been almost exclusively evaluated using clinically
+      ascertained cohorts. The contribution of these genetic variants to cognitive
+      phenotypes in the general population remains unclear. OBJECTIVE: To investigate
+      the clinical features conferred by CNVs associated with known syndromes in adult
+      carriers without clinical preselection and to assess the genome-wide consequences
+      of rare CNVs (frequency &lt;/=0.05%; size >/=250 kilobase pairs [kb]) on carriers'
+      educational attainment and intellectual disability prevalence in the general
+      population. DESIGN, SETTING, AND PARTICIPANTS: The population biobank of Estonia
+      contains 52,000 participants enrolled from 2002 through 2010. General
+      practitioners examined participants and filled out a questionnaire of health- and
+      lifestyle-related questions, as well as reported diagnoses. Copy number variant
+      analysis was conducted on a random sample of 7877 individuals and
+      genotype-phenotype associations with education and disease traits were evaluated.
+      Our results were replicated on a high-functioning group of 993 Estonians and 3
+      geographically distinct populations in the United Kingdom, the United States, and
+      Italy. MAIN OUTCOMES AND MEASURES: Phenotypes of genomic disorders in the general
+      population, prevalence of autosomal CNVs, and association of these variants with
+      educational attainment (from less than primary school through scientific degree)
+      and prevalence of intellectual disability. RESULTS: Of the 7877 in the Estonian
+      cohort, we identified 56 carriers of CNVs associated with known syndromes. Their
+      phenotypes, including cognitive and psychiatric problems, epilepsy, neuropathies,
+      obesity, and congenital malformations are similar to those described for carriers
+      of identical rearrangements ascertained in clinical cohorts. A genome-wide
+      evaluation of rare autosomal CNVs (frequency, &lt;/=0.05%; >/=250 kb) identified 831
+      carriers (10.5%) of the screened general population. Eleven of 216 (5.1%)
+      carriers of a deletion of at least 250 kb (odds ratio [OR], 3.16; 95% CI,
+      1.51-5.98; P = 1.5e-03) and 6 of 102 (5.9%) carriers of a duplication of at least
+      1 Mb (OR, 3.67; 95% CI, 1.29-8.54; P = .008) had an intellectual disability
+      compared with 114 of 6819 (1.7%) in the Estonian cohort. The mean education
+      attainment was 3.81 (P = 1.06e-04) among 248 (>/=250 kb) deletion carriers and
+      3.69 (P = 5.024e-05) among 115 duplication carriers (>/=1 Mb). Of the deletion
+      carriers, 33.5% did not graduate from high school (OR, 1.48; 95% CI, 1.12-1.95; P
+      = .005) and 39.1% of duplication carriers did not graduate high school (OR, 1.89;
+      95% CI, 1.27-2.8; P = 1.6e-03). Evidence for an association between rare CNVs and
+      lower educational attainment was supported by analyses of cohorts of adults from
+      Italy and the United States and adolescents from the United Kingdom. CONCLUSIONS
+      AND RELEVANCE: Known pathogenic CNVs in unselected, but assumed to be healthy,
+      adult populations may be associated with unrecognized clinical sequelae.
+      Additionally, individually rare but collectively common intermediate-size CNVs
+      may be negatively associated with educational attainment. Replication of these
+      findings in additional population groups is warranted given the potential
+      implications of this observation for genomics research, clinical care, and public
+      health.
+FAU - Mannik, Katrin
+AU  - Mannik K
+AD  - Center for Integrative Genomics, University of Lausanne, Lausanne,
+      Switzerland2Estonian Genome Center, University of Tartu, Tartu.
+FAU - Magi, Reedik
+AU  - Magi R
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Mace, Aurelien
+AU  - Mace A
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne,
+      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland.
+FAU - Cole, Ben
+AU  - Cole B
+AD  - Department of Laboratory Medicine and Pathology, University of Minnesota Medical
+      School, Minneapolis.
+FAU - Guyatt, Anna L
+AU  - Guyatt AL
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom.
+FAU - Shihab, Hashem A
+AU  - Shihab HA
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
+      Epidemiology Unit, School of Social and Community Medicine, University of
+      Bristol, Bristol, United Kingdom.
+FAU - Maillard, Anne M
+AU  - Maillard AM
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne, Switzerland.
+FAU - Alavere, Helene
+AU  - Alavere H
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Kolk, Anneli
+AU  - Kolk A
+AD  - Estonian Genome Center, University of Tartu, Tartu8Department of Neurology and
+      Neurorehabilitation, Children's Clinic, Tartu University Hospital, Tartu,
+      Estonia.
+FAU - Reigo, Anu
+AU  - Reigo A
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Mihailov, Evelin
+AU  - Mihailov E
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Leitsalu, Liis
+AU  - Leitsalu L
+AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
+      Cell Biology, University of Tartu, Tartu, Estonia.
+FAU - Ferreira, Anne-Maud
+AU  - Ferreira AM
+AD  - Center for Integrative Genomics, University of Lausanne, Lausanne,
+      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland.
+FAU - Noukas, Margit
+AU  - Noukas M
+AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
+      Cell Biology, University of Tartu, Tartu, Estonia.
+FAU - Teumer, Alexander
+AU  - Teumer A
+AD  - Institute for Community Medicine, University Medicine Greifswald, Greifswald,
+      Germany.
+FAU - Salvi, Erika
+AU  - Salvi E
+AD  - Deparment of Health Sciences, University of Milan, Milan, Italy.
+FAU - Cusi, Daniele
+AU  - Cusi D
+AD  - Deparment of Health Sciences, University of Milan, Milan, Italy12Institute of
+      Biomedical Technologies, Italian National Research Council, Milan, Italy.
+FAU - McGue, Matt
+AU  - McGue M
+AD  - Department of Psychology, University of Minnesota, Minneapolis.
+FAU - Iacono, William G
+AU  - Iacono WG
+AD  - Department of Psychology, University of Minnesota, Minneapolis.
+FAU - Gaunt, Tom R
+AU  - Gaunt TR
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
+      Epidemiology Unit, School of Social and Community Medicine, University of
+      Bristol, Bristol, United Kingdom.
+FAU - Beckmann, Jacques S
+AU  - Beckmann JS
+AD  - Swiss Institute of Bioinformatics, Lausanne, Switzerland.
+FAU - Jacquemont, Sebastien
+AU  - Jacquemont S
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne, Switzerland.
+FAU - Kutalik, Zoltan
+AU  - Kutalik Z
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne,
+      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland14Institute
+      of Social and Preventive Medicine, Lausanne University Hospital (CHUV), Lausanne,
+      Switzerland.
+FAU - Pankratz, Nathan
+AU  - Pankratz N
+AD  - Department of Laboratory Medicine and Pathology, University of Minnesota Medical
+      School, Minneapolis.
+FAU - Timpson, Nicholas
+AU  - Timpson N
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
+      Epidemiology Unit, School of Social and Community Medicine, University of
+      Bristol, Bristol, United Kingdom.
+FAU - Metspalu, Andres
+AU  - Metspalu A
+AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
+      Cell Biology, University of Tartu, Tartu, Estonia.
+FAU - Reymond, Alexandre
+AU  - Reymond A
+AD  - Center for Integrative Genomics, University of Lausanne, Lausanne, Switzerland.
+LA  - eng
+GR  - 102433/Z/13/Z/Wellcome Trust/United Kingdom
+GR  - AA09367/AA/NIAAA NIH HHS/United States
+GR  - AA11886/AA/NIAAA NIH HHS/United States
+GR  - DA024417/DA/NIDA NIH HHS/United States
+GR  - DA05147/DA/NIDA NIH HHS/United States
+GR  - DA13240/DA/NIDA NIH HHS/United States
+GR  - MH066140/MH/NIMH NIH HHS/United States
+PT  - Journal Article
+PT  - Research Support, N.I.H., Extramural
+PT  - Research Support, Non-U.S. Gov't
+PL  - United States
+TA  - JAMA
+JT  - JAMA
+JID - 7501160
+SB  - AIM
+SB  - IM
+CIN - JAMA. 2015 May 26;313(20):2029-30. PMID: 26010630
+MH  - Adolescent
+MH  - Adult
+MH  - Cognition
+MH  - *DNA Copy Number Variations
+MH  - Educational Status
+MH  - Epilepsy/genetics
+MH  - Estonia
+MH  - Female
+MH  - Genome-Wide Association Study
+MH  - Great Britain
+MH  - *Heterozygote
+MH  - Humans
+MH  - Intellectual Disability/*genetics
+MH  - Italy
+MH  - Male
+MH  - Mental Disorders/*genetics
+MH  - Obesity/genetics
+MH  - Phenotype
+MH  - United States
+EDAT- 2015/05/27 06:00
+MHDA- 2015/05/30 06:00
+CRDT- 2015/05/27 06:00
+AID - 2297168 [pii]
+AID - 10.1001/jama.2015.4845 [doi]
+PST - ppublish
+SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
             </div>
         </div>
-		    </div>
-		</div>
+            </div>
+        </div>
 <!-- / #accordion-pubmed -->
 
   </div>
@@ -333,20 +335,20 @@
   </div>
   <div class="panel-body">
   <p>After uploading your abstracts you will be able to enter exposure terms. There are three options for selecting terms:</p>
-	<div class="list-group">
-		<div class="list-group-item">
-			<h4 class="list-group-item-heading">Enter terms manually (semi-colon delimited)</h4>
-			<p class="list-group-item-text">This can be useful for editing and reusing long lists of MeSH terms</p>
-		</div>
-		<div class="list-group-item">
-			<h4 class="list-group-item-heading">Browse through the MeSH tree and select terms</h4>
-			<p class="list-group-item-text">You can choose to "explode" descendent MeSH terms with the radio buttons at the top of the list</p>
-		</div>
-		<div class="list-group-item">
-			<h4 class="list-group-item-heading">Search the MeSH tree</h4>
-			<p class="list-group-item-text">This automatically expands the relevant branches, allowing you to easily find and select terms</p>
-		</div>
-	</div>
+    <div class="list-group">
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Enter terms manually (semi-colon delimited)</h4>
+            <p class="list-group-item-text">This can be useful for editing and reusing long lists of MeSH terms</p>
+        </div>
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Browse through the MeSH tree and select terms</h4>
+            <p class="list-group-item-text">You can choose to "explode" descendent MeSH terms with the radio buttons at the top of the list</p>
+        </div>
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Search the MeSH tree</h4>
+            <p class="list-group-item-text">This automatically expands the relevant branches, allowing you to easily find and select terms</p>
+        </div>
+    </div>
 </div>
 </div>
 
@@ -355,23 +357,23 @@
     <h3 class="panel-title"><a id="mechanisms">Specify mechanisms</a></h3>
   </div>
   <div class="panel-body">
-		<p>After selecting exposures you will be able to enter mechanism terms. The same three options for selecting terms are presented:</p>
-		<div class="list-group">
-			<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Enter terms manually (semi-colon delimited)</h4>
-		    	<p class="list-group-item-text">This can be useful for editing and reusing long lists of MeSH terms</p>
-			</div>
-			<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Browse through the MeSH tree and select terms</h4>
-		    	<p class="list-group-item-text">You can choose to "explode" descendent MeSH terms with the radio buttons at the top of the list</p>
-	  		</div>
-			<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Search the MeSH tree</h4>
-		    	<p class="list-group-item-text">This automatically expands the relevant branches, allowing you to easily find and select terms</p>
-		  	</div>
-		</div>
-		<p>You can use the "breadcrumb trail" at the top to browse back to exposure selection if you wish</p>
-	</div>
+        <p>After selecting exposures you will be able to enter mechanism terms. The same three options for selecting terms are presented:</p>
+        <div class="list-group">
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Enter terms manually (semi-colon delimited)</h4>
+                <p class="list-group-item-text">This can be useful for editing and reusing long lists of MeSH terms</p>
+            </div>
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Browse through the MeSH tree and select terms</h4>
+                <p class="list-group-item-text">You can choose to "explode" descendent MeSH terms with the radio buttons at the top of the list</p>
+            </div>
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Search the MeSH tree</h4>
+                <p class="list-group-item-text">This automatically expands the relevant branches, allowing you to easily find and select terms</p>
+            </div>
+        </div>
+        <p>You can use the "breadcrumb trail" at the top to browse back to exposure selection if you wish</p>
+    </div>
 </div>
 
 <div class="panel panel-default">
@@ -379,23 +381,23 @@
     <h3 class="panel-title"><a id="outcomes">Specify outcomes</a></h3>
   </div>
   <div class="panel-body">
-		<p>Finally, after entering mechanism MeSH terms you will be able to select outcome terms. There are three options for selecting terms:</p>
-		<div class="list-group">
-			<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Enter terms manually (semi-colon delimited)</h4>
-		    	<p class="list-group-item-text">This can be useful for editing and reusing long lists of MeSH terms</p>
-			</div>
-			<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Browse through the MeSH tree and select terms</h4>
-		    	<p class="list-group-item-text">You can choose to "explode" descendent MeSH terms with the radio buttons at the top of the list</p>
-	  		</div>
-			<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Search the MeSH tree</h4>
-		    	<p class="list-group-item-text">This automatically expands the relevant branches, allowing you to easily find and select terms</p>
-	  		</div>
-		</div>
-		<p>You can use the "breadcrumb trail" at the top to browse back to exposure or mechanism selection if you wish</p>
-	</div>
+        <p>Finally, after entering mechanism MeSH terms you will be able to select outcome terms. There are three options for selecting terms:</p>
+        <div class="list-group">
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Enter terms manually (semi-colon delimited)</h4>
+                <p class="list-group-item-text">This can be useful for editing and reusing long lists of MeSH terms</p>
+            </div>
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Browse through the MeSH tree and select terms</h4>
+                <p class="list-group-item-text">You can choose to "explode" descendent MeSH terms with the radio buttons at the top of the list</p>
+            </div>
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Search the MeSH tree</h4>
+                <p class="list-group-item-text">This automatically expands the relevant branches, allowing you to easily find and select terms</p>
+            </div>
+        </div>
+        <p>You can use the "breadcrumb trail" at the top to browse back to exposure or mechanism selection if you wish</p>
+    </div>
 </div>
 
 <div class="panel panel-default">
@@ -403,8 +405,8 @@
     <h3 class="panel-title"><a id="genefilter">Genes and filter section</a></h3>
   </div>
   <div class="panel-body">
-		<p>The genes and filter section lets you enter gene names (or any text words) as potential mechanistic terms. This expands the functionality of TeMMPo to enable mechanistic terms other than MeSH terms - this is particularly relevant for terms such as gene names (which are not represented in MeSH). </p>
-		<p>An additional overall MeSH filter can also be applied in this section. This enables the user to restrict the articles used in the counting process. </p>
+        <p>The genes and filter section lets you enter gene names (or any text words) as potential mechanistic terms. This expands the functionality of TeMMPo to enable mechanistic terms other than MeSH terms - this is particularly relevant for terms such as gene names (which are not represented in MeSH). </p>
+        <p>An additional overall MeSH filter can also be applied in this section. This enables the user to restrict the articles used in the counting process. </p>
 </div>
 </div>
 
@@ -413,18 +415,19 @@
     <h3 class="panel-title"><a id="navigate">Navigate results</a></h3>
   </div>
   <div class="panel-body">
-		<p>Once your analysis is complete you are presented with a table of results. If this is your first analysis only one row will show. The results table contains:</p>
-		<table id="results" class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline collapsed" role="grid" style="width: 100%;">
-		    <thead>
-						<tr><th scope="col" class="dt-left sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Abstract file: activate to sort column ascending">Abstract file</th><th scope="col" class="dt-left sorting_desc" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-sort="descending" aria-label="Date: activate to sort column ascending">Date</th><th scope="col" class="dt-left sorting_disabled" tabindex="0" aria-controls="results" rowspan="1" colspan="1">View search criteria</th><th scope="col" class="dt-left">Mechanism visualisations</th><th scope="col" class="dt-left">Score visualisations</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score data">Score data</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Abstract IDs">Abstract IDs</th></tr>
-    		</thead>
-			</table>
-		<ul>
+        <p>Once your analysis is complete you are presented with a table of results. If this is your first analysis only one row will show. The results table contains:</p>
+        <table id="results" class="table table-striped table-bordered table-hover compact dataTable no-footer dtr-inline" role="grid" style="width: 100%;">
+          <thead>
+            <tr role="row"><th scope="col" class="dt-left sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Abstract file: activate to sort column ascending" style="width: 166px;">Abstract file</th><th scope="col" class="dt-left sorting_desc" title="Date search was initiated" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-sort="descending" aria-label="Date: activate to sort column ascending" style="width: 99px;">Date</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Status" style="width: 50px;">Status</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="View search criteria" style="width: 129px;">View search criteria</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Mechanism visualisations" style="width: 169px;">Mechanism visualisations</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score visualisations" style="width: 131px;">Score visualisations</th><th scope="col" class="dt-right sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Mediator match counts: activate to sort column ascending" style="width: 161px;">Mediator match counts</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score data [help]" style="width: 113px;">Score data [<a href="#">help</a>]</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Abstract IDs" style="width: 95px;">Abstract IDs</th><th scope="col" data-test="delete-label" class="sorting_disabled" rowspan="1" colspan="1" aria-label="Delete" style="width: 46px;">Delete</th></tr>
+          </thead>
+        </table>
+        <ul>
             <li><strong>Abstract file</strong>: the name of the file containing the abstracts used in this search</li>
             <li><strong>Date uploaded</strong>: the date the abstract file was uploaded or, if being reused, the date the search was run</li>
-			<li><strong>View search criteria</strong>: allows you to see which terms were selected. This is useful for reproducibility, allowing you too view a record of the analytical parameters. In addition, you can copy and edit any of the lists and enter them into the text box on any of the MeSH selection pages</li>
-			<li><strong>Visualisations</strong>: this provides a Sankey visualisation of the highest priority mechanisms (full results can be downloaded)</li>
-			<li><strong>Score data</strong>: contains the full set of results as a csv file. For each mechanism the columns contain:
+            <li><strong>View search criteria</strong>: allows you to see which terms were selected. This is useful for reproducibility, allowing you too view a record of the analytical parameters. In addition, you can copy and edit any of the lists and enter them into the text box on any of the MeSH selection pages</li>
+            <li><strong>Visualisations</strong>: this provides a Sankey visualisation of the highest priority mechanisms (full results can be downloaded)</li>
+            <li><strong>Mechanism match counts</strong>: this is the number of MeSH terms and genes that have been found to be mediators in the search.</li>
+            <li><strong>Score data</strong>: contains the full set of results as a csv file. For each mechanism the columns contain:
                 <ul>
                     <li><em>Mediators</em> = mechanism MeSH term</li>
                     <li><em>Exposure counts</em> = number of articles linking that mechanism to exposure</li>
@@ -432,12 +435,12 @@
                     <li><em>Scores</em> = priority score (see below)</li>
                 </ul>
             </li>
-			<li><strong>Abstract IDs</strong>: a csv file containing the abstract IDs used in analysis.</li>
-		</ul>
+            <li><strong>Abstract IDs</strong>: a csv file containing the abstract IDs used in analysis.</li>
+        </ul>
 
       <p><strong>How is the <em>priority score</em> calculated?</strong></p>
-		<p>The priority score is a weighted ratio of the number of abstracts linking the mechanisms to exposure (<code>EM</code>) and outcome (<code>MO</code>), calculated as:</p>
-			 <code>score = max(EM,MO) / min(EM,MO) x (EM + MO)</code>
+        <p>The priority score is a weighted ratio of the number of abstracts linking the mechanisms to exposure (<code>EM</code>) and outcome (<code>MO</code>), calculated as:</p>
+             <code>score = max(EM,MO) / min(EM,MO) x (EM + MO)</code>
 </div>
 </div>
 
@@ -446,9 +449,20 @@
     <h3 class="panel-title"><a id="reuse">Re-use searches/abstracts</a></h3>
   </div>
   <div class="panel-body">
-		<p>Select "Search Criteria" from the results table, or selecting "Reuse existing search" from the "Search" menu enables you to reuse either a set of abstracts you have uploaded previously or a set of search criteria (or both).</p>
-		<p><span class="btn btn-primary">Reuse search criteria</span> will repeat a previous analysis (on the same set of abstracts), but allowing you to edit all of the MeSH terms used.</p>
-		<p><span class="btn btn-default">Reuse abstracts only</span>  will allow you to define an entirely new search on an existing set of articles.</p>
+        <p>Select "Search Criteria" from the results table, or selecting "Reuse existing search" from the "Search" menu enables you to reuse either a set of abstracts you have uploaded previously or a set of search criteria (or both).</p>
+        <p><span class="btn btn-primary">Reuse search criteria</span> will repeat a previous analysis (on the same set of abstracts), but allowing you to edit all of the MeSH terms used.</p>
+        <p><span class="btn btn-default">Reuse abstracts only</span>  will allow you to define an entirely new search on an existing set of articles.</p>
 </div>
 </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a id="matchingchanges">Changes</a></h3>
+  </div>
+  <div class="panel-body">
+    <p>In May 2019 bugs were found in the results sorting of visualisations used on this website and fixes were released.</p>
+    <p><i class="fa fa-info-circle" title="Revised result" style="color:#337ab7;" data-results-change="#"></i> - denotes a result where recent revisions to the matching code uncovered additional mediator matches.</p>
+</div>
+</div>
+
 {% endblock %}

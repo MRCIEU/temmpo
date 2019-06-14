@@ -1,3 +1,22 @@
+3.0.0   TMMA-276 Update third party eggs
+        TMMA-277 Increase file upload limit to 2000MB
+        TMMA-278 Bug fix filtering searches when multiple years have been imported
+        TMMA-275 Add support for uploading bz2 and gzip files
+        TMMA-279 Add message queue to trigger running matching in the background
+                 Add some caching
+        TMMA-286 Reduce size of data structures when matching
+                 Dropped support for generating .gv files
+        TMMA-302 Add support for selenium acceptance testing
+        TMMA-306 Bug fix matching more than one mediator MeSH term in an article
+        TMMA-295 Bug fixed wording on the Bubble chart labels
+        TMMA-307 Bug fix handling a gene synonym being an alias to more than one gene
+        TMMA-315 Highlight where there are differences between v1 and v3 matching on the results pages
+                 Dropped support for generating unused .csv files
+        TMMA-314 Support downloading both versions of matching results
+        TMMA-326 Add system message functionality around the search and results area.
+        TMMA-327 Bug fix term/gene matching. Stop matching items that are subsets of others,
+                 e.g. Genetic Markers matching with no longer match Genetic Markers/ge [Genetics]
+
 2.8.3   TMMA-320 Upgrade Django to 1.11.21
 
 2.8.2   TMMA-298 Bug fix sorting Bubble chart by top scores correctly
@@ -9,13 +28,13 @@
         TMMA-108 Add google analytics
         TMMA-269 Upgrade Django to 1.11.x
 
-2.7.0	TMMA-157 Make is clear when no results were found.
+2.7.0   TMMA-157 Make is clear when no results were found
 
-2.6.1   TMMA-266 & TMMA-267 Bug fix and improve bubble chart.
+2.6.1   TMMA-266 & TMMA-267 Bug fix and improve bubble chart
 
 2.6.0   TMMA-228 12. Implementation of bubble charts
         TMMA-262 Add Fabric helper script 'fab add_missing_csv_headers_to_scores'
-        TMMA-264 Data fix, ensure all previously generated CSV files may not have been quoted correctly.
+        TMMA-264 Data fix, ensure all previously generated CSV files may not have been quoted correctly
 
 2.5.1   TMMA-260 Error related to SearchResults objects that have not started_processing when processing the has_failed property
 
@@ -31,7 +50,7 @@
         TMMA-201 Broken Sankey plot - very small and appearing in the bottom left
         TMMA-204 Re-running import mesh terms management command has incorrect top level terms
         TMMA-216 Upgrade Django to 1.11
-        TMMA-231 The "top 50" in the Sankey plot doesn't seem to correspond to the top 50 by score in the csv output.
+        TMMA-231 The "top 50" in the Sankey plot doesn't seem to correspond to the top 50 by score in the csv output
         TMMA-232 Review and resolve TeMMPo vulnerability scan reports
         TMMA-233 Improve deselecting terms from MeSH term tree
         TMMA-240 Bug fix Gene and filter form
@@ -46,7 +65,7 @@
         TMMA-259 Expand README
 
 2.4.0   TMMA-203 Roll back any SQLlite mesh term limitation code
-        TMMA-168 Bug fix: Investigate code within views which is selecting child mesh terms even if the tree is set not to.
+        TMMA-168 Bug fix: Investigate code within views which is selecting child mesh terms even if the tree is set not to
         TMMA-173 Bug fix: Tree does not automatically record all child Mesh Term ids when posting form
         Bug fix saving development emails to the file system
         Bug fix enabling maintenance mode during deployments
@@ -62,7 +81,7 @@
 
 2.1     TMMA-196 Resolve issue with permissions in var directory
 
-2.0     TMMA-130 Migrate project to be hosted on a Centos OS VM with SELinux enabled.
+2.0     TMMA-130 Migrate project to be hosted on a Centos OS VM with SELinux enabled
                  Streamline and update third party eggs used
         TMMA-155 Bug fix parsing abstract files with errors
         TMMA-165 Replace logo with one provided by original designers
@@ -89,7 +108,7 @@
         sudo /usr/sbin/apache2ctl configtest
         sudo /usr/sbin/apache2ctl restart
 
-1.1     TMMA-129 Upgrade Django to 1.8.15, plus upgrade oath2 and requests eggs.
+1.1     TMMA-129 Upgrade Django to 1.8.15, plus upgrade oath2 and requests eggs
         Migrate repository to bitbucket.org
 
         In project directory:
@@ -106,7 +125,7 @@
         sudo /usr/sbin/apache2ctl configtest
         sudo /usr/sbin/apache2ctl restart
 
-1.0     TMMA-102 Allow SECRET_KEY to be generated and stored outside of the source tree.
+1.0     TMMA-102 Allow SECRET_KEY to be generated and stored outside of the source tree
 
 1.0 RC3 TMMA-124 Bug fix citations with missing mesh headings
 

@@ -19,7 +19,7 @@
 
         // Only use the top results
         if (score_data.length > max_results) {
-          score_data = score_data.slice(0, max_results)
+          score_data = score_data.slice(0, max_results);
         }
 
         for (var i = 0; i < score_data.length; i++) {
@@ -31,8 +31,9 @@
     }
 
     function drawBubbleChart(data) {
+      var title_suffix = ( data.getNumberOfRows() < 20 ) ? "":" (Top 20)";
       var options = {
-        title: 'Focused search results from PubMed based on original score (Top 20)',
+        title: 'Focused search results based on original score' + title_suffix,
         hAxis: { title: 'Number of abstracts linking exposure to mechanism',
                  titleTextStyle: { bold: true }
         },

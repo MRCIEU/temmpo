@@ -1,5 +1,8 @@
+import logging
 import math
+import numpy as np
 import os
+import pandas as pd
 import re
 import string
 import sys
@@ -8,17 +11,19 @@ import unicodecsv
 from django.conf import settings
 # from django.core.mail import send_mail
 from django.utils import timezone
+from django.core.cache import cache
 
 from browser.models import SearchResult, Gene, OVID, PUBMED
 
 ERROR_TEXT = "Error occurred"
+logger = logging.getLogger(__name__)
+TERM_DELIMITER = ";"
 
+class Citation:
 
-class citation:
-
-    def __init__(self, ID):
+    def __init__(self, id):
         self.fields = {}
-        self.ID = ID
+        self.id = id
 
     def addfield(self, fieldname):
         self.currentfield = fieldname
@@ -34,34 +39,28 @@ def perform_search(search_result_stub_id):
 
     Original structure:
     createsynonyms()
-    createedgelist()
-    readcitations()
+    createedgelist()        Now create_edge_matrix()
+    read_citations()
     countedges()
-    createresultfile()
+    createresultfile()      No longer in the codebase, was never used in the application.
     printedges()
     createjson()
 
     """
+    logger.info("BEGIN: perform_search")
+
     # Get search result
     search_result_stub = SearchResult.objects.get(pk=int(search_result_stub_id))
-
     search_result_stub.started_processing = timezone.now()
     search_result_stub.has_completed = False
     search_result_stub.save()
 
     # Get main data
-    # user = search_result_stub.criteria.upload.user
-    # filename_id
     genelist = search_result_stub.criteria.get_wcrf_input_variables('gene')
     exposuremesh = search_result_stub.criteria.get_wcrf_input_variables('exposure')
     outcomemesh = search_result_stub.criteria.get_wcrf_input_variables('outcome')
     mediatormesh = search_result_stub.criteria.get_wcrf_input_variables('mediator')
-    mesh_filter = search_result_stub.mesh_filter or ""  # Previously hardcoded to Human then Humans
-
-    # print "GENE", genelist
-    # print "EXP", exposuremesh
-    # print "OUT", outcomemesh
-    # print "MED", mediatormesh
+    mesh_filter = search_result_stub.mesh_filter or ""  # Previously hard coded to Human then Humans
 
     # Constants
     WEIGHTFILTER = 2
@@ -69,17 +68,18 @@ def perform_search(search_result_stub_id):
     resultfilename = 'results_' + str(search_result_stub.id) + '_' + mesh_filter.replace(" ", "_").lower() + "_topresults"
     results_path = settings.RESULTS_PATH
 
-    print "Set constants"
-    # Get synonyms, edges and identifiers, citations
-    synonymlookup, synonymlisting = generate_synonyms()
-    print "Done synonyms"
-    edges, identifiers = createedgelist(genelist, synonymlookup, exposuremesh, outcomemesh, mediatormesh)
-    print "Done edges and identifiers"
+    logger.debug("Set constants")
+    # Get synonyms, edges, identifiers (NOT CURRENTLY IN USE), and citations
+    synonymlookup, synonymlisting = cache.get_or_set("temmpo:generate_synonyms", generate_synonyms, timeout=None)
+    logger.debug("Done synonyms")
+
+    edges, identifiers = create_edge_matrix(len(genelist), len(mediatormesh), len(exposuremesh), len(outcomemesh))
+    logger.debug("Done edges and identifiers (TODO)")
 
     abstract_file_path = search_result_stub.criteria.upload.abstracts_upload.path
     abstract_file_format = search_result_stub.criteria.upload.file_format
-    citations = readcitations(file_path=abstract_file_path, file_format=abstract_file_format)
-    print "Read citations"
+    citations = read_citations(file_path=abstract_file_path, file_format=abstract_file_format)
+    logger.info("Read citations")
 
     # Count edges
     papercounter, edges, identifiers = countedges(citations, genelist,
@@ -88,21 +88,14 @@ def perform_search(search_result_stub_id):
                                                   edges, outcomemesh,
                                                   mediatormesh, mesh_filter,
                                                   results_path, resultfilename, abstract_file_format)
-    print "Counted edges"
-
-    # Create results
-    createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename)
-
-    print "Created results"
+    logger.info("Counted edges")
 
     # Print edges
-    mediator_match_counts = printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename)
-    print "Printed %s edges" % mediator_match_counts
+    mediator_match_counts = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
+    logger.info("Printed %s edges", mediator_match_counts)
 
-    createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename)
-    print "Created JSON"
+    createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
+    logger.info("Created JSON")
 
     # Housekeeping
     # 1 - Mark results done
@@ -111,47 +104,26 @@ def perform_search(search_result_stub_id):
     # 2 - Give end time
     search_result_stub.ended_processing = timezone.now()
     # 3 - Record number of mediator matches
-    search_result_stub.mediator_match_counts = mediator_match_counts
+    search_result_stub.mediator_match_counts_v3 = mediator_match_counts
     # X - Email user
     # user_email = search_result_stub.criteria.upload.user.email
     # send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
     # [user_email,])
     # 4 - Save completed search result
     search_result_stub.save()
-    print "Done housekeeping"
-
-
-def generate_synonyms2():
-    """
-    Generate a list of gene synonyms
-    """
-
-    all_genes = Gene.objects.filter(synonym_for__exact=None)
-    synonymlookup = dict()
-    synonymlisting = dict()
-
-    for each_gene in all_genes:
-        synonymlookup[each_gene.name] = each_gene.name
-
-        # Get synonyms
-        all_synonyms = list(Gene.objects.filter(synonym_for=each_gene).values_list('name', flat=True))
-        if all_synonyms:
-            for syn in all_synonyms:
-                synonymlookup[syn] = each_gene.name
-            synonymlisting[each_gene.name] = all_synonyms + [each_gene.name]
-
-    # print synonymlookup
-    # print synonymlisting
-    return synonymlookup, synonymlisting
-
+    # tr.print_diff()
+    logger.debug("Done housekeeping")
+    logger.info("END: perform_search")
 
 def generate_synonyms():
-    # Create a dictionary of synoynms
-    base_dir = os.path.dirname(__file__)
-    full_path = "%s%s%s" % (base_dir, '/static/data-files/', 'Homo_sapiens.gene_info')
-    genefile = open(full_path, 'r')
+    """Create dictionaries of synonyms, genes and look ups.
+       NB: A synonym can be used for multiple genes.
+       ->
+       synonymlookup: dict synonym name => list of one or more gene names
+       synonymlisting: dict gene name  => list of possible synonyms and itself
+    """
+    genefile = open(settings.GENE_FILE_LOCATION, 'r')
     synonymlookup = dict()
-    # synonymresults = dict()
     synonymlisting = dict()
     for line in genefile:
         line = line.strip().split()
@@ -162,131 +134,138 @@ def generate_synonyms():
             synonyms = line[4].split("|")
         fulllist = synonyms + [genename]
         for synonym in synonyms:
-            synonymlookup[synonym] = genename
-        synonymlookup[genename] = genename
+            # TMMA-307 A gene synonym can be an alias for more than one gene.
+            matched_gene_names = synonymlookup.get(synonym, [])
+            matched_gene_names.append(genename)
+            synonymlookup[synonym] = matched_gene_names
+        synonymlookup[genename] = [genename, ]
         synonymlisting[genename] = fulllist
     genefile.close()
     return synonymlookup, synonymlisting
 
+def _get_genes_and_mediators(genelist, mediatormesh):
+    """Retrieve y axis of matching matrix, genes then mediators"""
+    for gene in genelist:
+        yield gene
 
-def createedgelist(genelist, synonymlookup, exposuremesh, outcomemesh, mediatormesh):
-    # edges contains a dictionary of edges to be weighted
-    edges = dict()
-    identifiers = dict()
-
-    for genel in genelist:
-        try:
-            gene = synonymlookup[genel]
-        except:
-            gene = genel
-        edges[gene] = [{}, {}]
-        identifiers[gene] = [{}, {}]
-        for exposure in exposuremesh:
-            edges[gene][0][exposure] = 0
-            identifiers[gene][0][exposure] = []
-        for outcome in outcomemesh:
-            edges[gene][1][outcome] = 0
-            identifiers[gene][1][outcome] = []
     for mediator in mediatormesh:
-        edges[mediator] = [{}, {}]
-        identifiers[mediator] = [{}, {}]
-        for exposure in exposuremesh:
-            edges[mediator][0][exposure] = 0
-            identifiers[mediator][0][exposure] = []
-        for outcome in outcomemesh:
-            edges[mediator][1][outcome] = 0
-            identifiers[mediator][1][outcome] = []
+        yield mediator
+
+def create_edge_matrix(gene_count, mediator_count, exposure_count, outcome_count):
+    """edges represented as a 2D nArray"""
+    edges = np.zeros(shape=(gene_count + mediator_count, exposure_count + outcome_count), 
+                     dtype=np.dtype(int))
+    identifiers = dict()
 
     return edges, identifiers
 
-
-def readcitations(file_path, file_format=OVID):
+def read_citations(file_path, file_format=OVID):
     """ Read the data from either OVID or PUBMED MEDLINE format files """
 
     if file_format == PUBMED:
-        citations = _pubmed_readcitations(file_path)
+        citations = _pubmed_read_citations(file_path)
 
     elif file_format == OVID:
-        citations = _ovid_medline_readcitations(file_path)
+        citations = _ovid_medline_read_citations(file_path)
 
     return citations
 
+def _ovid_medline_read_citations(abstract_file_path):
+    """ Read the Abstract data from an OVID Medline formatted text file.
+        Create a generator and yield an instance of the Citation class per item """
 
-def _ovid_medline_readcitations(abstract_file_path):
-    """ Read the data in as a list of citations (citation class) """
-    citations = list()
-    counter = -1
     infile = open(abstract_file_path, 'r')
+    citation = None
 
     for line in infile:
         line = line.strip("\r\n")
         if len(line) == 0:
-            nothing = 0
+            pass
         elif line[0] == "<":
-            ID = int(line.strip("<").strip(">"))
-            citations.append(citation(ID))
-            counter += 1
+            # Starting a new citation, yield if one has already been set up
+            if citation:
+                yield citation
+
+            citation_id = int(line.strip("<").strip(">"))
+            citation = Citation(citation_id)
         elif line[0] != " ":
-            citations[counter].addfield(line)
+            citation.addfield(line)
         else:
-            citations[counter].addfieldcontent(line.lstrip() + " ")
+            if citation.currentfield == "MeSH Subject Headings":
+                citation.addfieldcontent(TERM_DELIMITER + line.lstrip() + TERM_DELIMITER)  # Mesh Terms need clear delimiters not found in Mesh Terms to perform clean matching
+            else:
+                citation.addfieldcontent(line.lstrip() + " ")
+
+    # Yield last citation
+    if citation:
+        yield citation
+
     infile.close()
-    return citations
 
+def _pubmed_read_citations(abstract_file_path):
+    """ Process PubMed MEDLINE formatted abstracts text file
+        - code to parse file originally supplied by Benjamin Elsworth
 
-def _pubmed_readcitations(abstract_file_path):
-    """ Process PubMed MEDLINE formatted abstracts
-        - code to parse file supplied by Benjamin Elsworth"""
+        PubMed MesH term sub headings appear to be lower cased.  Plus any parentheses ()[] are replaced by spaces
+        Create a generator and yield an instance of the citation class per item """
 
-    # PubMed MesH term sub headings appear to be lower cased.  Plus any parentheses ()[] are replaced by spaces
-    # Read the data in as a list of citations (citation class)
-    citations = list()
-
+    citation = None
     counter = -1
     infile = open(abstract_file_path, 'r')
+
     for line in infile:
         line = line.strip("\r\n")
-        # print "line = "+line
         if len(line) == 0 or ERROR_TEXT in line:
             nothing = 0
         elif line[0:4] == "PMID":
+            # Starting a new citation, yield if one has already been set up
+            if citation:
+                yield citation
+
             in_mesh = False
-            ID = counter + 1
-            citations.append(citation(ID))
+            citation_id = counter + 1
+            citation = Citation(citation_id)
             counter += 1
-            citations[counter].addfield(line.split("-", 1)[0].strip())
-            citations[counter].addfieldcontent(line.split("-", 1)[1].strip())
+            citation.addfield(line.split("-", 1)[0].strip())
+            citation.addfieldcontent(line.split("-", 1)[1].strip())
         elif line[0:2] == "MH":
             if in_mesh == False:
-                citations[counter].addfield(line.split("-", 1)[0].strip())
+                citation.addfield(line.split("-", 1)[0].strip())
             in_mesh = True
-            citations[counter].addfieldcontent(line.split("-", 1)[1].strip() + " ")
+            citation.addfieldcontent(TERM_DELIMITER + line.split("-", 1)[1].strip() + TERM_DELIMITER) # Mesh Terms need clear delimiters not found in Mesh Terms to perform clean matching
         elif line[0] != " ":
-            citations[counter].addfield(line.split("-", 1)[0].strip())
-            citations[counter].addfieldcontent(line.split("-", 1)[1].strip() + " ")
+            citation.addfield(line.split("-", 1)[0].strip())
+            citation.addfieldcontent(line.split("-", 1)[1].strip() + " ")
         else:
-            citations[counter].addfieldcontent(line.strip() + " ")
+            citation.addfieldcontent(line.strip() + " ")
+
+    # Yield last citation
+    if citation:
+        yield citation
+
     infile.close()
 
-    return citations
-
-
 def searchgene(texttosearch, searchstring):
-    searchstringre = re.compile('[^A-Za-z]' + searchstring + '[^A-Za-z]')
+    """Return None for no matches >= 0 for match found.
+    Gene symbols guidance ref https://www.genenames.org/about/guidelines/#!/#tocAnchor-1-8"""
+    # TODO: (HIGH bug fix) Confirm of a Gene symbol name at start and end of an abstract will still match
+    searchstringre = re.compile('[^A-Za-z0-9#@_]' + searchstring + '[^A-Za-z0-9#@_]')
     return searchstringre.search(texttosearch)
 
+def ovid_matching_function(ovid_mesh_term_text, mesh_term):
+    """Return None for no matches >= 0 for match found.
+    NB: Asterisks indicate a major topic of article"""
+    searchstringre = re.compile('[;*]' + mesh_term + '[*;]')
+    return searchstringre.search(ovid_mesh_term_text)
 
 def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
-    """Return -1 for no matches > 0 for match found.
+    """Return None for no matches >= 0 for match found.
+    NB: Asterisks indicate a major topic of article
     Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
-    # TODO: (Low priority) Profile whether these comparisons should be replaced with regular expressions.
-    # TODO: (Low priority) Move transformation outside of the matching function, as same term is compared many times
+    # TODO: (Low priority improvement) Move transformation outside of the matching function, as same term is compared many times
     transformed_mesh_term = mesh_term.lower().replace('[', ' ').replace(']', ' ').replace('(', ' ').replace(')', ' ')
-    return string.find(pubmed_mesh_term_text.lower(), transformed_mesh_term)
-
-# TODO: TMMA-161 Review changing to accept zero indexed matches - may have affected previous live searches
-# TODO: TMMA-161 Could re-rerun searches and email users where any changes exist
-
+    searchstringre = re.compile('[;*]' + transformed_mesh_term + '[*;]')
+    return searchstringre.search(pubmed_mesh_term_text.lower())
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
@@ -300,7 +279,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         unique_id = "Unique Identifier"
         mesh_subject_headings = "MeSH Subject Headings"
         abstract = "Abstract"
-        matches = string.find
+        matches = ovid_matching_function
 
     elif file_format == PUBMED:
         unique_id = "PMID"
@@ -310,100 +289,112 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     for citation in citations:
         countthis = 0
-        # TODO: (Low priority) optimisation - check Abstract section exists sooner
-        # TODO: TMMA-161 HIGH PRIORITY - > should be >= to capture any zero indexed matches
-        # https://docs.python.org/2/library/string.html#string.find
+        edge_row_id = -1
+        # TODO: (Low priority improvement) - check Abstract section exists sooner
 
         # Ensure we only test citations with associated mesh headings
         if mesh_subject_headings in citation.fields:
             if not mesh_filter or matches(citation.fields[mesh_subject_headings], mesh_filter) >= 0:
                 for gene in genelist:
                     try:
-                        gene = synonymlookup[gene]
-                        for genesyn in synonymlisting[gene]:
-                            if matches(citation.fields[abstract], genesyn) >= 0:
-                                citation_id.add(citation.fields[unique_id].strip())
-                                if searchgene(citation.fields[abstract], genesyn):
+                        edge_row_id += 1
+                        edge_column_id = -1
+                        gene_matches = synonymlookup[gene]
+                        found_gene_match = False
+                        for gene in gene_matches:
+                            for genesyn in synonymlisting[gene]:
+                                if searchgene(citation.fields[abstract], genesyn) >= 0:
+                                    citation_id.add(citation.fields[unique_id].strip())
+                                    found_gene_match = True
                                     countthis = 1
                                     for exposure in exposuremesh:
+                                        edge_column_id += 1
                                         exposurel = exposure.split(" AND ")
                                         if len(exposurel) == 2:
                                             if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
-                                                edges[gene][0][exposure] += 1
-                                                identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                                edges[edge_row_id][edge_column_id] += 1
+                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                         elif len(exposurel) == 3:
                                             if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
-                                                edges[gene][0][exposure] += 1
-                                                identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                                edges[edge_row_id][edge_column_id] += 1
+                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                         else:
                                             if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
-                                                edges[gene][0][exposure] += 1
-                                                identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                                edges[edge_row_id][edge_column_id] += 1
+                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                     for outcome in outcomemesh:
+                                        edge_column_id += 1
                                         outcomel = outcome.split(" AND ")
                                         if len(outcomel) > 1:
                                             if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
-                                                edges[gene][1][outcome] += 1
-                                                identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                               edges[edge_row_id][edge_column_id] += 1
+                                                # identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                         else:
                                             if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
-                                                edges[gene][1][outcome] += 1
-                                                identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                                edges[edge_row_id][edge_column_id] += 1
+                                                # identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                    # Stop comparing synonyms once a match is found
                                     break
+                            # Stop comparing synonyms once a match is found
+                            if found_gene_match:
+                                break
+
                     except KeyError:
-                        # Some citations have no Abstract section
+                        # Some citations have no Abstract/MeSH Term section, so gene comparisons are not possible
                         pass
                     except:
                         # Report unexpected errors
-                        print "Unexpected error handling genes:", sys.exc_info()
-                        print " for genes:", genelist
+                        logger.info("Unexpected error handling genes: %s", sys.exc_info())
+                        logger.info(" for gene: %s", gene)
 
                 # Repeat for other mediators
                 for mediator in mediatormesh:
-
+                    edge_row_id += 1
+                    edge_column_id = -1
                     try:
                         if matches(citation.fields[mesh_subject_headings], mediator) >= 0:
                             countthis = 1
                             citation_id.add(citation.fields[unique_id].strip())
                             for exposure in exposuremesh:
+                                edge_column_id += 1
                                 exposurel = exposure.split(" AND ")
                                 if len(exposurel) == 2:
-                                    # print "exposurel", exposurel
                                     if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
-                                        edges[mediator][0][exposure] += 1
-                                        identifiers[mediator][0][exposure].append(citation.fields[unique_id])
+                                        edges[edge_row_id][edge_column_id] += 1
+                                        # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                                 elif len(exposurel) == 3:
                                     if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
-                                        edges[mediator][0][exposure] += 1
-                                        identifiers[mediator][0][exposure].append(citation.fields[unique_id])
+                                        edges[edge_row_id][edge_column_id] += 1
+                                        # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                                 else:
                                     if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
-                                        edges[mediator][0][exposure] += 1
-                                        identifiers[mediator][0][exposure].append(citation.fields[unique_id])
+                                        edges[edge_row_id][edge_column_id] += 1
+                                        # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             for outcome in outcomemesh:
-                                # print "b"
+                                edge_column_id += 1
                                 outcomel = outcome.split(" AND ")
                                 if len(outcomel) > 1:
                                     if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
-                                        edges[mediator][1][outcome] += 1
-                                        identifiers[mediator][1][outcome].append(citation.fields[unique_id])
+                                        edges[edge_row_id][edge_column_id] += 1
+                                        # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                                 else:
                                     if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
-                                        edges[mediator][1][outcome] += 1
-                                        identifiers[mediator][1][outcome].append(citation.fields[unique_id])
-                            break
+                                        edges[edge_row_id][edge_column_id] += 1
+                                        # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                     except KeyError:
-                        # Some citations have no Abstract section
+                        # Some citations have no MeSH Terms, so mediator comparisons are not possible
                         pass
                     except:
                         # Report unexpected errors
-                        print "Unexpected error handling mediator:", sys.exc_info()
-                        print " for mediator:", mediator
+                        logger.info("edge_row_id %s", edge_row_id)
+                        logger.info("edge_column_id %s", edge_column_id)
+                        logger.info("Unexpected error handling mediator: %s", sys.exc_info())
+                        logger.info(" for mediator:%s", mediator)
 
         if countthis == 1:
             papercounter += 1
 
-    # Output citation ids
+    # Output all citation ids where a gene or mediator MeSH term match is found
     if citation_id:
         resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
         csv_writer = unicodecsv.writer(resultfile)
@@ -414,224 +405,68 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
     return papercounter, edges, identifiers
 
 
-def createresultfile(search_result_stub, exposuremesh, outcomemesh, genelist,
-                     synonymlookup, edges, WEIGHTFILTER, mediatormesh,
-                     mesh_filter, GRAPHVIZEDGEMULTIPLIER, results_path, resultfilename):
-    """Gephi input.
-       NB: These files are is not in use in the web application and are not covered by the test suite.
-    """
+def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
+    """Write out edge file (*_edge.csv)"""
+    edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
+    csv_writer = unicodecsv.writer(edgefile)
+    csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
+    edge_score = 0
+    edge_row_id = -1
 
-    resultfile = open('%s%s.csv' % (results_path, resultfilename), 'w')
+    for mediator in _get_genes_and_mediators(genelist, mediatormesh):
+        edge_col_id = -1
+        edge_row_id += 1
 
-    exposurecounter = {}
-    outcomecounter = {}
-    for exposure in exposuremesh:
-        exposurecounter["_".join(exposure.split())] = 0
-    for outcome in outcomemesh:
-        outcomecounter["_".join(outcome.split())] = 0
-    for genel in genelist:
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            gene = synonymlookup[genel]
-            for exposure in exposuremesh:
-                if edges[gene][0][exposure] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    exposureandoutcome[0] = 1
-                    for i in range(edges[gene][0][exposure]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += gene + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                if edges[gene][1][outcome] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    exposureandoutcome[1] = 1
-                    for i in range(edges[gene][1][outcome]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += gene + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for mediator in mediatormesh:
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            for exposure in exposuremesh:
-                if edges[mediator][0][exposure] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[0] = 1
-                    for i in range(edges[mediator][0][exposure]):
-                        exposurecounter[exposureprint] += 1
-                        thisresult += mediatorprint + "," + exposureprint + "\n"
-            for outcome in outcomemesh:
-                if edges[mediator][1][outcome] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[1] = 1
-                    for i in range(edges[mediator][1][outcome]):
-                        outcomecounter[outcomeprint] += 1
-                        thisresult += mediatorprint + "," + outcomeprint + "\n"
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            resultfile.write(thisresult)
-    for exposure in exposurecounter.keys():
-        for i in range(exposurecounter[exposure]):
-            resultfile.write("EXPOSURE," + exposure + "\n")
-    for outcome in outcomecounter.keys():
-        for i in range(outcomecounter[outcome]):
-            resultfile.write("OUTCOME," + outcome + "\n")
-    resultfile.close()
-
-    # Output GEPHI file
-    gvfile = open('%s%s.gv' % (results_path, resultfilename), 'w')
-    gvfile.write('digraph prof {\n size="6,4"; ratio = fill; label = "' + mesh_filter + '"; labelloc = "t"; node [style=filled];\n')
-    for exposure in exposurecounter.keys():
-        gvfile.write('"EXPOSURE" -> "' + exposure + '" [dir=none,penwidth=' + str((int(math.log10(exposurecounter[exposure] + 0.1)) + 1) * GRAPHVIZEDGEMULTIPLIER) + '];\n')
-    for genel in genelist:
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            gene = synonymlookup[genel]
-            for exposure in exposuremesh:
-                if edges[gene][0][exposure] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    exposureandoutcome[0] = 1
-                    exposurecounter[exposureprint] += 1
-                    thisresult += '"' + exposureprint + '" -> "' + gene + '" [dir=none,penwidth=' + str((int(math.log10(edges[gene][0][exposure] + 0.1)) + 1) * GRAPHVIZEDGEMULTIPLIER) + '];\n'
-            for outcome in outcomemesh:
-                if edges[gene][1][outcome] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    exposureandoutcome[1] = 1
-                    outcomecounter[outcomeprint] += 1
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            gvfile.write(thisresult)
-    for mediator in mediatormesh:
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            for exposure in exposuremesh:
-                if edges[mediator][0][exposure] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[0] = 1
-                    exposurecounter[exposureprint] += 1
-                    thisresult += '"' + exposureprint + '" -> "' + mediatorprint + '" [dir=none,penwidth=' + str((int(math.log10(edges[mediator][0][exposure] + 0.1)) + 1) * GRAPHVIZEDGEMULTIPLIER) + '];\n'
-            for outcome in outcomemesh:
-                if edges[mediator][1][outcome] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[1] = 1
-                    outcomecounter[outcomeprint] += 1
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            gvfile.write(thisresult)
-    for genel in genelist:
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            gene = synonymlookup[genel]
-            for exposure in exposuremesh:
-                if edges[gene][0][exposure] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    exposureandoutcome[0] = 1
-                    exposurecounter[exposureprint] += 1
-            for outcome in outcomemesh:
-                if edges[gene][1][outcome] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    exposureandoutcome[1] = 1
-                    outcomecounter[outcomeprint] += 1
-                    thisresult += '"' + gene + '" -> "' + outcomeprint + '" [dir=none,penwidth=' + str((int(math.log10(edges[gene][1][outcome] + 0.1)) + 1) * GRAPHVIZEDGEMULTIPLIER) + '];\n'
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            gvfile.write(thisresult)
-    for mediator in mediatormesh:
-        thisresult = ""
-        exposureandoutcome = [0, 0]
-        try:
-            for exposure in exposuremesh:
-                if edges[mediator][0][exposure] > WEIGHTFILTER:
-                    exposureprint = "_".join(exposure.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[0] = 1
-                    exposurecounter[exposureprint] += 1
-            for outcome in outcomemesh:
-                if edges[mediator][1][outcome] > WEIGHTFILTER:
-                    outcomeprint = "_".join(outcome.split())
-                    mediatorprint = "_".join(mediator.split())
-                    exposureandoutcome[1] = 1
-                    outcomecounter[outcomeprint] += 1
-                    thisresult += '"' + mediatorprint + '" -> "' + outcomeprint + '" [dir=none,penwidth=' + str((int(math.log10(edges[mediator][1][outcome] + 0.1)) + 1) * GRAPHVIZEDGEMULTIPLIER) + '];\n'
-        except:
-            nothing = 0
-        if exposureandoutcome == [1, 1]:
-            gvfile.write(thisresult)
-    for outcome in outcomecounter.keys():
-        gvfile.write('"' + outcome + '" -> "OUTCOME" [dir=none,penwidth=' + str((int(math.log10(outcomecounter[outcome] + 0.1)) + 1) * GRAPHVIZEDGEMULTIPLIER) + '];\n')
-    gvfile.write("}")
-    gvfile.close()
-
-
-def printedges(edges, exposuremesh, outcomemesh, results_path, resultfilename):
-    edge_score = []
-    # expanded_edge_score = []
-    for ikey in edges.keys():
         b, d = 0, 0
         for exposure in exposuremesh:
+            edge_col_id += 1
             try:
-                b += edges[ikey][0][exposure]
+                b += edges[edge_row_id][edge_col_id]
             except:
                 b = b
         for outcome in outcomemesh:
+            edge_col_id += 1
             try:
-                d += edges[ikey][1][outcome]
+                d += edges[edge_row_id][edge_col_id]
             except:
                 d = d
         bf, df = float(b), float(d)
         if (bf and df) > 0.0:
             score1 = min(bf, df) / max(bf, df) * (bf + df)
-            edge_score.append((ikey, str(b), str(d), str(score1)),)  # ,score2
-            # expanded_edge_score.append((ikey,exposure,outcome,str(score1),) #,score2
+            csv_writer.writerow((mediator, str(b), str(d), str(score1)))
+            edge_score += 1
 
-        else:
-            score1 = "NA"
-
-    # Write out edge file
-    edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
-    csv_writer = unicodecsv.writer(edgefile)
-    csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
-    csv_writer.writerows(edge_score)
     edgefile.close()
 
-    # edgeexpfile = open('%s%s_edge_expanded.csv' % (results_path,resultfilename),'w')
-    # edgeexpfile.write(expanded_edge_score)
-    # edgeexpfile.close()
-    return len(edge_score)
+    return edge_score
 
 
-def createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename):
-
+def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
+    """Create JSON formatted resulted file
+       TODO - (Low priority improvement) can this be transformed from the CSV more efficiently?"""
     resultfile = open('%s%s.json' % (results_path, resultfilename), 'w')
     nodes = []
     mnodes = []
     edgesout = []
     nodesout = []
-    for ikey in edges.keys():
+    edge_row_id = -1
+
+    for mediator in _get_genes_and_mediators(genelist, mediatormesh):
+        edge_col_id = -1
+        edge_row_id += 1
+
         counter = [0, 0]
         for exposure in exposuremesh:
-            if edges[ikey][0][exposure] > 0:
+            edge_col_id += 1
+            if edges[edge_row_id][edge_col_id] > 0:
                 counter[0] += 1
         for outcome in outcomemesh:
-            if edges[ikey][1][outcome] > 0:
+            edge_col_id += 1
+            if edges[edge_row_id][edge_col_id] > 0:
                 counter[1] += 1
         if counter[0] > 0 and counter[1] > 0:
-            nodes.append(ikey)
-            mnodes.append(ikey)
+            nodes.append(mediator)
+            mnodes.append(mediator)
     for exposure in exposuremesh:
         nodes.append(exposure)
     for outcome in outcomemesh:
@@ -639,24 +474,94 @@ def createjson(edges, exposuremesh, outcomemesh, results_path, resultfilename):
     for node in nodes:
         thisnode = """{"name":"%s"}""" % node
         nodesout.append(thisnode)
-    for ikey in mnodes:
-        counter = [0, 0]
-        for exposure in exposuremesh:
-            if edges[ikey][0][exposure] > 0:
-                thisedge = """{"source":%s,"target":%s,"value":%s}""" % (str(nodes.index(exposure)), str(nodes.index(ikey)), str(edges[ikey][0][exposure]))
-                edgesout.append(thisedge)
-                counter[0] += 1
-        for outcome in outcomemesh:
-            if edges[ikey][1][outcome] > 0:
-                thisedge = """{"source":%s,"target":%s,"value":%s}""" % (str(nodes.index(ikey)), str(nodes.index(outcome)), str(edges[ikey][1][outcome]))
-                edgesout.append(thisedge)
-                counter[1] += 1
-        if counter[0] == 0:
-            for i in range(counter[1]):
-                edgesout.pop(-1)
-        if counter[1] == 0:
-            for i in range(counter[0]):
-                edgesout.pop(-1)
+
+    edge_row_id = -1
+    for mediator in _get_genes_and_mediators(genelist, mediatormesh):
+        edge_col_id = -1
+        edge_row_id += 1
+        if mediator in mnodes:
+            counter = [0, 0]
+            for exposure in exposuremesh:
+                edge_col_id += 1
+                if edges[edge_row_id][edge_col_id] > 0:
+                    thisedge = """{"source":%s,"target":%s,"value":%s}""" % (str(nodes.index(exposure)), str(nodes.index(mediator)), str(edges[edge_row_id][edge_col_id]))
+                    edgesout.append(thisedge)
+                    counter[0] += 1
+            for outcome in outcomemesh:
+                edge_col_id += 1
+                if edges[edge_row_id][edge_col_id] > 0:
+                    thisedge = """{"source":%s,"target":%s,"value":%s}""" % (str(nodes.index(mediator)), str(nodes.index(outcome)), str(edges[edge_row_id][edge_col_id]))
+                    edgesout.append(thisedge)
+                    counter[1] += 1
+            if counter[0] == 0:
+                for i in xrange(counter[1]):
+                    edgesout.pop(-1)
+            if counter[1] == 0:
+                for i in xrange(counter[0]):
+                    edgesout.pop(-1)
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
     resultfile.close()
+
+
+def record_differences_between_match_runs(search_result_id):
+    """Compare edge CSV file for difference.
+
+    Header: Mediators,Exposure counts,Outcome counts,Scores
+
+    v1 unsorted mediators
+    v3 mediator column is sorted by gene then mesh terms
+    """
+    logger.info("START comparing results edge file for %d, e.g. results_%d__topresults_edge.csv" % (search_result_id, search_result_id))
+    from browser.models import SearchResult
+    search_result = SearchResult.objects.get(id=search_result_id)
+
+    if search_result.mediator_match_counts is not None:
+        v1_filepath = settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv"
+        try:
+            # NB: V1 files have trailing commas in body rows
+            v1_df = pd.read_csv(v1_filepath,
+                                sep=',',
+                                header=0,
+                                names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                index_col=False,
+                                dtype= {"Mediators": np.str,
+                                        "Exposure counts": np.int32,
+                                        "Outcome counts": np.int32,
+                                        "Scores": np.float,
+                                        },
+                                engine='python')
+            v1_df = v1_df.sort_values("Mediators")
+            v3_filepath = settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv"
+            try:
+                v3_df = pd.read_csv(v3_filepath,
+                                    sep=',',
+                                    header=0,
+                                    names=("Mediators","Exposure counts","Outcome counts","Scores",),
+                                    index_col=False,
+                                    dtype= {"Mediators": np.str,
+                                            "Exposure counts": np.int32,
+                                            "Outcome counts": np.int32,
+                                            "Scores": np.float,
+                                            },
+                                    engine='python')
+                v3_df = v3_df.sort_values("Mediators")
+                is_different = not v1_df.equals(v3_df)
+                if is_different:
+                    search_result.has_edge_file_changed = True
+                    search_result.save()
+                    logger.info("%d has CHANGED" % search_result_id)
+            except IOError:
+                raise IOError("No version 3 edge file found for search result %d." % search_result_id)
+
+            except:
+                raise
+
+        except IOError:
+            raise IOError("No previous edge file found for search result %d" % search_result_id)
+
+        except:
+            raise
+    else:
+        logger.info("No previous match results have been recorded for search result %d" % search_result_id)
+    logger.info("END comparing results files")

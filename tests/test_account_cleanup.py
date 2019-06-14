@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Test non mesh term functionality."""
-
+from datetime import datetime, timedelta
 import glob
 import os
-from datetime import datetime, timedelta
+import shutil
 
 from django.utils import timezone
 from django.conf import settings
@@ -11,8 +11,10 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.core import mail
+from django.test import tag
 
 from tests.base_test_case import BaseTestCase
+from browser.matching import perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from browser.utils import user_clean_up, delete_user_content
 
@@ -21,7 +23,7 @@ BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
 TEST_YEAR = 2018
 
-
+@tag('cleanup-test')
 class UserDeletionTest(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
@@ -82,8 +84,8 @@ class UserDeletionTest(BaseTestCase):
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -93,7 +95,8 @@ class UserDeletionTest(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         search_result = SearchResult.objects.all()[0]
         search_result_id = search_result.id
@@ -106,9 +109,9 @@ class UserDeletionTest(BaseTestCase):
 
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
         # Check results files
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 5)
+        self.assertEqual(len(files_to_delete), 3)
 
         # Check account page
         response = self.client.get(reverse('account'))
@@ -130,7 +133,6 @@ class UserDeletionTest(BaseTestCase):
         search_result.has_completed = False
         search_result.save()
         response = self.client.get(reverse('results_listing'))
-        self.assertContains(response, 'Delete', count=1)
         self.assertContains(response, 'Processing', count=1)
         response = self.client.get(reverse('close_account', kwargs={'pk': test_user.id}))
         self.assertContains(response, 'You have a search that is still running.')
@@ -199,8 +201,8 @@ class UserDeletionTest(BaseTestCase):
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -210,7 +212,8 @@ class UserDeletionTest(BaseTestCase):
         response = self.client.get(reverse('results_listing'))
 
         # Check delete button
-        self.assertContains(response, 'Delete', count=2)
+        self.assertContains(response, 'delete-label', count=1)
+        self.assertContains(response, 'delete-button', count=1)
 
         search_result = SearchResult.objects.all()[0]
         search_result_id = search_result.id
@@ -223,9 +226,9 @@ class UserDeletionTest(BaseTestCase):
 
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
         # Check results files
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 5)
+        self.assertEqual(len(files_to_delete), 3)
 
         # Check can't access manage users page
         response = self.client.get(reverse('manage_users'))
@@ -352,6 +355,8 @@ class UserDeletionTest(BaseTestCase):
         # Ensure stub search result has been removed.
         self.assertFalse(SearchResult.objects.filter(id=search_result.id).exists())
 
+
+@tag('cleanup-test')
 class UserCleanUpManagementCommandTest(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
@@ -503,8 +508,8 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
-        self.assertEqual(edge_file_lines[1].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
+        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -516,7 +521,7 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         upload_record = Upload.objects.get(pk=upload_id)
 
         self.assertTrue(os.path.exists(upload_record.abstracts_upload.file.name))
-        base_path = settings.MEDIA_ROOT + '/results/' + search_result.filename_stub + '*'
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
 
         # Now make user in line for deletion
         self.user.last_login = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(days=366)
@@ -555,3 +560,91 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
 
         # Check user deleted
         self.assertEqual((self.total_users - 1), User.objects.all().count())
+
+
+    def test_delete_user_content_version_1_matching(self):
+        """Ensure version 1 files are also deleted"""
+        search_criteria = self._set_up_test_search_criteria()
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        # Run the search via message queue
+        perform_search(search_result.id)
+
+        # Retrieve results object
+        search_result = SearchResult.objects.get(id=search_result.id)
+
+        # Check v3 matching results files
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 3)
+
+        # Mock up some v1 results files
+        search_result.mediator_match_counts = search_result.mediator_match_counts_v3 
+        search_result.save()
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_abstracts.csv")
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + ".json", settings.RESULTS_PATH_V1 + search_result.filename_stub + ".json")
+
+        # Check v1 matching results files
+        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 3)
+
+        delete_user_content(search_criteria.upload.user.id)
+
+        # Check v1 matching results files
+        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
+
+        # Check v3 matching results files
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
+
+
+    def test_delete_user_content_version_1_matching_no_hits(self):
+        """Ensure version 1 files are also deleted"""
+        search_criteria = self._set_up_test_search_criteria()
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        # Run the search via message queue
+        perform_search(search_result.id)
+
+        # Retrieve results object
+        search_result = SearchResult.objects.get(id=search_result.id)
+
+        # Check v3 matching results files are created.
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 3)
+
+        # Mock up some v1 stub results files where mediator matches were 0
+        search_result.mediator_match_counts = 0 
+        search_result.save()
+        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
+        file_stub.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_abstracts.csv", "w")
+        file_stub.write("Abstract IDs\n")
+        file_stub.close()
+        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + ".json", "w")
+        file_stub.close()
+
+        # Check v1 matching results files exist
+        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 3)
+
+        delete_user_content(search_criteria.upload.user.id)
+
+        # Check v1 matching results files are deleted.
+        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
+
+        # Check v3 matching results files are deleted.
+        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)

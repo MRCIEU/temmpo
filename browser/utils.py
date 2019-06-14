@@ -72,23 +72,22 @@ def user_clean_up(no_deletion=False, warn_historic=False):
 
 def delete_user_content(user_id):
     """
-    Special function to allow us to delete all the content associated with a user
+    Special function to allow us to delete all the related database and uploaded files associated with a specific user
     """
-    user_to_delete = User.objects.get(id=user_id)
-    all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_to_delete)
+    all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_id)
 
     # Delete searches
     for user_search in all_user_searches:
         user_search.delete()
 
-    all_user_search_criteria = SearchCriteria.objects.filter(upload__user=user_to_delete)
+    all_user_search_criteria = SearchCriteria.objects.filter(upload__user=user_id)
 
     # Delete search criteria
     for user_search_criteria in all_user_search_criteria:
         user_search_criteria.delete()
 
     # Check for remaining uploads
-    remaining_uploads = Upload.objects.filter(user=user_to_delete)
+    remaining_uploads = Upload.objects.filter(user=user_id)
     for left_upload in remaining_uploads:
         left_upload.delete()
 
