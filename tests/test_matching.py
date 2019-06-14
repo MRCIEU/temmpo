@@ -25,6 +25,7 @@ from tests.base_test_case import BaseTestCase
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
 
+
 @tag('matching-test')
 class MatchingTestCase(BaseTestCase):
     """Run tests for performing matches in the TeMMPo application."""
@@ -482,7 +483,7 @@ class MatchingTestCase(BaseTestCase):
         return ["Cells", "Fictional MeSH Term A", "Neoplasm Metastasis", ]
 
     def _get_mediator_list(self):
-        return ["Fictional MeSH Term B", ]
+        return ["Fictional not found MeSH Term", "Fictional MeSH Term B", ]
 
     def _get_outcome_list(self):
         return ["Fictional MeSH Term AA", "Fictional MeSH Term C", "Serogroup", ]
@@ -578,7 +579,7 @@ class MatchingTestCase(BaseTestCase):
         synonymlisting = self._get_synonym_listing()
         exposuremesh = self._get_exposure_list()
         identifiers = dict()
-        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
         outcomemesh = self._get_outcome_list()
         mediatormesh = self._get_mediator_list()
         mesh_filter = None
@@ -606,17 +607,19 @@ class MatchingTestCase(BaseTestCase):
         self.assertEqual(identifiers, dict())
 
         # Verify edges - expected matches below:
-        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
-        # Example Gene A          0       1                       0                       0                        1                       0
-        # Example Gene B          1       0                       1                       1                        0                       1
-        # Example Gene B2         0       1                       0                       0                        1                       0
-        # Example Gene C          0       1                       0                       0                        1                       0
-        # Fictional MeSH Term B   1       1                       1                       1                        1                       1
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       1                       0                       0                        1                       0
+        # Example Gene B                1       0                       1                       1                        0                       1
+        # Example Gene B2               0       1                       0                       0                        1                       0
+        # Example Gene C                0       1                       0                       0                        1                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       1                       1                       1                        1                       1
         expected_edges = np.array([
             [0,1,0,0,1,0],
             [1,0,1,1,0,1],
             [0,1,0,0,1,0],
             [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
             [1,1,1,1,1,1]]
             )
         self.assertTrue(np.array_equal(edges, expected_edges))
@@ -638,7 +641,7 @@ class MatchingTestCase(BaseTestCase):
         synonymlisting = self._get_synonym_listing()
         exposuremesh = self._get_exposure_list()
         identifiers = dict()
-        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
         outcomemesh = self._get_outcome_list()
         mediatormesh = self._get_mediator_list()
         mesh_filter = "Fictional MeSH Term AA"
@@ -663,15 +666,17 @@ class MatchingTestCase(BaseTestCase):
         # Verify identifiers - currently not in use
         self.assertEqual(identifiers, dict())
         # Verify edges - expected matches below:
-        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
-        # Example Gene A          0       0                       0                       0                        0                       0
-        # Example Gene B          1       0                       1                       1                        0                       1
-        # Example Gene B2         0       0                       0                       0                        0                       0
-        # Example Gene C          0       0                       0                       0                        0                       0
-        # Fictional MeSH Term B   1       0                       1                       1                        0                       1
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       0                       0                       0                        0                       0
+        # Example Gene B                1       0                       1                       1                        0                       1
+        # Example Gene B2               0       0                       0                       0                        0                       0
+        # Example Gene C                0       0                       0                       0                        0                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       0                       1                       1                        0                       1
         expected_edges = np.array([
             [0,0,0,0,0,0],
             [1,0,1,1,0,1],
+            [0,0,0,0,0,0],
             [0,0,0,0,0,0],
             [0,0,0,0,0,0],
             [1,0,1,1,0,1]]
@@ -694,7 +699,7 @@ class MatchingTestCase(BaseTestCase):
         synonymlisting = self._get_synonym_listing()
         exposuremesh = self._get_exposure_list()
         identifiers = dict()
-        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
         outcomemesh = self._get_outcome_list()
         mediatormesh = self._get_mediator_list()
         mesh_filter = None
@@ -726,6 +731,7 @@ class MatchingTestCase(BaseTestCase):
             [1,0,1,1,0,1],
             [0,1,0,0,1,0],
             [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
             [1,1,1,1,1,1]]
             )
         self.assertTrue(np.array_equal(edges, expected_edges))
@@ -750,7 +756,7 @@ class MatchingTestCase(BaseTestCase):
         synonymlisting = self._get_synonym_listing()
         exposuremesh = self._get_exposure_list()
         identifiers = dict()
-        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
         outcomemesh = self._get_outcome_list()
         mediatormesh = self._get_mediator_list()
         mesh_filter = "Fictional MeSH Term AA"
@@ -775,15 +781,17 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(type(papercounter), int)
         self.assertEqual(papercounter, 1)
 
-        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
-        # Example Gene A          0       0                       0                       0                        0                       0
-        # Example Gene B          1       0                       1                       1                        0                       1
-        # Example Gene B2         0       0                       0                       0                        0                       0
-        # Example Gene C          0       0                       0                       0                        0                       0
-        # Fictional MeSH Term B   1       0                       1                       1                        0                       1
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       0                       0                       0                        0                       0
+        # Example Gene B                1       0                       1                       1                        0                       1
+        # Example Gene B2               0       0                       0                       0                        0                       0
+        # Example Gene C                0       0                       0                       0                        0                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       0                       1                       1                        0                       1
         expected_edges = np.array([
             [0,0,0,0,0,0],
             [1,0,1,1,0,1],
+            [0,0,0,0,0,0],
             [0,0,0,0,0,0],
             [0,0,0,0,0,0],
             [1,0,1,1,0,1]]
@@ -870,17 +878,19 @@ class MatchingTestCase(BaseTestCase):
 
     def test_printedges(self):
         """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
-        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis |   Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
-        # Example Gene A          0       1                       0                   |   0                        1                       0
-        # Example Gene B          1       0                       1                   |   1                        0                       1
-        # Example Gene B2         0       1                       0                   |   0                        1                       0
-        # Example Gene C          0       1                       0                   |   0                        1                       0
-        # Fictional MeSH Term B   1       1                       1                   |   1                        1                       1
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis |   Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       1                       0                   |   0                        1                       0
+        # Example Gene B                1       0                       1                   |   1                        0                       1
+        # Example Gene B2               0       1                       0                   |   0                        1                       0
+        # Example Gene C                0       1                       0                   |   0                        1                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       1                       1                   |   1                        1                       1
         edges = np.array([
             [0,1,0,0,1,0],
             [1,0,1,1,0,1],
             [0,1,0,0,1,0],
             [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
             [1,1,1,1,1,1]]
             )
         genelist = self._get_genes_list()
@@ -916,11 +926,113 @@ class MatchingTestCase(BaseTestCase):
                 self.assertEqual(expected_results[i][j], df.iat[i, j])
         self.assertEqual(csv_data.line_num, 6)
 
-    # @tag("test-it")
-    # def test_createedgelist(self):
-    #     assert False
+    @tag("test-it")
+    def test_createjson(self):
+        """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename
 
-    # @tag("test-it")
-    # def test_createjson(self):
-    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
-    #     assert False
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis |   Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       1                       0                   |   0                        1                       0
+        # Example Gene B                1       0                       1                   |   1                        0                       1
+        # Example Gene B2               0       1                       0                   |   0                        1                       0
+        # Example Gene C                0       1                       0                   |   0                        1                       0
+        # Fictional not found MeSH Term 0       0                       0                   |   0                        0                       0
+        # Fictional MeSH Term B         1       1                       1                   |   1                        1                       1
+
+        nodes
+        0. Example Gene A
+        1. Example Gene B
+        2. Example Gene B2
+        3. Example Gene C
+        4. Fictional MeSH Term B
+        5. Cells 
+        6. Fictional MeSH Term A
+        7. Neoplasm Metastasis
+        8. Fictional MeSH Term AA
+        9. Fictional MeSH Term C
+        10. Serogroup
+
+        links
+        source  target  value
+        6       0       1               Exposure: Cells => Mediator/Gene: Example Gene A
+        0       9       1               Mediator/Gene: Example Gene A => Outcome: Fictional MeSH Term C
+
+        5       1       1
+        7       1       1
+        1       8       1
+        1      10       1
+
+        6       2       1
+        2       9       1
+
+        6       3       1
+        3       9       1
+
+        5       4       1
+        6       4       1
+        7       4       1
+        4       8       1
+        4       9       1
+        4      10       1
+        """
+        genelist = self._get_genes_list()
+        exposuremesh = self._get_exposure_list()
+        edges = np.array([
+            [0,1,0,0,1,0],
+            [1,0,1,1,0,1],
+            [0,1,0,0,1,0],
+            [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
+            [1,1,1,1,1,1]]
+            )
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_createjson"
+        createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_file_path, results_file_name)
+        with open(results_file_path + results_file_name + ".json", 'r') as json_file:
+            json_data = json.loads(json_file.read())
+            self.assertTrue("nodes" in json_data.keys())
+            self.assertTrue("links" in json_data.keys())
+            nodes = json_data["nodes"]
+            self.assertEqual(len(nodes), 11)        # NB Only lists relevant genes and mediators with matches with at least exposure and at least outcome
+            expected_nodes = ["Example Gene A",
+                                "Example Gene B",
+                                "Example Gene B2",
+                                "Example Gene C",
+                                "Fictional MeSH Term B",
+                                "Cells",
+                                "Fictional MeSH Term A",
+                                "Neoplasm Metastasis",
+                                "Fictional MeSH Term AA",
+                                "Fictional MeSH Term C",
+                                "Serogroup",]
+            for i in range(0, len(expected_nodes)):
+                node = nodes[i]
+                expected_name = expected_nodes[i]
+                self.assertTrue(node.has_key("name"))
+                self.assertTrue(node["name"], expected_name)
+            links = json_data["links"]
+            expected_links = [  {"source":6, "target":0,  "value":1},
+                                {"source":0, "target":9,  "value":1},
+
+                                {"source":5, "target":1,  "value":1},
+                                {"source":7, "target":1,  "value":1},
+                                {"source":1, "target":8,  "value":1},
+                                {"source":1, "target":10,  "value":1},
+
+                                {"source":6, "target":2,  "value":1},
+                                {"source":2, "target":9,  "value":1},
+
+                                {"source":6, "target":3,  "value":1},
+                                {"source":3, "target":9,  "value":1},
+
+                                {"source":5, "target":4,  "value":1},
+                                {"source":6, "target":4,  "value":1},
+                                {"source":7, "target":4,  "value":1},
+                                {"source":4, "target":8,  "value":1},
+                                {"source":4, "target":9,  "value":1},
+                                {"source":4, "target":10,  "value":1}]
+            sorted_expected_links = sorted(expected_links, key=lambda item: (item['source'], item['target']))
+            self.assertEqual(len(links), 16)
+            sorted_links = sorted(links, key=lambda item: (item['source'], item['target']))
+            self.assertEqual(sorted_expected_links, sorted_links)
