@@ -246,20 +246,20 @@ def _pubmed_read_citations(abstract_file_path):
     infile.close()
 
 def searchgene(texttosearch, searchstring):
-    """Return -1 for no matches >= 0 for match found.
+    """Return None for no matches >= 0 for match found.
     Gene symbols guidance ref https://www.genenames.org/about/guidelines/#!/#tocAnchor-1-8"""
     # TODO: (HIGH bug fix) Confirm of a Gene symbol name at start and end of an abstract will still match
     searchstringre = re.compile('[^A-Za-z0-9#@_]' + searchstring + '[^A-Za-z0-9#@_]')
     return searchstringre.search(texttosearch)
 
 def ovid_matching_function(ovid_mesh_term_text, mesh_term):
-    """Return -1 for no matches >= 0 for match found.
+    """Return None for no matches >= 0 for match found.
     NB: Asterisks indicate a major topic of article"""
     searchstringre = re.compile('[;*]' + mesh_term + '[*;]')
     return searchstringre.search(ovid_mesh_term_text)
 
 def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
-    """Return -1 for no matches >= 0 for match found.
+    """Return None for no matches >= 0 for match found.
     NB: Asterisks indicate a major topic of article
     Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
     # TODO: (Low priority improvement) Move transformation outside of the matching function, as same term is compared many times

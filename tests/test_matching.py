@@ -5,24 +5,26 @@ import csv
 import io
 import json
 import logging
-import numpy as np
 import os
 import shutil
 
 from csvvalidator import *
+import numpy as np
+import pandas as pd
 
 from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import tag
 
-from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson
-from browser.matching import record_differences_between_match_runs, perform_search
+from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson, _get_genes_and_mediators
+from browser.matching import record_differences_between_match_runs, perform_search, pubmed_matching_function, ovid_matching_function, searchgene
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_test_case import BaseTestCase
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
+
 
 @tag('matching-test')
 class MatchingTestCase(BaseTestCase):
@@ -481,7 +483,7 @@ class MatchingTestCase(BaseTestCase):
         return ["Cells", "Fictional MeSH Term A", "Neoplasm Metastasis", ]
 
     def _get_mediator_list(self):
-        return ["Fictional MeSH Term B", ]
+        return ["Fictional not found MeSH Term", "Fictional MeSH Term B", ]
 
     def _get_outcome_list(self):
         return ["Fictional MeSH Term AA", "Fictional MeSH Term C", "Serogroup", ]
@@ -577,7 +579,7 @@ class MatchingTestCase(BaseTestCase):
         synonymlisting = self._get_synonym_listing()
         exposuremesh = self._get_exposure_list()
         identifiers = dict()
-        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
         outcomemesh = self._get_outcome_list()
         mediatormesh = self._get_mediator_list()
         mesh_filter = None
@@ -605,25 +607,82 @@ class MatchingTestCase(BaseTestCase):
         self.assertEqual(identifiers, dict())
 
         # Verify edges - expected matches below:
-        #                         Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
-        # Example Gene A          0       1                       0                       0                        1                       0
-        # Example Gene B          1       0                       1                       1                        0                       1
-        # Example Gene B2         0       1                       0                       0                        1                       0
-        # Example Gene C          0       1                       0                       0                        1                       0
-        # Fictional MeSH Term B   1       1                       1                       1                        1                       1
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       1                       0                       0                        1                       0
+        # Example Gene B                1       0                       1                       1                        0                       1
+        # Example Gene B2               0       1                       0                       0                        1                       0
+        # Example Gene C                0       1                       0                       0                        1                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       1                       1                       1                        1                       1
         expected_edges = np.array([
             [0,1,0,0,1,0],
             [1,0,1,1,0,1],
             [0,1,0,0,1,0],
             [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
             [1,1,1,1,1,1]]
             )
         self.assertTrue(np.array_equal(edges, expected_edges))
 
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
-        # TODO Rerun with mesh term filter set
-        # assert False
+    def test_count_edges_ovid_with_filter(self):
+        """Unit test the temmpo.browser.matching.countedges function using OVID citation syntax
+        args: citations, genelist, synonymlookup, synonymlisting, exposuremesh,
+        identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+        results_file_path, results_file_name, file_format=OVID
+
+        Creates an abstracts CSV file
+
+        returns: papercounter, edges, identifiers"""
+        citations = self._get_ovid_citation_generator()
+        genelist = self._get_genes_list()
+        synonymlookup = self._get_synonym_lookup()
+        synonymlisting = self._get_synonym_listing()
+        exposuremesh = self._get_exposure_list()
+        identifiers = dict()
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        mesh_filter = "Fictional MeSH Term AA"
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_count_edges_ovid"
+        file_format = OVID
+
+        papercounter, edges, identifiers = countedges(citations, genelist,
+                synonymlookup, synonymlisting, exposuremesh,
+                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+                results_file_path, results_file_name, file_format=file_format)
+
+        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+            csv_data = csv_file.readlines()
+            self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(len(csv_data), 2)
+            self.assertTrue("999991\r\n" in csv_data)
+
+        # Verify papercounter
+        self.assertTrue(type(papercounter), int)
+        self.assertEqual(papercounter, 1)
+        # Verify identifiers - currently not in use
+        self.assertEqual(identifiers, dict())
+        # Verify edges - expected matches below:
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       0                       0                       0                        0                       0
+        # Example Gene B                1       0                       1                       1                        0                       1
+        # Example Gene B2               0       0                       0                       0                        0                       0
+        # Example Gene C                0       0                       0                       0                        0                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       0                       1                       1                        0                       1
+        expected_edges = np.array([
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1],
+            [0,0,0,0,0,0],
+            [0,0,0,0,0,0],
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1]]
+            )
+        self.assertTrue(np.array_equal(edges, expected_edges))
+        os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
     def test_count_edges_pub_med(self):
         """Unit test the temmpo.browser.matching.countedges function using PubMed citation syntax.
@@ -640,7 +699,7 @@ class MatchingTestCase(BaseTestCase):
         synonymlisting = self._get_synonym_listing()
         exposuremesh = self._get_exposure_list()
         identifiers = dict()
-        edges = np.zeros(shape=(5, 6), dtype=np.dtype(int))
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
         outcomemesh = self._get_outcome_list()
         mediatormesh = self._get_mediator_list()
         mesh_filter = None
@@ -672,6 +731,7 @@ class MatchingTestCase(BaseTestCase):
             [1,0,1,1,0,1],
             [0,1,0,0,1,0],
             [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
             [1,1,1,1,1,1]]
             )
         self.assertTrue(np.array_equal(edges, expected_edges))
@@ -681,32 +741,298 @@ class MatchingTestCase(BaseTestCase):
 
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
-        # TODO: Rerun with mesh term filter set
-        # assert False
+    def test_count_edges_pub_med_with_filter(self):
+        """Unit test the temmpo.browser.matching.countedges function using PubMed citation syntax.
+        citations, genelist, synonymlookup, synonymlisting, exposuremesh,
+        identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+        results_file_path, results_file_name, file_format=OVID
 
-    # def test_createedgelist(self):
-    #     assert False
+        Creates a CSV edge file
 
-    # def test_printedges(self):
-    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
-    #     assert False
+                returns: papercounter, edges, identifiers"""
+        citations = self._get_pubmed_citation_generator()
+        genelist = self._get_genes_list()
+        synonymlookup = self._get_synonym_lookup()
+        synonymlisting = self._get_synonym_listing()
+        exposuremesh = self._get_exposure_list()
+        identifiers = dict()
+        edges = np.zeros(shape=(6, 6), dtype=np.dtype(int))
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        mesh_filter = "Fictional MeSH Term AA"
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_count_edges_pub_med"
+        file_format = PUBMED
 
-    # def test_createjson(self):
-    #     """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"
-    #     assert False
+        papercounter, edges, identifiers = countedges(citations, genelist,
+                synonymlookup, synonymlisting, exposuremesh,
+                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
+                results_file_path, results_file_name, file_format=file_format)
+        # Verify CSV file is valid CSV
+        # Verify that is has a header
+        # Verify that it contains the expected matches and no more
+        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+            csv_data = csv_file.readlines()
+            self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(len(csv_data), 2)
+            self.assertTrue("999991\r\n" in csv_data)
 
-    # def test_get_genes_and_mediators(self):
-    #     """genelist, mediatormesh"""
-    #     assert False
+        # Verify papercounter
+        self.assertTrue(type(papercounter), int)
+        self.assertEqual(papercounter, 1)
 
-    # def test_searchgene(self):
-    #     """texttosearch, searchstring"""
-    #     assert False
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis ;;; Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       0                       0                       0                        0                       0
+        # Example Gene B                1       0                       1                       1                        0                       1
+        # Example Gene B2               0       0                       0                       0                        0                       0
+        # Example Gene C                0       0                       0                       0                        0                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       0                       1                       1                        0                       1
+        expected_edges = np.array([
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1],
+            [0,0,0,0,0,0],
+            [0,0,0,0,0,0],
+            [0,0,0,0,0,0],
+            [1,0,1,1,0,1]]
+            )
+        self.assertTrue(np.array_equal(edges, expected_edges))
 
-    # def test_ovid_matching_function(self):
-    #     """ovid_mesh_term_text, mesh_term"""
-    #     assert False
+        # Verify identifiers - NB: currently not in use
+        self.assertEqual(identifiers, dict())
 
-    # def test_pubmed_matching_function(self):
-    #     """pubmed_mesh_term_text, mesh_term"""
-    #     assert False
+        os.remove(results_file_path + results_file_name + "_abstracts.csv")
+
+    def test_ovid_matching_function(self):
+        """ovid_mesh_term_text, mesh_term"""
+        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
+        mesh_term = "Fictional MeSH Term A"
+        self.assertEqual(ovid_matching_function(search_text, mesh_term), None)
+        mesh_term = "Fictional MeSH Term AA"
+        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Transcriptome"
+        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Genetics"
+        self.assertEqual(ovid_matching_function(search_text, mesh_term), None)
+
+    def test_pubmed_matching_function(self):
+        """pubmed_mesh_term_text, mesh_term"""
+        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
+        mesh_term = "Fictional MeSH Term A"
+        self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
+        mesh_term = "Fictional MeSH Term AA"
+        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Transcriptome"
+        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
+        mesh_term = "Genetics"
+        self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
+
+    def test_search_gene(self):
+        search_text = """A number of preclinical studies have shown that the activation of the vitamin D
+      receptor (VDR) reduces prostate cancer (PCa) cell and tumor growth. The majority 
+      of human PCas express a transmembrane protease serine 2 (TMPRSS2):erythroblast
+      transformation-specific (ETS) fusion gene, but most preclinical studies have been
+      performed in PCa models lacking TMPRSS2:ETS in part due to the limited
+      availability of model systems expressing endogenous TMPRSS2:ETS. The level of the
+      active metabolite of vitamin D, 1alpha,25-dihydroxyvitamin D3 (1,25D), is
+      controlled in part by VDR-dependent induction of cytochrome P450, family 24,
+      subfamily 1, polypeptide1 (CYP24A1), which metabolizes 1,25D to an inactive form.
+      Because ETS factors can cooperate with VDR to induce rat CYP24A1, we tested
+      whether TMPRSS2:ETS would cause aberrant induction of human CYP24A1 limiting the 
+      activity of VDR. In TMPRSS2:ETS positive VCaP cells, depletion of TMPRSS2:ETS
+      substantially reduced 1,25D-mediated CYP24A1 induction. Artificial expression of 
+      the type VI+72 TMPRSS2:ETS isoform in LNCaP cells synergized with 1,25D to
+      greatly increase CYP24A1 expression. Thus, one of the early effects of
+      TMPRSS2:ETS in prostate cells is likely a reduction in intracellular 1,25D, which
+      may lead to increased proliferation. Next, we tested the net effect of VDR action
+      in TMPRSS2:ETS containing PCa tumors in vivo. Unlike previous animal studies
+      performed on PCa tumors lacking TMPRSS2:ETS, EB1089 (seocalcitol) (a less
+      calcemic analog of 1,25D) did not inhibit the growth of TMPRSS2:ETS containing
+      VCaP tumors in vivo, suggesting that the presence of TMPRSS2:ETS may limit the
+      growth inhibitory actions of VDR. Our findings suggest that patients with
+      TMPRSS2:ETS negative tumors may be more responsive to VDR-mediated growth
+      inhibition and that TMPRSS2:ETS status should be considered in future clinical
+      trials."""
+        gene = "CYP24A1"
+        self.assertTrue(searchgene(search_text, gene) >= 0)
+        gene = "TMPRSS2"
+        self.assertTrue(searchgene(search_text, gene) >= 0)
+        gene = "PRSS10"
+        self.assertEqual(searchgene(search_text, gene), None)
+
+    def test_get_genes_and_mediators(self):
+        """genelist, mediatormesh"""
+        gene_list = [1, 5, 10, 15]
+        mediator_list = [2, 4, 6, 8]
+        returned_list = _get_genes_and_mediators(gene_list, mediator_list)
+        counter = 0
+        for item in returned_list:
+            if counter == 2:
+                self.assertEqual(item, 10)
+            if counter == 4:
+                self.assertEqual(item, 2)
+            if counter == 7:
+                self.assertEqual(item, 8)
+            counter +=1 
+        self.assertEqual(counter, 8)
+
+    def test_printedges(self):
+        """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename"""
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis |   Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       1                       0                   |   0                        1                       0
+        # Example Gene B                1       0                       1                   |   1                        0                       1
+        # Example Gene B2               0       1                       0                   |   0                        1                       0
+        # Example Gene C                0       1                       0                   |   0                        1                       0
+        # Fictional not found MeSH Term 0       0                       0                       0                        0                       0
+        # Fictional MeSH Term B         1       1                       1                   |   1                        1                       1
+        edges = np.array([
+            [0,1,0,0,1,0],
+            [1,0,1,1,0,1],
+            [0,1,0,0,1,0],
+            [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
+            [1,1,1,1,1,1]]
+            )
+        genelist = self._get_genes_list()
+        mediatormesh = self._get_mediator_list()
+        exposuremesh = self._get_exposure_list()
+        outcomemesh = self._get_outcome_list()
+        results_path = settings.RESULTS_PATH
+        resultfilename = "test_printedges"
+        edge_score = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
+
+        with open(results_path + resultfilename + "_edge.csv", 'rb') as csvfile:
+            csv_data = csv.reader(csvfile)
+            self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
+            self.assertEqual(edge_score, csv_data.line_num - 1)
+
+        # Tests on Count and Score values
+        # score = max(EM,MO) / min(EM,MO) x (EM + MO) from website Help page
+        # Expected results
+        # Mediator                  Exposure count  Outcome count   Scores  (Not testing as part of data frame as already tested above)
+        # Example Gene A            1               1               2
+        # Example Gene B            2               2               4
+        # Example Gene B2           1               1               2
+        # Example Gene C            1               1               2
+        # Fictional MeSH Term B     3               3               6
+        expected_results = [["Example Gene A", 1, 1, 2],
+                            ["Example Gene B", 2, 2, 4],
+                            ["Example Gene B2", 1, 1, 2],
+                            ["Example Gene C", 1, 1, 2],
+                            ["Fictional MeSH Term B", 3, 3, 6]]
+        df = pd.read_csv(results_path + resultfilename + "_edge.csv")
+        for i in range(0, 5):
+            for j in range(0, 4):
+                self.assertEqual(expected_results[i][j], df.iat[i, j])
+        self.assertEqual(csv_data.line_num, 6)
+
+    @tag("test-it")
+    def test_createjson(self):
+        """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename
+
+        #                               Cells ; Fictional MeSH Term A ; Neoplasm Metastasis |   Fictional MeSH Term AA ; Fictional MeSH Term C ; Serogroup
+        # Example Gene A                0       1                       0                   |   0                        1                       0
+        # Example Gene B                1       0                       1                   |   1                        0                       1
+        # Example Gene B2               0       1                       0                   |   0                        1                       0
+        # Example Gene C                0       1                       0                   |   0                        1                       0
+        # Fictional not found MeSH Term 0       0                       0                   |   0                        0                       0
+        # Fictional MeSH Term B         1       1                       1                   |   1                        1                       1
+
+        nodes
+        0. Example Gene A
+        1. Example Gene B
+        2. Example Gene B2
+        3. Example Gene C
+        4. Fictional MeSH Term B
+        5. Cells 
+        6. Fictional MeSH Term A
+        7. Neoplasm Metastasis
+        8. Fictional MeSH Term AA
+        9. Fictional MeSH Term C
+        10. Serogroup
+
+        links
+        source  target  value
+        6       0       1               Exposure: Cells => Mediator/Gene: Example Gene A
+        0       9       1               Mediator/Gene: Example Gene A => Outcome: Fictional MeSH Term C
+
+        5       1       1
+        7       1       1
+        1       8       1
+        1      10       1
+
+        6       2       1
+        2       9       1
+
+        6       3       1
+        3       9       1
+
+        5       4       1
+        6       4       1
+        7       4       1
+        4       8       1
+        4       9       1
+        4      10       1
+        """
+        genelist = self._get_genes_list()
+        exposuremesh = self._get_exposure_list()
+        edges = np.array([
+            [0,1,0,0,1,0],
+            [1,0,1,1,0,1],
+            [0,1,0,0,1,0],
+            [0,1,0,0,1,0],
+            [0,0,0,0,0,0],
+            [1,1,1,1,1,1]]
+            )
+        outcomemesh = self._get_outcome_list()
+        mediatormesh = self._get_mediator_list()
+        results_file_path = settings.RESULTS_PATH
+        results_file_name = "test_createjson"
+        createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_file_path, results_file_name)
+        with open(results_file_path + results_file_name + ".json", 'r') as json_file:
+            json_data = json.loads(json_file.read())
+            self.assertTrue("nodes" in json_data.keys())
+            self.assertTrue("links" in json_data.keys())
+            nodes = json_data["nodes"]
+            self.assertEqual(len(nodes), 11)        # NB Only lists relevant genes and mediators with matches with at least exposure and at least outcome
+            expected_nodes = ["Example Gene A",
+                                "Example Gene B",
+                                "Example Gene B2",
+                                "Example Gene C",
+                                "Fictional MeSH Term B",
+                                "Cells",
+                                "Fictional MeSH Term A",
+                                "Neoplasm Metastasis",
+                                "Fictional MeSH Term AA",
+                                "Fictional MeSH Term C",
+                                "Serogroup",]
+            for i in range(0, len(expected_nodes)):
+                node = nodes[i]
+                expected_name = expected_nodes[i]
+                self.assertTrue(node.has_key("name"))
+                self.assertTrue(node["name"], expected_name)
+            links = json_data["links"]
+            expected_links = [  {"source":6, "target":0,  "value":1},
+                                {"source":0, "target":9,  "value":1},
+
+                                {"source":5, "target":1,  "value":1},
+                                {"source":7, "target":1,  "value":1},
+                                {"source":1, "target":8,  "value":1},
+                                {"source":1, "target":10,  "value":1},
+
+                                {"source":6, "target":2,  "value":1},
+                                {"source":2, "target":9,  "value":1},
+
+                                {"source":6, "target":3,  "value":1},
+                                {"source":3, "target":9,  "value":1},
+
+                                {"source":5, "target":4,  "value":1},
+                                {"source":6, "target":4,  "value":1},
+                                {"source":7, "target":4,  "value":1},
+                                {"source":4, "target":8,  "value":1},
+                                {"source":4, "target":9,  "value":1},
+                                {"source":4, "target":10,  "value":1}]
+            sorted_expected_links = sorted(expected_links, key=lambda item: (item['source'], item['target']))
+            self.assertEqual(len(links), 16)
+            sorted_links = sorted(links, key=lambda item: (item['source'], item['target']))
+            self.assertEqual(sorted_expected_links, sorted_links)
