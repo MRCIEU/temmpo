@@ -166,6 +166,10 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
+        'django.security.DisallowedHost': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
     },
 }
 
