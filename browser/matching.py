@@ -8,10 +8,11 @@ import string
 import sys
 import unicodecsv
 
+from django.core.cache import cache
 from django.conf import settings
+from django.db import connection
 # from django.core.mail import send_mail
 from django.utils import timezone
-from django.core.cache import cache
 
 from browser.models import SearchResult, Gene, OVID, PUBMED
 
@@ -110,7 +111,11 @@ def perform_search(search_result_stub_id):
     # send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
     # [user_email,])
     # 4 - Save completed search result
-    search_result_stub.save()
+    try:
+        search_result_stub.save()
+    except OperationalError:
+        connection.close()
+        search_result_stub.save()
     # tr.print_diff()
     logger.debug("Done housekeeping")
     logger.info("END: perform_search")
@@ -493,10 +498,10 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
                     thisedge = """{"source":%s,"target":%s,"value":%s}""" % (str(nodes.index(mediator)), str(nodes.index(outcome)), str(edges[edge_row_id][edge_col_id]))
                     edgesout.append(thisedge)
                     counter[1] += 1
-            if counter[0] == 0:
+            if counter[0] == 0:     # TODO: Does this scenario occur? Has it not been dealt with earlier in line 467
                 for i in xrange(counter[1]):
                     edgesout.pop(-1)
-            if counter[1] == 0:
+            if counter[1] == 0:     # TODO: Does this scenario occur? Has it not been dealt with earlier in line 467
                 for i in xrange(counter[0]):
                     edgesout.pop(-1)
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
