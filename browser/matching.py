@@ -111,11 +111,11 @@ def perform_search(search_result_stub_id):
     # send_mail('TeMMPo job complete', 'Your TeMMPo search is now complete and the results can be viewed on the TeMMPo web site.', 'webmaster@ilrt.bristol.ac.uk',
     # [user_email,])
     # 4 - Save completed search result
-    try:
-        search_result_stub.save()
-    except OperationalError:
+    # NB: Actively refreshing DB connection to handle long processes where the DB connection goes away, only when not in a test.
+    if not connection.in_atomic_block:
+        logger.debug("Refreshing the connection to the database.")
         connection.close()
-        search_result_stub.save()
+    search_result_stub.save()
     # tr.print_diff()
     logger.debug("Done housekeeping")
     logger.info("END: perform_search")
