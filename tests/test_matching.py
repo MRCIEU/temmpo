@@ -191,6 +191,7 @@ class MatchingTestCase(BaseTestCase):
         try:
             record_differences_between_match_runs(search_result_id)
             # Expected to throw an exception and not reach the next line
+            logger.error("Expected version 1 edge file %s_edge.csv to be missing and an exception to be thrown." % search_result.filename_stub)
             assert False
         except IOError:
             assert True
@@ -926,7 +927,6 @@ class MatchingTestCase(BaseTestCase):
                 self.assertEqual(expected_results[i][j], df.iat[i, j])
         self.assertEqual(csv_data.line_num, 6)
 
-    @tag("test-it")
     def test_createjson(self):
         """edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename
 

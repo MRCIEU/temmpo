@@ -25,4 +25,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # NB: Missing trigger for adding the message.
     ]

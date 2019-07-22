@@ -23,7 +23,7 @@ PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
 GENE_FILE_LOCATION = BASE_DIR + "/prepopulate/Homo_sapiens.gene_info"
 
-ADMINS = (('TeMMPo research project developers', 'it-temmpo-developers@sympa.bristol.ac.uk'),)
+ADMINS = (('TeMMPo research project developers', 'it-temmpo-developers@bristol.ac.uk'),)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Based on idea
