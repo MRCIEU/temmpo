@@ -7,7 +7,15 @@ pipelines:
         caches:
           - pip
         script:
-          - yum install -y epel-release
+          - yum -y install epel-release
+          - yum -y update
+          - yum -y install mysql-devel
+          - yum -y install mysql-utilities
+          - yum -y install wget
+          - wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+          - yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
+          - yum -y install mysql-community-libs
+          - yum -y install mysql-community-client
           - yum install -y python-pip
           - pip install -U pip==19.1.1
           - pip install -U pip-tools==3.7.0
