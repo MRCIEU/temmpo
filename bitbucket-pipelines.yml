@@ -1,4 +1,4 @@
-image: python:2.7.16
+image: centos:7.6.1810
 
 pipelines:
   branches:
@@ -7,9 +7,11 @@ pipelines:
         caches:
           - pip
         script:
-          - apt update
-          - apt install -y redis-server
+          - yum -y install epel-release
+          - yum -y update
+          - yum -y install redis
           - service redis-server restart
+          - service redis-server status
           - redis-cli ping
           - redis-server -v
           - pip install -U pip==19.1.1
