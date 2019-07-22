@@ -7,13 +7,8 @@ pipelines:
         caches:
           - pip
         script:
-          - yum -y install epel-release
-          - yum -y update
-          - yum -y install redis
-          - systemctl start redis
-          - systemctl status redis
-          - redis-cli ping
-          - redis-server -v
+          - yum install -y epel-release
+          - yum install -y python-pip
           - pip install -U pip==19.1.1
           - pip install -U pip-tools==3.7.0
           - pip install -U setuptools==41.0.1
@@ -28,3 +23,9 @@ pipelines:
           - python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
           - pip install -U Fabric==1.13.1
           - fab -l -f deploy/fabfile.py
+        services:
+          - redis
+definitions:
+  services:
+    redis:
+      image: redis
