@@ -1,3 +1,6 @@
+3.0.1   TMMA-330 Bug fix handling OperationalError (2006, 'MySQL server has gone away')
+                 Update third party eggs
+
 3.0.0   TMMA-276 Update third party eggs
         TMMA-277 Increase file upload limit to 2000MB
         TMMA-278 Bug fix filtering searches when multiple years have been imported
