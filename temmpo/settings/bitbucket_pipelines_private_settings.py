@@ -4,7 +4,7 @@ DATABASES = {
         'NAME': 'pipelines',
         'USER': 'test_user',
         'PASSWORD': 'test_user_password',
-        'HOST': '0.0.0.0',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'STRICT_ALL_TABLES'
