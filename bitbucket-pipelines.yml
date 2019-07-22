@@ -9,18 +9,32 @@ pipelines:
         script:
           - yum -y install epel-release
           - yum -y update
-          - yum -y install mysql-devel
-          - yum -y install mysql-utilities
+          - yum -y install python-devel
+          - yum -y install python-wheel
+          - yum -y install python-magic
+          - yum -y install python-pip
+          - yum -y install python-virtualenv
+          - yum -y install libxml2-python
+          - yum -y install libxml2-devel
+          - yum -y install libxslt-python
+          - yum -y install libxslt-devel
+          - yum -y install python-lxml
+          - yum -y install gcc gcc-c++
           - yum -y install wget
+          - yum -y install mariadb
+          - yum -y install mariadb-devel
+          - yum -y install mysql-devel
+          - yum -y install mysql-connector-python
+          - yum -y install mysql-utilities
           - wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
           - yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
           - yum -y install mysql-community-libs
           - yum -y install mysql-community-client
-          - yum -y install gcc gcc-c++
-          - yum install -y python-pip
           - pip install -U pip==19.1.1
           - pip install -U pip-tools==3.7.0
           - pip install -U setuptools==41.0.1
+          - yum list installed
+          - pip freeze
           - pip install -r requirements/test.txt
           - pip-sync requirements/test.txt
           - mkdir -p /opt/var/results/testing/v1
