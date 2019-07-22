@@ -50,6 +50,7 @@ pipelines:
           - fab -l -f deploy/fabfile.py
         services:
           - redis
+          - mysql
 definitions:
   services:
     redis:
@@ -58,6 +59,6 @@ definitions:
       image: mysql:5.6.44
       variables:
         MYSQL_DATABASE: pipelines
-        MYSQL_RANDOM_ROOT_PASSWORD: yes
+        MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
         MYSQL_USERNAME: test_user
         MYSQL_PASSWORD: test_user_password
