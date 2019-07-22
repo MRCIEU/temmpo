@@ -45,12 +45,19 @@ pipelines:
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - ./venv/bin/python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
-          - ./venv/bin/pip install -U Fabric==1.13.1
+          - ./venv/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
+          - pip install fabric==1.13.1
           - fab -l -f deploy/fabfile.py
         services:
           - redis
 definitions:
   services:
     redis:
-      image: redis
+      image: redis:5.0.5
+    mysql:
+      image: mysql:5.6.44
+      variables:
+        MYSQL_DATABASE: pipelines
+        MYSQL_RANDOM_ROOT_PASSWORD: yes
+        MYSQL_USERNAME: test_user
+        MYSQL_PASSWORD: test_user_password

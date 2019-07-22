@@ -1,6 +1,13 @@
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/opt/var/data/db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'pipelines',
+        'USER': 'test_user',
+        'PASSWORD': 'test_user_password',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'sql_mode': 'STRICT_ALL_TABLES'
+        }
     }
 }
