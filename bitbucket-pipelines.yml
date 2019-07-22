@@ -10,6 +10,8 @@ pipelines:
           - yum -y install epel-release
           - yum -y update
           - yum -y install redis
+          - systemctl start redis
+          - systemctl status redis
           - redis-cli ping
           - redis-server -v
           - pip install -U pip==19.1.1
