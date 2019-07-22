@@ -30,21 +30,23 @@ pipelines:
           - yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
           - yum -y install mysql-community-libs
           - yum -y install mysql-community-client
-          - pip install -U pip==19.1.1
-          - pip install -U pip-tools==3.7.0
-          - pip install -U setuptools==41.0.1
           - yum list installed
-          - pip freeze
-          - pip install -r requirements/test.txt
-          - pip-sync requirements/test.txt
+          - pip install virtualenv
+          - virtualenv venv
+          - ./venv/bin/pip install -U pip==19.1.1
+          - ./venv/bin/pip install -U pip-tools==3.7.0
+          - ./venv/bin/pip install -U setuptools==41.0.1
+          - ./venv/bin/pip freeze
+          - ./venv/bin/pip install -r requirements/test.txt
+          - ./venv/bin/pip pip-sync requirements/test.txt
           - mkdir -p /opt/var/results/testing/v1
           - mkdir -p /opt/var/results/testing/v3
           - mkdir -p /opt/var/abstracts
           - mkdir -p /opt/var/data
           - mkdir -p /opt/var/log
           - ln -s /opt/atlassian/pipelines/agent/build/temmpo/settings/bitbucket_pipelines_private_settings.py /opt/atlassian/pipelines/agent/build/temmpo/settings/private_settings.py
-          - python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
-          - pip install -U Fabric==1.13.1
+          - ./venv/bin/python manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=selenium-test
+          - ./venv/bin/pip install -U Fabric==1.13.1
           - fab -l -f deploy/fabfile.py
         services:
           - redis
