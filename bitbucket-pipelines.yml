@@ -38,7 +38,7 @@ pipelines:
           - ./venv/bin/pip install -U setuptools==41.0.1
           - ./venv/bin/pip freeze
           - ./venv/bin/pip install -r requirements/test.txt
-          - ./venv/bin/pip pip-sync requirements/test.txt
+          - ./venv/bin/pip-sync requirements/test.txt
           - mkdir -p /opt/var/results/testing/v1
           - mkdir -p /opt/var/results/testing/v3
           - mkdir -p /opt/var/abstracts
