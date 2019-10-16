@@ -17,7 +17,7 @@ class ExtractorFileField(forms.FileField):
     def create_upload_file(self, file):
         size = os.path.getsize(file.name)
         # Intentionally leave file open for continued processing
-        file = open(file.name) # TODO review if cannot be opened better in the first place, see w+b
+        file = open(file.name)
 
         upload_file = TemporaryUploadedFile(file.name, None, size, file.encoding, None)
         upload_file.file = file

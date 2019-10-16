@@ -204,7 +204,7 @@ SIMPLE_AUTOCOMPLETE = {'browser.meshterm':
 # Gives 60 days of grace before deletion
 ACCOUNT_CLOSURE_WARNING = 305
 
-DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'
+DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@bristol.ac.uk>'
 
 SITE_ID = 1
 
@@ -218,7 +218,7 @@ RQ_QUEUES = {
         'HOST': '127.0.0.1',
         'PORT': 6379,
         'DB': 0,
-        'DEFAULT_TIMEOUT': 360000, # TODO: Profile a reasonable time out length for this, ref: https://github.com/rq/rq/blob/master/docs/docs/index.md
+        'DEFAULT_TIMEOUT': 360000,
     },
 }
 
