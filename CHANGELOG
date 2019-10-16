@@ -1,3 +1,5 @@
+3.0.2   TMMA-358 Update README
+
 3.0.1   TMMA-330 Bug fix handling OperationalError (2006, 'MySQL server has gone away')
                  Update third party eggs
 
