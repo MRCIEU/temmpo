@@ -1,0 +1,40 @@
+language: python
+
+python:
+  - '2.7'
+
+before_install:
+  - mkdir -p /usr/local/projects/temmpo/lib/test/src
+  - mv $TRAVIS_BUILD_DIR /usr/local/projects/temmpo/lib/test/src/temmpo
+  - cd /usr/local/projects/temmpo/lib/test/src
+  - ln -s temmpo/settings/travis_ci_private_settings.py temmpo/settings/private_settings.py
+  - mkdir -p /usr/local/projects/temmpo/var/abstracts
+  - mkdir -p /usr/local/projects/temmpo/var/data
+  - mkdir -p /usr/local/projects/temmpo/var/log
+  - mkdir -p /usr/local/projects/temmpo/var/results/testing/v1
+  - mkdir -p /usr/local/projects/temmpo/var/results/testing/v3
+
+install:
+  - cd /usr/local/projects/temmpo/lib/test/src/temmpo
+  - pip install -U pip==19.1.1
+  - pip install -U pip-tools==3.7.0
+  - pip install -U setuptools==41.0.1
+  - pip freeze
+  - pip install -r requirements/test.txt
+  - pip-sync requirements/test.txt
+
+services:
+  - mysql
+  - redis-server
+
+script:
+  - cd /usr/local/projects/temmpo/lib/test/src/temmpo
+  - python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
+  # NB: When deployed Fabric is installed at a sytem packages level and supports the CI/CD pipeline
+  - pip install fabric==1.13.1
+  - fab -l -f deploy/fabfile.py
+
+branches:
+  only:
+  - master
+  - /^TMMA-.*$/
