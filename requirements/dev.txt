@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file requirements/dev.txt requirements/dev.in
 #
-backports.shutil-get-terminal-size==1.0.0  # via ipython
 certifi==2019.3.9
 chardet==3.0.4
 click==7.0
@@ -17,9 +16,8 @@ django-redis-cache==2.0.0
 django-registration-redux==2.6
 django-rq==2.1.0
 django-simple-autocomplete==1.11
-django==1.11.22
+django==1.11.23
 easyprocess==0.2.5
-enum34==1.1.6             # via traitlets
 hiredis==1.0.0
 idna==2.8
 ipython-genutils==0.2.0   # via traitlets
@@ -28,7 +26,6 @@ lxml==4.3.4
 mysqlclient==1.4.2
 numpy==1.16.4
 pandas==0.24.2
-pathlib2==2.3.3           # via ipython, pickleshare
 pexpect==4.7.0            # via ipython
 pickleshare==0.7.5        # via ipython
 pip-tools==3.8.0
@@ -44,7 +41,6 @@ pyvirtualdisplay==0.2.1
 redis==3.2.1
 requests==2.22.0
 rq==1.0
-scandir==1.10.0           # via pathlib2
 selenium==3.141.0
 simplegeneric==0.8.1      # via ipython
 six==1.12.0
