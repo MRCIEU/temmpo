@@ -4,8 +4,10 @@ python:
   - '2.7'
 
 before_install:
+  # Move source code to a directory structure the application expects.
   - mkdir -p lib/test/src
-  - mv $TRAVIS_BUILD_DIR lib/test/src/temmpo
+  - shopt -s extglob
+  - mv !(lib) lib/test/src/temmpo
   - cd lib/test/src
   - ln -s temmpo/settings/travis_ci_private_settings.py temmpo/settings/private_settings.py
   - cd $TRAVIS_BUILD_DIR
