@@ -2,10 +2,10 @@
 Django settings for temmpo project.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.8/topics/settings/
+https://docs.djangoproject.com/en/1.11/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.8/ref/settings/
+https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 import os
 import random
@@ -17,7 +17,6 @@ USING_APACHE = False
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Dynamic config based on server host, vebuild and if dev, user name
-SERVER = os.uname()[1]
 THIS_PATH = os.path.dirname(__file__)
 PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
