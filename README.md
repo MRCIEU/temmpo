@@ -170,7 +170,7 @@ The project needs the following additional services to be running:
 
 ## Versioning
 
-For the versions available, see the [CHANGELOG](https://github.com/MRCIEU/temmpo/blob/master/CHANGELOG) and the tags on this repository.
+For the versions available, see the [CHANGELOG](CHANGELOG) and the tags on this repository.
 
 ## Authors
 
@@ -182,7 +182,7 @@ For the versions available, see the [CHANGELOG](https://github.com/MRCIEU/temmpo
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/MRCIEU/temmpo/blob/master/LICENSE) file for details
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgements
 
