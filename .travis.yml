@@ -8,7 +8,7 @@ before_install:
   - mkdir -p lib/test/src/temmpo
   - shopt -s extglob
   - mv !(lib) lib/test/src/temmpo/
-  - cd lib/test/src
+  - cd lib/test/src/temmpo/
   - ln -s temmpo/settings/travis_ci_private_settings.py temmpo/settings/private_settings.py
   - cd $TRAVIS_BUILD_DIR
   - mkdir -p var/abstracts
