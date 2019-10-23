@@ -33,13 +33,13 @@ Various options exist.  For example set up with Apache proxying and that by defa
 
     cd temmpo/deploy
     vagrant up db && vagrant up apache && vagrant ssh apache
-    fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=base -f /vagrant/fabfile.py
+    fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=dev -f /vagrant/deploy/fabfile.py
 
 
 #### d. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using a remotely run Fabric command.
 
     cd temmpo/deploy
-    vagrant up db && vagrant up apache && fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh apache
+    vagrant up db && vagrant up apache && fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=dev -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh apache
 
 ### Other useful commands
 
