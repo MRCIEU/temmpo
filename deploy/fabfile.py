@@ -9,11 +9,12 @@ from fabric.contrib import files
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
 
 GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
-GIT_URL = 'git@bitbucket.org:researchit/temmpo.git'
+GIT_URL = 'git@github.com:MRCIEU/temmpo.git'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
                  '104.192.143.3',
-                 'bitbucket.org',)
+                 'bitbucket.org',
+                 'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 PIP_VERSION = '19.1.1'
