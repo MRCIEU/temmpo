@@ -12,4 +12,4 @@ DATABASES = {
     }
 }
 
-# redis available over localhost, may need to redefine if any issues
+# redis available over localhost, may need to redefine if any issues
