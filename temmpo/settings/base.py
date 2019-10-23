@@ -2,10 +2,10 @@
 Django settings for temmpo project.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.8/topics/settings/
+https://docs.djangoproject.com/en/1.11/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.8/ref/settings/
+https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 import os
 import random
@@ -17,7 +17,6 @@ USING_APACHE = False
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Dynamic config based on server host, vebuild and if dev, user name
-SERVER = os.uname()[1]
 THIS_PATH = os.path.dirname(__file__)
 PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
@@ -204,7 +203,7 @@ SIMPLE_AUTOCOMPLETE = {'browser.meshterm':
 # Gives 60 days of grace before deletion
 ACCOUNT_CLOSURE_WARNING = 305
 
-DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@sympa.bristol.ac.uk>'
+DEFAULT_FROM_EMAIL = 'TeMMPo <it-temmpo-developers@bristol.ac.uk>'
 
 SITE_ID = 1
 
@@ -218,7 +217,7 @@ RQ_QUEUES = {
         'HOST': '127.0.0.1',
         'PORT': 6379,
         'DB': 0,
-        'DEFAULT_TIMEOUT': 360000, # TODO: Profile a reasonable time out length for this, ref: https://github.com/rq/rq/blob/master/docs/docs/index.md
+        'DEFAULT_TIMEOUT': 360000,
     },
 }
 

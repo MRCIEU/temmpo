@@ -178,6 +178,7 @@ if [ -d "/home/vagrant/.ssh/" ]; then
   ssh-keyscan -H 104.192.143.2 >> /home/vagrant/.ssh/known_hosts
   ssh-keyscan -H 104.192.143.3 >> /home/vagrant/.ssh/known_hosts
   ssh-keyscan -H bitbucket.org >> /home/vagrant/.ssh/known_hosts
+  ssh-keyscan -H github.com >> /home/vagrant/.ssh/known_hosts
 
   chown -R vagrant:vagrant /home/vagrant/.ssh/
   chmod 700 /home/vagrant/.ssh/*
