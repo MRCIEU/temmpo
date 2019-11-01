@@ -1,5 +1,7 @@
 # TeMMPo
 
+[![Build Status](https://travis-ci.org/MRCIEU/temmpo.svg?branch=master)](https://travis-ci.org/MRCIEU/temmpo)
+
 [TeMMPo](https://www.temmpo.org.uk/) (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of published evidence for specific mechanisms between an exposure and outcome. The tool identifies co-occurrence of MeSH headings in scientific publications to indicate papers that link an intermediate mechanism to either an exposure or an outcome.  TeMMPo is particularly useful when a specific lifestyle or dietary exposure is known to associate with a disease outcome, but little is known about the underlying mechanisms. Understanding these mechanisms may help develop interventions, sub-classify disease or establish evidence for causality. TeMMPo quantifies the body of published literature to establish which mechanisms have been researched the most, enabling these mechanisms to be subjected to systematic review.
 
 ## Getting Started
@@ -170,7 +172,7 @@ The project needs the following additional services to be running:
 
 ## Versioning
 
-For the versions available, see the [CHANGELOG](https://github.com/MRCIEU/temmpo/blob/master/CHANGELOG) and the tags on this repository.
+For the versions available, see the [CHANGELOG](CHANGELOG) and the tags on this repository.
 
 ## Authors
 
@@ -182,7 +184,7 @@ For the versions available, see the [CHANGELOG](https://github.com/MRCIEU/temmpo
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/MRCIEU/temmpo/blob/master/LICENSE) file for details
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgements
 
