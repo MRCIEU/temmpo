@@ -161,7 +161,7 @@ LOGGING = {
     },
     'loggers': {
         '': {
-            'handlers': ['mail_admins', 'console', 'local_file'],
+            'handlers': ['console', 'local_file'],  # 'mail_admins', 
             'propagate': True,
             'level': 'DEBUG',
         },
