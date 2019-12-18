@@ -1,3 +1,6 @@
+3.1.0   TMMA-367 Apply Django security update 1.11.27
+                 Update third party eggs
+
 3.0.4   TMMA-364 Add link to code from TeMMPo home page
 
 3.0.3   TMMA-361 Update Django to 1.11.25
