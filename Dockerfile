@@ -56,8 +56,6 @@ RUN mkdir -p /usr/local/projects/temmpo/lib/dev/src/temmpo
 
 # Copy application code into container
 COPY . src/temmpo/
-# TODO DEBUG BUGFIX: Create the expected private settings file for the development host
-WORKDIR /usr/local/projects/temmpo/lib/dev/src/temmpo/temmpo/settings
 
 # Set container entry directory to alongside manage.py
 WORKDIR /usr/local/projects/temmpo/lib/dev/src/temmpo
