@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  mysql:
+    restart: always
+    image: mysql:5.6.46
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    env_file: .env
+
+  redis:
+    restart: always
+    image: redis:5.0.7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  django:
+    restart: always
+    build: .
+    ports:
+      - "8000:8000"
+    links:
+      - mysql:mysql
+      - redis:redis
+    volumes:
+      - django-log:/usr/local/projects/temmpo/var/log/
+      - .:/usr/local/projects/temmpo/lib/dev/src/temmpo/
+    command: bash -c "cp -n temmpo/settings/docker_dev_private_settings.py temmpo/settings/private_settings.py && /usr/local/projects/temmpo/lib/dev/bin/python manage.py migrate --settings=temmpo.settings.dev && /usr/local/projects/temmpo/lib/dev/bin/python manage.py runserver 0.0.0.0:8000 --settings=temmpo.settings.dev"
+    depends_on:
+      - mysql
+      - redis
+
+volumes:
+  mysql-data:
+  redis-data:
+  django-log:

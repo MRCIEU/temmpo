@@ -6,13 +6,42 @@
 
 ## Getting Started
 
-### Prerequisites
+The Django development environment can be created using Docker or Vagrant.  At present the supplied Vagrant file provides more extensive replication of the production set up, allowing for testing with Apache proxying and additional documentation of usage.
+
+### Using Docker
+
+A basic Django testing environment can be set up using the supplied docker-compose.yml and Dockerfiles.  The prerequisites are:
+
+* Docker (tested with ??)
+* Docker Compose (tested with ??)
+
+#### Installing a Docker development environment
+
+    docker-compose up -d --build
+
+#### Running tests with Docker
+
+    docker-compose exec django /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
+
+#### Run rqworkers
+
+    docker-compose exec django /usr/local/projects/temmpo/lib/dev/bin/python manage.py rqworker default --settings=temmpo.settings.dev
+
+#### Update requirements files
+
+    docker-compose exec django ../../bin/pip-compile --output-file requirements/base.txt requirements/base.in
+    docker-compose exec django ../../bin/pip-compile --output-file requirements/test.txt requirements/test.in
+    docker-compose exec django ../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in
+
+### Using Vagrant
+
+Prerequisites are:
 
 * Vagrant https://www.vagrantup.com/
 * VirtualBox https://www.virtualbox.org/ or another provider, see https://www.vagrantup.com/docs/providers/
 NB: The vagrant installation also requires an additional plugin to mount the development source code cloned on your local machine.
 
-### Installing
+#### Installing a Vagrant development environment
 
     vagrant plugin install vagrant-sshfs
     git clone git@github.com:MRCIEU/temmpo.git
@@ -20,40 +49,40 @@ NB: The vagrant installation also requires an additional plugin to mount the dev
 Use one of the techniques below to set up your virtual environment and create your Django application.
 Various options exist.  For example set up with Apache proxying and that by default run database migrations.
 
-#### a. Installing a Vagrant development virtual environment.
+##### a. Installing a Vagrant development virtual environment.
 
     cd temmpo/deploy
     vagrant up && vagrant ssh
     fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-#### b. Installing a Vagrant development virtual environment using a remotely run Fabric command.
+##### b. Installing a Vagrant development virtual environment using a remotely run Fabric command.
 
     cd temmpo/deploy
     vagrant up && fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=dev  -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh
 
-#### c. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive.
+##### c. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive.
 
     cd temmpo/deploy
     vagrant up db && vagrant up apache && vagrant ssh apache
     fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=dev -f /vagrant/deploy/fabfile.py
 
 
-#### d. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using a remotely run Fabric command.
+##### d. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using a remotely run Fabric command.
 
     cd temmpo/deploy
     vagrant up db && vagrant up apache && fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=dev -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh apache
 
-### Other useful commands
+#### Other useful commands
 
-#### Activate virtualenv and move to source directory
+##### Activate virtualenv and move to source directory
 
     cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
 
-#### Create a super user
+##### Create a super user
 
     python manage.py createsuperuser --settings=temmpo.settings.dev
 
-#### Importing MeSH Terms
+##### Importing MeSH Terms
 
 To be able to run the applications browsing and searching functionality Mesh Terms will need to be imported, either by using fixtures or the custom management command.
 
@@ -71,59 +100,58 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
         python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2019.bin 2019
 
-#### Importing Genes - optional
+##### Importing Genes - optional
 
 A database of existing gene terms can be imported into the Django application database.  A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
 
     python manage.py import_genes --settings=temmpo.settings.dev
 
-#### Run the development server and workers
+##### Run the development server and workers
 
 Ensure matching code is reloaded
 
     sudo systemctl stop rqworker
     python manage.py rqworker default --settings=temmpo.settings.dev
 
-
 In a separate terminal window run the development server
 
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
-#### View application in your local browser
+##### View application in your local browser
 
-##### Using Django development server
+###### Using Django development server
 
     http://localhost:59099
 
-##### Using Apache as a proxy server
+###### Using Apache as a proxy server
 
     http://localhost:8800
 
-#### Database migrations
+##### Database migrations
 
 NB: If you want to manually run migrations you need to use the --database flag
 
     python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
-#### Updating the requirements file using pip-sync (via Vagrant VM)
+##### Updating the requirements file using pip-sync (via Vagrant VM)
 
     fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-#### Development deployment commands when working with the apache Vagrant VM.
+##### Development deployment commands when working with the apache Vagrant VM.
 
-##### a. Deploy master branch to Vagrant Apache VM
+###### a. Deploy master branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-##### b. Deploy demo_stable branch on Vagrant Apache VM:
+###### b. Deploy demo_stable branch on Vagrant Apache VM:
 
     fab deploy:env=dev,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-##### c. Deploy prod_stable branch to Vagrant Apache VM
+###### c. Deploy prod_stable branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-## Running the tests
+### Running the tests
 
     python manage.py test --settings=temmpo.settings.test_mysql
 
@@ -131,7 +159,7 @@ or
 
     python manage.py test --settings=temmpo.settings.test_sqlite
 
-### Running specific tests
+#### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
 
