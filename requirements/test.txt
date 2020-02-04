@@ -24,7 +24,6 @@ lxml==4.4.2
 mysqlclient==1.4.6
 numpy==1.16.5
 pandas==0.24.2
-pip-tools==4.3.0
 pyscreenshot==0.5.1
 python-dateutil==2.8.0
 python-magic==0.4.15
