@@ -19,7 +19,7 @@ django-redis-cache==2.1.0
 django-registration-redux==2.6
 django-rq==2.1.0
 django-simple-autocomplete==1.11
-django==1.11.27
+django==1.11.28
 easyprocess==0.2.5
 enum34==1.1.6             # via traitlets
 hiredis==1.0.1
@@ -33,7 +33,6 @@ pandas==0.24.2
 pathlib2==2.3.3           # via ipython, pickleshare
 pexpect==4.7.0            # via ipython
 pickleshare==0.7.5        # via ipython
-pip-tools==4.3.0
 prompt-toolkit==1.0.16    # via ipython
 ptyprocess==0.6.0         # via pexpect
 pygments==2.3.1           # via ipython
@@ -57,4 +56,4 @@ urllib3==1.25.2
 wcwidth==0.1.7            # via prompt-toolkit
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==42.0.2        # via ipython
+# setuptools
