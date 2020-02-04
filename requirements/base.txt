@@ -13,7 +13,7 @@ django-redis-cache==2.1.0
 django-registration-redux==2.6
 django-rq==2.1.0
 django-simple-autocomplete==1.11
-django==1.11.27
+django==1.11.28
 hiredis==1.0.1
 lxml==4.4.2
 mysqlclient==1.4.6
