@@ -16,7 +16,7 @@ django-redis-cache==2.1.0
 django-registration-redux==2.6
 django-rq==2.1.0
 django-simple-autocomplete==1.11
-django==1.11.27
+django==1.11.28
 easyprocess==0.2.5        # via pyscreenshot, pyvirtualdisplay
 hiredis==1.0.1
 idna==2.8                 # via requests
@@ -24,7 +24,6 @@ lxml==4.4.2
 mysqlclient==1.4.6
 numpy==1.16.5
 pandas==0.24.2
-pip-tools==4.3.0
 pyscreenshot==0.5.1
 python-dateutil==2.8.0
 python-magic==0.4.15
