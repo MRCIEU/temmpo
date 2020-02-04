@@ -36,9 +36,9 @@ RUN mkdir -p /usr/local/projects/temmpo/lib/
 WORKDIR /usr/local/projects/temmpo/lib/
 RUN virtualenv dev
 WORKDIR /usr/local/projects/temmpo/lib/dev/
-RUN ./bin/pip install -U pip==19.1.1
-RUN ./bin/pip install -U pip-tools==4.3.0
-RUN ./bin/pip install -U setuptools==41.0.1
+RUN ./bin/pip install -U pip==20.0.2
+RUN ./bin/pip install -U pip-tools==4.4.1
+RUN ./bin/pip install -U setuptools==44.0.0
 RUN ./bin/pip freeze
 
 # Copy just requirements into container
