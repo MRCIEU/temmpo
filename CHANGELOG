@@ -1,5 +1,4 @@
 3.2.0   TMMA-368 Apply Django security update 1.11.28
-                 Update pip and setuptools
 
 3.1.0   TMMA-367 Apply Django security update 1.11.27
                  Update third party eggs
