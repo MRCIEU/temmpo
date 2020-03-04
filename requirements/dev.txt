@@ -19,7 +19,7 @@ django-redis-cache==2.1.0
 django-registration-redux==2.6
 django-rq==2.1.0
 django-simple-autocomplete==1.11
-django==1.11.28
+django==1.11.29
 easyprocess==0.2.5
 enum34==1.1.6             # via traitlets
 hiredis==1.0.1
@@ -56,4 +56,4 @@ urllib3==1.25.2
 wcwidth==0.1.7            # via prompt-toolkit
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools
+# setuptools==44.0.0        # via ipython
