@@ -4,8 +4,6 @@
 #
 #    pip-compile --output-file=requirements/dev.txt requirements/dev.in
 #
---index-url https://pypi.python.org/simple/
-
 backports.shutil-get-terminal-size==1.0.0  # via ipython
 certifi==2019.3.9
 chardet==3.0.4
