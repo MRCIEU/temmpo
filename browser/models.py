@@ -33,7 +33,7 @@ def get_user_upload_location(instance, filename):
 
 
 class Gene(models.Model):
-    """Prepoulated with genes from the below sources.
+    """Pre-populated with genes from the below sources.
     # ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
     # ftp://ftp.ncbi.nih.gov/gene/DATA/README
 
@@ -213,7 +213,7 @@ class SearchCriteria(models.Model):
             return tuple()
 
     def __unicode__(self):
-        """Provide a flexible method for determining he search criteria's name.
+        """Provide a flexible method for determining the search criteria object's name.
 
         At present user's cannot assign names to search criteria through the user interface.
         """
