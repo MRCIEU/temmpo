@@ -542,6 +542,6 @@ def pip_sync_requirements_file(env="dev", use_local_mode=True):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --output-file requirements/base.txt requirements/base.in')
+        caller('../../bin/pip-compile --output-file requirements/requirements.txt requirements/requirements.in')
         caller('../../bin/pip-compile --output-file requirements/test.txt requirements/test.in')
         caller('../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in')

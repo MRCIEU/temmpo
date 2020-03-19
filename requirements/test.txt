@@ -4,8 +4,6 @@
 #
 #    pip-compile --output-file=requirements/test.txt requirements/test.in
 #
---index-url https://pypi.python.org/simple/
-
 certifi==2019.3.9         # via requests
 chardet==3.0.4            # via requests
 click==7.0
