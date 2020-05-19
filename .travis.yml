@@ -22,9 +22,9 @@ before_install:
 install:
   - cd $TRAVIS_BUILD_DIR
   - cd lib/test/src/temmpo
-  - pip install -U pip==19.3.1
-  - pip install -U setuptools==44.1.0
-  - pip install pip-tools==4.5.1
+  - pip install -U pip==19.1.1
+  - pip install -U pip-tools==3.8.0
+  - pip install -U setuptools==41.0.1
   - pip freeze
   - pip install -r requirements/test.txt
   - pip-sync requirements/test.txt
