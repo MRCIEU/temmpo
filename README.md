@@ -87,6 +87,8 @@ Ensure matching code is reloaded
 
 In a separate terminal window run the development server
 
+    vagrant ssh
+    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 #### View application in your local browser
@@ -124,12 +126,15 @@ NB: If you want to manually run migrations you need to use the --database flag
     fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ## Running the tests
+Run the entire test suite using MySQL and generate a coverage report.
 
-    python manage.py test --settings=temmpo.settings.test_mysql
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql
+    coverage report
 
-or
+Or run the entire test suite using SQLlite and generate a coverage report.
 
-    python manage.py test --settings=temmpo.settings.test_sqlite
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
+    coverage report
 
 ### Running specific tests
 

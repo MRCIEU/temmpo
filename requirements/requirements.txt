@@ -4,6 +4,8 @@
 #
 #    pip-compile --output-file=requirements/requirements.txt requirements/requirements.in
 #
+--index-url https://pypi.python.org/simple/
+
 click==7.0                # via rq
 django-js-asset==1.2.2    # via django-mptt
 django-mptt==0.9.0
