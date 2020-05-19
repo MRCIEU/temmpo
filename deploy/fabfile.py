@@ -236,6 +236,8 @@ def setup_apache(env="dev", use_local_mode=False):
     <Location "/admin">
         Require ip 137.222
         Require ip 10.0.0.0/8
+        Require ip 172.16.0.0/12
+        Require ip 192.168.0.0/16
     </Location>
     """ % {'env': env}
 
