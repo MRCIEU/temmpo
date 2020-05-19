@@ -233,12 +233,13 @@ def setup_apache(env="dev", use_local_mode=False):
         AllowMethods GET
     </Location>
 
-    <Location "/admin">
+    <LocationMatch "^/(admin|django-rq)">
         Require ip 137.222
         Require ip 10.0.0.0/8
         Require ip 172.16.0.0/12
         Require ip 192.168.0.0/16
-    </Location>
+    </LocationMatch>
+
     """ % {'env': env}
 
     _add_file_local(apache_conf_file, apache_conf, use_local_mode)
