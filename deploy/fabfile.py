@@ -96,8 +96,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-            caller('./bin/pip install -U pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
+            caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip freeze')
 
@@ -146,8 +146,8 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
         # Ensure pip and setup tools is up to expected version for existing environments.
         caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-        caller('./bin/pip install -U pip-tools==%s' % PIP_TOOLS_VERSION)
         caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
+        caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
 
         if use_pip_sync:
             caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
