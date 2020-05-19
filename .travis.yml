@@ -22,9 +22,9 @@ before_install:
 install:
   - cd $TRAVIS_BUILD_DIR
   - cd lib/test/src/temmpo
-  - pip install -U pip==19.1.1
-  - pip install -U pip-tools==3.8.0
-  - pip install -U setuptools==41.0.1
+  - pip install -U pip==20.1.1
+  - pip install -U pip-tools==5.1.2
+  - pip install -U setuptools==44.1.0
   - pip freeze
   - pip install -r requirements/test.txt
   - pip-sync requirements/test.txt
@@ -36,8 +36,9 @@ services:
 script:
   - cd $TRAVIS_BUILD_DIR
   - cd lib/test/src/temmpo
-  - python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
-  # NB: When deployed Fabric is installed at a sytem packages level and supports the CI/CD pipeline
+  - coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
+  - coverage report
+  # NB: When deployed Fabric is installed at a system packages level and supports the CI/CD pipeline
   - pip install fabric==1.13.1
   - fab -l -f deploy/fabfile.py
 

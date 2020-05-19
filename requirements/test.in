@@ -1,5 +1,6 @@
 -r requirements.txt
 
+coverage==5.1
 csvvalidator==1.2
 pyvirtualdisplay==0.2.1
 pyscreenshot==0.5.1
