@@ -17,9 +17,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
-PIP_VERSION = '19.1.1'
-SETUPTOOLS_VERSION = '41.0.1'
-PIP_TOOLS_VERSION = '3.8.0'
+PIP_VERSION = '20.1.1'
+SETUPTOOLS_VERSION = '44.1.0'
+PIP_TOOLS_VERSION = '5.1.2'
 
 
 def _add_file_local(path, contents, use_local_mode):

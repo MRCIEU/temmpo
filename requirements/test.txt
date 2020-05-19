@@ -4,33 +4,36 @@
 #
 #    pip-compile --output-file=requirements/test.txt requirements/test.in
 #
+--index-url https://pypi.python.org/simple/
+
 certifi==2019.3.9         # via requests
 chardet==3.0.4            # via requests
-click==7.0
-csvvalidator==1.2
-django-js-asset==1.2.2
-django-mptt==0.9.0
-django-redis-cache==2.1.0
-django-registration-redux==2.6
-django-rq==2.1.0
-django-simple-autocomplete==1.11
-django==1.11.29
+click==7.0                # via -r requirements/requirements.txt, rq
+coverage==5.1             # via -r requirements/test.in
+csvvalidator==1.2         # via -r requirements/test.in
+django-js-asset==1.2.2    # via -r requirements/requirements.txt, django-mptt
+django-mptt==0.9.0        # via -r requirements/requirements.txt
+django-redis-cache==2.1.0  # via -r requirements/requirements.txt
+django-registration-redux==2.6  # via -r requirements/requirements.txt
+django-rq==2.1.0          # via -r requirements/requirements.txt
+django-simple-autocomplete==1.11  # via -r requirements/requirements.txt
+django==1.11.29           # via -r requirements/requirements.txt, django-rq, django-simple-autocomplete
 easyprocess==0.2.5        # via pyscreenshot, pyvirtualdisplay
-hiredis==1.0.1
+hiredis==1.0.1            # via -r requirements/requirements.txt
 idna==2.8                 # via requests
-lxml==4.4.2
-mysqlclient==1.4.6
-numpy==1.16.5
-pandas==0.24.2
-pyscreenshot==0.5.1
-python-dateutil==2.8.0
-python-magic==0.4.15
-pytz==2019.1
-pyvirtualdisplay==0.2.1
-redis==3.3.11
-requests==2.22.0
-rq==1.0
-selenium==3.141.0
-six==1.12.0
-unicodecsv==0.14.1
+lxml==4.4.2               # via -r requirements/requirements.txt
+mysqlclient==1.4.6        # via -r requirements/requirements.txt
+numpy==1.16.5             # via -r requirements/requirements.txt, pandas
+pandas==0.24.2            # via -r requirements/requirements.txt
+pyscreenshot==0.5.1       # via -r requirements/test.in
+python-dateutil==2.8.0    # via -r requirements/requirements.txt, pandas
+python-magic==0.4.15      # via -r requirements/requirements.txt
+pytz==2019.1              # via -r requirements/requirements.txt, django, pandas
+pyvirtualdisplay==0.2.1   # via -r requirements/test.in
+redis==3.3.11             # via -r requirements/requirements.txt, django-redis-cache, django-rq, rq
+requests==2.22.0          # via -r requirements/test.in
+rq==1.0                   # via -r requirements/requirements.txt, django-rq
+selenium==3.141.0         # via -r requirements/test.in
+six==1.12.0               # via -r requirements/requirements.txt, django-redis-cache, python-dateutil
+unicodecsv==0.14.1        # via -r requirements/requirements.txt
 urllib3==1.25.2           # via requests, selenium
