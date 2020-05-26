@@ -327,11 +327,11 @@ class SearchResult(models.Model):
         return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3)
 
     def __unicode__(self):
-        """Provide a flexible method for determining the search criteria object's name.
-
-        At present user's cannot assign names to search criteria through the user interface.
-        """
-        return self.filename_stub + " (" + self.status + ") started: " + naturaltime(self.started_processing)
+        """Provide a flexible method for determining the search result object's name."""
+        if self.filename_stub:
+            return self.filename_stub + " (" + self.status + ") started: " + naturaltime(self.started_processing)
+        else:
+            return "SearchResult id: %d status: %s " % (self.id, self.status)
 
 
 class MessageManager(models.Manager):
