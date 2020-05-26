@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 """Test view authorisation"""
 import os
+from datetime import timedelta
 
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import tag
+from django.utils import timezone
 
 from browser.matching import perform_search
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, Gene
+from browser.models import Gene, Message, MeshTerm, SearchCriteria, SearchResult,  Upload, OVID
 from tests.base_test_case import BaseTestCase
+
 
 @tag('admin')
 class AdminTestCase(BaseTestCase):
@@ -88,28 +91,35 @@ class AdminTestCase(BaseTestCase):
         self.assertContains(response, 'class="readonly"', count=2)
 
     def test_messages_admin_list(self):
-        """Test super user accessing gene listing admin pages"""
+        """Test super user accessing message listing admin pages"""
         self.client.logout()
         self._login_super_user()
         expected_form = ["Select message to change", "Add message"]
+        message = Message.objects.create(body="Testing 1, 2, 3", user=self.user, end=timezone.now() + timedelta(days=1))
         self._find_expected_content('/admin/browser/message', msg_list=expected_form)
+        message.delete()
 
     def test_messages_admin_edit(self):
-        """Test super user accessing gene edit admin pages"""
-        path = '/admin/browser/gene/21899/change/'
+        """Test super user accessing message edit admin pages"""
+        
         self.client.logout()
         self._login_super_user()
-        expected_form = ["TRPC1", "Synonym for:"]
+        message = Message.objects.create(body="Testing A, B, C", user=self.user, end=timezone.now() + timedelta(days=1))
+        path = '/admin/browser/message/%d/change/' % message.id
+        expected_form = ["Testing A, B, C", "Body", "Start", "End", "Is disabled", ]
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
-        self.assertContains(response, 'class="readonly"', count=2)
+        self.assertNotContains(response, 'class="readonly"')
+        message.delete()
 
     def test_upload_admin_list(self):
         """Test super user accessing upload listing admin pages"""
         self.client.logout()
         self._login_super_user()
         expected_form = ["Select upload to change", "Add upload"]
+        upload = self._create_upload_object()
         self._find_expected_content('/admin/browser/upload', msg_list=expected_form)
+        upload.delete()
 
     def test_upload_admin_edit(self):
         """Test super user accessing upload edit admin pages"""
@@ -121,13 +131,16 @@ class AdminTestCase(BaseTestCase):
         response = self.client.get(path, follow=True)
         self.assertContains(response, 'class="readonly"', count=3)
         self.assertContains(response, 'test-abstract-ovid-test-sample-5.txt')
+        upload.delete()
 
     def test_search_criteria_admin_list(self):
         """Test super user accessing search criteria listing admin pages"""
         self.client.logout()
         self._login_super_user()
+        search_criteria = self._create_search_criteria()
         expected_form = ["Select search criteria to change", "Add search criteria"]
         self._find_expected_content('/admin/browser/searchcriteria', msg_list=expected_form)
+        search_criteria.delete()
 
     def test_search_criteria_admin_edit(self):
         """Test super user accessing search criteria admin pages"""
@@ -140,6 +153,7 @@ class AdminTestCase(BaseTestCase):
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
         self.assertContains(response, 'class="readonly"', count=7)
+        search_criteria.delete()
 
     def test_search_result_admin_list(self):
         """Test super user accessing search result listing admin pages"""
@@ -155,6 +169,7 @@ class AdminTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(id=search_result.id)
         expected_form = [search_result.filename_stub, "Completed"]
         self._find_expected_content('/admin/browser/searchresult', msg_list=expected_form)
+        search_result.delete()
 
     def test_search_result_edit_list(self):
         """Test super user accessing search result admin pages"""
@@ -174,3 +189,4 @@ class AdminTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(id=search_result.id)
         expected_form = ["results_%d__topresults" % search_result.id, ]
         self._find_expected_content(path, msg_list=expected_form)
+        search_result.delete()
