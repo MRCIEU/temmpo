@@ -19,16 +19,23 @@ class AdminTestCase(BaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
 
+    def setUp(self):
+        super(AdminTestCase, self).setUp()
+        self.client.logout()
+        self._login_super_user()
+
+    def tearDown(self):
+        self.client.logout()
+        super(AdminTestCase, self).tearDown()
+
     def _create_upload_object(self):
         """Create and return a test upload object."""
         BASE_DIR = os.path.dirname(__file__)
         test_file_path = os.path.join(BASE_DIR, 'test-abstract-ovid-test-sample-5.txt')
-
         test_file = open(test_file_path, 'r')
         upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract-ovid-test-sample-5.txt'), file_format=OVID)
         upload.save()
         test_file.close()
-
         return upload
 
     def _create_search_criteria(self):
@@ -58,16 +65,12 @@ class AdminTestCase(BaseTestCase):
 
     def test_mesh_terms_admin_list(self):
         """Test super user accessing mesh term listing admin pages"""
-        self.client.logout()
-        self._login_super_user()
         expected_form = ["Select mesh term to change", "Search", "Add mesh term"]
         self._find_expected_content('/admin/browser/meshterm', msg_list=expected_form)
 
     def test_mesh_terms_admin_edit(self):
         """Test super user accessing mesh term edit admin pages"""
         path = '/admin/browser/meshterm/16493/change/'
-        self.client.logout()
-        self._login_super_user()
         expected_form = ["2015", "Parent", "Tree number", "Year", "Term", ]
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
@@ -75,16 +78,12 @@ class AdminTestCase(BaseTestCase):
 
     def test_genes_admin_list(self):
         """Test super user accessing gene listing admin pages"""
-        self.client.logout()
-        self._login_super_user()
         expected_form = ["Select gene to change", "Search", "Add gene"]
         self._find_expected_content('/admin/browser/gene', msg_list=expected_form)
 
     def test_genes_admin_edit(self):
         """Test super user accessing gene edit admin pages"""
         path = '/admin/browser/gene/21899/change/'
-        self.client.logout()
-        self._login_super_user()
         expected_form = ["TRPC1", "Synonym for:"]
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
@@ -92,18 +91,13 @@ class AdminTestCase(BaseTestCase):
 
     def test_messages_admin_list(self):
         """Test super user accessing message listing admin pages"""
-        self.client.logout()
-        self._login_super_user()
-        expected_form = ["Select message to change", "Add message"]
         message = Message.objects.create(body="Testing 1, 2, 3", user=self.user, end=timezone.now() + timedelta(days=1))
+        expected_form = ["Select message to change", "Add message", "Testing 1, 2, 3", ]
         self._find_expected_content('/admin/browser/message', msg_list=expected_form)
         message.delete()
 
     def test_messages_admin_edit(self):
         """Test super user accessing message edit admin pages"""
-        
-        self.client.logout()
-        self._login_super_user()
         message = Message.objects.create(body="Testing A, B, C", user=self.user, end=timezone.now() + timedelta(days=1))
         path = '/admin/browser/message/%d/change/' % message.id
         expected_form = ["Testing A, B, C", "Body", "Start", "End", "Is disabled", ]
@@ -114,8 +108,6 @@ class AdminTestCase(BaseTestCase):
 
     def test_upload_admin_list(self):
         """Test super user accessing upload listing admin pages"""
-        self.client.logout()
-        self._login_super_user()
         expected_form = ["Select upload to change", "Add upload"]
         upload = self._create_upload_object()
         self._find_expected_content('/admin/browser/upload', msg_list=expected_form)
@@ -135,8 +127,6 @@ class AdminTestCase(BaseTestCase):
 
     def test_search_criteria_admin_list(self):
         """Test super user accessing search criteria listing admin pages"""
-        self.client.logout()
-        self._login_super_user()
         search_criteria = self._create_search_criteria()
         expected_form = ["Select search criteria to change", "Add search criteria"]
         self._find_expected_content('/admin/browser/searchcriteria', msg_list=expected_form)
@@ -147,8 +137,6 @@ class AdminTestCase(BaseTestCase):
         # Create test search criteria object
         search_criteria = self._create_search_criteria()
         path = '/admin/browser/searchcriteria/%d/change/' % search_criteria.id
-        self.client.logout()
-        self._login_super_user()
         expected_form = ["Phenotype", "TRPC1", "Public Health Systems Research", "Cells", ]
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
@@ -157,8 +145,6 @@ class AdminTestCase(BaseTestCase):
 
     def test_search_result_admin_list(self):
         """Test super user accessing search result listing admin pages"""
-        self.client.logout()
-        self._login_super_user()
         # Check listing with a stub search result object
         search_result = self._create_search_result()
         expected_form = ["Select search result to change", "Add search result", "SearchResult id:", "Not started"]
@@ -176,8 +162,6 @@ class AdminTestCase(BaseTestCase):
         # Create test search result object
         search_result = self._create_search_result()
         path = '/admin/browser/searchresult/%d/change/' % search_result.id
-        self.client.logout()
-        self._login_super_user()
         # Check form with a stub search result object
         expected_form = ["Filename stub", "Has edge file changed", "Criteria", ]
         self._find_expected_content(path, msg_list=expected_form)
