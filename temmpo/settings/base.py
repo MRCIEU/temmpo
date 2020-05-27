@@ -54,8 +54,8 @@ ALLOWED_HOSTS = ['127.0.0.1',
 DEFAULT_APPS = [
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.contenttypes', # Moved above to fix testing issue: https://code.djangoproject.com/ticket/9207
     'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
