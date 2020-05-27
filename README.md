@@ -61,15 +61,21 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
     NB: this can take a few minutes.
 
-        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json  --settings=temmpo.settings.dev
+        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019.json  --settings=temmpo.settings.dev
 
 2. Management command
 
     Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
 
-    NB: This command each take over 20 minutes to run.
+    NB: This command each take over 50 minutes to run depending on your environment.
 
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2019.bin 2019
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2020.bin 2020
+
+##### Dumping MeSH terms to a fixture file
+
+After importing a new year of mesh terms, create a fixture file for testing and development purposes.  For example:
+
+    python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020.json
 
 #### Importing Genes - optional
 
@@ -79,7 +85,7 @@ A database of existing gene terms can be imported into the Django application da
 
 #### Run the development server and workers
 
-Ensure matching code is reloaded
+In development you will need to restart the worker whenever any changes to the matching code are made.  Run the following in a separate window and restart to see changes to the mathcing code.
 
     sudo systemctl stop rqworker
     python manage.py rqworker default --settings=temmpo.settings.dev

@@ -84,3 +84,5 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
             print e
             print self.driver.page_source
             self.fail("A selenium exception occurred trying to access the chart label element in a bubble chart")
+
+        search_result.delete()
