@@ -135,12 +135,12 @@ NB: If you want to manually run migrations you need to use the --database flag
 Run the entire test suite using MySQL and generate a coverage report.
 
     coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql
-    coverage report
+    coverage report --skip-empty --skip-covered -m
 
 Or run the entire test suite using SQLlite and generate a coverage report.
 
     coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
-    coverage report
+    coverage report --skip-empty --skip-covered -m
 
 ### Running specific tests
 
