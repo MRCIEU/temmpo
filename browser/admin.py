@@ -13,8 +13,9 @@ class UploadAdmin(admin.ModelAdmin):
 
 class SearchCriteriaAdmin(admin.ModelAdmin):
     list_display = ('created', 'upload', )
-    readonly_fields = ('created', 'upload', 'mesh_terms_year_of_release', 'exposure_terms',  'mediator_terms', 'outcome_terms', 'genes', )
+    readonly_fields = ('created', 'mesh_terms_year_of_release', 'exposure_terms',  'mediator_terms', 'outcome_terms', 'genes', )
     search_fields = ('upload__user__email', 'upload__user__username', )
+    raw_id_fields = ('upload', )
 
 class GeneAdmin(admin.ModelAdmin):
     readonly_fields = ('name', 'synonym_for', )
@@ -29,7 +30,8 @@ class MeshTermAdmin(admin.ModelAdmin):
 class SearchResultAdmin(admin.ModelAdmin):
     exclude = ('results', )
     search_fields = ('criteria__upload__user__email', 'criteria__upload__user__username', 'filename_stub')
-    readonly_fields = ('criteria', 'mesh_filter', 'has_completed', 'filename_stub', 'started_processing', 'ended_processing', 'mediator_match_counts', 'mediator_match_counts_v3', 'has_edge_file_changed')
+    readonly_fields = ('mesh_filter', 'has_completed', 'filename_stub', 'started_processing', 'ended_processing', 'mediator_match_counts', 'mediator_match_counts_v3', 'has_edge_file_changed')
+    raw_id_fields = ('criteria', )
 
 class MessageAdmin(admin.ModelAdmin):
 
