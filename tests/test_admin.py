@@ -137,10 +137,11 @@ class AdminTestCase(BaseTestCase):
         # Create test search criteria object
         search_criteria = self._create_search_criteria()
         path = '/admin/browser/searchcriteria/%d/change/' % search_criteria.id
-        expected_form = ["Phenotype", "TRPC1", "Public Health Systems Research", "Cells", ]
+        expected_form = ["Phenotype", "TRPC1", "Public Health Systems Research", "Cells", "lookup_id_upload", ]
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
-        self.assertContains(response, 'class="readonly"', count=7)
+        self.assertContains(response, 'class="readonly"', count=6)
+        self.assertContains(response, 'related-lookup', count=1)
         search_criteria.delete()
 
     def test_search_result_admin_list(self):
@@ -157,16 +158,17 @@ class AdminTestCase(BaseTestCase):
         self._find_expected_content('/admin/browser/searchresult', msg_list=expected_form)
         search_result.delete()
 
-    def test_search_result_edit_list(self):
+    def test_search_result_edit(self):
         """Test super user accessing search result admin pages"""
         # Create test search result object
         search_result = self._create_search_result()
         path = '/admin/browser/searchresult/%d/change/' % search_result.id
         # Check form with a stub search result object
-        expected_form = ["Filename stub", "Has edge file changed", "Criteria", ]
+        expected_form = ["Filename stub", "Has edge file changed", "Criteria", "field-criteria", ]
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
-        self.assertContains(response, 'class="readonly"', count=9)
+        self.assertContains(response, 'class="readonly"', count=8)
+        self.assertContains(response, 'related-lookup', count=1)
         # Check form after a matching has been performed
         perform_search(search_result.id)
         # Retrieve the updated search results object
