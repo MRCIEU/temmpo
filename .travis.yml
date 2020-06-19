@@ -44,7 +44,7 @@ script:
 
 after_success:
   # Update requirements third party dependenacy checking service
-  - test $TRAVIS_BRANCH = "TMMA-93" && requires.io update-branch -t $REQUIRES_IO_TOKEN -r rit/temmpo -n $TRAVIS_BRANCH requirements/
+  - test $TRAVIS_BRANCH = "TMMA-93" && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
 
 branches:
   only:
