@@ -50,7 +50,8 @@ python-magic==0.4.15      # via -r requirements/test.txt
 pytz==2019.1              # via -r requirements/test.txt, django, pandas
 pyvirtualdisplay==0.2.1   # via -r requirements/test.txt
 redis==3.3.11             # via -r requirements/test.txt, django-redis-cache, django-rq, rq
-requests==2.22.0          # via -r requirements/test.txt
+requests==2.22.0          # via -r requirements/test.txt, requires.io
+requires.io==0.2.6        # via -r requirements/test.txt
 rq==1.0                   # via -r requirements/test.txt, django-rq
 scandir==1.10.0           # via pathlib2
 selenium==3.141.0         # via -r requirements/test.txt

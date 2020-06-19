@@ -42,6 +42,10 @@ script:
   - pip install fabric==1.13.1
   - fab -l -f deploy/fabfile.py
 
+after_success:
+  # Update requirements third party dependenacy checking service
+  - test $TRAVIS_BRANCH = "TMMA-93" && requires.io update-branch -t $REQUIRES_IO_TOKEN -r rit/temmpo -n $TRAVIS_BRANCH requirements/
+
 branches:
   only:
   - master
