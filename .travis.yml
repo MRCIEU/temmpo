@@ -44,7 +44,7 @@ script:
 
 after_success:
   # Update requirements tracked by third party dependency checking service, requires.io
-  - test $TRAVIS_BRANCH = "TMMA-93" && requires.io update-repo -t $REQUIRES_IO_TOKEN -r temmpo --private && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
+  - test $TRAVIS_BRANCH = "master" && apt-get update && apt-get install -y ca-certificates --no-install-recommends && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
 
 branches:
   only:
