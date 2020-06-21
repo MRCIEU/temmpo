@@ -43,8 +43,8 @@ script:
   - fab -l -f deploy/fabfile.py
 
 after_success:
-  # Update requirements third party dependency checking service
-  - test $TRAVIS_BRANCH = "master" && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
+  # Update requirements tracked by third party dependency checking service, requires.io
+  - test $TRAVIS_BRANCH = "TMMA-93" && requires.io update-repo -t $REQUIRES_IO_TOKEN -r temmpo --private && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
 
 branches:
   only:
