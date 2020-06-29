@@ -460,7 +460,7 @@ def update_requires_io(requires_io_token, env="test", use_local_mode=False):
         with change_dir(src_dir):
             caller('git checkout %s' % branch)
         with change_dir(venv_dir):
-            caller('./bin/requires.io requires.io update-branch -t %s -r temmpo -n %s %s/requirements/' % (requires_io_token, branch, src_dir, ))
+            caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements/' % (requires_io_token, branch, src_dir, ))
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
