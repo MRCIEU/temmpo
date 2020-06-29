@@ -4,5 +4,4 @@ astroid==1.6.6
 django-debug-toolbar==1.11
 ipython==5.8.0
 isort==4.3.21
-pylint==1.9.5
 pympler==0.7

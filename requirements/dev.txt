@@ -4,13 +4,12 @@
 #
 #    pip-compile --output-file=requirements/dev.txt requirements/dev.in
 #
-astroid==1.6.6            # via -r requirements/dev.in, pylint
-backports.functools-lru-cache==1.6.1  # via astroid, isort, pylint
+astroid==1.6.6            # via -r requirements/dev.in
+backports.functools-lru-cache==1.6.1  # via astroid, isort
 backports.shutil-get-terminal-size==1.0.0  # via ipython
 certifi==2019.3.9         # via -r requirements/test.txt, requests
 chardet==3.0.4            # via -r requirements/test.txt, requests
 click==7.0                # via -r requirements/test.txt, rq
-configparser==4.0.2       # via pylint
 coverage==5.1             # via -r requirements/test.txt
 csvvalidator==1.2         # via -r requirements/test.txt
 decorator==4.4.0          # via ipython, traitlets
@@ -29,10 +28,9 @@ hiredis==1.0.1            # via -r requirements/test.txt
 idna==2.8                 # via -r requirements/test.txt, requests
 ipython-genutils==0.2.0   # via traitlets
 ipython==5.8.0            # via -r requirements/dev.in
-isort==4.3.21             # via -r requirements/dev.in, pylint
+isort==4.3.21             # via -r requirements/dev.in
 lazy-object-proxy==1.4.3  # via astroid
 lxml==4.4.2               # via -r requirements/test.txt
-mccabe==0.6.1             # via pylint
 mysqlclient==1.4.6        # via -r requirements/test.txt
 numpy==1.16.5             # via -r requirements/test.txt, pandas
 pandas==0.24.2            # via -r requirements/test.txt
@@ -42,7 +40,6 @@ pickleshare==0.7.5        # via ipython
 prompt-toolkit==1.0.16    # via ipython
 ptyprocess==0.6.0         # via pexpect
 pygments==2.3.1           # via ipython
-pylint==1.9.5             # via -r requirements/dev.in
 pympler==0.7              # via -r requirements/dev.in
 pyscreenshot==0.5.1       # via -r requirements/test.txt
 python-dateutil==2.8.0    # via -r requirements/test.txt, pandas
@@ -50,18 +47,18 @@ python-magic==0.4.15      # via -r requirements/test.txt
 pytz==2019.1              # via -r requirements/test.txt, django, pandas
 pyvirtualdisplay==0.2.1   # via -r requirements/test.txt
 redis==3.3.11             # via -r requirements/test.txt, django-redis-cache, django-rq, rq
-requests==2.22.0          # via -r requirements/test.txt, requires.io
+requests==2.24.0          # via -r requirements/test.txt, requires.io
 requires.io==0.2.6        # via -r requirements/test.txt
 rq==1.0                   # via -r requirements/test.txt, django-rq
 scandir==1.10.0           # via pathlib2
 selenium==3.141.0         # via -r requirements/test.txt
 simplegeneric==0.8.1      # via ipython
-singledispatch==3.4.0.3   # via astroid, pylint
-six==1.12.0               # via -r requirements/test.txt, astroid, django-redis-cache, pathlib2, prompt-toolkit, pylint, python-dateutil, singledispatch, traitlets
+singledispatch==3.4.0.3   # via astroid
+six==1.12.0               # via -r requirements/test.txt, astroid, django-redis-cache, pathlib2, prompt-toolkit, python-dateutil, singledispatch, traitlets
 sqlparse==0.3.0           # via django-debug-toolbar
 traitlets==4.3.2          # via ipython
 unicodecsv==0.14.1        # via -r requirements/test.txt
-urllib3==1.25.2           # via -r requirements/test.txt, requests, selenium
+urllib3==1.25.9           # via -r requirements/test.txt, requests, selenium
 wcwidth==0.1.7            # via prompt-toolkit
 wrapt==1.12.1             # via astroid
 
