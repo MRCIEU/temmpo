@@ -195,20 +195,19 @@ class SearchCriteria(models.Model):
             return []
 
     def get_wcrf_input_variables(self, codename='exposure'):
-        """Helper function to return terms in format that suits the matching code."""
+        """Helper function to return terms in format that suits the matching code.  Ensure unique and sorted lists."""
         input_variables = None
         if codename == 'exposure':
-            input_variables = self.exposure_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.exposure_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'outcome':
-            input_variables = self.outcome_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.outcome_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'mediator':
-            input_variables = self.mediator_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.mediator_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'gene':
-            input_variables = self.genes.order_by('name').values_list('name', flat=True)
+            input_variables = self.genes.distinct().order_by('name').values_list('name', flat=True)
 
         if input_variables:
-            #Ensure unique and sorted - NB not sorted in practise but order is maintained which is essential
-            return list(set(input_variables)) # Order should be maintained desc
+            return tuple(input_variables)
         else:
             return tuple()
 

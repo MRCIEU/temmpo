@@ -20,6 +20,7 @@ ERROR_TEXT = "Error occurred"
 logger = logging.getLogger(__name__)
 TERM_DELIMITER = ";"
 
+
 class Citation:
 
     def __init__(self, id):

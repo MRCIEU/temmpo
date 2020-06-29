@@ -14,6 +14,7 @@ import pandas as pd
 
 from django.conf import settings
 from django.core.files import File
+from django.core import management
 from django.core.urlresolvers import reverse
 from django.test import tag
 
@@ -121,6 +122,19 @@ class MatchingTestCase(BaseTestCase):
                 self.assertTrue("transfected with CYP27B" in citation.fields["AB"])
         self.assertEqual(citation_count, 100)
 
+    def _prepare_base_search_criteria(self, year):
+        BASE_DIR = os.path.dirname(__file__)
+        test_file_path = os.path.join(BASE_DIR, 'test-abstract-ovid-test-sample-5.txt')
+
+        test_file = open(test_file_path, 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract-ovid-test-sample-5.txt'), file_format=OVID)
+        upload.save()
+        test_file.close()
+
+        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
+        search_criteria.save()
+        return search_criteria
+
     def _prepare_search_result(self):
         """Generates a search result object and associated edge file
 
@@ -130,21 +144,12 @@ class MatchingTestCase(BaseTestCase):
         Serogroup,2,1,1.5
         """
         year = 2018
-        BASE_DIR = os.path.dirname(__file__)
-        test_file_path = os.path.join(BASE_DIR, 'test-abstract-ovid-test-sample-5.txt')
-
-        test_file = open(test_file_path, 'r')
-        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract-ovid-test-sample-5.txt'), file_format=OVID)
-        upload.save()
-        test_file.close()
+        search_criteria = self._prepare_base_search_criteria(year)
 
         exposure_term = MeshTerm.objects.get(term="Cells", year=year).get_descendants(include_self=True)
         mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Public Health Systems Research", year=year).get_descendants(include_self=True)
         # gene = Gene.objects.get(name="TRPC1") # Extend gene testing to include STIM1 or a synonym or two
-
-        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
-        search_criteria.save()
 
         # search_criteria.genes.add(gene)
         search_criteria.exposure_terms = exposure_term
@@ -157,22 +162,21 @@ class MatchingTestCase(BaseTestCase):
 
         perform_search(search_result.id)
 
-        return search_result.id
+        return SearchResult.objects.get(id=search_result.id)
 
 
     def test_record_differences_between_match_runs_no_previous_search(self):
         """No version 1 search results"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
 
         self.assertEqual(search_result.mediator_match_counts, None)
         self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_match_counts_changed)
         self.assertFalse(search_result.has_edge_file_changed)
 
-        record_differences_between_match_runs(search_result_id)
+        record_differences_between_match_runs(search_result.id)
 
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = SearchResult.objects.get(id=search_result.id)
         self.assertEqual(search_result.mediator_match_counts, None)
         self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_match_counts_changed)
@@ -180,8 +184,7 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_missing_v1_edge_file(self):
         """Previous search results but missing edge file"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = 0
         search_result.save()
 
@@ -189,13 +192,13 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_result.has_match_counts_changed)
 
         try:
-            record_differences_between_match_runs(search_result_id)
+            record_differences_between_match_runs(search_result.id)
             # Expected to throw an exception and not reach the next line
             logger.error("Expected version 1 edge file %s_edge.csv to be missing and an exception to be thrown." % search_result.filename_stub)
             assert False
         except IOError:
             assert True
-            search_result = SearchResult.objects.get(id=search_result_id)
+            search_result = SearchResult.objects.get(id=search_result.id)
             self.assertTrue(search_result.has_changed)
             self.assertTrue(search_result.has_match_counts_changed)
         except:
@@ -203,19 +206,18 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_missing_v3_edge_file(self):
         """Previous search results but missing edge file"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = 0
         search_result.save()
         shutil.move(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
 
         try:
-            record_differences_between_match_runs(search_result_id)
+            record_differences_between_match_runs(search_result.id)
             # Expected to throw an exception and not reach the next line
             assert False
         except IOError:
             assert True
-            search_result = SearchResult.objects.get(id=search_result_id)
+            search_result = SearchResult.objects.get(id=search_result.id)
             self.assertTrue(search_result.has_changed)
             self.assertTrue(search_result.has_match_counts_changed)
         except:
@@ -223,8 +225,7 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_no_changes_expected(self):
         """Previous search, edge file and no changes expected"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = search_result.mediator_match_counts_v3
         search_result.save()
         # Add trailing commas to the V1 file no longer present in v3 files
@@ -235,8 +236,8 @@ class MatchingTestCase(BaseTestCase):
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as v1_csv:
             v1_csv.writelines(data)
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
         self.assertFalse(search_result.has_match_counts_changed)
@@ -246,8 +247,7 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_when_changes_exist(self):
         """Previous search, edge file and change in counts and scores expected in line 1, n/2, and n"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = search_result.mediator_match_counts_v3
         search_result.save()
 
@@ -258,8 +258,8 @@ class MatchingTestCase(BaseTestCase):
             file.write("Genetic Pleiotropy,1,1,2.0,\n")
             file.write("Serogroup,2,1,1.5,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
         self.assertTrue(search_result.has_changed)
@@ -273,8 +273,8 @@ class MatchingTestCase(BaseTestCase):
             file.write("Genetic Pleiotropy,2,1,1.5,\n")
             file.write("Serogroup,2,1,1.5,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
         self.assertTrue(search_result.has_changed)
@@ -288,8 +288,8 @@ class MatchingTestCase(BaseTestCase):
             file.write("Genetic Pleiotropy,1,1,2.0,\n")
             file.write("Serogroup,1,1,1,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
         self.assertTrue(search_result.has_changed)
@@ -299,8 +299,7 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_when_new_meditors(self):
         """Previous search, edge file and new mediators expected in line 1, n/2, and n"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = search_result.mediator_match_counts_v3 - 1
         search_result.save()
 
@@ -310,8 +309,8 @@ class MatchingTestCase(BaseTestCase):
             file.write("Genetic Pleiotropy,1,1,2.0,\n")
             file.write("Serogroup,2,1,1.5,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
         self.assertTrue(search_result.has_changed)
@@ -324,8 +323,8 @@ class MatchingTestCase(BaseTestCase):
             file.write("Genetic Markers,2,1,1.5,\n")
             file.write("Serogroup,2,1,1.5,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
         self.assertTrue(search_result.has_changed)
@@ -338,8 +337,8 @@ class MatchingTestCase(BaseTestCase):
             file.write("Genetic Markers,2,1,1.5,\n")
             file.write("Genetic Pleiotropy,1,1,2.0,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
         self.assertTrue(search_result.has_changed)
@@ -365,9 +364,9 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_results_edge_csv_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('count_data', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('count_data', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL, file_name_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -381,15 +380,14 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_v1_results_edge_csv_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = 1
         search_result.save()
         # Create a test version 1 file
         v1_file = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
         v1_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v1 file,0,0,0,\n")
         v1_file.close()
-        path = reverse('count_data_v1', kwargs={'pk': search_result_id })
+        path = reverse('count_data_v1', kwargs={'pk': search_result.id })
         expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V1, search_result.filename_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -403,9 +401,9 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_results_json_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('json_data', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('json_data', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         expected_url = "%s%s.json" % (settings.RESULTS_URL, file_name_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -416,11 +414,11 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_v1_results_json_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         # Mock up a version 1 matching result file
         shutil.copyfile(settings.RESULTS_PATH + file_name_stub + ".json", settings.RESULTS_PATH_V1 + file_name_stub + ".json")
-        path = reverse('json_data_v1', kwargs={'pk': search_result_id })
+        path = reverse('json_data_v1', kwargs={'pk': search_result.id })
         expected_url = "%s%s.json" % (settings.RESULTS_URL_V1, file_name_stub)
         self.assertTrue("v1" in expected_url)
         response = self.client.get(path, follow=True)
@@ -439,9 +437,9 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_results_abstract_ids_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('abstracts_data', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('abstracts_data', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         expected_url = "%s%s_abstracts.csv" % (settings.RESULTS_URL, file_name_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -456,9 +454,9 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_v1_results_abstract_ids_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('abstracts_data_v1', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('abstracts_data_v1', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         # Mock up a version 1 matching result file
         shutil.copyfile(settings.RESULTS_PATH + file_name_stub + "_abstracts.csv", settings.RESULTS_PATH_V1 + file_name_stub + "_abstracts.csv")
         expected_url = "%s%s_abstracts.csv" % (settings.RESULTS_URL_V1, file_name_stub)
@@ -1036,3 +1034,81 @@ class MatchingTestCase(BaseTestCase):
             self.assertEqual(len(links), 16)
             sorted_links = sorted(links, key=lambda item: (item['source'], item['target']))
             self.assertEqual(sorted_expected_links, sorted_links)
+
+    def _prepare_gene_matches_only_search_result(self):
+        """Generates a search result object and associated edge file
+
+        Mediators,Exposure counts,Outcome counts,Scores
+        
+        """
+        year = 2018
+        search_criteria = self._prepare_base_search_criteria(year)
+
+        exposure_term = MeshTerm.objects.get(term="Cells", year=year)
+        mediator_term_a = MeshTerm.objects.get(term="Phenotype", year=year)
+        mediator_term_b = MeshTerm.objects.get(term="Genetic Markers", year=year)
+        outcome_term = MeshTerm.objects.get(term="Public Health Systems Research", year=year)
+        gene_list = Gene.objects.filter(name__in=("A1BG", "A2M", "A2MP1", "NAT2", "AAVS1", "LBM180", ))
+
+        search_criteria.genes = gene_list
+        search_criteria.exposure_terms.add(exposure_term)
+        search_criteria.outcome_terms.add(outcome_term)
+        search_criteria.mediator_terms.add(mediator_term_a)
+        search_criteria.mediator_terms.add(mediator_term_b)
+        search_criteria.mediator_terms.add(mediator_term_a)
+        search_criteria.mediator_terms.add(mediator_term_b)
+        search_criteria.save()
+
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        perform_search(search_result.id)
+
+        return SearchResult.objects.get(id=search_result.id)
+
+    def test_ensure_get_wcrf_input_variables_is_sorted(self):
+        """"Bug detection - TMMA-377"""
+        Gene.objects.all().delete()
+        management.call_command('loaddata', 'test_genes_ext.json', verbosity=0)
+
+        year = 2018
+        search_criteria = self._prepare_base_search_criteria(year)
+        phenotype = MeshTerm.objects.get(term="Phenotype", year=year)
+        cells = MeshTerm.objects.get(term="Cells", year=year)
+        public_health = MeshTerm.objects.get(term="Public Health Systems Research", year=year)
+        search_criteria.exposure_terms.add(phenotype)
+        search_criteria.exposure_terms.add(cells)
+        search_criteria.exposure_terms.add(cells)
+        search_criteria.mediator_terms.add(phenotype)
+        search_criteria.mediator_terms.add(phenotype)
+        search_criteria.mediator_terms.add(cells)
+        search_criteria.outcome_terms.add(public_health)
+        search_criteria.outcome_terms.add(cells)
+        search_criteria.outcome_terms.add(public_health)
+        search_criteria.genes = Gene.objects.filter(name__in=("A1BG", "A2M", "A2MP1", "NAT2", "AAVS1", "LBM180", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("exposure"), ("Cells", "Phenotype", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("mediator"), ("Cells", "Phenotype", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("outcome"), ("Cells", "Public Health Systems Research", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("gene"), ("A1BG", "A2M", "A2MP1", "AAVS1", "LBM180", "NAT2", ))
+
+    def test_missing_genes_only_mediators(self):
+        """"Bug detection - TMMA-377"""
+        Gene.objects.all().delete()
+        management.call_command('loaddata', 'test_genes_ext.json', verbosity=0)
+        search_result = self._prepare_gene_matches_only_search_result()
+        
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as file_obj:
+            for line in file_obj:
+                logger.debug(line)
+
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv") as file_obj:
+            for line in file_obj:
+                logger.debug(line)
+        
+        # TODO - abstracts that have only media matches are being counted.
+
+        with open(settings.RESULTS_PATH + search_result.filename_stub + ".json") as file_obj:
+            parsed = json.load(file_obj)
+            logger.debug(json.dumps(parsed, indent=4, sort_keys=True))
+
+        self.assertEqual(search_result.mediator_match_counts_v3, 6)
