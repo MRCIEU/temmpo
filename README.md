@@ -13,6 +13,12 @@
 * VirtualBox https://www.virtualbox.org/ or another provider, see https://www.vagrantup.com/docs/providers/
 NB: The vagrant installation also requires an additional plugin to mount the development source code cloned on your local machine.
 
+Tested with these versions:
+
+VirtualBox 6.1.8 r137981 (Qt5.6.3)
+vagrant 2.2.9
+vagrant-sshfs 1.3.5
+
 ### Installing
 
     vagrant plugin install vagrant-sshfs
