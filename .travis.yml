@@ -1,9 +1,4 @@
-dist: xenial
 language: python
-addons:
-  apt:
-    packages:
-      - libgnutls-dev
 
 python:
   - '2.7'
@@ -47,15 +42,7 @@ script:
   - pip install fabric==1.13.1
   - fab -l -f deploy/fabfile.py
 
-after_success:
-  # Update requirements tracked by third party dependency checking service, requires.io
-  - test $TRAVIS_BRANCH = "TMMA-93" && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
-
 branches:
   only:
   - master
   - /^TMMA-.*$/
-
-env:
-  global:
-    secure: KBzC8tsNjHQev6mVDZwZsosj/hpihdTRSvNI5n2h7chXHo02IGWDJXOCeWy0GPylcRC6tKW6W/YKSppgPqy2YiSwX9tdUWvlnzUVx8RmEJPYcz7XY21+uZ1D0Axh6WmT9Pg2wNIk6BTCzvCqqmiKDGZAhnd70xHPOI6lf+iNRVZA3k0bhCS9kpCP+HglThDMjGRXFvNtoGrtubw7/ZtlGM7DiS1b6RF0tFDh8IaCWZI3KEb8npdqkjvcMjkM6++CbO6+ScB6VxXVJkVZzEvICoGnWD72IITDG/A+ecWM+0NRU+mYuCe9FkbRoFd4GMLu5ODbtrW0L7ikhlDQhN+IBL08YVOf7sYx7xp0grT1oztQFEm3dSud4zbJDUkDTd0FlBdI3pebZqtN3EgURfCm0NTxHRrwuer2Ub7Isdgxe/vXddqP6pIRWJQzAkPoGiT62aqnDSjRD9w8P0tgpY/8dL+5vlSXYV3ErZzgKAzlZA2jK7z8s6+HPFkk8dTZK+O0PSSlvJ7AOsMdydamt7jLn49vD/ndALmv1u2yzXj/+jOOXU2zA6GgWPSbBLfQVsW4iof/YSIGifXDawluYwl1XPzU1ICF33DvNf/2V9f6CnngR2fI5oj0JRTpQ2Ve7/sliVgsIM8CmRDu6wVae2qPUkn+7K8/zDazcMKRwvIQIQA=
