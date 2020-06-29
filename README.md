@@ -19,6 +19,10 @@ VirtualBox 6.1.8 r137981 (Qt5.6.3)
 vagrant 2.2.9
 vagrant-sshfs 1.3.5
 
+NB: Additional development IDE support for Visual Code can be added by installing
+
+    pip install pylint==1.9.5
+
 ### Installing
 
     vagrant plugin install vagrant-sshfs
