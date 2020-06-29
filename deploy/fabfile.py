@@ -452,6 +452,8 @@ def update_requires_io(requires_io_token, env="test", use_local_mode=False):
     """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
     # Can only be run against test or dev instances
     use_local_mode = (str(use_local_mode).lower() == 'true')
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
     for branch in ("master", "demo_stable", "prod_stable"):
