@@ -1,4 +1,9 @@
+dist: xenial
 language: python
+addons:
+  apt:
+    packages:
+      - libgnutls-dev
 
 python:
   - '2.7'
@@ -44,7 +49,7 @@ script:
 
 after_success:
   # Update requirements tracked by third party dependency checking service, requires.io
-  - test $TRAVIS_BRANCH = "TMMA-93" && apt-get update && apt-get install -y ca-certificates --no-install-recommends && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
+  - test $TRAVIS_BRANCH = "TMMA-93" && requires.io update-branch -t $REQUIRES_IO_TOKEN -r temmpo -n $TRAVIS_BRANCH requirements/
 
 branches:
   only:
