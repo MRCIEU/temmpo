@@ -459,6 +459,7 @@ def update_requires_io(requires_io_token, env="test", use_local_mode=False):
     for branch in ("master", "demo_stable", "prod_stable"):
         with change_dir(src_dir):
             caller('git checkout %s' % branch)
+            caller('git pull')
         with change_dir(venv_dir):
             caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements/' % (requires_io_token, branch, src_dir, ))
 
