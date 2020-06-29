@@ -452,13 +452,16 @@ def update_requires_io(requires_io_token, env="test", use_local_mode=False):
     """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
     # Can only be run against test or dev instances
     use_local_mode = (str(use_local_mode).lower() == 'true')
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
     for branch in ("master", "demo_stable", "prod_stable"):
         with change_dir(src_dir):
             caller('git checkout %s' % branch)
+            caller('git pull')
         with change_dir(venv_dir):
-            caller('./bin/requires.io requires.io update-branch -t %s -r temmpo -n %s %s/requirements/' % (requires_io_token, branch, src_dir, ))
+            caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements/' % (requires_io_token, branch, src_dir, ))
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
