@@ -425,7 +425,7 @@ def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
 def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
-    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
@@ -448,9 +448,20 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     with change_dir(src_dir):
         caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
+def update_requires_io(requires_io_token, env="test", use_local_mode=False):
+    """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
+    # Can only be run against test or dev instances
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+    for branch in ("master", "demo_stable", "prod_stable"):
+        with change_dir(src_dir):
+            caller('git checkout %s' % branch)
+        with change_dir(venv_dir):
+            caller('./bin/requires.io requires.io update-branch -t %s -r temmpo -n %s %s/requirements/' % (requires_io_token, branch, src_dir, ))
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
-    """env="test", database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
+    """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
     if database_name in ('temmpo_p', ):
         abort("Function should not be run against a production database.")
 
