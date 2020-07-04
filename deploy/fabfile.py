@@ -446,7 +446,31 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+
+def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
+    # Convert any command line arguments from strings to boolean values where necessary.
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    reuse_db = (str(reuse_db).lower() == 'true')
+    run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
+    cmd_suffix = ''
+    if reuse_db:
+        cmd_suffix = " --keepdb"
+    if tag and tag != "None":
+        cmd_suffix += " --tag=%s" % tag
+    if not run_selenium_tests:
+        cmd_suffix += " --exclude-tag=selenium-test"
+    elif tag and tag != "None":
+        cmd_suffix += " --tag=selenium-test"
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+
+    with change_dir(src_dir):
+        caller('%sbin/python manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def update_requires_io(requires_io_token, env="test", use_local_mode=False):
     """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""

@@ -2,6 +2,7 @@
 """Test non mesh term functionality."""
 from datetime import datetime, timedelta
 import glob
+import logging
 import os
 import shutil
 
@@ -18,7 +19,7 @@ from browser.matching import perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from browser.utils import user_clean_up, delete_user_content
 
-
+logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
 TEST_YEAR = 2018
@@ -40,6 +41,13 @@ class UserDeletionTest(BaseTestCase):
         mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=year).get_descendants(include_self=True)
         gene = Gene.objects.get(name="TRPC1")
+
+        logger.debug("exposure_terms")
+        logger.debug(exposure_terms)
+        logger.debug("mediator_terms")
+        logger.debug(mediator_terms)
+        logger.debug("outcome_terms")
+        logger.debug(outcome_terms)
 
         search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
         search_criteria.save()
@@ -85,7 +93,7 @@ class UserDeletionTest(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -202,7 +210,7 @@ class UserDeletionTest(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -504,12 +512,14 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
             os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
+        logger.debug(edge_file_lines)
+        logger.debug(abstract_file_lines)
         test_results_edge_csv.close()
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)

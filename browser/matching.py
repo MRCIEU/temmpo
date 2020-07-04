@@ -20,6 +20,7 @@ ERROR_TEXT = "Error occurred"
 logger = logging.getLogger(__name__)
 TERM_DELIMITER = ";"
 
+
 class Citation:
 
     def __init__(self, id):
@@ -74,29 +75,41 @@ def perform_search(search_result_stub_id):
     synonymlookup, synonymlisting = cache.get_or_set("temmpo:generate_synonyms", generate_synonyms, timeout=None)
     logger.debug("Done synonyms")
 
+    logger.debug(genelist)
+    logger.debug("Exposures")
+    logger.debug(exposuremesh)
+    logger.debug("Mediators")
+    logger.debug(mediatormesh)
+    logger.debug("Outcomes")
+    logger.debug(outcomemesh)
     edges, identifiers = create_edge_matrix(len(genelist), len(mediatormesh), len(exposuremesh), len(outcomemesh))
-    logger.debug("Done edges and identifiers (TODO)")
+    logger.debug("Done edges and TODO: identifiers")
 
     abstract_file_path = search_result_stub.criteria.upload.abstracts_upload.path
     abstract_file_format = search_result_stub.criteria.upload.file_format
+    logger.info("Read citations START")
     citations = read_citations(file_path=abstract_file_path, file_format=abstract_file_format)
-    logger.info("Read citations")
+    logger.info("Read citations END")
 
     # Count edges
+    logger.info("Count edges START")
     papercounter, edges, identifiers = countedges(citations, genelist,
                                                   synonymlookup, synonymlisting,
                                                   exposuremesh, identifiers,
                                                   edges, outcomemesh,
                                                   mediatormesh, mesh_filter,
                                                   results_path, resultfilename, abstract_file_format)
-    logger.info("Counted edges")
+    logger.info("Count edges END")
 
     # Print edges
+    logger.info("Print edges START")
     mediator_match_counts = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
     logger.info("Printed %s edges", mediator_match_counts)
+    logger.info("Print edges END")
 
+    logger.info("Create JSON START")
     createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
-    logger.info("Created JSON")
+    logger.info("Create JSON  END")
 
     # Housekeeping
     # 1 - Mark results done
@@ -259,8 +272,9 @@ def searchgene(texttosearch, searchstring):
 
 def ovid_matching_function(ovid_mesh_term_text, mesh_term):
     """Return None for no matches >= 0 for match found.
-    NB: Asterisks indicate a major topic of article"""
-    searchstringre = re.compile('[;*]' + mesh_term + '[*;]')
+    NB: Asterisks indicate a major topic of article.  TBC /... what does this mean"""
+    # TODO consider precomplied regualr expression???
+    searchstringre = re.compile('[;*\\[]' + mesh_term + '[;/\\]]') # * prefixes Major headings, /?? [Mesh term] sub headings TODO also match against sub headings
     return searchstringre.search(ovid_mesh_term_text)
 
 def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
@@ -269,7 +283,7 @@ def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
     Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
     # TODO: (Low priority improvement) Move transformation outside of the matching function, as same term is compared many times
     transformed_mesh_term = mesh_term.lower().replace('[', ' ').replace(']', ' ').replace('(', ' ').replace(')', ' ')
-    searchstringre = re.compile('[;*]' + transformed_mesh_term + '[*;]')
+    searchstringre = re.compile('[;*\\[]' + transformed_mesh_term + '[;/\\]]')
     return searchstringre.search(pubmed_mesh_term_text.lower())
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
