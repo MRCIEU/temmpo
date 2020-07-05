@@ -115,6 +115,19 @@ class MeshTerm(MPTTModel):
         previous_terms = [x.term for x in previous_term_objs]
         return cls.objects.filter(year=current_year).filter(term__in=previous_terms)
 
+    @classmethod
+    def get_fixture_ids(cls, year, exposures, mediators, outcomes):
+        "Test fixture helper script, takes year int, exposures, mediators, outcomes are semicolon & space separated strings of term names, as per Search Criteria tab, returns a comma delimited string of ids"
+        terms_needed = []
+        terms_needed.extend(exposures.split("; "))
+        terms_needed.extend(mediators.split("; "))
+        terms_needed.extend(outcomes.split("; "))
+        logger.debug(terms_needed)
+        term_ids = cls.objects.filter(term__in=terms_needed, year=year).get_ancestors(include_self=True).values_list("id", flat=True)
+        ids = ",".join([str(x) for x in term_ids])
+        logger.info("Term counts %s" % len(term_ids))
+        return "python manage.py dumpdata browser.MeshTerm --indent 4 --pks %s --output test_fixtures.json" % ids
+
 
 OVID = 'ovid'
 PUBMED = 'pubmed'
@@ -195,20 +208,19 @@ class SearchCriteria(models.Model):
             return []
 
     def get_wcrf_input_variables(self, codename='exposure'):
-        """Helper function to return terms in format that suits the matching code."""
+        """Helper function to return terms in format that suits the matching code.  Ensure unique and sorted lists."""
         input_variables = None
         if codename == 'exposure':
-            input_variables = self.exposure_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.exposure_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'outcome':
-            input_variables = self.outcome_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.outcome_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'mediator':
-            input_variables = self.mediator_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.mediator_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'gene':
-            input_variables = self.genes.order_by('name').values_list('name', flat=True)
+            input_variables = self.genes.distinct().order_by('name').values_list('name', flat=True)
 
         if input_variables:
-            #Ensure unique and sorted - NB not sorted in practise but order is maintained which is essential
-            return list(set(input_variables)) # Order should be maintained desc
+            return tuple(input_variables)
         else:
             return tuple()
 

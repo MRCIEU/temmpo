@@ -15,9 +15,9 @@ NB: The vagrant installation also requires an additional plugin to mount the dev
 
 Tested with these versions:
 
-VirtualBox 6.1.8 r137981 (Qt5.6.3)
-vagrant 2.2.9
-vagrant-sshfs 1.3.5
+* VirtualBox 6.1.8 r137981 (Qt5.6.3)
+* vagrant 2.2.9
+* vagrant-sshfs 1.3.5
 
 NB: Additional development IDE support for Visual Code can be added by installing
 
@@ -90,9 +90,19 @@ After importing a new year of mesh terms, create a fixture file for testing and 
 
 #### Importing Genes - optional
 
-A database of existing gene terms can be imported into the Django application database.  A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
+A database of existing gene terms can be imported into the Django application database, either by using fixtures or the slower custom management command.
 
-    python manage.py import_genes --settings=temmpo.settings.dev
+1. Load fixture data
+
+    NB: This can take a few minutes.
+
+        python manage.py loaddata browser/fixtures/genes_snap_shot_2020_06_29.json --settings=temmpo.settings.dev
+
+2. Management command
+
+    A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
+
+        python manage.py import_genes --settings=temmpo.settings.dev
 
 #### Run the development server and workers
 
