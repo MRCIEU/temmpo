@@ -1,6 +1,4 @@
-4.0.0   TMMA-343 Bug fix matching MeSH terms with sub headings
-                 Add support for matching MeSH sub headings
-        TMMA-383 Expand definition of Abstract IDs CSV in help page
+3.6.0   TMMA-382 Increase workers in matching queue
 
 3.5.2   TMMA-93 Automate requires.io third party dependency checking
 
