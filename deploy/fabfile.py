@@ -412,7 +412,8 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
 
 def _change_rqworker_service(use_local_mode, action):
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    caller("sudo systemctl %s rqworker@{1..4}" % action)
+    for num in range(1, 5):
+        caller("sudo service rqworker%d %s" % (num, action))
 
 def restart_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="stop")

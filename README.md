@@ -181,8 +181,15 @@ This suggests attempting to create a search when no mesh terms have been importe
 The project needs the following additional services to be running:
 
     sudo systemctl status redis
-    sudo systemctl status rqworker@{1..4}
+    sudo systemctl status rqworker1
+    sudo systemctl status rqworker2
+    sudo systemctl status rqworker3
+    sudo systemctl status rqworker4
     sudo systemctl status httpd      # Not relevant for the django Vagrant VM
+
+# Check all services
+
+    sudo systemctl status
 
 ## Built with
 
