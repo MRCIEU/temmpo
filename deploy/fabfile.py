@@ -72,6 +72,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     # Create application specific directories
     caller('mkdir -p %svar/results/v1' % PROJECT_ROOT)
     caller('mkdir -p %svar/results/v3' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v4' % PROJECT_ROOT)
     caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
 
     if restart_rqworker:
