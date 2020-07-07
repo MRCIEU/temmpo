@@ -155,12 +155,12 @@ NB: If you want to manually run migrations you need to use the --database flag
 ## Running the tests
 Run the entire test suite using MySQL and generate a coverage report.
 
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
     coverage report --skip-empty --skip-covered -m
 
 Or run the entire test suite using SQLlite and generate a coverage report.
 
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=slow
     coverage report --skip-empty --skip-covered -m
 
 ### Running specific tests
@@ -181,7 +181,7 @@ This suggests attempting to create a search when no mesh terms have been importe
 The project needs the following additional services to be running:
 
     sudo systemctl status redis
-    sudo systemctl status rqworker
+    sudo systemctl status rqworker@{1..4}
     sudo systemctl status httpd      # Not relevant for the django Vagrant VM
 
 ## Built with
