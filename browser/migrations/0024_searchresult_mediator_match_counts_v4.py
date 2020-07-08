@@ -36,22 +36,18 @@ def enqueue_regenerating_matches(apps, schema_editor):
 
 
 def create_reprocessing_message(apps, schema_editor):
-    # TODO Does not seem to work
     msg = "Due to bug fixes and the addition of support for matching sub MeSH terms, all results are being reprocessed. Any changes will be highlighted in the Results area. NB: This may take up to 72 hours and new search results will be delayed."
     Message = apps.get_model("browser", "Message")
     User = apps.get_model("auth", "User")
     try:
         initial_user = User.objects.get(id=1)
+        # Add a message set to clear automatically in 2 weeks.
+        # With expectation that after manual check the message will be disabled upon completion of the migration.
+        new_msg = Message.objects.create(body=msg, user=initial_user, end=timezone.now() + timedelta(days=14))
+        new_msg.save()
+        logger.info("User %s created a site message, regarding reprocessing." % initial_user.username)
     except:
-        initial_user = User(email="messenger@example.org", username="messenger")
-        initial_user.save()
-        logger.warning("No user existed so one was created.")
-
-    # Add a message set to clear automatically in 2 weeks.
-    # With expectation that after manual check the message will be disabled upon completion of the migration.
-    new_msg = Message.objects.create(body=msg, user=initial_user, end=timezone.now() + timedelta(days=14))
-    new_msg.save()
-    logger.info("User %s created a site message, regarding reprocessing." % initial_user.username)
+        logger.warning("No user existed so no site message was created.  Normally as part of dev site setup.")
 
 class Migration(migrations.Migration):
 
