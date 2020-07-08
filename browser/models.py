@@ -349,6 +349,14 @@ class SearchResult(models.Model):
         else:
             return "SearchResult id: %d status: %s " % (self.id, self.status)
 
+    def matching_status(self):
+        info = "id: %s \n" % self.id
+        info += "v1: %s \n" % self.mediator_match_counts
+        info += "v2: %s \n" % self.mediator_match_counts_v3
+        info += "v4: %s \n" % self.mediator_match_counts_v4
+        info += "abstract: %s \n" % self.criteria.upload
+        info += "abstract: %s \n" % self.criteria.upload.file_format
+        return info
 
 class MessageManager(models.Manager):
 
