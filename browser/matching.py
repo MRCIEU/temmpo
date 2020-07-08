@@ -556,6 +556,7 @@ def record_differences_between_previous_match_runs(search_result, result_dir_a, 
     if getattr(search_result, previous_match_counts_field) is not None:
         result_filepath_a = result_dir_a + search_result.filename_stub + "_edge.csv"
         try:
+            logger.info("Read previous CSV edge file %s" % result_filepath_a)
             df_a = pd.read_csv(result_filepath_a,
                                 sep=',',
                                 header=0,
@@ -570,6 +571,7 @@ def record_differences_between_previous_match_runs(search_result, result_dir_a, 
             df_a = df_a.sort_values("Mediators")
             result_filepath_b = result_dir_b + search_result.filename_stub + "_edge.csv"
             try:
+                logger.info("Read current CSV edge file %s" % result_filepath_b)
                 df_b = pd.read_csv(result_filepath_b,
                                     sep=',',
                                     header=0,
@@ -587,14 +589,14 @@ def record_differences_between_previous_match_runs(search_result, result_dir_a, 
                     search_result.has_edge_file_changed = True
                     search_result.save()
                     logger.warning("%d has CHANGED" % search_result.id)
-            except IOError:
-                raise IOError("No current edge file found for search result %d." % search_result.id)
+            except IOError as e:
+                raise IOError(e)
 
             except:
                 raise
 
-        except IOError:
-            raise IOError("No previous edge file found for search result %d" % search_result.id)
+        except IOError as e:
+            raise IOError(e)
 
         except:
             raise
