@@ -25,30 +25,33 @@ def enqueue_regenerating_matches(apps, schema_editor):
     logger.info("%d priority search results exist" % priority_result_ids.count())
     for result_id in priority_result_ids:
         django_rq.enqueue(perform_search, result_id)
-        django_rq.enqueue(record_differences_between_match_runs, search_result_id)
+        django_rq.enqueue(record_differences_between_match_runs, result_id)
     logger.info("%d priority search results queued for reprocessing and comparisons" % priority_result_ids.count())
 
     logger.info("%d remaining search results exist" % remaining_result_ids.count())
     for result_id in remaining_result_ids:
         django_rq.enqueue(perform_search, result_id)
-        django_rq.enqueue(record_differences_between_match_runs, search_result_id)
+        django_rq.enqueue(record_differences_between_match_runs, result_id)
     logger.info("%d remaining search results queued for reprocessing and comparisons" % remaining_result_ids.count())
 
 
 def create_reprocessing_message(apps, schema_editor):
+    # TODO Does not seem to work
     msg = "Due to bug fixes and the addition of support for matching sub MeSH terms, all results are being reprocessed. Any changes will be highlighted in the Results area. NB: This may take up to 72 hours and new search results will be delayed."
     Message = apps.get_model("browser", "Message")
     User = apps.get_model("auth", "User")
-    (initial_user, created) = User.objects.get_or_create(id=1, defaults={"email": "messenger@example.org", "username": "messenger"})
+    try:
+        initial_user = User.objects.get(id=1)
+    except:
+        initial_user = User(email="messenger@example.org", username="messenger")
+        initial_user.save()
+        logger.warning("No user existed so one was created.")
+
     # Add a message set to clear automatically in 2 weeks.
     # With expectation that after manual check the message will be disabled upon completion of the migration.
     new_msg = Message.objects.create(body=msg, user=initial_user, end=timezone.now() + timedelta(days=14))
     new_msg.save()
     logger.info("User %s created a site message, regarding reprocessing." % initial_user.username)
-    if created:
-        logger.warning("No user existed so a temporary user was created.")
-        initial_user.delete()
-
 
 class Migration(migrations.Migration):
 
