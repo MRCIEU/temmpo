@@ -416,7 +416,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     except:
                         # Report unexpected errors as warning.
                         # TODO Review occurances and handle better, see inbox
-                        logger.warning("Unexpected error handling mediator: %s for mediator:%s edge_row_id %s edge_column_id %s", (sys.exc_info(), mediator, edge_row_id, edge_column_id)
+                        logger.warning("Unexpected error handling mediator: %s for mediator:%s edge_row_id %s edge_column_id %s", (sys.exc_info(), mediator, edge_row_id, edge_column_id))
 
         if countthis == 1:
             papercounter += 1
