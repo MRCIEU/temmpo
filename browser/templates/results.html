@@ -54,15 +54,15 @@ Total {{ article_count }} papers.
     {% if search_result.has_changed %} <h2>Original results <i class="fa fa-code-fork" title="Previous version" style="color:#337ab7;" data-results-change="{{ search_result.id }}"></i></h2>
     <p>These are for comparison purposes only.</p>
 
-        {% if search_result.mediator_match_counts %}
-        <div id="results-buttons-v1" class="form-group">
-            <a href="{{ score_csv_url_v1 }}" class="btn btn-outline btn-danger">Download version 1 scores as CSV</a> <a href="{{ abstract_ids_csv_url_v1 }}" class="btn btn-outline btn-danger">Download version 1 abstract IDs as CSV</a>
-        </div>
-        {% endif %}
-
-        {% if search_result.mediator_match_counts_v3 %}
+        {% if search_result.mediator_match_counts_v3 is not None %}
         <div id="results-buttons-v3" class="form-group">
             <a href="{{ score_csv_url_v3 }}" class="btn btn-outline btn-danger">Download version 3 scores as CSV</a> <a href="{{ abstract_ids_csv_url_v3 }}" class="btn btn-outline btn-danger">Download version 3 abstract IDs as CSV</a>
+        </div>
+        {% endif %}
+        
+        {% if search_result.mediator_match_counts is not None %}
+        <div id="results-buttons-v1" class="form-group">
+            <a href="{{ score_csv_url_v1 }}" class="btn btn-outline btn-danger">Download version 1 scores as CSV</a> <a href="{{ abstract_ids_csv_url_v1 }}" class="btn btn-outline btn-danger">Download version 1 abstract IDs as CSV</a>
         </div>
         {% endif %}
 
