@@ -108,8 +108,7 @@ A database of existing gene terms can be imported into the Django application da
 
 In development you will need to restart the worker whenever any changes to the matching code are made.  Run the following in a separate window and restart to see changes to the mathcing code.
 
-    sudo systemctl stop rqworker
-    python manage.py rqworker default --settings=temmpo.settings.dev
+    fab restart_rqworker_service:use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 
 In a separate terminal window run the development server
