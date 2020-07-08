@@ -30,7 +30,7 @@ class MeshTermAdmin(admin.ModelAdmin):
 class SearchResultAdmin(admin.ModelAdmin):
     exclude = ('results', )
     search_fields = ('criteria__upload__user__email', 'criteria__upload__user__username', 'filename_stub')
-    readonly_fields = ('mesh_filter', 'has_completed', 'filename_stub', 'started_processing', 'ended_processing', 'mediator_match_counts', 'mediator_match_counts_v3', 'has_edge_file_changed')
+    readonly_fields = ('mesh_filter', 'has_completed', 'filename_stub', 'started_processing', 'ended_processing', 'mediator_match_counts', 'mediator_match_counts_v3', 'mediator_match_counts_v4', 'has_edge_file_changed')
     raw_id_fields = ('criteria', )
 
 class MessageAdmin(admin.ModelAdmin):

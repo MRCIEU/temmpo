@@ -145,7 +145,7 @@ class SearchingTestCase(BaseTestCase):
         # Filter by a genes
         response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
 
-        # TODO Test filter by MeshTerm part of form
+        # TODO: TMMA-343 Test filter by MeshTerm part of form
 
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
@@ -638,7 +638,7 @@ class SearchingTestCase(BaseTestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
+        # TODO: (Improvement) Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
 
     def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
         """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
@@ -664,7 +664,7 @@ class SearchingTestCase(BaseTestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key}) + expanded_node_query_string
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
+        # TODO: (Improvement) Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
 
     def test_search_results_deletion(self):
         """Test we can delete results and associated files """
@@ -904,7 +904,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertNotEqual(len(terms), criteria.outcome_terms.count())
 
     def test_highlighting_matching_changes(self):
-        """Ensure new version 3 matching code results, are not marked as changes"""
+        """TODO: TMMA-343 UPDATE AND EXPAND: Ensure new version 3 matching code results, are not marked as changes"""
         self._login_user()
         search_criteria = self._set_up_test_search_criteria()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})

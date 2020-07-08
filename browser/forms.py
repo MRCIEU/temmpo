@@ -127,7 +127,7 @@ class TermSelectorForm(forms.ModelForm):
             if self.type != 'outcome':
                 duplicates.extend(self.instance.outcome_terms.filter(id__in=mesh_term_ids).values_list("id", flat=True))
 
-            # TODO handle the fact that users can add genes which may conflict with other exposures or outcomes.
+            # TODO: (Improve error handling) Handle the fact that users can add genes which may conflict with other exposures or outcomes.
             # genes = self.instance.genes.all().values_list("name", flat=True)
 
             # Stuff pre-processed terms into cleaned data if no duplicates
