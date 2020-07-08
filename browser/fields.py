@@ -39,8 +39,7 @@ class ExtractorFileField(forms.FileField):
                 return self.create_upload_file(extracted_file)
 
             except Exception as e:
-                logger.error("Cannot extract bz2")
-                logger.error(e)
+                logger.warning("Cannot extract bz2 %s" e)
                 raise forms.ValidationError("There were problems extracting your bz2 file")
 
         elif mime_type in ("application/x-gzip", "application/gzip"):
@@ -55,8 +54,7 @@ class ExtractorFileField(forms.FileField):
                 return self.create_upload_file(extracted_file)
 
             except Exception as e:
-                logger.error("Cannot extract gzip")
-                logger.error(e)
+                logger.warning("Cannot extract gzip %e" % e)
                 raise forms.ValidationError("There were problems extracting your gz file")
 
         return value
