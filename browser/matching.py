@@ -374,8 +374,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     break
                         except:
                             # Report unexpected errors
-                            logger.error("Unexpected error handling genes: %s", sys.exc_info())
-                            logger.error(" for gene: %s", gene)
+                            logger.warning("Unexpected error handling genes: %s  for gene: %s", (sys.exc_info(), gene, ))
 
                 # Repeat for other mediators
                 for mediator in mediatormesh:
@@ -415,11 +414,9 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                         # Some citations have no MeSH Terms, so mediator comparisons are not possible
                         pass
                     except:
-                        # Report unexpected errors
-                        logger.error("edge_row_id %s", edge_row_id)
-                        logger.error("edge_column_id %s", edge_column_id)
-                        logger.error("Unexpected error handling mediator: %s", sys.exc_info())
-                        logger.error(" for mediator:%s", mediator)
+                        # Report unexpected errors as warning.
+                        # TODO Review occurances and handle better, see inbox
+                        logger.warning("Unexpected error handling mediator: %s for mediator:%s edge_row_id %s edge_column_id %s", (sys.exc_info(), mediator, edge_row_id, edge_column_id))
 
         if countthis == 1:
             papercounter += 1
