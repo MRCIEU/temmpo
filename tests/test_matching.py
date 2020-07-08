@@ -1245,8 +1245,6 @@ class MatchingTestCase(BaseTestCase):
             self.assertEqual("Acute-Phase Proteins", mediators[2])
             self.assertTrue("Prostaglandin D2" in [x for x in mediators])
 
-        # TODO: TMMA-343 Assert the v4 CSV and JSON files created are okay
-
     @tag('slow', 'insulin')
     def test_verify_missing_insulin_markers(self):
         """TMMA-343 Ensure matching missing IGF-II (Insulin-Like Growth Factor II) and IGFBP-5 (Insulin-Like Growth Factor Binding Protein 5) terms.
