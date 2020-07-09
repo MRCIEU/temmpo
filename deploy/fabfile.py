@@ -484,6 +484,8 @@ def update_requires_io(requires_io_token, env="test", use_local_mode=False):
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
     for branch in ("master", "demo_stable", "prod_stable"):
         with change_dir(src_dir):
+            caller('git fetch --all')
+            caller('git fetch origin %s' % branch)
             caller('git checkout %s' % branch)
             caller('git pull')
         with change_dir(venv_dir):
