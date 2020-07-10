@@ -455,7 +455,25 @@ class MatchingTestCase(BaseTestCase):
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
 
-    # TODO: TMMA-343 add test for serving v3 edge CSV files
+    def test_serving_v3_results_edge_csv_file(self):
+        self._login_user()
+        search_result = self._prepare_search_result()
+        search_result.mediator_match_counts_v3 = 1
+        search_result.save()
+        # Create a test version 3 file
+        v3_file = open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w")
+        v3_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v3 file,0,0,0,\n")
+        v3_file.close()
+        path = reverse('count_data_v3', kwargs={'pk': search_result.id })
+        expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V3, search_result.filename_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        # Check for expected content
+        self.assertTrue("TESITNG v3 file,0,0,0" in content)
+        # Validate CSV data
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
 
     def test_serving_v1_results_edge_csv_file(self):
         self._login_user()
