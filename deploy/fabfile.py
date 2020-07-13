@@ -134,6 +134,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     if using_apache:
         disable_apache_site(use_local_mode)
+    stop_rqworker_service(use_local_mode)
 
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
@@ -164,7 +165,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
-    restart_rqworker_service(use_local_mode)
+    start_rqworker_service(use_local_mode)
 
 def setup_apache(env="dev", use_local_mode=False):
     """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
