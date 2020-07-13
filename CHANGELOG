@@ -1,3 +1,6 @@
+4.1.0   TMMA-391 Bug fix matching against MeSH Terms (or genes) that need escaping, e.g. H(+)-K(+)-Exchanging ATPase
+        Improve speed of MeSH Term matching
+
 4.0.1   Change website email address
 
 4.0.0   TMMA-343 Bug fix matching MeSH terms with sub headings
