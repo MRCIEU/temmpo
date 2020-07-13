@@ -269,28 +269,29 @@ def _pubmed_read_citations(abstract_file_path):
 
     infile.close()
 
+# TODO: TMM-394 Optimise use of compile for gene matching
 def searchgene(texttosearch, searchstring):
     """Return None for no matches >= 0 for match found.
     Gene symbols guidance ref https://www.genenames.org/about/guidelines/#!/#tocAnchor-1-8"""
-    # TMMA-343 (HIGH bug fix) Confirm of a Gene symbol name at start and end of an abstract will still match
-    searchstringre = re.compile('[^A-Za-z0-9#@_]' + searchstring + '[^A-Za-z0-9#@_]', re.IGNORECASE)
+    searchstringre = re.compile('[^A-Za-z0-9#@_]' + re.escape(searchstring) + '[^A-Za-z0-9#@_]', re.IGNORECASE)
     return searchstringre.search(texttosearch)
 
-def ovid_matching_function(ovid_mesh_term_text, mesh_term):
+def ovid_prepare_mesh_term_search_text_function(mesh_term):
     """Return None for no matches >= 0 for match found.
-    NB: Asterisks indicate a major topic of article.  TBC /... what does this mean"""
-    # TODO: (Improvement) Consider precomplied regular expression
-    searchstringre = re.compile('[;*\\[]' + mesh_term + '[;/\\]]', re.IGNORECASE) # * prefixes Major headings, /?? [Mesh term] sub headings and also match against sub headings
-    return searchstringre.search(ovid_mesh_term_text)
+    NB: An asterisk prefix indicates a major topic of article.
+        /?? [Mesh term] denotes sub headings
+        ref: http://zatoka.icm.edu.pl/OVIDWEB/fldguide/medline.htm"""
+    return re.compile('[;*/\\[]' + re.escape(mesh_term) + '[;/\\]]', re.IGNORECASE)
 
-def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
+def pubmed_prepare_mesh_term_search_text_function(mesh_term):
     """Return None for no matches >= 0 for match found.
-    NB: Asterisks indicate a major topic of article
-    Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
-    # TODO: (Improvement) Move transformation outside of the matching function, as same term is compared many times
-    transformed_mesh_term = mesh_term.lower().replace('[', ' ').replace(']', ' ').replace('(', ' ').replace(')', ' ')
-    searchstringre = re.compile('[;*\\[]' + transformed_mesh_term + '[;/\\]]', re.IGNORECASE)
-    return searchstringre.search(pubmed_mesh_term_text.lower())
+    NB: An asterisk prefix indicates a major topic of article.
+        /mesh term denotes sub headings in lowercase normally
+        ref: https://www.nlm.nih.gov/bsd/mms/medlineelements.html#mh"""
+    return re.compile('[;*/\\[]' + re.escape(mesh_term) + '[;/\\]]', re.IGNORECASE)  # TODO (Low priority) Performance improvement - Confirm that square braces matching is not needed for PubMED formatted files.
+
+def search_for_mesh_term(mesh_term_search_text, compiled_mesh_term_re):
+    return compiled_mesh_term_re.search(mesh_term_search_text)
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
@@ -304,22 +305,31 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         unique_id = "Unique Identifier"
         mesh_subject_headings = "MeSH Subject Headings"
         abstract = "Abstract"
-        matches = ovid_matching_function
+        prepare_mesh_term_match_text = ovid_prepare_mesh_term_search_text_function
 
     elif file_format == PUBMED:
         unique_id = "PMID"
         mesh_subject_headings = "MH"
         abstract = "AB"
-        matches = pubmed_matching_function
+        prepare_mesh_term_match_text = pubmed_prepare_mesh_term_search_text_function
+
+    # Prepare dictionary of compiled regular expressions for reuse in mesh term matching
+    compiled_mesh_term_reg_exp_hash = {}
+    for mesh_term in exposuremesh:
+        compiled_mesh_term_reg_exp_hash[mesh_term] = prepare_mesh_term_match_text(mesh_term)
+    for mesh_term in mediatormesh:
+        compiled_mesh_term_reg_exp_hash[mesh_term] = prepare_mesh_term_match_text(mesh_term)
+    for mesh_term in outcomemesh:
+        compiled_mesh_term_reg_exp_hash[mesh_term] = prepare_mesh_term_match_text(mesh_term)
+    if mesh_filter:
+        compiled_mesh_term_reg_exp_hash[mesh_filter] = prepare_mesh_term_match_text(mesh_filter)
 
     for citation in citations:
         countthis = 0
         edge_row_id = -1
-        # TODO: (Low priority improvement) - check Abstract section exists sooner
-
         # Ensure we only test citations with associated mesh headings
         if mesh_subject_headings in citation.fields:
-            if not mesh_filter or matches(citation.fields[mesh_subject_headings], mesh_filter) >= 0:
+            if not mesh_filter or search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mesh_filter]) >= 0:
                 # Only search for genes in citations with an abstract section
                 if abstract in citation.fields:
                     for gene in genelist:
@@ -327,6 +337,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                             found_gene_match = False
                             edge_row_id += 1
                             edge_column_id = -1
+                            # TODO: TMM-394 Optimise generation of gene_matches and synomym_matches - Move outside of citations for loop, include regular expression compile improvements
                             if gene in synonymlookup:
                                 gene_matches = synonymlookup[gene]
                             else:
@@ -343,30 +354,16 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                         countthis = 1
                                         for exposure in exposuremesh:
                                             edge_column_id += 1
-                                            exposurel = exposure.split(" AND ")
-                                            if len(exposurel) == 2:
-                                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
-                                                    edges[edge_row_id][edge_column_id] += 1
-                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                            elif len(exposurel) == 3:
-                                                if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
-                                                    edges[edge_row_id][edge_column_id] += 1
-                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
-                                            else:
-                                                if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
-                                                    edges[edge_row_id][edge_column_id] += 1
-                                                    # identifiers[gene][0][exposure].append(citation.fields[unique_id])
+                                            # NB: Removed AND splitting as not possible using the web app interface
+                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) >= 0:
+                                                edges[edge_row_id][edge_column_id] += 1
+                                                # identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                         for outcome in outcomemesh:
                                             edge_column_id += 1
-                                            outcomel = outcome.split(" AND ")
-                                            if len(outcomel) > 1:
-                                                if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
-                                                    edges[edge_row_id][edge_column_id] += 1
-                                                    # identifiers[gene][1][outcome].append(citation.fields[unique_id])
-                                            else:
-                                                if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
-                                                    edges[edge_row_id][edge_column_id] += 1
-                                                    # identifiers[gene][1][outcome].append(citation.fields[unique_id])
+                                            # NB: Removed AND splitting as not possible using the web app interface
+                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) >= 0:
+                                                edges[edge_row_id][edge_column_id] += 1
+                                                # identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                         # Stop comparing synonyms once a match is found
                                         break
                                 # Stop comparing synonyms once a match is found
@@ -381,41 +378,26 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     edge_row_id += 1
                     edge_column_id = -1
                     try:
-                        if matches(citation.fields[mesh_subject_headings], mediator) >= 0:
+                        if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mediator]) >= 0:
                             countthis = 1
                             citation_id.add(citation.fields[unique_id].strip())
                             for exposure in exposuremesh:
                                 edge_column_id += 1
-                                exposurel = exposure.split(" AND ")
-                                if len(exposurel) == 2:
-                                    if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0:
-                                        edges[edge_row_id][edge_column_id] += 1
-                                        # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
-                                elif len(exposurel) == 3:
-                                    if matches(citation.fields[mesh_subject_headings], exposurel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[1]) >= 0 and matches(citation.fields[mesh_subject_headings], exposurel[2]) >= 0:
-                                        edges[edge_row_id][edge_column_id] += 1
-                                        # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
-                                else:
-                                    if matches(citation.fields[mesh_subject_headings], exposure) >= 0:
-                                        edges[edge_row_id][edge_column_id] += 1
-                                        # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
+                                # NB: Removed AND splitting as not possible using the web app interface
+                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) >= 0:
+                                    edges[edge_row_id][edge_column_id] += 1
+                                    # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             for outcome in outcomemesh:
                                 edge_column_id += 1
-                                outcomel = outcome.split(" AND ")
-                                if len(outcomel) > 1:
-                                    if matches(citation.fields[mesh_subject_headings], outcomel[0]) >= 0 and matches(citation.fields[mesh_subject_headings], outcomel[1]) >= 0:
-                                        edges[edge_row_id][edge_column_id] += 1
-                                        # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
-                                else:
-                                    if matches(citation.fields[mesh_subject_headings], outcome) >= 0:
-                                        edges[edge_row_id][edge_column_id] += 1
-                                        # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
+                                # NB: Removed AND splitting as not possible using the web app interface
+                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) >= 0:
+                                    edges[edge_row_id][edge_column_id] += 1
+                                    # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                     except KeyError:
                         # Some citations have no MeSH Terms, so mediator comparisons are not possible
                         pass
                     except:
                         # Report unexpected errors as warning.
-                        # TODO Review occurances and handle better, see inbox
                         logger.warning("Unexpected error handling mediator: %s for mediator:%s edge_row_id %s edge_column_id %s", (sys.exc_info(), mediator, edge_row_id, edge_column_id))
 
         if countthis == 1:

@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse
 from django.test import tag
 
 from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson, _get_genes_and_mediators
-from browser.matching import record_differences_between_match_runs, perform_search, pubmed_matching_function, ovid_matching_function, searchgene
+from browser.matching import record_differences_between_match_runs, perform_search, ovid_prepare_mesh_term_search_text_function, pubmed_prepare_mesh_term_search_text_function, search_for_mesh_term, searchgene
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_test_case import BaseTestCase
 
@@ -455,7 +455,25 @@ class MatchingTestCase(BaseTestCase):
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
 
-    # TODO: TMMA-343 add test for serving v3 edge CSV files
+    def test_serving_v3_results_edge_csv_file(self):
+        self._login_user()
+        search_result = self._prepare_search_result()
+        search_result.mediator_match_counts_v3 = 1
+        search_result.save()
+        # Create a test version 3 file
+        v3_file = open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w")
+        v3_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v3 file,0,0,0,\n")
+        v3_file.close()
+        path = reverse('count_data_v3', kwargs={'pk': search_result.id })
+        expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V3, search_result.filename_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        # Check for expected content
+        self.assertTrue("TESITNG v3 file,0,0,0" in content)
+        # Validate CSV data
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
 
     def test_serving_v1_results_edge_csv_file(self):
         self._login_user()
@@ -885,29 +903,45 @@ class MatchingTestCase(BaseTestCase):
 
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
-    def test_ovid_matching_function(self):
-        """ovid_mesh_term_text, mesh_term"""
-        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
-        mesh_term = "Fictional MeSH Term A"
-        self.assertEqual(ovid_matching_function(search_text, mesh_term), None)
-        mesh_term = "Fictional MeSH Term AA"
-        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Transcriptome"
-        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Genetics"
-        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
+    def test_ovid_matching(self):
+        search_text = ";Cells;;H(+)-K(+)-Exchanging ATPase;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
+        self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term AA")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Transcriptome")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Genetics")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Metabolism")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Colorectal Neoplasms")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("H(+)-K(+)-Exchanging ATPase")  # TMMA-391: Test for bug fix
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
 
-    def test_pubmed_matching_function(self):
-        """pubmed_mesh_term_text, mesh_term"""
-        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
-        mesh_term = "Fictional MeSH Term A"
-        self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
-        mesh_term = "Fictional MeSH Term AA"
-        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Transcriptome"
-        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Genetics"
-        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
+    def test_pubmed_matching(self):
+        search_text = ";Adolescent;;H(+)-K(+)-Exchanging ATPase;;Adult;;Fetal Growth Retardation/complications/*physiopathology;;Cognition;;*DNA Copy Number Variations;;Educational Status;;Epilepsy/genetics;;Estonia;;Female;;Genome-Wide Association Study;;Great Britain;;*Heterozygote;;Humans;;Intellectual Disability/*genetics;;Italy;;Male;;Mental Disorders/*genetics;;Obesity/genetics;;Phenotype;;United States;"
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
+        self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Genetics")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Epilepsy")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Adolescent")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("United States")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Mental Disorders")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("DNA Copy Number Variations")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("H(+)-K(+)-Exchanging ATPase")  # TMMA-391: Test for bug fix
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Complications")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Physiopathology")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
 
     def test_search_gene(self):
         search_text = """A number of preclinical studies have shown that the activation of the vitamin D
@@ -1373,5 +1407,11 @@ class MatchingTestCase(BaseTestCase):
         abstract = u"test-abstract-pubmed-1.txt"
         search_criteria = self._prepare_base_search_criteria(year, file_name=abstract, file_format=PUBMED)
         self._assert_gene_matching(search_criteria, year)
+
+    def test_searchgene(self):
+        """TMMA-391 Ensure gene's don't need to be escaped for matching"""
+        texttosearch = " Various 'omics' technologies, RP11-153M24.1, including microarrays and gas chromatography mass spectrometry, can be used to identify hundreds of interesting genes, proteins and metabolites, such as differential genes, proteins and metabolites associated with diseases. Identifying metabolic pathways has become an invaluable aid to understanding the genes and metabolites associated with studying conditions. However, the classical methods used to identify pathways fail to accurately consider joint power of interesting gene/metabolite and the key regions impacted by them within metabolic pathways. In this study, we propose a powerful analytical method referred to as Subpathway-GM for the identification of metabolic subpathways. This provides a more accurate level of pathway analysis by integrating information from genes and metabolites, and their positions and cascade regions within the given pathway. We analyzed two colorectal cancer and one metastatic prostate cancer data sets and demonstrated that Subpathway-GM was able to identify disease-relevant subpathways whose corresponding entire pathways might be ignored using classical entire pathway identification methods. Further analysis indicated that the power of a joint genes/metabolites and subpathway strategy based on their topologies may play a key role in reliably recalling disease-relevant subpathways and finding novel subpathways. "
+        searchstring = "RP11-153M24.1"
+        self.assertFalse(searchgene(texttosearch, searchstring) == None)
 
 # TODO TMMA-343 Add test for display results page (with v1, v3, v4 and the combinations there of)
