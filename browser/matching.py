@@ -288,9 +288,12 @@ def pubmed_matching_function(pubmed_mesh_term_text, mesh_term):
     NB: Asterisks indicate a major topic of article
     Need to perform a case insensitive search that replaces ()[] with spaces before comparison """
     # TODO: (Improvement) Move transformation outside of the matching function, as same term is compared many times
-    transformed_mesh_term = mesh_term.lower().replace('[', ' ').replace(']', ' ').replace('(', ' ').replace(')', ' ')
+    transformed_mesh_term = mesh_term.replace('[', ' ').replace(']', ' ').replace('(', ' ').replace(')', ' ')
     searchstringre = re.compile('[;*\\[]' + transformed_mesh_term + '[;/\\]]', re.IGNORECASE)
-    return searchstringre.search(pubmed_mesh_term_text.lower())
+    return searchstringre.search(pubmed_mesh_term_text)
+
+# def match_mesh_term(searchstringre, meshterm):
+    # return searchstringre.search(meshterm)
 
 def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
