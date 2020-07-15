@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "Build script for a development TeMMPo environment on Centos"
 timedatectl set-timezone Europe/London
 yum -y install epel-release
@@ -53,23 +55,27 @@ systemctl start redis.service
 systemctl enable redis
 redis-cli ping
 
-cat > /etc/systemd/system/rqworker.service <<MESSAGE_QUEUE_WORKER
-[Unit]
-Description=Django-RQ Worker
-After=network.target
+# TMMA-382: Review and increase number of workers for matching code
+for i in 1 2 3 4
+do
+  cat > /etc/systemd/system/rqworker$i.service <<MESSAGE_QUEUE_WORKER
+  [Unit]
+  Description=TeMMPo Django-RQ Worker $i
+  After=network.target
 
-[Service]
-User=apache
-Group=vagrant
-WorkingDirectory=/usr/local/projects/temmpo/lib/dev/src/temmpo
-ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temmpo/lib/dev/src/temmpo/manage.py rqworker default --settings=temmpo.settings.dev
+  [Service]
+  User=apache
+  Group=vagrant
+  WorkingDirectory=/usr/local/projects/temmpo/lib/dev/src/temmpo
+  ExecStart=/usr/local/projects/temmpo/lib/dev/bin/python /usr/local/projects/temmpo/lib/dev/src/temmpo/manage.py rqworker default --settings=temmpo.settings.dev --name $i
 
-[Install]
-WantedBy=multi-user.target
+  [Install]
+  WantedBy=multi-user.target
 MESSAGE_QUEUE_WORKER
 
-systemctl start rqworker
-systemctl enable rqworker
+  systemctl enable rqworker$i
+  systemctl start rqworker$1
+done
 
 # Install components for Selenium testing
 yum -y install Xvfb
@@ -136,8 +142,10 @@ mkdir -p /usr/local/projects/temmpo/var/data
 mkdir -p /usr/local/projects/temmpo/var/abstracts
 mkdir -p /usr/local/projects/temmpo/var/results/v1
 mkdir -p /usr/local/projects/temmpo/var/results/v3
+mkdir -p /usr/local/projects/temmpo/var/results/v4
 mkdir -p /usr/local/projects/temmpo/var/results/testing/v1
 mkdir -p /usr/local/projects/temmpo/var/results/testing/v3
+mkdir -p /usr/local/projects/temmpo/var/results/testing/v4
 
 echo "Add directory for development emails"
 mkdir -p /usr/local/projects/temmpo/var/email

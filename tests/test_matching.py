@@ -14,11 +14,12 @@ import pandas as pd
 
 from django.conf import settings
 from django.core.files import File
+from django.core import management
 from django.core.urlresolvers import reverse
 from django.test import tag
 
 from browser.matching import Citation, create_edge_matrix, generate_synonyms, read_citations, countedges, printedges, createjson, _get_genes_and_mediators
-from browser.matching import record_differences_between_match_runs, perform_search, pubmed_matching_function, ovid_matching_function, searchgene
+from browser.matching import record_differences_between_match_runs, perform_search, ovid_prepare_mesh_term_search_text_function, pubmed_prepare_mesh_term_search_text_function, search_for_mesh_term, searchgene
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from tests.base_test_case import BaseTestCase
 
@@ -121,30 +122,33 @@ class MatchingTestCase(BaseTestCase):
                 self.assertTrue("transfected with CYP27B" in citation.fields["AB"])
         self.assertEqual(citation_count, 100)
 
-    def _prepare_search_result(self):
+    def _prepare_base_search_criteria(self, year, file_name=u'test-abstract-ovid-test-sample-5.txt', file_format=OVID):
+        BASE_DIR = os.path.dirname(__file__)
+        test_file_path = os.path.join(BASE_DIR, file_name)
+        test_file = open(test_file_path, 'r')
+        upload = Upload(user=self.user, abstracts_upload=File(test_file, file_name), file_format=file_format)
+        upload.save()
+        test_file.close()
+
+        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
+        search_criteria.save()
+        return search_criteria
+
+    def _prepare_search_result(self, file_name=u'test-abstract-ovid-test-sample-5.txt', file_format=OVID):
         """Generates a search result object and associated edge file
 
         Mediators,Exposure counts,Outcome counts,Scores
-        Genetic Markers,2,1,1.5
+        Genetic Markers,1,1,2.0
         Genetic Pleiotropy,1,1,2.0
-        Serogroup,2,1,1.5
+        Serogroup,1,1,2.0
         """
         year = 2018
-        BASE_DIR = os.path.dirname(__file__)
-        test_file_path = os.path.join(BASE_DIR, 'test-abstract-ovid-test-sample-5.txt')
-
-        test_file = open(test_file_path, 'r')
-        upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract-ovid-test-sample-5.txt'), file_format=OVID)
-        upload.save()
-        test_file.close()
+        search_criteria = self._prepare_base_search_criteria(year, file_name, file_format)
 
         exposure_term = MeshTerm.objects.get(term="Cells", year=year).get_descendants(include_self=True)
         mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Public Health Systems Research", year=year).get_descendants(include_self=True)
         # gene = Gene.objects.get(name="TRPC1") # Extend gene testing to include STIM1 or a synonym or two
-
-        search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
-        search_criteria.save()
 
         # search_criteria.genes.add(gene)
         search_criteria.exposure_terms = exposure_term
@@ -157,22 +161,21 @@ class MatchingTestCase(BaseTestCase):
 
         perform_search(search_result.id)
 
-        return search_result.id
+        return SearchResult.objects.get(id=search_result.id)
 
 
     def test_record_differences_between_match_runs_no_previous_search(self):
         """No version 1 search results"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
 
         self.assertEqual(search_result.mediator_match_counts, None)
         self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_match_counts_changed)
         self.assertFalse(search_result.has_edge_file_changed)
 
-        record_differences_between_match_runs(search_result_id)
+        record_differences_between_match_runs(search_result.id)
 
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = SearchResult.objects.get(id=search_result.id)
         self.assertEqual(search_result.mediator_match_counts, None)
         self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_match_counts_changed)
@@ -180,8 +183,7 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_missing_v1_edge_file(self):
         """Previous search results but missing edge file"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = 0
         search_result.save()
 
@@ -189,13 +191,13 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_result.has_match_counts_changed)
 
         try:
-            record_differences_between_match_runs(search_result_id)
+            record_differences_between_match_runs(search_result.id)
             # Expected to throw an exception and not reach the next line
             logger.error("Expected version 1 edge file %s_edge.csv to be missing and an exception to be thrown." % search_result.filename_stub)
             assert False
         except IOError:
             assert True
-            search_result = SearchResult.objects.get(id=search_result_id)
+            search_result = SearchResult.objects.get(id=search_result.id)
             self.assertTrue(search_result.has_changed)
             self.assertTrue(search_result.has_match_counts_changed)
         except:
@@ -203,19 +205,19 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_missing_v3_edge_file(self):
         """Previous search results but missing edge file"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = 0
+        search_result.mediator_match_counts_v3 = 0
         search_result.save()
         shutil.move(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
 
         try:
-            record_differences_between_match_runs(search_result_id)
+            record_differences_between_match_runs(search_result.id)
             # Expected to throw an exception and not reach the next line
             assert False
         except IOError:
             assert True
-            search_result = SearchResult.objects.get(id=search_result_id)
+            search_result = SearchResult.objects.get(id=search_result.id)
             self.assertTrue(search_result.has_changed)
             self.assertTrue(search_result.has_match_counts_changed)
         except:
@@ -223,11 +225,16 @@ class MatchingTestCase(BaseTestCase):
 
     def test_record_differences_between_match_runs_no_changes_expected(self):
         """Previous search, edge file and no changes expected"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
-        search_result.mediator_match_counts = search_result.mediator_match_counts_v3
+        search_result = self._prepare_search_result()
+        search_result.mediator_match_counts = search_result.mediator_match_counts_v3 = search_result.mediator_match_counts_v4
         search_result.save()
-        # Add trailing commas to the V1 file no longer present in v3 files
+        
+        # Copy over v4 results files to v3 folder
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv")
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv", settings.RESULTS_PATH_V3 + search_result.filename_stub + "_abstracts.csv")
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + ".json", settings.RESULTS_PATH_V3 + search_result.filename_stub + ".json")
+
+        # Add trailing commas to the V1 file no longer present in v4 files and write to v1 directory
         with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r") as v3_csv:
             data = v3_csv.readlines()
             for i in range(1, len(data)):
@@ -235,116 +242,185 @@ class MatchingTestCase(BaseTestCase):
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as v1_csv:
             v1_csv.writelines(data)
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
 
         self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v4)
         self.assertFalse(search_result.has_match_counts_changed)
         self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_edge_file_changed)
 
 
-    def test_record_differences_between_match_runs_when_changes_exist(self):
-        """Previous search, edge file and change in counts and scores expected in line 1, n/2, and n"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
-        search_result.mediator_match_counts = search_result.mediator_match_counts_v3
-        search_result.save()
+    def test_record_differences_between_match_runs_when_previous_is_missing(self):
+        # Also cover scenarios with different length v1 and v3 files after verifying can compare with missign files
+        search_result = self._prepare_search_result()
 
-        #Amend line 1 found in the v1 results file
-        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+        # No v1 or v3 files exist
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
+        self._assert_results_not_changed(search_result)
+
+        # Create version 3 file with a changes
+        search_result.mediator_match_counts_v3 = 1
+        search_result.save()
+        with open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             file.write("Genetic Markers,1,1,1,\n")
-            file.write("Genetic Pleiotropy,1,1,2.0,\n")
-            file.write("Serogroup,2,1,1.5,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
+        self._assert_results_have_changed(search_result, True)
 
-        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
-        self.assertTrue(search_result.has_changed)
-        self.assertFalse(search_result.has_match_counts_changed)
-        self.assertTrue(search_result.has_edge_file_changed)
-
-        # Amend line n/2 found in the v1 results file
+        # Create version 1 file with a changes
+        search_result.mediator_match_counts_v1 = 3
+        search_result.save()
         with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             file.write("Genetic Markers,2,1,1.5,\n")
             file.write("Genetic Pleiotropy,2,1,1.5,\n")
-            file.write("Serogroup,2,1,1.5,\n")
+            file.write("Serogroup,6,1,1.5,\n")
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+        record_differences_between_match_runs(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
+        self._assert_results_have_changed(search_result, True)
 
-        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+
+    def _add_line(self, previous_results_path, search_result):
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+            results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            results_file.write("Genetic Markers,1,1,2.0,\n")
+            results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
+            results_file.write("Serogroup,1,1,2.0,\n")
+            results_file.write("Psychiatry and Psychology,2,1,1.5,\n")
+
+    def _rename_mediators(self, previous_results_path, search_result):
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+            results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            results_file.write("Health Care,1,1,2.0,\n")
+            results_file.write("Publication Characteristics,1,1,2.0,\n")
+            results_file.write("Geographicals,1,1,2.0,\n")
+
+    def _change_counts(self, previous_results_path, search_result):
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+            results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            results_file.write("Genetic Markers,6,1,1.5,\n")
+            results_file.write("Genetic Pleiotropy,1,5,2.0,\n")
+            results_file.write("Serogroup,99,1,1.5,\n")
+
+    def _remove_line_1(self, previous_results_path, search_result):
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+            results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
+            results_file.write("Serogroup,1,1,2.0,\n")
+
+    def _remove_line_2(self, previous_results_path, search_result):
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+            results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            results_file.write("Genetic Markers,1,1,2.0,\n")
+            results_file.write("Serogroup,1,1,2.0,\n")
+
+    def _remove_line_3(self, previous_results_path, search_result):
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+            results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            results_file.write("Genetic Markers,1,1,2.0,\n")
+            results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
+
+    def _no_change(self, previous_results_path, search_result):
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+            results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+            results_file.write("Genetic Markers,1,1,2.0,\n")
+            results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
+            results_file.write("Serogroup,1,1,2.0,\n")
+
+    def _assert_results_have_changed(self, search_result, mediator_difference):
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r") as results_file:
+            logger.debug(results_file.readlines())
         self.assertTrue(search_result.has_changed)
-        self.assertFalse(search_result.has_match_counts_changed)
+        if mediator_difference:
+            self.assertTrue(search_result.has_match_counts_changed)
+        else:
+            self.assertFalse(search_result.has_match_counts_changed)
         self.assertTrue(search_result.has_edge_file_changed)
 
-        # Amend last line found in the v1 results file
-        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
-            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,2,1,1.5,\n")
-            file.write("Genetic Pleiotropy,1,1,2.0,\n")
-            file.write("Serogroup,1,1,1,\n")
-
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
-
-        self.assertEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
-        self.assertTrue(search_result.has_changed)
+    def _assert_results_not_changed(self, search_result):
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r") as results_file:
+            logger.debug(results_file.readlines())
+        self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_match_counts_changed)
-        self.assertTrue(search_result.has_edge_file_changed)
-
+        self.assertFalse(search_result.has_edge_file_changed)
 
     def test_record_differences_between_match_runs_when_new_meditors(self):
-        """Previous search, edge file and new mediators expected in line 1, n/2, and n"""
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
-        search_result.mediator_match_counts = search_result.mediator_match_counts_v3 - 1
-        search_result.save()
+        """Test TMMA-343 Compare various combinations of changes to previous version files
+        v4 results:
 
-        #Remove line 1 found in the v1 results file
-        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
-            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Pleiotropy,1,1,2.0,\n")
-            file.write("Serogroup,2,1,1.5,\n")
+        has_changed matrix of expected results
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
+                        | v4 (more meditors)| v4 (less mediators)   | v4 (equal mediators)
+        v1 == v3        | True              | True                  | True
+        v1 <> v3        | True              | True                  | True
+        v1 == v3 == v4  | N/A               | N/A                   | False    
+        """
 
-        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
-        self.assertTrue(search_result.has_changed)
-        self.assertTrue(search_result.has_match_counts_changed)
-        self.assertTrue(search_result.has_edge_file_changed)
+        variations = [ # Version 1 and 3 files are the same
+                     { 'label': "v1 == v3 and v4 has more mediators",
+                        'mediator_difference': 1, 
+                        'v1_moderator': self._remove_line_3,
+                        'v3_moderator': self._remove_line_3,
+                        'expected_result': True},
+                     { 'label': "v1 == v3 and v4 has less mediators",
+                        'mediator_difference': -1,
+                        'v1_moderator': self._add_line,
+                        'v3_moderator': self._add_line,
+                        'expected_result': True},
+                     { 'label': "v1 == v3 and v4 (equal mediators) A ",
+                        'mediator_difference': 0, 
+                        'v1_moderator': self._rename_mediators,
+                        'v3_moderator': self._rename_mediators,
+                        'expected_result': True},
+                     { 'label': "v1 == v3 and v4 (equal mediators) B ",
+                        'mediator_difference': 0, 
+                        'v1_moderator': self._change_counts,
+                        'v3_moderator': self._change_counts,
+                        'expected_result': True},
+                    # Version 1 and 3 files are different
+                     { 'label': "v1 <> v3 and v4 has more mediators",
+                        'mediator_difference': 1, 
+                        'v1_moderator': self._remove_line_2,
+                        'v3_moderator': self._remove_line_1,
+                        'expected_result': True},
+                     { 'label': "v1 <> v3 and v4 has less mediators",
+                        'mediator_difference': -1,
+                        'v1_moderator': self._add_line,
+                        'v3_moderator': self._add_line,
+                        'expected_result': True},
+                     { 'label': "v1 <> v3 and v4 (equal mediators) ",
+                        'mediator_difference': 0, 
+                        'v1_moderator': self._change_counts,
+                        'v3_moderator': self._rename_mediators,
+                        'expected_result': True},
+                     # Version 1, 3, and 4 files are the same
+                     { 'label': "v1 == v3 == v4",
+                        'mediator_difference': 0, 
+                        'v1_moderator': self._no_change,
+                        'v3_moderator': self._no_change,
+                        'expected_result': False},
+            ]
 
-        # Remove line n/2 found in the v1 results file
-        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
-            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,2,1,1.5,\n")
-            file.write("Serogroup,2,1,1.5,\n")
+        for variation in variations:
+            logger.debug(variation["label"])
+            search_result = self._prepare_search_result()
+            search_result.mediator_match_counts_v3 = search_result.mediator_match_counts = search_result.mediator_match_counts_v4 + variation['mediator_difference']
+            search_result.save()
 
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
-
-        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
-        self.assertTrue(search_result.has_changed)
-        self.assertTrue(search_result.has_match_counts_changed)
-        self.assertTrue(search_result.has_edge_file_changed)
-
-        # Remove last line found in the v1 results file
-        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
-            file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-            file.write("Genetic Markers,2,1,1.5,\n")
-            file.write("Genetic Pleiotropy,1,1,2.0,\n")
-
-        record_differences_between_match_runs(search_result_id)
-        search_result = SearchResult.objects.get(id=search_result_id)
-
-        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
-        self.assertTrue(search_result.has_changed)
-        self.assertTrue(search_result.has_match_counts_changed)
-        self.assertTrue(search_result.has_edge_file_changed)
+            variation['v1_moderator'](settings.RESULTS_PATH_V1, search_result)
+            variation['v3_moderator'](settings.RESULTS_PATH_V3, search_result)
+            record_differences_between_match_runs(search_result.id)
+            search_result = SearchResult.objects.get(id=search_result.id)
+            if variation['expected_result']:
+                self._assert_results_have_changed(search_result, variation['mediator_difference'])
+            else:
+                self._assert_results_not_changed(search_result)
 
     def _get_egde_csv_data_validation_issues(self, data):
         field_names = ('Mediators',
@@ -365,9 +441,9 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_results_edge_csv_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('count_data', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('count_data', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL, file_name_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -379,17 +455,36 @@ class MatchingTestCase(BaseTestCase):
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
 
+    def test_serving_v3_results_edge_csv_file(self):
+        self._login_user()
+        search_result = self._prepare_search_result()
+        search_result.mediator_match_counts_v3 = 1
+        search_result.save()
+        # Create a test version 3 file
+        v3_file = open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w")
+        v3_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v3 file,0,0,0,\n")
+        v3_file.close()
+        path = reverse('count_data_v3', kwargs={'pk': search_result.id })
+        expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V3, search_result.filename_stub)
+        response = self.client.get(path, follow=True)
+        content = response.getvalue()
+        self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        # Check for expected content
+        self.assertTrue("TESITNG v3 file,0,0,0" in content)
+        # Validate CSV data
+        csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
+        self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
+
     def test_serving_v1_results_edge_csv_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        search_result = SearchResult.objects.get(id=search_result_id)
+        search_result = self._prepare_search_result()
         search_result.mediator_match_counts = 1
         search_result.save()
         # Create a test version 1 file
         v1_file = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
         v1_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v1 file,0,0,0,\n")
         v1_file.close()
-        path = reverse('count_data_v1', kwargs={'pk': search_result_id })
+        path = reverse('count_data_v1', kwargs={'pk': search_result.id })
         expected_url = "%s%s_edge.csv" % (settings.RESULTS_URL_V1, search_result.filename_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -403,9 +498,9 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_results_json_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('json_data', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('json_data', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         expected_url = "%s%s.json" % (settings.RESULTS_URL, file_name_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -414,13 +509,15 @@ class MatchingTestCase(BaseTestCase):
         # Validate contents is valid JSON
         result_json_data = json.loads(content)
 
+    # TODO: TMMA-343 add test for serving v3 edge JSON files
+
     def test_serving_v1_results_json_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         # Mock up a version 1 matching result file
         shutil.copyfile(settings.RESULTS_PATH + file_name_stub + ".json", settings.RESULTS_PATH_V1 + file_name_stub + ".json")
-        path = reverse('json_data_v1', kwargs={'pk': search_result_id })
+        path = reverse('json_data_v1', kwargs={'pk': search_result.id })
         expected_url = "%s%s.json" % (settings.RESULTS_URL_V1, file_name_stub)
         self.assertTrue("v1" in expected_url)
         response = self.client.get(path, follow=True)
@@ -439,9 +536,9 @@ class MatchingTestCase(BaseTestCase):
 
     def test_serving_results_abstract_ids_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('abstracts_data', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('abstracts_data', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         expected_url = "%s%s_abstracts.csv" % (settings.RESULTS_URL, file_name_stub)
         response = self.client.get(path, follow=True)
         content = response.getvalue()
@@ -454,11 +551,13 @@ class MatchingTestCase(BaseTestCase):
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
 
+    # TODO: TMMA-343 add test for serving v3 abstract IDs CSV files
+
     def test_serving_v1_results_abstract_ids_file(self):
         self._login_user()
-        search_result_id = self._prepare_search_result()
-        path = reverse('abstracts_data_v1', kwargs={'pk': search_result_id })
-        file_name_stub = SearchResult.objects.get(id=search_result_id).filename_stub
+        search_result = self._prepare_search_result()
+        path = reverse('abstracts_data_v1', kwargs={'pk': search_result.id })
+        file_name_stub = SearchResult.objects.get(id=search_result.id).filename_stub
         # Mock up a version 1 matching result file
         shutil.copyfile(settings.RESULTS_PATH + file_name_stub + "_abstracts.csv", settings.RESULTS_PATH_V1 + file_name_stub + "_abstracts.csv")
         expected_url = "%s%s_abstracts.csv" % (settings.RESULTS_URL_V1, file_name_stub)
@@ -804,29 +903,45 @@ class MatchingTestCase(BaseTestCase):
 
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
-    def test_ovid_matching_function(self):
-        """ovid_mesh_term_text, mesh_term"""
-        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
-        mesh_term = "Fictional MeSH Term A"
-        self.assertEqual(ovid_matching_function(search_text, mesh_term), None)
-        mesh_term = "Fictional MeSH Term AA"
-        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Transcriptome"
-        self.assertTrue(ovid_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Genetics"
-        self.assertEqual(ovid_matching_function(search_text, mesh_term), None)
+    def test_ovid_matching(self):
+        search_text = ";Cells;;H(+)-K(+)-Exchanging ATPase;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
+        self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term AA")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Transcriptome")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Genetics")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Metabolism")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("Colorectal Neoplasms")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = ovid_prepare_mesh_term_search_text_function("H(+)-K(+)-Exchanging ATPase")  # TMMA-391: Test for bug fix
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
 
-    def test_pubmed_matching_function(self):
-        """pubmed_mesh_term_text, mesh_term"""
-        search_text = ";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
-        mesh_term = "Fictional MeSH Term A"
-        self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
-        mesh_term = "Fictional MeSH Term AA"
-        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Transcriptome"
-        self.assertTrue(pubmed_matching_function(search_text, mesh_term) >= 0)
-        mesh_term = "Genetics"
-        self.assertEqual(pubmed_matching_function(search_text, mesh_term), None)
+    def test_pubmed_matching(self):
+        search_text = ";Adolescent;;H(+)-K(+)-Exchanging ATPase;;Adult;;Fetal Growth Retardation/complications/*physiopathology;;Cognition;;*DNA Copy Number Variations;;Educational Status;;Epilepsy/genetics;;Estonia;;Female;;Genome-Wide Association Study;;Great Britain;;*Heterozygote;;Humans;;Intellectual Disability/*genetics;;Italy;;Male;;Mental Disorders/*genetics;;Obesity/genetics;;Phenotype;;United States;"
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
+        self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Genetics")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Epilepsy")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Adolescent")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("United States")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Mental Disorders")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("DNA Copy Number Variations")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("H(+)-K(+)-Exchanging ATPase")  # TMMA-391: Test for bug fix
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Complications")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        mesh_term = pubmed_prepare_mesh_term_search_text_function("Physiopathology")
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
 
     def test_search_gene(self):
         search_text = """A number of preclinical studies have shown that the activation of the vitamin D
@@ -1036,3 +1151,267 @@ class MatchingTestCase(BaseTestCase):
             self.assertEqual(len(links), 16)
             sorted_links = sorted(links, key=lambda item: (item['source'], item['target']))
             self.assertEqual(sorted_expected_links, sorted_links)
+
+    def _prepare_gene_matches_only_search_result(self):
+        """Generates a search result object and associated edge file
+
+        Mediators,Exposure counts,Outcome counts,Scores
+        
+        """
+        year = 2018
+        search_criteria = self._prepare_base_search_criteria(year)
+
+        exposure_term = MeshTerm.objects.get(term="Cells", year=year)
+        mediator_term_a = MeshTerm.objects.get(term="Phenotype", year=year)
+        mediator_term_b = MeshTerm.objects.get(term="Genetic Markers", year=year)
+        outcome_term = MeshTerm.objects.get(term="Public Health Systems Research", year=year)
+        gene_list = Gene.objects.filter(name__in=("A1BG", "A2M", "A2MP1", "NAT2", "AAVS1", "LBM180", ))
+
+        search_criteria.genes = gene_list
+        search_criteria.exposure_terms.add(exposure_term)
+        search_criteria.outcome_terms.add(outcome_term)
+        search_criteria.mediator_terms.add(mediator_term_a)
+        search_criteria.mediator_terms.add(mediator_term_b)
+        search_criteria.mediator_terms.add(mediator_term_a)
+        search_criteria.mediator_terms.add(mediator_term_b)
+        search_criteria.save()
+
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+
+        perform_search(search_result.id)
+
+        return SearchResult.objects.get(id=search_result.id)
+
+    def test_missing_genes_only_mediators(self):
+        """"Bug detection - TMMA-377"""
+        Gene.objects.all().delete()
+        management.call_command('loaddata', 'test_genes_ext.json', verbosity=0)
+        search_result = self._prepare_gene_matches_only_search_result()
+
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as file_obj:
+            for line in file_obj:
+                logger.debug(line)
+
+        with open(settings.RESULTS_PATH + search_result.filename_stub + ".json") as file_obj:
+            parsed = json.load(file_obj)
+            logger.debug(json.dumps(parsed, indent=4, sort_keys=True))
+
+        self.assertEqual(search_result.mediator_match_counts_v4, 6)
+
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv") as file_obj:
+            for line in file_obj:
+                logger.debug(line)
+
+    def test_ensure_get_wcrf_input_variables_are_unique_and_sorted(self):
+        """"Bug detection - TMMA-377"""
+        Gene.objects.all().delete()
+        management.call_command('loaddata', 'test_genes_ext.json', verbosity=0)
+
+        year = 2018
+        search_criteria = self._prepare_base_search_criteria(year)
+        phenotype = MeshTerm.objects.get(term="Phenotype", year=year)
+        cells = MeshTerm.objects.get(term="Cells", year=year)
+        public_health = MeshTerm.objects.get(term="Public Health Systems Research", year=year)
+        search_criteria.exposure_terms.add(phenotype)
+        search_criteria.exposure_terms.add(cells)
+        search_criteria.exposure_terms.add(cells)
+        search_criteria.mediator_terms.add(phenotype)
+        search_criteria.mediator_terms.add(phenotype)
+        search_criteria.mediator_terms.add(cells)
+        search_criteria.outcome_terms.add(public_health)
+        search_criteria.outcome_terms.add(cells)
+        search_criteria.outcome_terms.add(public_health)
+        search_criteria.genes = Gene.objects.filter(name__in=("A1BG", "A2M", "A2MP1", "NAT2", "AAVS1", "LBM180", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("exposure"), ("Cells", "Phenotype", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("mediator"), ("Cells", "Phenotype", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("outcome"), ("Cells", "Public Health Systems Research", ))
+        self.assertEqual(search_criteria.get_wcrf_input_variables("gene"), ("A1BG", "A2M", "A2MP1", "AAVS1", "LBM180", "NAT2", ))
+
+    @tag("slow")
+    def test_recreate_search_result_630(self):
+        """Resolve mismatching: Prostaglandin D2 in MeSH term entries like *Prostaglandin D2/bl [Blood]"""
+
+        MeshTerm.objects.all().delete()
+        management.call_command('loaddata', 'mesh_terms_sr_630_2019.json', verbosity=0)
+        year = 2019
+        exposures = "Basketball; Yoga; Athletic Performance; Bicycling; Circuit-Based Exercise; Water Sports; Boxing; Dancing; Physical Fitness; Breathing Exercises; Warm-Up Exercise; Cool-Down Exercise; Hockey; Dance Therapy; Physical Conditioning, Human; Exercise; Soccer; Football; Endurance Training; Running; Cardiorespiratory Fitness; Baseball; Exercise Therapy; Plyometric Exercise; Track and Field; Racquet Sports; Tennis; Stair Climbing; Weight Lifting; Volleyball; High-Intensity Interval Training; Return to Sport; Jogging; Tai Ji; Motion Therapy, Continuous Passive; Exercise Movement Techniques; Snow Sports; Resistance Training; Sports for Persons with Disabilities; Sports; Physical Endurance; Swimming; Skating; Muscle Stretching Exercises; Walking; Golf; Youth Sports; Wrestling; Mountaineering; Qigong; Gymnastics; Skiing; Diving; Martial Arts"
+        mediators = "Prostaglandin D2; Hemorrhagic Septicemia; Carboprost; Macrophage Inflammatory Proteins; alpha-Macroglobulins; Angiotensins; Hemorrhagic Septicemia, Viral; Prostaglandin Endoperoxides; Substance P; Chemokine CXCL9; Autacoids; Chemokine CXCL2; Interferon beta-1a; Fungemia; Chemokine CXCL1; Chemokine CXCL6; Chemokines; Chemokine CXCL5; Interleukin-12 Subunit p40; Ceruloplasmin; Kassinin; Sepsis; Chemokine CCL24; Transforming Growth Factor beta2; Tachykinins; Prostaglandin H2; RANK Ligand; Chemokine CCL17; Macrophage Migration-Inhibitory Factors; Systemic Inflammatory Response Syndrome; Chemokine CCL11; Chemokines, CC; Neurokinin A; Neurokinin B; Chemokine CCL19; Chemokine CCL18; Interleukin-18; OX40 Ligand; Erythropoietin; 1-Sarcosine-8-Isoleucine Angiotensin II; Interleukin-12; Interleukin-13; Interleukin-10; Chemokines, CXC; Interleukin-16; Interleukin-17; Arbaprostil; Interleukin-15; Cyclooxygenase Inhibitors; Prostaglandin Endoperoxides, Synthetic; Lymphokines; Cellulitis; Empyema, Subdural; Kininogen, High-Molecular-Weight; Inflammation; Monokines; CD40 Ligand; Kininogen, Low-Molecular-Weight; Fas Ligand Protein; Neonatal Sepsis; Travoprost; Granulocyte-Macrophage Colony-Stimulating Factor; Fibrinogen; Chemokine CX3CL1; Iloprost; Inflammation Mediators; Angiotensin III; Prostaglandins A, Synthetic; Interleukin-1beta; Macrophage Colony-Stimulating Factor; Tumor Necrosis Factor Ligand Superfamily Member 13; TNF-Related Apoptosis-Inducing Ligand; Monocyte Chemoattractant Proteins; Tumor Necrosis Factor Ligand Superfamily Member 15; Transforming Growth Factor beta1; Bradykinin; Colony-Stimulating Factors; Lenograstim; Transforming Growth Factor beta3; Neurogenic Inflammation; Latanoprost; Epoprostenol; beta-Thromboglobulin; Leukotriene E4; Haptoglobins; Eicosanoids; Leukotriene B4; 4-1BB Ligand; Kininogens; Prostaglandins, Synthetic; Prostaglandins E, Synthetic; Interferons; Interleukin 1 Receptor Antagonist Protein; Seroma; Chemokines, C; Candidemia; Bimatoprost; Fibrinogens, Abnormal; Angiotensin I; C-Reactive Protein; Thrombopoietin; Prostaglandins A; Prostaglandins I; Trypsin Inhibitor, Kazal Pancreatic; Cyclooxygenase 2 Inhibitors; Interleukin-1; Interleukin-12 Subunit p35; Interleukin-33; Serum Amyloid A Protein; Dinoprost; Physalaemin; Macrophage-Activating Factors; Prostaglandins D; Anti-Inflammatory Agents; Prostaglandins E; Leukotriene D4; Parasitemia; alpha 1-Antitrypsin; Anti-Inflammatory Agents, Non-Steroidal; Interferon beta-1b; CD27 Ligand; Transforming Growth Factor beta; Platelet Activating Factor; Chemokine CCL26; Chemokine CCL27; Angiotensin Amide; Leukemia Inhibitory Factor; Chemokine CCL22; Chemokine CCL20; Chemokine CCL21; Bacteremia; Interleukin-2; Interleukin-3; Interleukin-4; Empyema; Interferon-beta; Interleukin-7; Interleukin-8; Interleukin-9; Interferon-gamma; Tumor Necrosis Factors; Oncostatin M; Hemopexin; Serotonin; Interleukin-27; Prostaglandins H; Misoprostol; Osteopontin; Prostaglandins G; Prostaglandins F; Hepatocyte Growth Factor; Implant Capsular Contracture; Prostaglandins B; Viremia; Acute-Phase Proteins; Leukocyte Migration-Inhibitory Factors; Lymphotoxin-alpha; Tumor Necrosis Factor-alpha; Endotoxemia; Leukotriene C4; Alprostadil; Hematopoietic Cell Growth Factors; Ectodysplasins; Chemokine CXCL16; Transferrin; Chemokine CXCL10; Chemokine CXCL11; Chemokine CXCL12; Chemokine CXCL13; Growth Differentiation Factor 15; Interferon Type I; Cloprostenol; Enprostil; Interleukin-23 Subunit p19; Kallidin; Granulocyte Colony-Stimulating Factor; Chemokines, CX3C; Chemokine CCL7; Chemokine CCL5; Chemokine CCL4; Chemokine CCL3; Chemokine CCL2; Chemokine CCL1; Complement C3; Interleukin-1alpha; Shock, Septic; CD30 Ligand; Chemokine CCL8; Suppressor Factors, Immunologic; Abscess; Interleukin-5; Stem Cell Factor; B-Cell Activating Factor; 6-Ketoprostaglandin F1 alpha; SRS-A; Interleukin-23; 15-Hydroxy-11 alpha,9 alpha-(epoxymethano)prosta-5,13-dienoic Acid; Orosomucoid; Acute-Phase Reaction; Interleukins; Interleukin-6; Interleukin-11; Prostaglandins F, Synthetic; Leukotriene A4; Urotensins; Serositis; Demulcents; Saralasin; Eledoisin; Lymphotoxin-beta; Epoetin Alfa; Platelet Factor 4; Foreign-Body Reaction; Interferon-alpha; 16,16-Dimethylprostaglandin E2; Interferon alpha-2; Angiotensin II; Filgrastim; Kinins; Histamine; Lymphotoxin alpha1, beta2 Heterotrimer; Dinoprostone; Serum Amyloid P-Component; Rioprostil; Lipocalin-2; Leukotrienes; Suppuration; Tumor Necrosis Factor Ligand Superfamily Member 14; Cytokines; Transfer Factor; Prostaglandins; alpha 1-Antichymotrypsin; Cytokine TWEAK"
+        outcomes = "Breast Neoplasms, Male; Carcinoma, Lobular; Breast Carcinoma In Situ; Breast Neoplasms; Triple Negative Breast Neoplasms; Carcinoma, Ductal, Breast; Hereditary Breast and Ovarian Cancer Syndrome; Unilateral Breast Neoplasms; Inflammatory Breast Neoplasms"
+        exposure_list = exposures.split("; ")
+        mediator_list = mediators.split("; ")
+        outcome_list = outcomes.split("; ")
+        filter_term = "Humans"
+        # Extract test OVID abstracts and create an upload and search criteria object
+        abstract_file_path = os.path.join(BASE_DIR, "07-32-54-exercise-inflamm-breast-cancer-may-3-2019-expanded-terms.txt.gz")
+        self._login_user()
+        search_path = reverse('search_ovid_medline')
+        with open(abstract_file_path, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
+                                        follow=True)
+        search_criteria = SearchCriteria.objects.last()
+        exposure_terms = MeshTerm.objects.filter(term__in=exposure_list, year=year)
+        mediator_terms = MeshTerm.objects.filter(term__in=mediator_list, year=year)
+        outcome_terms = MeshTerm.objects.filter(term__in=outcome_list, year=year)
+        logger.debug(outcome_terms)
+        search_criteria.exposure_terms = exposure_terms
+        search_criteria.mediator_terms = mediator_terms
+        search_criteria.outcome_terms = outcome_terms
+        search_criteria.year = year
+        search_criteria.save()
+        search_result = SearchResult(criteria=search_criteria, mesh_filter=filter_term)
+        search_result.save()
+        perform_search(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
+
+        # Confirmed can recreate the same or more mediator counts as found in v1 matching
+        self.assertTrue(search_result.mediator_match_counts_v4 >= 118)
+        
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+            edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
+            mediators = edge_csv_reader.loc[: , "Mediators"]
+            logger.debug("Mediators")
+            logger.debug(mediators)
+            self.assertEqual("6-Ketoprostaglandin F1 alpha", mediators[0])
+            self.assertEqual("Abscess", mediators[1])
+            self.assertEqual("Acute-Phase Proteins", mediators[2])
+            self.assertTrue("Prostaglandin D2" in [x for x in mediators])
+
+    @tag('slow', 'insulin')
+    def test_verify_missing_insulin_markers(self):
+        """TMMA-343 Ensure matching missing IGF-II (Insulin-Like Growth Factor II) and IGFBP-5 (Insulin-Like Growth Factor Binding Protein 5) terms.
+            Exposures	Basketball; Yoga; Athletic Performance; Bicycling; Circuit-Based Exercise; Water Sports; Boxing; Dancing; Physical Fitness; Breathing Exercises; Warm-Up Exercise; Cool-Down Exercise; Hockey; Dance Therapy; Physical Conditioning, Human; Exercise; Soccer; Football; Endurance Training; Running; Cardiorespiratory Fitness; Baseball; Exercise Therapy; Plyometric Exercise; Track and Field; Racquet Sports; Tennis; Stair Climbing; Weight Lifting; Volleyball; High-Intensity Interval Training; Return to Sport; Jogging; Tai Ji; Motion Therapy, Continuous Passive; Exercise Movement Techniques; Snow Sports; Resistance Training; Sports for Persons with Disabilities; Sports; Physical Endurance; Swimming; Skating; Muscle Stretching Exercises; Walking; Golf; Youth Sports; Wrestling; Mountaineering; Qigong; Gymnastics; Skiing; Diving; Martial Arts
+            Mediators	Insulin, Ultralente; Insulin, Regular, Human; Insulin-Like Growth Factor Binding Protein 1; Insulins; Insulin-Like Growth Factor I; Insulin-Like Growth Factor Binding Protein 6; Insulin Detemir; Insulin-Like Growth Factor Binding Protein 4; Insulin-Like Growth Factor Binding Protein 5; Insulin-Like Growth Factor Binding Protein 2; Insulin-Like Growth Factor Binding Protein 3; C-Peptide; Insulin Lispro; Biphasic Insulins; Insulin, Isophane; Somatomedins; Insulin, Regular, Pork; Insulin, Long-Acting; Isophane Insulin, Human; Insulin Resistance; Nonsuppressible Insulin-Like Activity; Insulin Receptor Substrate Proteins; Proinsulin; Receptor, Insulin; Insulin-Like Growth Factor II; Insulin; Insulin-Like Growth Factor Binding Proteins; Insulin Aspart; Incretins; Insulin Antagonists; Insulin Glargine; Insulin, Short-Acting; Receptor, IGF Type 2; Insulin, Lente; Receptor, IGF Type 1; Metabolic Syndrome; Insulin Secretion
+            Outcomes	Breast Neoplasms, Male; Carcinoma, Lobular; Breast Carcinoma In Situ; Breast Neoplasms; Triple Negative Breast Neoplasms; Carcinoma, Ductal, Breast; Hereditary Breast and Ovarian Cancer Syndrome; Unilateral Breast Neoplasms; Inflammatory Breast Neoplasms
+            Filter      Humans
+            Abstract    08-15-08-insulin-may-27-2019.txt"""
+
+        """Resolve mismatching: Prostaglandin D2 in MeSH term entries like *Prostaglandin D2/bl [Blood]"""
+
+        MeshTerm.objects.all().delete()
+        management.call_command('loaddata', 'mesh_terms_sr_650_2019.json', verbosity=0)
+        year = 2019
+        exposures = "Basketball; Yoga; Athletic Performance; Bicycling; Circuit-Based Exercise; Water Sports; Boxing; Dancing; Physical Fitness; Breathing Exercises; Warm-Up Exercise; Cool-Down Exercise; Hockey; Dance Therapy; Physical Conditioning, Human; Exercise; Soccer; Football; Endurance Training; Running; Cardiorespiratory Fitness; Baseball; Exercise Therapy; Plyometric Exercise; Track and Field; Racquet Sports; Tennis; Stair Climbing; Weight Lifting; Volleyball; High-Intensity Interval Training; Return to Sport; Jogging; Tai Ji; Motion Therapy, Continuous Passive; Exercise Movement Techniques; Snow Sports; Resistance Training; Sports for Persons with Disabilities; Sports; Physical Endurance; Swimming; Skating; Muscle Stretching Exercises; Walking; Golf; Youth Sports; Wrestling; Mountaineering; Qigong; Gymnastics; Skiing; Diving; Martial Arts"
+        mediators = "Insulin, Ultralente; Insulin, Regular, Human; Insulin-Like Growth Factor Binding Protein 1; Insulins; Insulin-Like Growth Factor I; Insulin-Like Growth Factor Binding Protein 6; Insulin Detemir; Insulin-Like Growth Factor Binding Protein 4; Insulin-Like Growth Factor Binding Protein 5; Insulin-Like Growth Factor Binding Protein 2; Insulin-Like Growth Factor Binding Protein 3; C-Peptide; Insulin Lispro; Biphasic Insulins; Insulin, Isophane; Somatomedins; Insulin, Regular, Pork; Insulin, Long-Acting; Isophane Insulin, Human; Insulin Resistance; Nonsuppressible Insulin-Like Activity; Insulin Receptor Substrate Proteins; Proinsulin; Receptor, Insulin; Insulin-Like Growth Factor II; Insulin; Insulin-Like Growth Factor Binding Proteins; Insulin Aspart; Incretins; Insulin Antagonists; Insulin Glargine; Insulin, Short-Acting; Receptor, IGF Type 2; Insulin, Lente; Receptor, IGF Type 1; Metabolic Syndrome; Insulin Secretion"
+        outcomes = "Breast Neoplasms, Male; Carcinoma, Lobular; Breast Carcinoma In Situ; Breast Neoplasms; Triple Negative Breast Neoplasms; Carcinoma, Ductal, Breast; Hereditary Breast and Ovarian Cancer Syndrome; Unilateral Breast Neoplasms; Inflammatory Breast Neoplasms"
+        exposure_list = exposures.split("; ")
+        mediator_list = mediators.split("; ")
+        outcome_list = outcomes.split("; ")
+        filter_term = "Humans"
+        # Extract test OVID abstracts and create an upload and search criteria object
+        abstract_file_path = os.path.join(BASE_DIR, "08-15-08-insulin-may-27-2019.txt.gz")
+        self._login_user()
+        search_path = reverse('search_ovid_medline')
+        with open(abstract_file_path, 'r') as upload:
+            response = self.client.post(search_path,
+                                        {'abstracts_upload': upload,
+                                         'file_format': OVID},
+                                        follow=True)
+        search_criteria = SearchCriteria.objects.last()
+        exposure_terms = MeshTerm.objects.filter(term__in=exposure_list, year=year)
+        mediator_terms = MeshTerm.objects.filter(term__in=mediator_list, year=year)
+        outcome_terms = MeshTerm.objects.filter(term__in=outcome_list, year=year)
+        logger.debug(outcome_terms)
+        search_criteria.exposure_terms = exposure_terms
+        search_criteria.mediator_terms = mediator_terms
+        search_criteria.outcome_terms = outcome_terms
+        search_criteria.year = year
+        search_criteria.save()
+        search_result = SearchResult(criteria=search_criteria, mesh_filter=filter_term)
+        search_result.save()
+        perform_search(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
+        
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+            edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
+            mediators = edge_csv_reader.loc[: , "Mediators"]
+            logger.debug("Mediators")
+            for x in mediators:
+                logger.debug(x)
+            # Confirmed can recreate or surpass mediator counts in v1
+            self.assertTrue(search_result.mediator_match_counts_v4 >= 17)
+            self.assertTrue("Insulin" in [x for x in mediators])
+            self.assertTrue("Insulin-Like Growth Factor I" in [x for x in mediators])
+            self.assertTrue("Insulin-Like Growth Factor II" in [x for x in mediators])
+            self.assertTrue("Insulin-Like Growth Factor Binding Protein 5" in [x for x in mediators])
+
+    def test_matching_sub_headings(self):
+        """Match subheadings such as Blood in *Prostaglandin D2/bl [Blood]"""
+        year = 2019
+        exposures = "Genetic Markers; Histamine; Eryptosis"
+        mediators = "Genetics; Male"
+        outcomes = "Prostatic Neoplasms"
+        exposure_list = exposures.split("; ")
+        mediator_list = mediators.split("; ")
+        outcome_list = outcomes.split("; ")
+        filter_term = "Humans"
+        abstract = u"test-abstract-ovid-test-sample-5.txt"
+        search_criteria = self._prepare_base_search_criteria(year, file_name=abstract, file_format=OVID)
+        for x in exposure_list:
+            search_criteria.exposure_terms.add(MeshTerm.objects.create(term=x, year=year))
+        for x in mediator_list:
+            search_criteria.mediator_terms.add(MeshTerm.objects.create(term=x, year=year))
+        for x in outcome_list:
+            search_criteria.outcome_terms.add(MeshTerm.objects.create(term=x, year=year))
+        search_criteria.save()
+        search_result = SearchResult(criteria=search_criteria, mesh_filter=filter_term)
+        search_result.save()
+        perform_search(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
+        
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+            edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
+            mediators = edge_csv_reader.loc[: , "Mediators"]
+            logger.debug(list(mediators))
+            self.assertTrue("Genetics" in [x for x in mediators])
+
+        # Matched a sub heading and a standard mesh term heading
+        self.assertEqual(search_result.mediator_match_counts_v4, 2)
+
+    def _assert_gene_matching(self, search_criteria, year):
+        search_criteria.exposure_terms.add(MeshTerm.objects.create(term="Histamine", year=year))
+        search_criteria.mediator_terms.add(MeshTerm.objects.create(term="Metabolism", year=year))
+        search_criteria.outcome_terms.add(MeshTerm.objects.create(term="Pyroptosis", year=year))
+        search_criteria.genes.add(Gene.objects.create(name="FICTIONAL-GENE-A"))
+        search_criteria.genes.add(Gene.objects.create(name="FICTIONAL-GENE-B"))
+        search_criteria.genes.add(Gene.objects.create(name="FICTIONAL-GENE-C"))
+        search_criteria.genes.add(Gene.objects.get(name="TRPC1"))
+        search_criteria.save()
+        search_result = SearchResult(criteria=search_criteria)
+        search_result.save()
+        perform_search(search_result.id)
+        search_result = SearchResult.objects.get(id=search_result.id)
+        # Expects 4 media matches (FICTIONAL-GENE-A, FICTIONAL-GENE-B, FICTIONAL-GENE-C, TRPC1, Metabolism)
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+            edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
+            mediators = edge_csv_reader.loc[: , "Mediators"]
+            self.assertEqual("FICTIONAL-GENE-A", mediators[0]) # Start of abstract (new gene)
+            self.assertEqual("FICTIONAL-GENE-B", mediators[1]) # Middle (new gene)
+            self.assertEqual("FICTIONAL-GENE-C", mediators[2]) # End of abstract (new gene)
+            self.assertEqual("TRPC1", mediators[3]) # Middle (existing gene)
+            self.assertEqual("Metabolism", mediators[4])
+        self.assertEqual(search_result.mediator_match_counts_v4, 5)
+
+    def test_gene_matched_at_edge_of_ovid_abstracts(self):
+        """TMMA-343: Bug fix matching new genes, and support matching those found at the very start of the abstract section."""
+        year = 2019
+        abstract = u"test-abstract-ovid-1.txt"
+        search_criteria = self._prepare_base_search_criteria(year, file_name=abstract, file_format=OVID)
+        self._assert_gene_matching(search_criteria, year)
+
+    def test_gene_matched_at_edge_of_pubmed_abstracts(self):
+        """TMMA-343: Bug fix matching new genes, and support matching those found at the very start of the abstract section."""
+        year = 2019
+        abstract = u"test-abstract-pubmed-1.txt"
+        search_criteria = self._prepare_base_search_criteria(year, file_name=abstract, file_format=PUBMED)
+        self._assert_gene_matching(search_criteria, year)
+
+    def test_searchgene(self):
+        """TMMA-391 Ensure gene's don't need to be escaped for matching"""
+        texttosearch = " Various 'omics' technologies, RP11-153M24.1, including microarrays and gas chromatography mass spectrometry, can be used to identify hundreds of interesting genes, proteins and metabolites, such as differential genes, proteins and metabolites associated with diseases. Identifying metabolic pathways has become an invaluable aid to understanding the genes and metabolites associated with studying conditions. However, the classical methods used to identify pathways fail to accurately consider joint power of interesting gene/metabolite and the key regions impacted by them within metabolic pathways. In this study, we propose a powerful analytical method referred to as Subpathway-GM for the identification of metabolic subpathways. This provides a more accurate level of pathway analysis by integrating information from genes and metabolites, and their positions and cascade regions within the given pathway. We analyzed two colorectal cancer and one metastatic prostate cancer data sets and demonstrated that Subpathway-GM was able to identify disease-relevant subpathways whose corresponding entire pathways might be ignored using classical entire pathway identification methods. Further analysis indicated that the power of a joint genes/metabolites and subpathway strategy based on their topologies may play a key role in reliably recalling disease-relevant subpathways and finding novel subpathways. "
+        searchstring = "RP11-153M24.1"
+        self.assertFalse(searchgene(texttosearch, searchstring) == None)
+
+# TODO TMMA-343 Add test for display results page (with v1, v3, v4 and the combinations there of)

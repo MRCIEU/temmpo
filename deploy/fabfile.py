@@ -72,6 +72,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     # Create application specific directories
     caller('mkdir -p %svar/results/v1' % PROJECT_ROOT)
     caller('mkdir -p %svar/results/v3' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v4' % PROJECT_ROOT)
     caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
 
     if restart_rqworker:
@@ -133,6 +134,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     if using_apache:
         disable_apache_site(use_local_mode)
+    stop_rqworker_service(use_local_mode)
 
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
@@ -163,7 +165,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
-    restart_rqworker_service(use_local_mode)
+    start_rqworker_service(use_local_mode)
 
 def setup_apache(env="dev", use_local_mode=False):
     """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
@@ -412,7 +414,8 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
 
 def _change_rqworker_service(use_local_mode, action):
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    caller("sudo service rqworker %s" % action)
+    for num in range(1, 5):
+        caller("sudo service rqworker%d %s" % (num, action))
 
 def restart_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="stop")
@@ -425,7 +428,7 @@ def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
 def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
-    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
@@ -446,11 +449,51 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
+def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
+    # Convert any command line arguments from strings to boolean values where necessary.
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    reuse_db = (str(reuse_db).lower() == 'true')
+    run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
+    cmd_suffix = ''
+    if reuse_db:
+        cmd_suffix = " --keepdb"
+    if tag and tag != "None":
+        cmd_suffix += " --tag=%s" % tag
+    if not run_selenium_tests:
+        cmd_suffix += " --exclude-tag=selenium-test"
+    elif tag and tag != "None":
+        cmd_suffix += " --tag=selenium-test"
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+
+    with change_dir(src_dir):
+        caller('%sbin/python manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+
+def update_requires_io(requires_io_token, env="test", use_local_mode=False):
+    """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
+    # Can only be run against test or dev instances
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+    for branch in ("master", "demo_stable", "prod_stable"):
+        with change_dir(src_dir):
+            caller('git fetch --all')
+            caller('git fetch origin %s' % branch)
+            caller('git checkout %s' % branch)
+            caller('git pull')
+        with change_dir(venv_dir):
+            caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements' % (requires_io_token, branch, src_dir, ))
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
-    """env="test", database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
+    """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
     if database_name in ('temmpo_p', ):
         abort("Function should not be run against a production database.")
 

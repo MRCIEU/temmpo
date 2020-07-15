@@ -167,7 +167,7 @@ class AdminTestCase(BaseTestCase):
         expected_form = ["Filename stub", "Has edge file changed", "Criteria", "field-criteria", ]
         self._find_expected_content(path, msg_list=expected_form)
         response = self.client.get(path, follow=True)
-        self.assertContains(response, 'class="readonly"', count=8)
+        self.assertContains(response, 'class="readonly"', count=9)
         self.assertContains(response, 'related-lookup', count=1)
         # Check form after a matching has been performed
         perform_search(search_result.id)

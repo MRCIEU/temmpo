@@ -1,6 +1,7 @@
 # TeMMPo
 
 [![Build Status](https://travis-ci.org/MRCIEU/temmpo.svg?branch=master)](https://travis-ci.org/MRCIEU/temmpo)
+[![Requirements Status](https://requires.io/enterprise/rit/temmpo/requirements.svg?branch=master)](https://requires.io/enterprise/rit/temmpo/requirements/?branch=master)
 
 [TeMMPo](https://www.temmpo.org.uk/) (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of published evidence for specific mechanisms between an exposure and outcome. The tool identifies co-occurrence of MeSH headings in scientific publications to indicate papers that link an intermediate mechanism to either an exposure or an outcome.  TeMMPo is particularly useful when a specific lifestyle or dietary exposure is known to associate with a disease outcome, but little is known about the underlying mechanisms. Understanding these mechanisms may help develop interventions, sub-classify disease or establish evidence for causality. TeMMPo quantifies the body of published literature to establish which mechanisms have been researched the most, enabling these mechanisms to be subjected to systematic review.
 
@@ -11,6 +12,16 @@
 * Vagrant https://www.vagrantup.com/
 * VirtualBox https://www.virtualbox.org/ or another provider, see https://www.vagrantup.com/docs/providers/
 NB: The vagrant installation also requires an additional plugin to mount the development source code cloned on your local machine.
+
+Tested with these versions:
+
+* VirtualBox 6.1.8 r137981 (Qt5.6.3)
+* vagrant 2.2.9
+* vagrant-sshfs 1.3.5
+
+NB: Additional development IDE support for Visual Code can be added by installing
+
+    pip install pylint==1.9.5
 
 ### Installing
 
@@ -79,16 +90,25 @@ After importing a new year of mesh terms, create a fixture file for testing and 
 
 #### Importing Genes - optional
 
-A database of existing gene terms can be imported into the Django application database.  A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
+A database of existing gene terms can be imported into the Django application database, either by using fixtures or the slower custom management command.
 
-    python manage.py import_genes --settings=temmpo.settings.dev
+1. Load fixture data
+
+    NB: This can take a few minutes.
+
+        python manage.py loaddata browser/fixtures/genes_snap_shot_2020_06_29.json --settings=temmpo.settings.dev
+
+2. Management command
+
+    A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
+
+        python manage.py import_genes --settings=temmpo.settings.dev
 
 #### Run the development server and workers
 
 In development you will need to restart the worker whenever any changes to the matching code are made.  Run the following in a separate window and restart to see changes to the mathcing code.
 
-    sudo systemctl stop rqworker
-    python manage.py rqworker default --settings=temmpo.settings.dev
+    fab restart_rqworker_service:use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 
 In a separate terminal window run the development server
@@ -134,12 +154,12 @@ NB: If you want to manually run migrations you need to use the --database flag
 ## Running the tests
 Run the entire test suite using MySQL and generate a coverage report.
 
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
     coverage report --skip-empty --skip-covered -m
 
 Or run the entire test suite using SQLlite and generate a coverage report.
 
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=slow
     coverage report --skip-empty --skip-covered -m
 
 ### Running specific tests
@@ -160,8 +180,15 @@ This suggests attempting to create a search when no mesh terms have been importe
 The project needs the following additional services to be running:
 
     sudo systemctl status redis
-    sudo systemctl status rqworker
+    sudo systemctl status rqworker1
+    sudo systemctl status rqworker2
+    sudo systemctl status rqworker3
+    sudo systemctl status rqworker4
     sudo systemctl status httpd      # Not relevant for the django Vagrant VM
+
+# Check all services
+
+    sudo systemctl status
 
 ## Built with
 

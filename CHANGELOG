@@ -1,3 +1,19 @@
+4.1.0   TMMA-391 Bug fix matching against MeSH Terms (or genes) that need escaping, e.g. H(+)-K(+)-Exchanging ATPase
+        Improve speed of MeSH Term matching
+
+4.0.1   Change website email address
+
+4.0.0   TMMA-343 Bug fix matching MeSH terms with sub headings
+                 Add support for matching MeSH sub headings
+                 Bug fix matching new genes and ones at the very start of Abstract sections
+                 Support case insenstive matching
+        TMMA-383 Expand definition of Abstract IDs CSV in help page
+        TMMA-384 Re-run version 4 of the matching algorithm
+
+3.6.0   TMMA-382 Increase workers in matching queue
+
+3.5.2   TMMA-93 Automate requires.io third party dependency checking
+
 3.5.1   Improve debugging support
 
 3.5.0   TMMA-381 Drop support for TLS 1.0 & 1.1

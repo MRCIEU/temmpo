@@ -15,7 +15,8 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
                            MeshTermsAllAsJSON, MeshTermSearchJSON, SelectSearchTypeView,
                            SearchPubMedView, ReuseSearchView, DeleteSearch, UserAccountView,
                            CloseAccount, AccountClosedConfirmation, UsersListingView, DeleteUser,
-                           CountDataViewV1, AbstractDataViewV1, JSONDataViewV1)
+                           CountDataViewV1, AbstractDataViewV1, JSONDataViewV1,
+                           CountDataViewV3, AbstractDataViewV3, JSONDataViewV3)
 
 urlpatterns = [
 
@@ -48,10 +49,15 @@ urlpatterns = [
 
     url(r'^search-criteria/(?P<pk>\d+)/$', CriteriaView.as_view(), name='criteria'),
 
-    url(r'^data/v3/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count_data'),
-    url(r'^data/v3/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts_data'),
-    url(r'^data/v3/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json_data'),
     url(r'^data/delete/(?P<pk>\d+)/$', DeleteSearch.as_view(), name='delete_data'),
+
+    url(r'^data/v4/count/(?P<pk>\d+)/$', CountDataView.as_view(), name='count_data'),
+    url(r'^data/v4/abstracts/(?P<pk>\d+)/$', AbstractDataView.as_view(), name='abstracts_data'),
+    url(r'^data/v4/json/(?P<pk>\d+)/$', JSONDataView.as_view(), name='json_data'),
+
+    url(r'^data/v3/count/(?P<pk>\d+)/$', CountDataViewV3.as_view(), name='count_data_v3'),
+    url(r'^data/v3/abstracts/(?P<pk>\d+)/$', AbstractDataViewV3.as_view(), name='abstracts_data_v3'),
+    url(r'^data/v3/json/(?P<pk>\d+)/$', JSONDataViewV3.as_view(), name='json_data_v3'),
 
     url(r'^data/v1/count/(?P<pk>\d+)/$', CountDataViewV1.as_view(), name='count_data_v1'),
     url(r'^data/v1/abstracts/(?P<pk>\d+)/$', AbstractDataViewV1.as_view(), name='abstracts_data_v1'),
