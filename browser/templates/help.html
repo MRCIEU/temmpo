@@ -418,7 +418,7 @@ SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
         <p>Once your analysis is complete you are presented with a table of results. If this is your first analysis only one row will show. The results table contains:</p>
         <table id="results" class="table table-striped table-bordered table-hover compact dataTable no-footer dtr-inline" role="grid" style="width: 100%;">
           <thead>
-            <tr role="row"><th scope="col" class="dt-left sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Abstract file: activate to sort column ascending" style="width: 166px;">Abstract file</th><th scope="col" class="dt-left sorting_desc" title="Date search was initiated" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-sort="descending" aria-label="Date: activate to sort column ascending" style="width: 99px;">Date</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Status" style="width: 50px;">Status</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="View search criteria" style="width: 129px;">View search criteria</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Mechanism visualisations" style="width: 169px;">Mechanism visualisations</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score visualisations" style="width: 131px;">Score visualisations</th><th scope="col" class="dt-right sorting" tabindex="0" aria-controls="results" rowspan="1" colspan="1" aria-label="Mediator match counts: activate to sort column ascending" style="width: 161px;">Mediator match counts</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Score data [help]" style="width: 113px;">Score data [<a href="#">help</a>]</th><th scope="col" class="dt-left sorting_disabled" rowspan="1" colspan="1" aria-label="Abstract IDs" style="width: 95px;">Abstract IDs</th><th scope="col" data-test="delete-label" class="sorting_disabled" rowspan="1" colspan="1" aria-label="Delete" style="width: 46px;">Delete</th></tr>
+            <tr role="row"><th scope="col" tabindex="0" rowspan="1" colspan="1">Abstract file</th><th scope="col" class="dt-left" title="Date search was initiated" tabindex="0" rowspan="1" colspan="1">Date</th><th scope="col" class="dt-left" rowspan="1" colspan="1">Status</th><th scope="col" class="dt-left" rowspan="1" colspan="1">View search criteria</th><th scope="col" class="dt-left" rowspan="1" colspan="1" >Mechanism visualisations</th><th scope="col" class="dt-left" rowspan="1" colspan="1">Score visualisations</th><th scope="col" class="dt-right" tabindex="0" rowspan="1" colspan="1">Mechanism match counts</th><th scope="col" class="dt-left" rowspan="1" colspan="1">Score data [<a href="#navigate">help</a>]</th><th scope="col" class="dt-left" rowspan="1" colspan="1">Mechanism Abstract IDs [<a href="#navigate">help</a>]</th><th scope="col" data-test="delete-label" class="sorting_disabled" rowspan="1" colspan="1">Delete</th></tr>
           </thead>
         </table>
         <ul>
@@ -429,7 +429,7 @@ SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
             <li><strong>Mechanism match counts</strong>: this is the number of MeSH terms and genes that have been found to be mediators in the search.</li>
             <li><strong>Score data</strong>: contains the full set of results as a csv file. For each mechanism the columns contain:
                 <ul>
-                    <li><em>Mediators</em> = mechanism MeSH term</li>
+                    <li><em>Mediators</em> = mechanism MeSH term or gene</li>
                     <li><em>Exposure counts</em> = number of articles linking that mechanism to exposure</li>
                     <li><em>Outcome counts</em> = number of articles linking that mechanism to outcome</li>
                     <li><em>Scores</em> = priority score (see below)</li>
@@ -462,7 +462,8 @@ SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.</pre>
   <div class="panel-body">
     <p>A <a href="https://github.com/MRCIEU/temmpo/blob/prod_stable/CHANGELOG">CHANGELOG</a> is published on GitHub.</p>
     <p>In May 2019 bugs were found in the results sorting of visualisations used on this website and fixes were released.</p>
-    <p><i class="fa fa-info-circle" title="Revised result" style="color:#337ab7;" data-results-change="#"></i> - denotes a result where recent revisions to the matching code uncovered additional mediator matches.</p>
+    <p>In July 2020 changes were made to resolve an issue that resulted in under matching genes and mechanisms that included symbols.  Changes also added support for case insenstive and sub heading MeSH terms matching.</p>
+    <p><i class="fa fa-info-circle" title="Revised result" style="color:#337ab7;" data-results-change="#"></i> - denotes a result where revisions to the matching algorithm have resulted in changes to the original calculation.</p>
 </div>
 </div>
 

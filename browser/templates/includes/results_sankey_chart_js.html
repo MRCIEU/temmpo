@@ -54,6 +54,7 @@
                 return b.score - a.score;
             })
 
+            console.log("oLinksSort");
             console.log(oLinksSort);
 
             if (threshold != -1 && oLinksSort.length > threshold) {
@@ -112,7 +113,7 @@
         // Set chart options
         var options = {
             width: "100%",
-            height: 650,
+            height: 700,
             sankey: {
                 node: {
                     interactivity: true,
@@ -138,11 +139,11 @@
                 max: 500,
                 value: 50,
                 slide: function (event, ui) {
-                    $("#chart-slider-label").val(ui.value);
+                    $("#chart-slider-label").text(ui.value);
                     google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
                 }
             });
-            $("#chart-slider-label").val($("#slider").slider("value"));
+            $("#chart-slider-label").text($("#slider").slider("value"));
         });
     })
 </script>

@@ -904,13 +904,13 @@ class SearchingTestCase(BaseTestCase):
         self.assertNotEqual(len(terms), criteria.outcome_terms.count())
 
     def test_highlighting_matching_changes(self):
-        """TODO: TMMA-343 UPDATE AND EXPAND: Ensure new version 3 matching code results, are not marked as changes"""
+        """Ensure new version 4 matching code results, are not marked as changes"""
         self._login_user()
         search_criteria = self._set_up_test_search_criteria()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
         response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
         search_result = SearchResult.objects.get(criteria=search_criteria)
-        expected_text = ["Mediator match counts", "View bubble chart", ]
+        expected_text = ["Mechanism match counts", "View bubble chart", ]
         revised_text = ['data-results-change="%d"' % search_result.id, "Revised result"]
         response = self.client.get(reverse('results_listing'))
 
@@ -920,18 +920,18 @@ class SearchingTestCase(BaseTestCase):
         for text in expected_text:
             self.assertContains(response, text)
 
-        # Fake up a previous results
+        # Fake up previous results
         search_result.mediator_match_counts = 0
         search_result.save()
-        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v4)
 
         response = self.client.get(reverse('results_listing'))
         for text in revised_text:
             self.assertContains(response, text)
 
-        search_result.mediator_match_counts = 1
+        search_result.mediator_match_counts_v3 = 1
         search_result.save()
-        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertNotEqual(search_result.mediator_match_counts_v3, search_result.mediator_match_counts_v4)
 
         response = self.client.get(reverse('results_listing'))
         for text in revised_text:
@@ -939,5 +939,5 @@ class SearchingTestCase(BaseTestCase):
 
         # Test the change is highlighted on the individual results pages
         path = reverse('results', kwargs={'pk': search_result.id})
-        expected_text = ["Download version 1 scores as CSV", "Download version 1 abstract IDs as CSV", "Revised results"]
+        expected_text = ["Download version 1 scores (CSV)", "Download version 1 mechanism abstract IDs (CSV)", "Revised results", "Download version 3 mechanism abstract IDs (CSV)"]
         self._find_expected_content(path=path, msg_list=expected_text)
