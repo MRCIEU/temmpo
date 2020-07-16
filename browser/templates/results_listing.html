@@ -24,7 +24,7 @@ $(document).ready(function() {
         "responsive": true,
         // "lengthChange": false,
         "columnDefs": [
-            { "orderable": false, "targets": [2, 3, 4, 5, 7, 8, 9],
+            { "orderable": false, "targets": [3, 4, 5, 7, 8, 9],
              }
             ],
         "order": [ 1, 'desc' ],   {# NB: Ensure remains in sync with ListView queryset ordering #}
@@ -67,7 +67,7 @@ $(document).ready(function() {
             <th scope="row" class="dt-left"><a href="{% url 'criteria' pk=result_stub.criteria.pk %}" title="Search criteria for search '{{ result_stub.pk }}'">Search criteria</a></th>
             <td><div class="controls">
                     {% if result_stub.has_failed %}
-                    <a href="{% url 'delete_data' pk=result_stub.pk %}" class="btn btn-danger" data-test="abort-button">Delete</a>
+                    <a href="{% url 'delete_data' pk=result_stub.pk %}" class="btn btn-danger btn-sm" data-test="abort-button">Delete</a>
                     {% endif %}
                 </div>
             </td>
@@ -89,9 +89,9 @@ $(document).ready(function() {
             <th scope="col" class="dt-left">View search criteria</th>
             <th scope="col" class="dt-left">Mechanism visualisations</th>
             <th scope="col" class="dt-left">Score visualisations</th>
-            <th scope="col" class="dt-right">Mediator match counts</th>
+            <th scope="col" class="dt-right">Mechanism match counts</th>
             <th scope="col" class="dt-left">Score data [<a href="{% url 'help' %}#navigate">help</a>]</th>
-            <th scope="col" class="dt-left">Abstract IDs</th>
+            <th scope="col" class="dt-left">Mechanism Abstract IDs [<a href="{% url 'help' %}#navigate">help</a>]</th>
             <th scope="col" data-test="delete-label">Delete</th>
         </tr>
     </thead>
@@ -100,30 +100,18 @@ $(document).ready(function() {
         <tr>
             <th scope="row" class="dt-left">{{ result.criteria.upload }}</th>
             <td>{{ result.criteria.created|date:"d M Y H:i" }}</td>
-            <td>{{ result.status }}</td>
+            <td>{{ result.status }} {% if result.has_changed %} <i class="fa fa-info-circle" title="Revised result" style="color:#337ab7;" data-results-change="{{ result.id }}"></i>{% endif %}</td>
             <th scope="row" class="dt-left"><a href="{% url 'criteria' pk=result.criteria.pk %}" title="Search criteria for resultset '{{ result.pk }}'">Search criteria</a></th>
             {% if result.mediator_match_counts_v4 %}
-                {% if result.has_completed %} 
-                    <td>
-                        <a href="{% url 'results' pk=result.pk %}" title="Sankey visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View Sankey diagram</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'results_bubble' pk=result.pk %}" title="Bubble chart visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View bubble chart</a>
-                    </td>
-                    <td class="dt-right">
-                        {{ result.mediator_match_counts_v4 }} {% if result.has_changed %} <i class="fa fa-info-circle" title="Revised result" style="color:#337ab7;" data-results-change="{{ result.id }}"></i>{% endif %}
-                    </td>
-                {% else %}
-                    <td>
-                        N/A
-                    </td>
-                    <td>
-                        N/A
-                    </td>
-                    <td>
-                        N/A
-                    </td>
-                {% endif %}
+                <td>
+                    <a href="{% url 'results' pk=result.pk %}" title="Sankey visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View Sankey diagram</a>
+                </td>
+                <td>
+                    <a href="{% url 'results_bubble' pk=result.pk %}" title="Bubble chart visualisation with '{{ result.mesh_filter|default:'no' }}' filter over {{ result.criteria.upload }}">View bubble chart</a>
+                </td>
+                <td class="dt-right">
+                    {{ result.mediator_match_counts_v4 }}
+                </td>
                 <td>
                     {% if result.has_completed %}
                     <a href="{% url 'count_data' pk=result.pk %}" title="Count data for resultset '{{ result.pk }}'">Score data</a> (CSV)
@@ -141,17 +129,16 @@ $(document).ready(function() {
                 </td>
                 <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">N/A
                 </td>
-                <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">N/A
+                <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">0
                 </td>
                 <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">N/A
                 </td>
                 <td title="No matches found{% if result.mesh_filter %} filtered by {{ result.mesh_filter }}{% endif %}.">N/A
                 </td>
             {% endif %}
-            <td><div class="controls">
-                    {% if result.has_completed or result.has_failed %}
-                    <a href="{% url 'delete_data' pk=result.pk %}" class="btn btn-danger" data-test="delete-button">Delete</a>
-                    {% endif %}
+            <td>
+                <div class="controls">
+                    <a href="{% url 'delete_data' pk=result.pk %}" class="btn btn-danger btn-sm" data-test="delete-button">Delete</a>
                 </div>
             </td>
         </tr>

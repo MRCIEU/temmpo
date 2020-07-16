@@ -122,10 +122,8 @@ class MeshTerm(MPTTModel):
         terms_needed.extend(exposures.split("; "))
         terms_needed.extend(mediators.split("; "))
         terms_needed.extend(outcomes.split("; "))
-        logger.debug(terms_needed)
         term_ids = cls.objects.filter(term__in=terms_needed, year=year).get_ancestors(include_self=True).values_list("id", flat=True)
         ids = ",".join([str(x) for x in term_ids])
-        logger.info("Term counts %s" % len(term_ids))
         return "python manage.py dumpdata browser.MeshTerm --indent 4 --pks %s --output test_fixtures.json" % ids
 
 
