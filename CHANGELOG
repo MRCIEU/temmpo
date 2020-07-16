@@ -1,3 +1,6 @@
+4.1.1   TMMA-334 Bug fix sorting by mediator count on results listing table
+        TMMA-397 Update wording, help page and tooltips
+
 4.1.0   TMMA-391 Bug fix matching against MeSH Terms (or genes) that need escaping, e.g. H(+)-K(+)-Exchanging ATPase
         Improve speed of MeSH Term matching
 

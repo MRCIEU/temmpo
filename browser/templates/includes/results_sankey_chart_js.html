@@ -26,6 +26,8 @@
                 int_out.push(link.source);
                 return link;
             })
+            console.log("matches")
+            console.log(matches)
             //find overlapping link objects
             for (i in exp_int) {
                 var int_out_match = int_out.indexOf(exp_int[i]);
@@ -54,6 +56,7 @@
                 return b.score - a.score;
             })
 
+            console.log("oLinksSort");
             console.log(oLinksSort);
 
             if (threshold != -1 && oLinksSort.length > threshold) {
@@ -90,7 +93,7 @@
                 }
             });
             // Hide the slider if we are not limiting the result set
-            if (topLinks.length < 5) {
+            if (topLinks.length < threshold) {
                 $("#threshold-controller").hide();
             }
 
@@ -112,7 +115,7 @@
         // Set chart options
         var options = {
             width: "100%",
-            height: 650,
+            height: 700,
             sankey: {
                 node: {
                     interactivity: true,
@@ -138,11 +141,11 @@
                 max: 500,
                 value: 50,
                 slide: function (event, ui) {
-                    $("#chart-slider-label").val(ui.value);
+                    $("#chart-slider-label").text(ui.value);
                     google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
                 }
             });
-            $("#chart-slider-label").val($("#slider").slider("value"));
+            $("#chart-slider-label").text($("#slider").slider("value"));
         });
     })
 </script>

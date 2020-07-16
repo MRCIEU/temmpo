@@ -68,11 +68,11 @@
 
 #chart-slider-label
 {
-    font-size: large;
+    font-size: 130%;
     border: 0;
     color: #f6931f;
     font-weight: bold;
-    width: 30px;
+    width: 2em;
 }
 
 #slider{ margin-bottom: 1em; }

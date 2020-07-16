@@ -1,0 +1,56 @@
+<1>
+Unique Identifier
+  27855349
+Record Owner
+  From MEDLINE, a database of the U.S. National Library of Medicine.
+Status
+  MEDLINE
+Authors
+  Qayyum AA;  Qayyum F;  Larsson HB;  Kjaer A;  Hasbak P;  Vejlstrup NG;  Kastrup J.
+Authors Full Name
+  Qayyum, Abbas A;  Qayyum, Faiza;  Larsson, Henrik B W;  Kjaer, Andreas;  Hasbak, Philip;  Vejlstrup, Niels G;  Kastrup, Jens.
+Institution
+  Qayyum,Abbas A. Department of Cardiology & Cardiac Catheterization Laboratory 2014, The Heart Centre, Rigshospitalet, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Blegdamsvej 9, 2100 Copenhagen, Denmark. Electronic address: abbas.ali.qayyum@regionh.dk.
+  Qayyum,Faiza. Department of Cardiology, Hvidovre Hospital, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Kettegaard Alle 30, 2650 Hvidovre, Denmark.
+  Larsson,Henrik B W. Department of Clinical Physiology, Nuclear Medicine & PET, Rigshospitalet, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Blegdamsvej 9, 2100 Copenhagen, Denmark; Functional Imaging Unit, Diagnostic Department, Glostrup Hospital, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Ndr. Ringvej 57, 2600 Copenhagen, Denmark.
+  Kjaer,Andreas. Department of Clinical Physiology, Nuclear Medicine & PET, Rigshospitalet, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Blegdamsvej 9, 2100 Copenhagen, Denmark.
+  Hasbak,Philip. Department of Clinical Physiology, Nuclear Medicine & PET, Rigshospitalet, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Blegdamsvej 9, 2100 Copenhagen, Denmark.
+  Vejlstrup,Niels G. Department of Cardiology & Cardiac Catheterization Laboratory 2014, The Heart Centre, Rigshospitalet, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Blegdamsvej 9, 2100 Copenhagen, Denmark.
+  Kastrup,Jens. Department of Cardiology & Cardiac Catheterization Laboratory 2014, The Heart Centre, Rigshospitalet, University Hospital of Copenhagen and Faculty of Health Sciences, Copenhagen University, Blegdamsvej 9, 2100 Copenhagen, Denmark.
+Title
+  Comparison of rest and adenosine stress quantitative and semi-quantitative myocardial perfusion using magnetic resonance in patients with ischemic heart disease.
+Source
+  Clinical Imaging.  41:149-156, 2017 Jan - Feb.
+MeSH Subject Headings
+    *Adenosine/ad [Administration & Dosage]
+    Female
+    Humans
+    *Magnetic Resonance Imaging/mt [Methods]
+    Male
+    Middle Aged
+    Myocardial Ischemia
+    *Myocardial Perfusion Imaging/mt [Methods]
+    Reproducibility of Results
+    *Rest
+Keyword Heading
+    Cardiac magnetic resonance
+  Coronary artery disease
+  Invasive coronary angiogram
+  Myocardial perfusion imaging
+  Positron emission tomography
+  Refractory angina
+Abstract
+  The aim was to compare absolute quantified myocardial perfusion (MP) to semi-quantitative measurements of MP using MRI for detection of ischemia. Twenty-nine patients underwent rest and stress MP imaging obtained by 1.5T MRI and analyzed using own developed software and by commercial available software. Linear regression analysis demonstrated that absolute quantitative data correlated stronger to maxSI (rest: r=0.296, p=.193; stress: r=0.583, p=0.011; myocardial perfusion reserve (MPR): r=0.789, p<0.001; and DELTA myocardial blood flow (DELTA MBF: r=0.683, p=0.004) than to upslope (rest: r=0.420, p=0.058; stress: r=0.096, p=0.704; MPR: r=0.682, p=0.004; and DELTA MBF: r=0.055, p=0.804). Absolute quantified MP was able to distinguish between ischemic and non-ischemic territories at rest (left anterior descending artery (LAD): 103.1+/-11.3mL/100g/min vs. 206.3+/-98.5mL/100g/min; p=0.001, right coronary artery (RCA): 124.1+/-45.2mL/100g/min vs. 241.3+/-81.7mL/100g/min; p<0.001, and left circumflex artery (LCX): 132.8+/-53.8mL/100g/min vs. 181.2+/-56.6mL/100g/min; p=0.060) and at stress (LAD: 148.1+/-47.2mL/100g/min vs. 296.6+/-111.6mL/100g/min; p=0.012, RCA: 173.4+/-63.7mL/100g/min vs. 290.2+/-100.6mL/100g/min; p=0.008, and LCX: 206.6+/-105.1mL/100g/min vs. 273.8+/-78.0mL/100g/min; p=0.186). The correlation between global maxSI and positron emission tomography data was non-significant at rest and borderline significant at stress (r=0.265, p=0.382 and r=0.601, p=0.050, respectively). Quantified MP may be useful in patients for detection of ischemia.Copyright © 2016 Elsevier Inc. All rights reserved.
+Registry Number/Name of Substance
+  K72T3FS567 (Adenosine).
+Publication Type
+  Comparative Study.  Journal Article.
+Date Created
+  20161117
+Year of Publication
+  2017
+Link to the Ovid Full Text or citation
+ https://ezp.lib.unimelb.edu.au/login?url=http://ovidsp.ovid.com/ovidweb.cgi?T=JS&CSC=Y&NEWS=N&PAGE=fulltext&D=prem&AN=27855349
+Link to the External Link Resolver
+ http://sfx.unimelb.hosted.exlibrisgroup.com/sfxlcl41/?sid=OVID:medline&id=pmid:27855349&id=doi:10.1016%2Fj.clinimag.2016.11.001&issn=0899-7071&isbn=&volume=41&issue=&spage=149&pages=149-156&date=2017&title=Clinical+Imaging&atitle=Comparison+of+rest+and+adenosine+stress+quantitative+and+semi-quantitative+myocardial+perfusion+using+magnetic+resonance+in+patients+with+ischemic+heart+disease.&aulast=Qayyum&pid=%3Cauthor%3EQayyum+AA%3BQayyum+F%3BLarsson+HB%3BKjaer+A%3BHasbak+P%3BVejlstrup+NG%3BKastrup+J%3C%2Fauthor%3E%3CAN%3E27855349%3C%2FAN%3E%3CDT%3EComparative+Study%3C%2FDT%3E
+
