@@ -13,6 +13,8 @@
     }
 
     topVal = 50
+    // TMMA-299 Use example JSON from search result 704 for chart debugging
+    // var sample_json = "{{ STATIC_URL }}/js/sample.json";
     function getLinks(topVal) {
         var threshold = topVal;
         var exp_int = [];
@@ -26,8 +28,7 @@
                 int_out.push(link.source);
                 return link;
             })
-            console.log("matches")
-            console.log(matches)
+
             //find overlapping link objects
             for (i in exp_int) {
                 var int_out_match = int_out.indexOf(exp_int[i]);
@@ -39,6 +40,7 @@
                     }
                 }
             }
+
             //calculate scores based on number of abstracts for overlapping links
             for (i in oLinks) {
                 var l1_val = matches.links[oLinks[i].l1].value;
@@ -56,14 +58,9 @@
                 return b.score - a.score;
             })
 
-            console.log("oLinksSort");
-            console.log(oLinksSort);
-
             if (threshold != -1 && oLinksSort.length > threshold) {
-                console.log("Limiting links to " + threshold + " instead of showing " + oLinksSort.length);
+                console.log("Limiting links to a maxium of " + threshold + " instead of showing " + oLinksSort.length);
                 topLinks = oLinksSort.slice(0, threshold);
-                // TODO: TMMA-299 (Improvment) Change the way it's counted to ensure we get n mediators
-                // Would it help JSON denoted mediators help?
             }
             else
             {
@@ -83,10 +80,8 @@
             nodeMatch = []
 
             matches.links = matches.links.filter(function (link) {
-                // TODO: TMMA-299 (Improvement?) Maybe should look up missing data and expand to ensure we have
-
+                // Find term/gene names to augment map for the top links
                 if (top_targets.indexOf(link.target) > -1 && top_sources.indexOf(link.source) > -1) {
-                    nodeMatch.push(link.target, link.source);
                     target = matches.nodes[link.target].name;
                     source = matches.nodes[link.source].name;
                     sData.push([source, target, link.value]);
@@ -95,6 +90,10 @@
             // Hide the slider if we are not limiting the result set
             if (topLinks.length < threshold) {
                 $("#threshold-controller").hide();
+            }
+            else {
+                $("#link-count").text(oLinksSort.length);
+                $("#chart-slider-label").text(sData.length);
             }
 
             drawSankeyDiagram(sData);
@@ -115,7 +114,7 @@
         // Set chart options
         var options = {
             width: "100%",
-            height: 700,
+            height: 1800,       // Increase chart height
             sankey: {
                 node: {
                     interactivity: true,
@@ -139,13 +138,12 @@
                 range: "max",
                 min: 5,
                 max: 500,
-                value: 50,
+                value: topVal,
                 slide: function (event, ui) {
                     $("#chart-slider-label").text(ui.value);
                     google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
                 }
             });
-            $("#chart-slider-label").text($("#slider").slider("value"));
         });
     })
 </script>
