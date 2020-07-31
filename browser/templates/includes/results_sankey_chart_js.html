@@ -86,13 +86,15 @@
                     source = matches.nodes[link.source].name;
                     sData.push([source, target, link.value]);
                 }
+                return link;
             });
+
             // Hide the slider if we are not limiting the result set
             if (oLinksSort.length < sliderCutOff) {
                 $("#threshold-controller").hide();
             }
             else {
-                $("#link-count").text(oLinksSort.length);
+                $("#link-count").text(matches.links.length);
                 $("#chart-slider-label").text(sData.length);
             }
 
