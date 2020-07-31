@@ -140,7 +140,6 @@
                 max: 500,
                 value: sliderCutOff,      // Start at the cut off
                 slide: function (event, ui) {
-                    $("#chart-slider-label").text(ui.value);
                     google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
                 }
             });
