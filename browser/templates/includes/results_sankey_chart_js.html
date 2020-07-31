@@ -21,7 +21,7 @@
         var int_out = [];
         var oLinks = [];
         var sData = [];
-        d3.json("{{ json_url }}/js/sample-2.json").then(function (matches) {
+        d3.json("{{ json_url }}").then(function (matches) {
             //create arrays of target and sources
             matches.links = matches.links.filter(function (link) {
                 exp_int.push(link.target);
@@ -59,6 +59,7 @@
             })
 
             if (threshold != -1 && oLinksSort.length > threshold) {
+                console.log("matches.links.length: " + matches.links.length)
                 console.log("Slicing oLinksSort at " + threshold + " instead of showing all " + oLinksSort.length);
                 topLinks = oLinksSort.slice(0, threshold);
             }
