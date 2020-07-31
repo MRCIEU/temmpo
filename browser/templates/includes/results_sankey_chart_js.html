@@ -59,6 +59,7 @@
             })
 
             if (threshold != -1 && oLinksSort.length > threshold) {
+                console.log("matches.links.length: " + matches.links.length)
                 console.log("Slicing oLinksSort at " + threshold + " instead of showing all " + oLinksSort.length);
                 topLinks = oLinksSort.slice(0, threshold);
             }
@@ -86,13 +87,15 @@
                     source = matches.nodes[link.source].name;
                     sData.push([source, target, link.value]);
                 }
+                return link;
             });
+
             // Hide the slider if we are not limiting the result set
             if (oLinksSort.length < sliderCutOff) {
                 $("#threshold-controller").hide();
             }
             else {
-                $("#link-count").text(oLinksSort.length);
+                $("#link-count").text(matches.links.length);
                 $("#chart-slider-label").text(sData.length);
             }
 
