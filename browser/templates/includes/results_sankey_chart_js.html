@@ -2,7 +2,7 @@
 <script>
     // Generate Sankey diagram
     google.charts.load("current", {packages: ["sankey"]});
-    google.charts.setOnLoadCallback(function() { (getLinks(topVal))});
+    google.charts.setOnLoadCallback(function() { (getLinks(sliderCutOff))});
 
     function getAllIndexes(arr, val) {
         var indexes = [], i = -1;
@@ -12,11 +12,11 @@
         return indexes;
     }
 
-    topVal = 50
     // TMMA-299 Use example JSON from search result 704 for chart debugging
     // var sample_json = "{{ STATIC_URL }}/js/sample.json";
-    function getLinks(topVal) {
-        var threshold = topVal;
+    // TODO: (Performance) Refactor out requesting JSON and creating matches & oLinks
+    var sliderCutOff = 50;
+    function getLinks(threshold) {
         var exp_int = [];
         var int_out = [];
         var oLinks = [];
@@ -59,7 +59,7 @@
             })
 
             if (threshold != -1 && oLinksSort.length > threshold) {
-                console.log("Limiting links to a maxium of " + threshold + " instead of showing " + oLinksSort.length);
+                console.log("Slicing oLinksSort at " + threshold + " instead of showing all " + oLinksSort.length);
                 topLinks = oLinksSort.slice(0, threshold);
             }
             else
@@ -88,7 +88,7 @@
                 }
             });
             // Hide the slider if we are not limiting the result set
-            if (topLinks.length < threshold) {
+            if (oLinksSort.length < sliderCutOff) {
                 $("#threshold-controller").hide();
             }
             else {
@@ -138,7 +138,7 @@
                 range: "max",
                 min: 5,
                 max: 500,
-                value: topVal,
+                value: sliderCutOff,      // Start at the cut off
                 slide: function (event, ui) {
                     $("#chart-slider-label").text(ui.value);
                     google.charts.setOnLoadCallback(function() { (getLinks(ui.value))});
