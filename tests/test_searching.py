@@ -566,7 +566,7 @@ class SearchingTestCase(BaseTestCase):
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
         response = self.client.post(path, follow=True)
         search_result = SearchResult.objects.get(criteria=search_criteria)
-        self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["Download scores (CSV)", "Download mechanism abstract IDs (CSV)", "Download Sankey chart JSON",])
+        self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["Download scores (CSV)", "Download mechanism abstract IDs (CSV)", "Download Sankey diagram JSON",])
 
 
     # Test JSON MeSH Term exports
