@@ -23,7 +23,7 @@ django-registration-redux==2.6  # via -r requirements/test.txt
 django-rq==2.1.0          # via -r requirements/test.txt
 django-simple-autocomplete==1.11  # via -r requirements/test.txt
 django==1.11.29           # via -r requirements/test.txt, django-debug-toolbar, django-rq, django-simple-autocomplete
-easyprocess==0.3          # via -r requirements/test.txt, pyscreenshot, pyvirtualdisplay
+easyprocess==0.2.5        # via -r requirements/test.txt, pyscreenshot, pyvirtualdisplay
 enum34==1.1.10            # via astroid, traitlets
 futures==3.3.0            # via isort
 hiredis==1.0.1            # via -r requirements/test.txt

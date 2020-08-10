@@ -18,7 +18,7 @@ django-registration-redux==2.6  # via -r requirements/requirements.txt
 django-rq==2.1.0          # via -r requirements/requirements.txt
 django-simple-autocomplete==1.11  # via -r requirements/requirements.txt
 django==1.11.29           # via -r requirements/requirements.txt, django-rq, django-simple-autocomplete
-easyprocess==0.3          # via pyscreenshot, pyvirtualdisplay
+easyprocess==0.2.5        # via pyscreenshot, pyvirtualdisplay
 hiredis==1.0.1            # via -r requirements/requirements.txt
 idna==2.10                # via requests
 lxml==4.4.2               # via -r requirements/requirements.txt
