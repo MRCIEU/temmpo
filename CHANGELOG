@@ -1,5 +1,6 @@
 4.2.1   TMMA-401 Display number of mediators on Sankey and Bubble chart
         TMMA-400 Add download JSON from Sankey diagram option
+        Update third party eggs and Python packing tools
 
 4.2.0   TMMA-299 Changed labling and size of Sankey diagram
 

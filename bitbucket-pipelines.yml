@@ -33,9 +33,9 @@ pipelines:
           - yum list installed
           - pip install virtualenv
           - virtualenv venv
-          - ./venv/bin/pip install -U pip==19.1.1
-          - ./venv/bin/pip install -U pip-tools==3.8.0
-          - ./venv/bin/pip install -U setuptools==41.0.1
+          - ./venv/bin/pip install -U pip==19.3.1
+          - ./venv/bin/pip install -U pip-tools==4.5.1
+          - ./venv/bin/pip install -U setuptools==44.1.1
           - ./venv/bin/pip freeze
           - ./venv/bin/pip install -r requirements/test.txt
           - ./venv/bin/pip-sync requirements/test.txt
