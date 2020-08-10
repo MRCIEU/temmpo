@@ -37,7 +37,7 @@ Total {{ article_count }} papers.
     {% if sankey_is_active %}
         <div id="threshold-controller" class="hidden-print">
             <p>
-              <label for="chart-slider-label">Showing top <span id="chart-slider-label"></span> of <span id="link-count"></span> links.</label>
+              <label for="chart-slider-label">Showing top <span id="chart-slider-label"></span> of <span id="link-count"></span> links related to {{ search_result.mediator_match_counts_v4 }} mechanisms.</label>
             </p>
             <div id="slider"></div>
         </div>
@@ -52,7 +52,7 @@ Total {{ article_count }} papers.
         {% endif %}
 
         <div id="results-buttons" class="form-group">
-            <a href="{{ score_csv_url }}" class="btn btn-outline btn-default">Download scores (CSV)</a> <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default">Download mechanism abstract IDs (CSV)</a>
+            <a href="{{ score_csv_url }}" class="btn btn-outline btn-default">Download scores (CSV)</a> <a href="{{ abstract_ids_csv_url }}" class="btn btn-outline btn-default">Download mechanism abstract IDs (CSV)</a> <a href="{{ json_url }}" class="btn btn-outline btn-default" target="_blank">Download Sankey chart JSON</a>
         </div>
 
         {% if search_result.has_changed %}
