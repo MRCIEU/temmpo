@@ -18,7 +18,7 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 PIP_VERSION = '19.1.1'
-SETUPTOOLS_VERSION = '44.1.0'
+SETUPTOOLS_VERSION = '44.1.1'
 PIP_TOOLS_VERSION = '4.5.1'
 
 
@@ -591,3 +591,17 @@ def pip_sync_requirements_file(env="dev", use_local_mode=True):
         caller('../../bin/pip-compile --output-file requirements/requirements.txt requirements/requirements.in')
         caller('../../bin/pip-compile --output-file requirements/test.txt requirements/test.in')
         caller('../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in')
+
+def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    if package:
+        package = "--upgrade-package %s" % package
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    with change_dir(venv_dir+"src/temmpo/"):
+        caller('../../bin/pip-compile --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
+        caller('../../bin/pip-compile --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
+        caller('../../bin/pip-compile --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)

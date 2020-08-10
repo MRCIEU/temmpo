@@ -559,6 +559,16 @@ class SearchingTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(criteria=search_criteria)
         self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('json_data', kwargs={'pk': search_result.id})])
 
+    def test_download_links(self):
+        self._login_user()
+        # Set up test search
+        search_criteria = self._set_up_test_search_criteria()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, follow=True)
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["Download scores (CSV)", "Download mechanism abstract IDs (CSV)", "Download Sankey diagram JSON",])
+
+
     # Test JSON MeSH Term exports
 
     def test_json_mesh_term_export(self):

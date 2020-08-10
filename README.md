@@ -133,9 +133,15 @@ NB: If you want to manually run migrations you need to use the --database flag
 
     python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
-#### Updating the requirements file using pip-sync (via Vagrant VM)
+#### Updating the requirements file using pip-tools (via Vagrant VM)
 
     fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+
+#### Upgrading the requirements file using pip-tools (via Vagrant VM)
+
+Optionally pass in a package or update them all within any requirements.in file constraints
+
+    fab pip_tools_update_requirements:env=dev,use_local_mode=True,package="" -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 #### Development deployment commands when working with the apache Vagrant VM.
 
