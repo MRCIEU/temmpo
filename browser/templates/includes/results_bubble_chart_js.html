@@ -31,7 +31,7 @@
     }
 
     function drawBubbleChart(data) {
-      var title_suffix = ( data.getNumberOfRows() < 20 ) ? "":" (Top 20)";
+      var title_suffix = ( data.getNumberOfRows() < 20 ) ? "":" (Top 20 of {{ search_result.mediator_match_counts_v4 }} mechanisms)";
       var options = {
         title: 'Focused search results based on original score' + title_suffix,
         hAxis: { title: 'Number of abstracts linking exposure to mechanism',
