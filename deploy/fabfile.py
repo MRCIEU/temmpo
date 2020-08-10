@@ -17,7 +17,7 @@ GIT_SSH_HOSTS = ('104.192.143.1',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
-PIP_VERSION = '19.3.1'
+PIP_VERSION = '19.1.1'
 SETUPTOOLS_VERSION = '44.1.1'
 PIP_TOOLS_VERSION = '4.5.1'
 
