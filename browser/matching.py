@@ -480,8 +480,8 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
         nodes.append(exposure)
     for outcome in outcomemesh:
         nodes.append(outcome)
-    for node in nodes:
-        thisnode = """{"name":"%s"}""" % node
+    for i in range(len(nodes)):
+        thisnode = """{"name":"%s","id":"%d"}""" % (nodes[i], i)
         nodesout.append(thisnode)
 
     edge_row_id = -1
