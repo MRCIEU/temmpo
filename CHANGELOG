@@ -1,3 +1,6 @@
+4.3.0   TMMA-405 Add node IDs to JSON output
+        TMMA-404 Reduce size of Sankey diagram
+
 4.2.1   TMMA-401 Display number of mediators on Sankey and Bubble chart
         TMMA-400 Add download JSON from Sankey diagram option
         Update third party eggs and Python packing tools
