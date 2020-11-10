@@ -39,14 +39,14 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         self.driver.get("%s%s" % (self.live_server_url, url))
         time.sleep(3)
 
-    def sel_find_by_css(self, css):
-        return self.driver.find_element_by_css_selector(css)
+    # def sel_find_by_css(self, css):
+    #     return self.driver.find_element_by_css_selector(css)
 
-    def sel_find_by_id(self, element_id):
-        return self.driver.find_element_by_id(element_id)
+    # def sel_find_by_id(self, element_id):
+    #     return self.driver.find_element_by_id(element_id)
 
-    def sel_find_by_tag(self, element_tag):
-        return self.driver.find_element_by_tag_name(element_tag)
+    # def sel_find_by_tag(self, element_tag):
+    #     return self.driver.find_element_by_tag_name(element_tag)
 
     def login_user(self, user, password):
         self.sel_open(reverse('login'))

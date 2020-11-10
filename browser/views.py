@@ -265,7 +265,7 @@ class SearchExistingUpload(RedirectView):
 
 
 class SearchExisting(RedirectView):
-    """TODO: TMMA-139 Change to allow separate term collection reuse
+    """TODO: (Improvement) TMMA-139 Change to allow separate term collection reuse
        Create new search criteria based on existing one and pass to
        ExposureSelector view """
     permanent = False
@@ -374,7 +374,7 @@ class ResultsView(TemplateView):
         context = super(ResultsView, self).get_context_data(**kwargs)
         context['active'] = 'results'
 
-        # TODO: TMMA-30 Add tabular version of results table as per PDF
+        # TODO: (Improvment) TMMA-30 Add tabular version of results table as per PDF
         context['search_result'] = self.search_result
         context['json_url'] = reverse('json_data', kwargs=kwargs)
         context['score_csv_url'] = reverse('count_data', kwargs=kwargs)
@@ -382,6 +382,9 @@ class ResultsView(TemplateView):
         context['json_url_v1'] = reverse('json_data_v1', kwargs=kwargs)
         context['score_csv_url_v1'] = reverse('count_data_v1', kwargs=kwargs)
         context['abstract_ids_csv_url_v1'] = reverse('abstracts_data_v1', kwargs=kwargs)
+        context['json_url_v3'] = reverse('json_data_v3', kwargs=kwargs)
+        context['score_csv_url_v3'] = reverse('count_data_v3', kwargs=kwargs)
+        context['abstract_ids_csv_url_v3'] = reverse('abstracts_data_v3', kwargs=kwargs)
         context['criteria_url'] = reverse('criteria', kwargs={'pk': self.search_result.criteria.id})
         context['results_sankey_url'] = reverse('results', kwargs=kwargs)
         context['results_bubble_url'] = reverse('results_bubble', kwargs=kwargs)
@@ -504,6 +507,13 @@ class CountDataViewV1(CountDataView):
         url = settings.RESULTS_URL_V1 + '%s_edge.csv' % search_result.filename_stub
         return url
 
+class CountDataViewV3(CountDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V3 + '%s_edge.csv' % search_result.filename_stub
+        return url
+
 class AbstractDataView(RedirectView):
     permanent = True
     query_string = False
@@ -536,6 +546,12 @@ class AbstractDataViewV1(AbstractDataView):
         url = settings.RESULTS_URL_V1 + '%s_abstracts.csv' % search_result.filename_stub
         return url
 
+class AbstractDataViewV3(AbstractDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V3 + '%s_abstracts.csv' % search_result.filename_stub
+        return url
 
 class JSONDataView(RedirectView):
     permanent = True
@@ -569,6 +585,12 @@ class JSONDataViewV1(JSONDataView):
         url = settings.RESULTS_URL_V1 + '%s.json' % search_result.filename_stub
         return url
 
+class JSONDataViewV3(JSONDataView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        search_result = get_object_or_404(SearchResult, pk=kwargs['pk'])
+        url = settings.RESULTS_URL_V3 + '%s.json' % search_result.filename_stub
+        return url
 
 class MeshTermsAsJSON(TemplateView):
     """Used with the JSTrees to represent MeshTerms."""

@@ -1,6 +1,7 @@
 # TeMMPo
 
 [![Build Status](https://travis-ci.org/MRCIEU/temmpo.svg?branch=master)](https://travis-ci.org/MRCIEU/temmpo)
+[![Requirements Status](https://requires.io/enterprise/rit/temmpo/requirements.svg?branch=master)](https://requires.io/enterprise/rit/temmpo/requirements/?branch=master)
 
 [TeMMPo](https://www.temmpo.org.uk/) (Text Mining for Mechanism Prioritisation) is a web-based tool to enable researchers to identify the quantity of published evidence for specific mechanisms between an exposure and outcome. The tool identifies co-occurrence of MeSH headings in scientific publications to indicate papers that link an intermediate mechanism to either an exposure or an outcome.  TeMMPo is particularly useful when a specific lifestyle or dietary exposure is known to associate with a disease outcome, but little is known about the underlying mechanisms. Understanding these mechanisms may help develop interventions, sub-classify disease or establish evidence for causality. TeMMPo quantifies the body of published literature to establish which mechanisms have been researched the most, enabling these mechanisms to be subjected to systematic review.
 
@@ -12,8 +13,8 @@ The Django development environment can be created using Docker or Vagrant.  At p
 
 A basic Django testing environment can be set up using the supplied docker-compose.yml and Dockerfiles.  The prerequisites are:
 
-* Docker (tested with ??)
-* Docker Compose (tested with ??)
+* Docker (tested with version 19.03.13, build 4484c46d9d)
+* Docker Compose (tested with version 1.27.4, build 40524192)
 
 #### Installing a Docker development environment
 
@@ -41,7 +42,17 @@ Prerequisites are:
 * VirtualBox https://www.virtualbox.org/ or another provider, see https://www.vagrantup.com/docs/providers/
 NB: The vagrant installation also requires an additional plugin to mount the development source code cloned on your local machine.
 
-#### Installing a Vagrant development environment
+Tested with these versions:
+
+* VirtualBox 6.1.8 r137981 (Qt5.6.3)
+* vagrant 2.2.9
+* vagrant-sshfs 1.3.5
+
+NB: Additional development IDE support for Visual Code can be added by installing
+
+    pip install pylint==1.9.5
+
+### Installing
 
     vagrant plugin install vagrant-sshfs
     git clone git@github.com:MRCIEU/temmpo.git
@@ -90,31 +101,48 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
     NB: this can take a few minutes.
 
-        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018.json  --settings=temmpo.settings.dev
+        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019.json  --settings=temmpo.settings.dev
 
 2. Management command
 
     Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
 
-    NB: This command each take over 20 minutes to run.
+    NB: This command each take over 50 minutes to run depending on your environment.
 
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2019.bin 2019
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2020.bin 2020
+
+##### Dumping MeSH terms to a fixture file
+
+After importing a new year of mesh terms, create a fixture file for testing and development purposes.  For example:
+
+    python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020.json
 
 ##### Importing Genes - optional
 
-A database of existing gene terms can be imported into the Django application database.  A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
+A database of existing gene terms can be imported into the Django application database, either by using fixtures or the slower custom management command.
 
-    python manage.py import_genes --settings=temmpo.settings.dev
+1. Load fixture data
+
+    NB: This can take a few minutes.
+
+        python manage.py loaddata browser/fixtures/genes_snap_shot_2020_06_29.json --settings=temmpo.settings.dev
+
+2. Management command
+
+    A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
+
+        python manage.py import_genes --settings=temmpo.settings.dev
 
 ##### Run the development server and workers
 
-Ensure matching code is reloaded
+In development you will need to restart the worker whenever any changes to the matching code are made.  Run the following in a separate window and restart to see changes to the mathcing code.
 
-    sudo systemctl stop rqworker
-    python manage.py rqworker default --settings=temmpo.settings.dev
+    fab restart_rqworker_service:use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 In a separate terminal window run the development server
 
+    vagrant ssh
+    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 ##### View application in your local browser
@@ -133,11 +161,17 @@ NB: If you want to manually run migrations you need to use the --database flag
 
     python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
-##### Updating the requirements file using pip-sync (via Vagrant VM)
+#### Updating the requirements file using pip-tools (via Vagrant VM)
 
     fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-##### Development deployment commands when working with the apache Vagrant VM.
+#### Upgrading the requirements file using pip-tools (via Vagrant VM)
+
+Optionally pass in a package or update them all within any requirements.in file constraints
+
+    fab pip_tools_update_requirements:env=dev,use_local_mode=True,package="" -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
+
+#### Development deployment commands when working with the apache Vagrant VM.
 
 ###### a. Deploy master branch to Vagrant Apache VM
 
@@ -151,13 +185,16 @@ NB: If you want to manually run migrations you need to use the --database flag
 
     fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-### Running the tests
+## Running the tests
+Run the entire test suite using MySQL and generate a coverage report.
 
-    python manage.py test --settings=temmpo.settings.test_mysql
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
+    coverage report --skip-empty --skip-covered -m
 
-or
+Or run the entire test suite using SQLlite and generate a coverage report.
 
-    python manage.py test --settings=temmpo.settings.test_sqlite
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=slow
+    coverage report --skip-empty --skip-covered -m
 
 #### Running specific tests
 
@@ -177,8 +214,15 @@ This suggests attempting to create a search when no mesh terms have been importe
 The project needs the following additional services to be running:
 
     sudo systemctl status redis
-    sudo systemctl status rqworker
+    sudo systemctl status rqworker1
+    sudo systemctl status rqworker2
+    sudo systemctl status rqworker3
+    sudo systemctl status rqworker4
     sudo systemctl status httpd      # Not relevant for the django Vagrant VM
+
+# Check all services
+
+    sudo systemctl status
 
 ## Built with
 

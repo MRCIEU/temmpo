@@ -17,9 +17,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
-PIP_VERSION = '20.0.2'
-SETUPTOOLS_VERSION = '44.0.0'
-PIP_TOOLS_VERSION = '4.4.1'
+PIP_VERSION = '19.1.1'
+SETUPTOOLS_VERSION = '44.1.1'
+PIP_TOOLS_VERSION = '4.5.1'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -55,8 +55,8 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base", restart_rqworker=True):
-    """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="base."""
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True):
+    """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
     clone_repo = (str(clone_repo).lower() == 'true')
@@ -72,6 +72,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     # Create application specific directories
     caller('mkdir -p %svar/results/v1' % PROJECT_ROOT)
     caller('mkdir -p %svar/results/v3' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v4' % PROJECT_ROOT)
     caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
 
     if restart_rqworker:
@@ -96,8 +97,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
         with change_dir(venv_dir):
             caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-            caller('./bin/pip install -U pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
+            caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip freeze')
 
@@ -119,8 +120,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
 
-def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"):
-    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="base"."""
+def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"):
+    """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     using_apache = (str(using_apache).lower() == 'true')
     migrate_db = (str(migrate_db).lower() == 'true')
@@ -133,6 +134,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     if using_apache:
         disable_apache_site(use_local_mode)
+    stop_rqworker_service(use_local_mode)
 
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
@@ -146,8 +148,8 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
         # Ensure pip and setup tools is up to expected version for existing environments.
         caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-        caller('./bin/pip install -U pip-tools==%s' % PIP_TOOLS_VERSION)
         caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
+        caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
 
         if use_pip_sync:
             caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
@@ -163,7 +165,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
             restart_apache(env, use_local_mode, run_checks=True)
             enable_apache_site(use_local_mode)
 
-    restart_rqworker_service(use_local_mode)
+    start_rqworker_service(use_local_mode)
 
 def setup_apache(env="dev", use_local_mode=False):
     """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
@@ -233,10 +235,13 @@ def setup_apache(env="dev", use_local_mode=False):
         AllowMethods GET
     </Location>
 
-    <Location "/admin">
+    <LocationMatch "^/(admin|django-rq)">
         Require ip 137.222
         Require ip 10.0.0.0/8
-    </Location>
+        Require ip 172.16.0.0/12
+        Require ip 192.168.0.0/16
+    </LocationMatch>
+
     """ % {'env': env}
 
     _add_file_local(apache_conf_file, apache_conf, use_local_mode)
@@ -409,7 +414,8 @@ def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
 
 def _change_rqworker_service(use_local_mode, action):
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    caller("sudo service rqworker %s" % action)
+    for num in range(1, 5):
+        caller("sudo service rqworker%d %s" % (num, action))
 
 def restart_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="stop")
@@ -422,7 +428,7 @@ def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
 def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
-    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql"""
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
@@ -443,11 +449,51 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
+def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
+    """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
+    # Convert any command line arguments from strings to boolean values where necessary.
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    reuse_db = (str(reuse_db).lower() == 'true')
+    run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
+    cmd_suffix = ''
+    if reuse_db:
+        cmd_suffix = " --keepdb"
+    if tag and tag != "None":
+        cmd_suffix += " --tag=%s" % tag
+    if not run_selenium_tests:
+        cmd_suffix += " --exclude-tag=selenium-test"
+    elif tag and tag != "None":
+        cmd_suffix += " --tag=selenium-test"
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+
+    with change_dir(src_dir):
+        caller('%sbin/python manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+
+def update_requires_io(requires_io_token, env="test", use_local_mode=False):
+    """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
+    # Can only be run against test or dev instances
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+    for branch in ("master", "demo_stable", "prod_stable"):
+        with change_dir(src_dir):
+            caller('git fetch --all')
+            caller('git fetch origin %s' % branch)
+            caller('git checkout %s' % branch)
+            caller('git pull')
+        with change_dir(venv_dir):
+            caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements' % (requires_io_token, branch, src_dir, ))
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
-    """env="test", database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
+    """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
     if database_name in ('temmpo_p', ):
         abort("Function should not be run against a production database.")
 
@@ -542,6 +588,20 @@ def pip_sync_requirements_file(env="dev", use_local_mode=True):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --output-file requirements/base.txt requirements/base.in')
+        caller('../../bin/pip-compile --output-file requirements/requirements.txt requirements/requirements.in')
         caller('../../bin/pip-compile --output-file requirements/test.txt requirements/test.in')
         caller('../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in')
+
+def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    if package:
+        package = "--upgrade-package %s" % package
+
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+
+    with change_dir(venv_dir+"src/temmpo/"):
+        caller('../../bin/pip-compile --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
+        caller('../../bin/pip-compile --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
+        caller('../../bin/pip-compile --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)

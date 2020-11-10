@@ -1,5 +1,46 @@
+4.3.0   TMMA-405 Add node IDs to JSON output
+        TMMA-404 Reduce size of Sankey diagram
+
+4.2.1   TMMA-401 Display number of mediators on Sankey and Bubble chart
+        TMMA-400 Add download JSON from Sankey diagram option
+        Update third party eggs and Python packing tools
+
+4.2.0   TMMA-299 Changed labling and size of Sankey diagram
+
+4.1.1   TMMA-334 Bug fix sorting by mediator count on results listing table
+        TMMA-397 Update wording, help page and tooltips
+
+4.1.0   TMMA-391 Bug fix matching against MeSH Terms (or genes) that need escaping, e.g. H(+)-K(+)-Exchanging ATPase
+        Improve speed of MeSH Term matching
+
+4.0.1   Change website email address
+
+4.0.0   TMMA-343 Bug fix matching MeSH terms with sub headings
+                 Add support for matching MeSH sub headings
+                 Bug fix matching new genes and ones at the very start of Abstract sections
+                 Support case insenstive matching
+        TMMA-383 Expand definition of Abstract IDs CSV in help page
+        TMMA-384 Re-run version 4 of the matching algorithm
+
+3.6.0   TMMA-382 Increase workers in matching queue
+
+3.5.2   TMMA-93 Automate requires.io third party dependency checking
+
+3.5.1   Improve debugging support
+
+3.5.0   TMMA-381 Drop support for TLS 1.0 & 1.1
+
+3.4.1   Minimal updates to Python packing tools
+
+3.4.0   TMMA-372 Add code coverage report to test suite
+
+3.3.2   TMMA-371 Improve security email based error logging
+
+3.3.1   TMMA-370 Enable Github security alerts
+
+3.3.0   TMMA-369 Apply Django security update 1.11.29
+
 3.2.0   TMMA-368 Apply Django security update 1.11.28
-                 Update pip and setuptools
 
 3.1.0   TMMA-367 Apply Django security update 1.11.27
                  Update third party eggs

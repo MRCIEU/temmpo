@@ -33,7 +33,7 @@ def get_user_upload_location(instance, filename):
 
 
 class Gene(models.Model):
-    """Prepoulated with genes from the below sources.
+    """Pre-populated with genes from the below sources.
     # ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
     # ftp://ftp.ncbi.nih.gov/gene/DATA/README
 
@@ -115,6 +115,17 @@ class MeshTerm(MPTTModel):
         previous_terms = [x.term for x in previous_term_objs]
         return cls.objects.filter(year=current_year).filter(term__in=previous_terms)
 
+    @classmethod
+    def get_fixture_ids(cls, year, exposures, mediators, outcomes):
+        "Test fixture helper script, takes year int, exposures, mediators, outcomes are semicolon & space separated strings of term names, as per Search Criteria tab, returns a comma delimited string of ids"
+        terms_needed = []
+        terms_needed.extend(exposures.split("; "))
+        terms_needed.extend(mediators.split("; "))
+        terms_needed.extend(outcomes.split("; "))
+        term_ids = cls.objects.filter(term__in=terms_needed, year=year).get_ancestors(include_self=True).values_list("id", flat=True)
+        ids = ",".join([str(x) for x in term_ids])
+        return "python manage.py dumpdata browser.MeshTerm --indent 4 --pks %s --output test_fixtures.json" % ids
+
 
 OVID = 'ovid'
 PUBMED = 'pubmed'
@@ -195,25 +206,24 @@ class SearchCriteria(models.Model):
             return []
 
     def get_wcrf_input_variables(self, codename='exposure'):
-        """Helper function to return terms in format that suits the matching code."""
+        """Helper function to return terms in format that suits the matching code.  Ensure unique and sorted lists."""
         input_variables = None
         if codename == 'exposure':
-            input_variables = self.exposure_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.exposure_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'outcome':
-            input_variables = self.outcome_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.outcome_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'mediator':
-            input_variables = self.mediator_terms.order_by('term').values_list('term', flat=True)
+            input_variables = self.mediator_terms.distinct().order_by('term').values_list('term', flat=True)
         elif codename == 'gene':
-            input_variables = self.genes.order_by('name').values_list('name', flat=True)
+            input_variables = self.genes.distinct().order_by('name').values_list('name', flat=True)
 
         if input_variables:
-            #Ensure unique and sorted - NB not sorted in practise but order is maintained which is essential
-            return list(set(input_variables)) # Order should be maintained desc
+            return tuple(input_variables)
         else:
             return tuple()
 
     def __unicode__(self):
-        """Provide a flexible method for determining he search criteria's name.
+        """Provide a flexible method for determining the search criteria object's name.
 
         At present user's cannot assign names to search criteria through the user interface.
         """
@@ -239,8 +249,9 @@ class SearchResult(models.Model):
     started_processing = models.DateTimeField(blank=True, null=True)
     ended_processing = models.DateTimeField(blank=True, null=True)
     mediator_match_counts = models.PositiveIntegerField(blank=True, null=True)
-    # After a substantial change to the matching code record in separate field for historic comparisons where required.
+    # After substantial changes to the matching code record in separate field to support historic comparisons where required.
     mediator_match_counts_v3 = models.PositiveIntegerField(blank=True, null=True)
+    mediator_match_counts_v4 = models.PositiveIntegerField(blank=True, null=True)
     has_edge_file_changed = models.BooleanField(default=False)
 
     # TMMA-288 Store a reference to the job that has been queue for processing, NB: This reference may not persist between 
@@ -302,21 +313,24 @@ class SearchResult(models.Model):
 
         # Delete associated results files (if completed)
         if self.has_completed:
-            base_path = settings.RESULTS_PATH + self.filename_stub + '*'
-            files_to_delete = glob.glob(base_path)
-
-            for delfile in files_to_delete:
-                os.remove(delfile)
+            self._delete_files(settings.RESULTS_PATH)
 
         # If version 1 files exists delete as well.
         if self.mediator_match_counts is not None:
-            base_path = settings.RESULTS_PATH_V1 + self.filename_stub + '*'
-            files_to_delete = glob.glob(base_path)
+            self._delete_files(settings.RESULTS_PATH_V1)
 
-            for delfile in files_to_delete:
-                os.remove(delfile)
+        # If version 3 files exists delete as well.
+        if self.mediator_match_counts_v3 is not None:
+            self._delete_files(settings.RESULTS_PATH_V3)
 
         super(SearchResult, self).delete()
+
+    def _delete_files(self, results_directory):
+        base_path = results_directory + self.filename_stub + '*'
+        files_to_delete = glob.glob(base_path)
+
+        for delfile in files_to_delete:
+            os.remove(delfile)
 
     @property
     def has_changed(self):
@@ -324,8 +338,23 @@ class SearchResult(models.Model):
 
     @property
     def has_match_counts_changed(self):
-        return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3)
+        return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3) or (self.mediator_match_counts_v3 is not None and self.mediator_match_counts_v3 != self.mediator_match_counts_v4)
 
+    def __unicode__(self):
+        """Provide a flexible method for determining the search result object's name."""
+        if self.filename_stub:
+            return self.filename_stub + " (" + self.status + ") started: " + naturaltime(self.started_processing)
+        else:
+            return "SearchResult id: %d status: %s " % (self.id, self.status)
+
+    def matching_status(self):
+        info = "id: %s \n" % self.id
+        info += "v1: %s \n" % self.mediator_match_counts
+        info += "v2: %s \n" % self.mediator_match_counts_v3
+        info += "v4: %s \n" % self.mediator_match_counts_v4
+        info += "abstract: %s \n" % self.criteria.upload
+        info += "abstract: %s \n" % self.criteria.upload.file_format
+        return info
 
 class MessageManager(models.Manager):
 

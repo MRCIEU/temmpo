@@ -22,7 +22,7 @@ PROJECT_ROOT = '/'.join(THIS_PATH.split('/')[0:-6])
 
 GENE_FILE_LOCATION = BASE_DIR + "/prepopulate/Homo_sapiens.gene_info"
 
-ADMINS = (('TeMMPo research project developers', 'it-temmpo-developers@bristol.ac.uk'),)
+ADMINS = (('TeMMPo research project developers', 'tessa.alexander@bristol.ac.uk'),)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Based on idea
@@ -37,7 +37,7 @@ except IOError:
         with open(SECRET_FILE, 'w') as secret_file:
             secret_file.write(SECRET_KEY)
     except IOError:
-        raise Exception('Please create a file %s  with a secret key value.  See https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key for more information.' % SECRET_FILE)
+        raise Exception('Please create a file %s  with a secret key value.  See https://docs.djangoproject.com/en/1.11/ref/settings/#secret-key for more information.' % SECRET_FILE)
 
 # SECURITY WARNING: don't run with debug turned on in production!  See prod.py settings file to change this value.
 DEBUG = True
@@ -54,8 +54,8 @@ ALLOWED_HOSTS = ['127.0.0.1',
 DEFAULT_APPS = [
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.contenttypes', # Moved above to fix testing issue: https://code.djangoproject.com/ticket/9207
     'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -82,7 +82,7 @@ ROOT_URLCONF = 'temmpo.urls'
 WSGI_APPLICATION = 'temmpo.wsgi.application'
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.8/topics/i18n/
+# https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-gb'
 
@@ -97,7 +97,7 @@ USE_TZ = True
 SHORT_DATE_FORMAT = 'd/m/Y'
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
@@ -106,9 +106,13 @@ STATIC_ROOT = "%s/var/www/static" % PROJECT_ROOT  # e.g. /usr/local/projects/tem
 
 ORIGINAL_RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', '')
 RESULTS_PATH_V1 = os.path.join(MEDIA_ROOT, 'results', 'v1', '')
-RESULTS_PATH = os.path.join(MEDIA_ROOT, 'results', 'v3', '')
+RESULTS_PATH_V3 = os.path.join(MEDIA_ROOT, 'results', 'v3', '')
+RESULTS_PATH_V4 = os.path.join(MEDIA_ROOT, 'results', 'v4', '')
+RESULTS_PATH = RESULTS_PATH_V4
+
 RESULTS_URL_V1 = MEDIA_URL + "results/v1/"
-RESULTS_URL = MEDIA_URL + "results/v3/"
+RESULTS_URL_V3 = MEDIA_URL + "results/v3/"
+RESULTS_URL = MEDIA_URL + "results/v4/"
 
 LOGIN_REDIRECT_URL = 'results_listing'
 LOGIN_URL = 'login'
@@ -156,7 +160,6 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
         }
     },
     'loggers': {

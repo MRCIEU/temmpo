@@ -1,0 +1,16 @@
+# This is an implicit value, here for clarity
+--index-url https://pypi.python.org/simple/
+Django==1.11.29  # rq.filter: >=1.11,<2
+django-mptt==0.9.0
+django-registration-redux==2.6
+django-simple-autocomplete==1.11
+lxml==4.4.2
+mysqlclient==1.4.6
+python-magic==0.4.15
+unicodecsv==0.14.1
+django-rq==2.1.0
+redis==3.3.11
+django-redis-cache==2.1.0
+hiredis==1.0.1
+numpy==1.16.5
+pandas==0.24.2

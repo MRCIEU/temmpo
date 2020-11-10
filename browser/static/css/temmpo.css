@@ -66,14 +66,15 @@
     margin-bottom: 0em;
 } 
 
-#chart-slider-label
+#chart-slider-label, #link-count
 {
-    font-size: large;
+    font-size: 130%;
     border: 0;
-    color: #f6931f;
     font-weight: bold;
-    width: 30px;
+    width: 2em;
 }
+
+#chart-slider-label { color: #f6931f; }
 
 #slider{ margin-bottom: 1em; }
 

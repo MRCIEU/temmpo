@@ -2,6 +2,7 @@
 """Test non mesh term functionality."""
 from datetime import datetime, timedelta
 import glob
+import logging
 import os
 import shutil
 
@@ -18,7 +19,7 @@ from browser.matching import perform_search
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 from browser.utils import user_clean_up, delete_user_content
 
-
+logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
 TEST_YEAR = 2018
@@ -40,6 +41,13 @@ class UserDeletionTest(BaseTestCase):
         mediator_terms = MeshTerm.objects.get(term="Phenotype", year=year).get_descendants(include_self=True)
         outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=year).get_descendants(include_self=True)
         gene = Gene.objects.get(name="TRPC1")
+
+        logger.debug("exposure_terms")
+        logger.debug(exposure_terms)
+        logger.debug("mediator_terms")
+        logger.debug(mediator_terms)
+        logger.debug("outcome_terms")
+        logger.debug(outcome_terms)
 
         search_criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
         search_criteria.save()
@@ -85,7 +93,7 @@ class UserDeletionTest(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -202,7 +210,7 @@ class UserDeletionTest(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -504,12 +512,14 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
             os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
+        logger.debug(edge_file_lines)
+        logger.debug(abstract_file_lines)
         test_results_edge_csv.close()
         test_results_abstract_csv.close()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -561,9 +571,30 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         # Check user deleted
         self.assertEqual((self.total_users - 1), User.objects.all().count())
 
+    def _create_mock_results_files(self, search_result, previous_results_directory):
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", previous_results_directory + search_result.filename_stub + "_edge.csv")
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv", previous_results_directory + search_result.filename_stub + "_abstracts.csv")
+        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + ".json", previous_results_directory + search_result.filename_stub + ".json")
 
-    def test_delete_user_content_version_1_matching(self):
-        """Ensure version 1 files are also deleted"""
+    def _assert_results_files_created(self, result_base_path):
+        files_to_delete = glob.glob(result_base_path)
+        self.assertEqual(len(files_to_delete), 3)
+
+    def _check_results_files_deleted(self, base_path):
+        files_to_delete = glob.glob(base_path)
+        self.assertEqual(len(files_to_delete), 0)
+
+    def _mock_up_empty_results_files(self, search_result, result_base_path):
+        file_stub = open(result_base_path + search_result.filename_stub + "_edge.csv", "w")
+        file_stub.write("Mediators,Exposure counts,Outcome counts,Scores\n")
+        file_stub = open(result_base_path + search_result.filename_stub + "_abstracts.csv", "w")
+        file_stub.write("Abstract IDs\n")
+        file_stub.close()
+        file_stub = open(result_base_path + search_result.filename_stub + ".json", "w")
+        file_stub.close()
+
+    def test_delete_user_content_with_previous_matching(self):
+        """Ensure version 1 & 3 files are deleted as well as version 4"""
         search_criteria = self._set_up_test_search_criteria()
         search_result = SearchResult(criteria=search_criteria)
         search_result.save()
@@ -574,38 +605,38 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(id=search_result.id)
 
-        # Check v3 matching results files
-        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
-        files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 3)
+        # Check v4 matching results files were all created
+        self._assert_results_files_created(settings.RESULTS_PATH + search_result.filename_stub + '*')
 
-        # Mock up some v1 results files
-        search_result.mediator_match_counts = search_result.mediator_match_counts_v3 
+        # Mock up some v1 results
+        search_result.mediator_match_counts = search_result.mediator_match_counts_v4
         search_result.save()
-        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv")
-        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv", settings.RESULTS_PATH_V1 + search_result.filename_stub + "_abstracts.csv")
-        shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + ".json", settings.RESULTS_PATH_V1 + search_result.filename_stub + ".json")
+        self._create_mock_results_files(search_result, settings.RESULTS_PATH_V1)
+
+        # Mock up some v3 results
+        search_result.mediator_match_counts_v3 = search_result.mediator_match_counts_v4
+        search_result.save()
+        self._create_mock_results_files(search_result, settings.RESULTS_PATH_V3)
 
         # Check v1 matching results files
-        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
-        files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 3)
+        self._assert_results_files_created(settings.RESULTS_PATH_V1 + search_result.filename_stub + '*')
+
+        # Check v3 matching results files
+        self._assert_results_files_created(settings.RESULTS_PATH_V3 + search_result.filename_stub + '*')
 
         delete_user_content(search_criteria.upload.user.id)
 
         # Check v1 matching results files
-        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
-        files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 0)
+        self._check_results_files_deleted(settings.RESULTS_PATH_V1 + search_result.filename_stub + '*')
 
         # Check v3 matching results files
-        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
-        files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 0)
+        self._check_results_files_deleted(settings.RESULTS_PATH_V3 + search_result.filename_stub + '*')
 
+        # Check v4 matching results files
+        self._check_results_files_deleted(settings.RESULTS_PATH_V4 + search_result.filename_stub + '*')
 
-    def test_delete_user_content_version_1_matching_no_hits(self):
-        """Ensure version 1 files are also deleted"""
+    def test_delete_user_content_previous_matches_with_no_hits(self):
+        """Ensure version 1 & 3 files where not matches exist are deleted as well as v4 files"""
         search_criteria = self._set_up_test_search_criteria()
         search_result = SearchResult(criteria=search_criteria)
         search_result.save()
@@ -616,35 +647,31 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(id=search_result.id)
 
-        # Check v3 matching results files are created.
+        # Check v4 matching results files are created.
         base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
         files_to_delete = glob.glob(base_path)
         self.assertEqual(len(files_to_delete), 3)
 
-        # Mock up some v1 stub results files where mediator matches were 0
-        search_result.mediator_match_counts = 0 
+        # Mock up some v1 results files where mediator matches were 0
+        search_result.mediator_match_counts = 0
         search_result.save()
-        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
-        file_stub.write("Mediators,Exposure counts,Outcome counts,Scores\n")
-        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_abstracts.csv", "w")
-        file_stub.write("Abstract IDs\n")
-        file_stub.close()
-        file_stub = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + ".json", "w")
-        file_stub.close()
+        self._mock_up_empty_results_files(search_result, settings.RESULTS_PATH_V1)
+
+        # Mock up some v3 results files where mediator matches were 0
+        search_result.mediator_match_counts_v3 = 0
+        search_result.save()
+        self._mock_up_empty_results_files(search_result, settings.RESULTS_PATH_V3)
 
         # Check v1 matching results files exist
-        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
-        files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 3)
+        self._assert_results_files_created(settings.RESULTS_PATH_V1 + search_result.filename_stub + '*')
 
         delete_user_content(search_criteria.upload.user.id)
 
         # Check v1 matching results files are deleted.
-        base_path = settings.RESULTS_PATH_V1 + search_result.filename_stub + '*'
-        files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 0)
+        self._check_results_files_deleted(settings.RESULTS_PATH_V1 + search_result.filename_stub + '*')
 
         # Check v3 matching results files are deleted.
-        base_path = settings.RESULTS_PATH + search_result.filename_stub + '*'
-        files_to_delete = glob.glob(base_path)
-        self.assertEqual(len(files_to_delete), 0)
+        self._check_results_files_deleted(settings.RESULTS_PATH_V3 + search_result.filename_stub + '*')
+
+        # Check v4 matching results files are deleted.
+        self._check_results_files_deleted(settings.RESULTS_PATH + search_result.filename_stub + '*')

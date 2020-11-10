@@ -54,7 +54,7 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
 
     def test_bubble_chart(self):
         search_result = self._set_up_test_search_result()
-        self.assertTrue(search_result.mediator_match_counts_v3 > 0)
+        self.assertTrue(search_result.mediator_match_counts_v4 > 0)
 
         # Bubble chart page
         self.sel_open(reverse("results_bubble",  kwargs={'pk': search_result.id}))
@@ -76,7 +76,7 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
 
         try:
             chart_header_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(3) > text")
-            self.assertTrue(search_result.mediator_match_counts_v3 < 20)
+            self.assertTrue(search_result.mediator_match_counts_v4 < 20)
             self.assertEqual(chart_header_label.text, "Focused search results based on original score")
             self.assertFalse("(Top 20)" in chart_header_label.text)
 
@@ -84,3 +84,5 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
             print e
             print self.driver.page_source
             self.fail("A selenium exception occurred trying to access the chart label element in a bubble chart")
+
+        search_result.delete()

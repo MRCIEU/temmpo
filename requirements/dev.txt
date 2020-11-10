@@ -6,54 +6,63 @@
 #
 --index-url https://pypi.python.org/simple/
 
+astroid==1.6.6            # via -r requirements/dev.in
+backports.functools-lru-cache==1.6.1  # via astroid, isort, wcwidth
 backports.shutil-get-terminal-size==1.0.0  # via ipython
-certifi==2019.3.9
-chardet==3.0.4
-click==7.0
-csvvalidator==1.2
-decorator==4.4.0          # via ipython, traitlets
-django-debug-toolbar==1.11
-django-js-asset==1.2.2
-django-mptt==0.9.0
-django-redis-cache==2.1.0
-django-registration-redux==2.6
-django-rq==2.1.0
-django-simple-autocomplete==1.11
-django==1.11.28
-easyprocess==0.2.5
-enum34==1.1.6             # via traitlets
-hiredis==1.0.1
-idna==2.8
+certifi==2020.6.20        # via -r requirements/test.txt, requests
+chardet==3.0.4            # via -r requirements/test.txt, requests
+click==7.1.2              # via -r requirements/test.txt, rq
+coverage==5.1             # via -r requirements/test.txt
+csvvalidator==1.2         # via -r requirements/test.txt
+decorator==4.4.2          # via ipython, traitlets
+django-debug-toolbar==1.11  # via -r requirements/dev.in
+django-js-asset==1.2.2    # via -r requirements/test.txt, django-mptt
+django-mptt==0.9.0        # via -r requirements/test.txt
+django-redis-cache==2.1.0  # via -r requirements/test.txt
+django-registration-redux==2.6  # via -r requirements/test.txt
+django-rq==2.1.0          # via -r requirements/test.txt
+django-simple-autocomplete==1.11  # via -r requirements/test.txt
+django==1.11.29           # via -r requirements/test.txt, django-debug-toolbar, django-rq, django-simple-autocomplete
+easyprocess==0.2.5        # via -r requirements/test.txt, pyscreenshot, pyvirtualdisplay
+enum34==1.1.10            # via astroid, traitlets
+futures==3.3.0            # via isort
+hiredis==1.0.1            # via -r requirements/test.txt
+idna==2.10                # via -r requirements/test.txt, requests
 ipython-genutils==0.2.0   # via traitlets
-ipython==5.8.0
-lxml==4.4.2
-mysqlclient==1.4.6
-numpy==1.16.5
-pandas==0.24.2
-pathlib2==2.3.3           # via ipython, pickleshare
-pexpect==4.7.0            # via ipython
+ipython==5.8.0            # via -r requirements/dev.in
+isort==4.3.21             # via -r requirements/dev.in
+lazy-object-proxy==1.5.1  # via astroid
+lxml==4.4.2               # via -r requirements/test.txt
+mysqlclient==1.4.6        # via -r requirements/test.txt
+numpy==1.16.5             # via -r requirements/test.txt, pandas
+pandas==0.24.2            # via -r requirements/test.txt
+pathlib2==2.3.5           # via ipython, pickleshare
+pexpect==4.8.0            # via ipython
 pickleshare==0.7.5        # via ipython
-prompt-toolkit==1.0.16    # via ipython
+prompt-toolkit==1.0.18    # via ipython
 ptyprocess==0.6.0         # via pexpect
-pygments==2.3.1           # via ipython
-pympler==0.7
-pyscreenshot==0.5.1
-python-dateutil==2.8.0
-python-magic==0.4.15
-pytz==2019.1
-pyvirtualdisplay==0.2.1
-redis==3.3.11
-requests==2.22.0
-rq==1.0
+pygments==2.5.2           # via ipython
+pympler==0.7              # via -r requirements/dev.in
+pyscreenshot==0.5.1       # via -r requirements/test.txt
+python-dateutil==2.8.1    # via -r requirements/test.txt, pandas
+python-magic==0.4.15      # via -r requirements/test.txt
+pytz==2020.1              # via -r requirements/test.txt, django, pandas
+pyvirtualdisplay==0.2.1   # via -r requirements/test.txt
+redis==3.3.11             # via -r requirements/test.txt, django-redis-cache, django-rq, rq
+requests==2.24.0          # via -r requirements/test.txt, requires.io
+requires.io==0.2.6        # via -r requirements/test.txt
+rq==1.3.0                 # via -r requirements/test.txt, django-rq
 scandir==1.10.0           # via pathlib2
-selenium==3.141.0
+selenium==3.141.0         # via -r requirements/test.txt
 simplegeneric==0.8.1      # via ipython
-six==1.12.0
-sqlparse==0.3.0           # via django-debug-toolbar
-traitlets==4.3.2          # via ipython
-unicodecsv==0.14.1
-urllib3==1.25.2
-wcwidth==0.1.7            # via prompt-toolkit
+singledispatch==3.4.0.3   # via astroid
+six==1.15.0               # via -r requirements/test.txt, astroid, django-redis-cache, pathlib2, prompt-toolkit, python-dateutil, singledispatch, traitlets
+sqlparse==0.3.1           # via django-debug-toolbar
+traitlets==4.3.3          # via ipython
+unicodecsv==0.14.1        # via -r requirements/test.txt
+urllib3==1.25.10          # via -r requirements/test.txt, requests, selenium
+wcwidth==0.2.5            # via prompt-toolkit
+wrapt==1.12.1             # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

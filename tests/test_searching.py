@@ -145,7 +145,7 @@ class SearchingTestCase(BaseTestCase):
         # Filter by a genes
         response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
 
-        # TODO Test filter by MeshTerm part of form
+        # TODO: TMMA-343 Test filter by MeshTerm part of form
 
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
@@ -160,7 +160,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs") # 5 articles have Phenotype, [1 TRPC1 - 23049826 - same as Phenotype), 
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -559,6 +559,16 @@ class SearchingTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(criteria=search_criteria)
         self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["d3", "www.gstatic.com/charts/loader.js", "jquery", reverse('json_data', kwargs={'pk': search_result.id})])
 
+    def test_download_links(self):
+        self._login_user()
+        # Set up test search
+        search_criteria = self._set_up_test_search_criteria()
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, follow=True)
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        self._find_expected_content(reverse("results", kwargs={'pk': search_result.id}), msg_list=["Download scores (CSV)", "Download mechanism abstract IDs (CSV)", "Download Sankey diagram JSON",])
+
+
     # Test JSON MeSH Term exports
 
     def test_json_mesh_term_export(self):
@@ -638,7 +648,7 @@ class SearchingTestCase(BaseTestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
+        # TODO: (Improvement) Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
 
     def test_mesh_terms_as_json_for_tree_population_sub_tree(self):
         """Test can retrieve JSON that represent the children of a specific MeshTerm jsTree node."""
@@ -664,7 +674,7 @@ class SearchingTestCase(BaseTestCase):
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key}) + expanded_node_query_string
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
-        # TODO Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
+        # TODO: (Improvement) Expand jsTree testing - Should selected state (and undetermined - not currently enabled) be tested as well here?
 
     def test_search_results_deletion(self):
         """Test we can delete results and associated files """
@@ -694,7 +704,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -812,7 +822,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
-        self.assertEqual(len(abstract_file_lines), 8)  # Expected 8 lines including header
+        self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
@@ -904,13 +914,13 @@ class SearchingTestCase(BaseTestCase):
         self.assertNotEqual(len(terms), criteria.outcome_terms.count())
 
     def test_highlighting_matching_changes(self):
-        """Ensure new version 3 matching code results, are not marked as changes"""
+        """Ensure new version 4 matching code results, are not marked as changes"""
         self._login_user()
         search_criteria = self._set_up_test_search_criteria()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
         response = self.client.post(path, {'genes': 'TRPC1,HTR1A'}, follow=True)
         search_result = SearchResult.objects.get(criteria=search_criteria)
-        expected_text = ["Mediator match counts", "View bubble chart", ]
+        expected_text = ["Mechanism match counts", "View bubble chart", ]
         revised_text = ['data-results-change="%d"' % search_result.id, "Revised result"]
         response = self.client.get(reverse('results_listing'))
 
@@ -920,18 +930,18 @@ class SearchingTestCase(BaseTestCase):
         for text in expected_text:
             self.assertContains(response, text)
 
-        # Fake up a previous results
+        # Fake up previous results
         search_result.mediator_match_counts = 0
         search_result.save()
-        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v4)
 
         response = self.client.get(reverse('results_listing'))
         for text in revised_text:
             self.assertContains(response, text)
 
-        search_result.mediator_match_counts = 1
+        search_result.mediator_match_counts_v3 = 1
         search_result.save()
-        self.assertNotEqual(search_result.mediator_match_counts, search_result.mediator_match_counts_v3)
+        self.assertNotEqual(search_result.mediator_match_counts_v3, search_result.mediator_match_counts_v4)
 
         response = self.client.get(reverse('results_listing'))
         for text in revised_text:
@@ -939,5 +949,5 @@ class SearchingTestCase(BaseTestCase):
 
         # Test the change is highlighted on the individual results pages
         path = reverse('results', kwargs={'pk': search_result.id})
-        expected_text = ["Download version 1 scores as CSV", "Download version 1 abstract IDs as CSV", "Revised results"]
+        expected_text = ["Download version 1 scores (CSV)", "Download version 1 mechanism abstract IDs (CSV)", "Revised results", "Download version 3 mechanism abstract IDs (CSV)"]
         self._find_expected_content(path=path, msg_list=expected_text)
