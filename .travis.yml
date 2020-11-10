@@ -2,6 +2,8 @@ language: python
 
 python:
   - '2.7'
+  - '3.6'
+  - '3.7'
 
 before_install:
   # Move source code to a directory structure the application expects.
