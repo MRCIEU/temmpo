@@ -4,17 +4,17 @@
 #
 #    pip-compile --output-file=requirements/dev.txt requirements/dev.in
 #
---index-url https://pypi.python.org/simple/
-
 astroid==1.6.6            # via -r requirements/dev.in
 backports.functools-lru-cache==1.6.1  # via astroid, isort, wcwidth
 backports.shutil-get-terminal-size==1.0.0  # via ipython
 certifi==2020.6.20        # via -r requirements/test.txt, requests
 chardet==3.0.4            # via -r requirements/test.txt, requests
+clamd==1.0.2              # via -r requirements/test.txt, django-clamd
 click==7.1.2              # via -r requirements/test.txt, rq
 coverage==5.1             # via -r requirements/test.txt
 csvvalidator==1.2         # via -r requirements/test.txt
 decorator==4.4.2          # via ipython, traitlets
+django-clamd==0.4.0       # via -r requirements/test.txt
 django-debug-toolbar==1.11  # via -r requirements/dev.in
 django-js-asset==1.2.2    # via -r requirements/test.txt, django-mptt
 django-mptt==0.9.0        # via -r requirements/test.txt
@@ -22,7 +22,7 @@ django-redis-cache==2.1.0  # via -r requirements/test.txt
 django-registration-redux==2.6  # via -r requirements/test.txt
 django-rq==2.1.0          # via -r requirements/test.txt
 django-simple-autocomplete==1.11  # via -r requirements/test.txt
-django==1.11.29           # via -r requirements/test.txt, django-debug-toolbar, django-rq, django-simple-autocomplete
+django==1.11.29           # via -r requirements/test.txt, django-clamd, django-debug-toolbar, django-rq, django-simple-autocomplete
 easyprocess==0.2.5        # via -r requirements/test.txt, pyscreenshot, pyvirtualdisplay
 enum34==1.1.10            # via astroid, traitlets
 futures==3.3.0            # via isort

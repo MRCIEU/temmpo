@@ -4,16 +4,16 @@
 #
 #    pip-compile --output-file=requirements/requirements.txt requirements/requirements.in
 #
---index-url https://pypi.python.org/simple/
-
+clamd==1.0.2              # via django-clamd
 click==7.1.2              # via rq
+django-clamd==0.4.0       # via -r requirements/requirements.in
 django-js-asset==1.2.2    # via django-mptt
 django-mptt==0.9.0        # via -r requirements/requirements.in
 django-redis-cache==2.1.0  # via -r requirements/requirements.in
 django-registration-redux==2.6  # via -r requirements/requirements.in
 django-rq==2.1.0          # via -r requirements/requirements.in
 django-simple-autocomplete==1.11  # via -r requirements/requirements.in
-django==1.11.29           # via -r requirements/requirements.in, django-rq, django-simple-autocomplete
+django==1.11.29           # via -r requirements/requirements.in, django-clamd, django-rq, django-simple-autocomplete
 hiredis==1.0.1            # via -r requirements/requirements.in
 lxml==4.4.2               # via -r requirements/requirements.in
 mysqlclient==1.4.6        # via -r requirements/requirements.in

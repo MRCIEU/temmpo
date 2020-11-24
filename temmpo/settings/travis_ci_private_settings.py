@@ -13,3 +13,6 @@ DATABASES = {
 }
 
 # redis available over localhost, may need to redefine if any issues
+
+# clamd testing is enabled for VM based Jenkins run tests.
+CLAMD_ENABLED = False

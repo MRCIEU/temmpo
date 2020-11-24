@@ -62,7 +62,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', 'django_rq', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', 'django_rq', 'django_clamd', ]
 LOCAL_APPS = ['browser', ]
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -237,6 +237,13 @@ CACHES = {
         },
     },
 }
+
+CLAMD_SOCKET = '/var/run/clamd.scan/clamd.sock'
+CLAMD_USE_TCP = False
+CLAMD_TCP_SOCKET = 3310
+CLAMD_TCP_ADDR = '127.0.0.1'
+CLAMD_ENABLED = True
+
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
 try:

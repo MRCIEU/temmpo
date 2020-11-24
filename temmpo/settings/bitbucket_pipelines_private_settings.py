@@ -11,3 +11,6 @@ DATABASES = {
         }
     }
 }
+
+# clamd testing is enabled for VM based Jenkins run tests.
+CLAMD_ENABLED = False
