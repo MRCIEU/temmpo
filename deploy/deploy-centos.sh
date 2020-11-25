@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO test Apache builds in Travis CI/CD build pipelines as well
+
 echo "###   Build script for a development TeMMPo environment on Centos"
 timedatectl set-timezone Europe/London
 
@@ -56,23 +58,25 @@ setsebool -P antivirus_can_scan_system 1
 # Use production config as per puppet config,
 # see https://gitlab.isys.bris.ac.uk/research_it/clamav/-/blob/master/files/freshclam.conf
 # and https://gitlab.isys.bris.ac.uk/research_it/clamav/-/blob/master/templates/scan.conf.epp
-# TODO test django and apache vagrant VM builds still work ; Should be part of a CI/CD job test too.
 if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/freshclam.conf ]
   then
-    cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/scan.conf /etc/
+    cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/freshclam.conf /etc/
   else
+    # apache VMs do not mount local source code
     cp /vagrant/deploy/freshclam.conf /etc/
 fi
 if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/scan.conf ]
   then
     cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/scan.conf /etc/clamd.d/
   else
+    # apache VMs do not mount local source code
     cp /vagrant/deploy/scan.conf /etc/clamd.d/
 fi
 
 touch /var/log/clamd.scan
 chown clamscan:clamscan /var/log/clamd.scan
-chmod ugo+rx -R /var/run/clamd.scan
+usermod -a -G clamscan apache
+# chmod ugo+rx -R /var/run/clamd.scan
 
 systemctl start clamd@scan
 systemctl enable clamd@scan
@@ -85,7 +89,7 @@ if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-
   then
     pip install -r /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt
   else
-    pip install -r /vagrant/pip-freeze-2020-11-23.txt
+    pip install -r /vagrant/deploy/pip-freeze-2020-11-23.txt
 fi
 
 echo "###   Install redis"
@@ -186,6 +190,7 @@ if [ -d "/home/vagrant/.ssh/" ]; then
     then
       cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa* /home/vagrant/.ssh/
     else
+      # apache VMs do not mount local source code
       cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
   fi
 
