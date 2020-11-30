@@ -25,7 +25,7 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
 
-    def _assert_file_upload(url, file_path):
+    def _assert_file_upload(self, url, file_path):
         logger.debug('_assert_file_upload %s %s ' % (url, file_path))
         previous_upload_count = Upload.objects.all().count()
         self.driver.get("%s%s" % (self.live_server_url, url))
@@ -63,7 +63,7 @@ class ScanOnUploadTestCase(ScanOnUploadInterface):
 
     def test_upload_pubmed_file(self):
         file_path = os.path.join(BASE_DIR, 'test-abstract-pubmed-1.txt')
-        self._upload_file(url=reverse("search_ovid_medline"), file_path=file_path)
+        self._assert_file_upload(url=reverse("search_ovid_medline"), file_path=file_path)
 
     #  TODO: Trigger virus scanner file uploads wit EICAR txt directly to model and via form.
 
