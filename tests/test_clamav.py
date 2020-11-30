@@ -19,6 +19,26 @@ logger = logging.getLogger(__name__)
 @tag('clamav')  # Only supported by Apache fronted tests runners
 @tag('selenium-test')
 @override_settings(CLAMD_ENABLED=True)
+class ScanOnUploadInterface(SeleniumBaseTestCase):
+
+    fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
+
+    def _assert_file_upload(url, file_path):
+        previous_upload_count = Upload.objects.all().count()
+        self.driver.get("%s%s" % (self.live_server_url, url))
+        self.driver.find_element_by_id("abstracts_upload").clear()
+        self.driver.find_element_by_id("abstracts_upload").send_keys(file_path)
+
+        # response = self._setup_file_upload_response(test_archive_file, search_path)
+        # self.assertNotContains(response, "is not an acceptable file type")
+        # self.assertNotContains(response, "is not a plain text file")
+
+        self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
+        uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
+        mime_type = magic.from_buffer(uploaded_file.read(2048), mime=True)
+        self.assertEqual(mime_type, "text/plain")
+
+
 class ScanOnArchiveUploadTestCase(ScanOnUploadInterface):
     """Test ClamAV enabled with archive abstract files"""
     def test_upload_pub_med_bz_archive(self):
@@ -40,9 +60,6 @@ class ScanOnArchiveUploadTestCase(ScanOnUploadInterface):
         """TODO: Trigger virus scanner file uploads wit EICAR txt directly to model and via form."""
 
 
-@tag('clamav')  # Only supported by Apache fronted tests runners
-@tag('selenium-test')
-@override_settings(CLAMD_ENABLED=True)
 class ScanOnUploadTestCase(ScanOnUploadInterface):
     """Test ClamAV enabled with text abstract upload files"""
     # fixtures = []
@@ -56,22 +73,3 @@ class ScanOnUploadTestCase(ScanOnUploadInterface):
 
     #  TODO: Trigger virus scanner file uploads wit EICAR txt directly to model and via form.
 
-
-class ScanOnUploadInterface(SeleniumBaseTestCase):
-
-    fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
-
-    def _assert_file_upload(url, file_path):
-        previous_upload_count = Upload.objects.all().count()
-        self.driver.get("%s%s" % (self.live_server_url, url))
-        self.driver.find_element_by_id("abstracts_upload").clear()
-        self.driver.find_element_by_id("abstracts_upload").send_keys(file_path)
-
-        # response = self._setup_file_upload_response(test_archive_file, search_path)
-        # self.assertNotContains(response, "is not an acceptable file type")
-        # self.assertNotContains(response, "is not a plain text file")
-
-        self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
-        uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
-        mime_type = magic.from_buffer(uploaded_file.read(2048), mime=True)
-        self.assertEqual(mime_type, "text/plain")
