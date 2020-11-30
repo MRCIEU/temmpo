@@ -48,12 +48,14 @@ setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_can_network_connect_db 1
 setsebool -P httpd_can_sendmail 1
 
-echo "###   Install anti-virus tools"
+echo "###   Install anti-virus tools used with Apache fronted instances"
 yum -y install clamav
 yum -y install clamd
+# ref: https://github.com/vstoykov/django-clamd#configuration
 # Installed on prod
 yum -y install clamav-data
 yum -y install clamav-devel
+
 setsebool -P antivirus_can_scan_system 1
 # Use production config as per puppet config,
 # see https://gitlab.isys.bris.ac.uk/research_it/clamav/-/blob/master/files/freshclam.conf
@@ -76,7 +78,6 @@ fi
 touch /var/log/clamd.scan
 chown clamscan:clamscan /var/log/clamd.scan
 usermod -a -G clamscan apache
-# chmod ugo+rx -R /var/run/clamd.scan
 
 systemctl start clamd@scan
 systemctl enable clamd@scan

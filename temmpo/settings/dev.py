@@ -31,3 +31,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/usr/local/projects/temmpo/var/email'
 
 LOGGING['handlers']['console']['level'] = 'DEBUG'
+
+# Disabled for Django dev runner
+CLAMD_ENABLED = False
