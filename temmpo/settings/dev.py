@@ -1,5 +1,7 @@
 from base import *
 
+import os
+
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK' : lambda request: True,
     'INTERCEPT_REDIRECTS': False,
@@ -32,5 +34,8 @@ EMAIL_FILE_PATH = '/usr/local/projects/temmpo/var/email'
 
 LOGGING['handlers']['console']['level'] = 'DEBUG'
 
-# Disabled for Django dev runner
-CLAMD_ENABLED = False
+USING_APACHE = (os.environ.has_key("USING_APACHE") and os.environ["USING_APACHE"] == 'True')
+
+# Disable ClamAV for Django development runner
+if not USING_APACHE:
+    CLAMD_ENABLED = False
