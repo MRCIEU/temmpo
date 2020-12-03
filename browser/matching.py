@@ -329,7 +329,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         edge_row_id = -1
         # Ensure we only test citations with associated mesh headings
         if mesh_subject_headings in citation.fields:
-            if not mesh_filter or search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mesh_filter]) >= 0:
+            search_result_for_mesh_term = search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mesh_filter])
+            if not mesh_filter or search_result_for_mesh_term is not None:
                 # Only search for genes in citations with an abstract section
                 if abstract in citation.fields:
                     for gene in genelist:
