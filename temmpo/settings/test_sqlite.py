@@ -1,6 +1,6 @@
 """Test specific settings file, currently used in BitBucket pipelines."""
 
-from base import *
+from temmpo.settings.base import *
 
 # Define a local SQLite database to run tests with
 DATABASES = {

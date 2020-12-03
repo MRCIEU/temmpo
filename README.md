@@ -21,7 +21,8 @@ Tested with these versions:
 
 NB: Additional development IDE support for Visual Code can be added by installing
 
-    pip install pylint==1.9.5
+    cd /usr/local/projects/temmpo/lib/dev/bin
+    pip3 install pylint==2.6.0
 
 ### Installing
 

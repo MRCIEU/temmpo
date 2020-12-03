@@ -9,21 +9,58 @@ echo "###   Install EPEL repo and run package updates"
 yum -y install epel-release
 yum -y update
 
+echo "### Install IUS repo for Python 3+ packages"
+yum -y install https://repo.ius.io/ius-release-el7.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+#  NB: Jon uses
+# yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+
 echo "Install Centos dev tools, like audit2allow"
 yum -y install policycoreutils-python
 yum -y install mlocate
 
-echo "###   Install Python components"
+echo "###   Install Python 3 and components"
+yum -y install python36u
+yum -y install python36u-setuptools
+yum -y install python36u-devel
 yum -y install python-devel
-yum -y install python-wheel
-yum -y install python-magic
 yum -y install python-pip
+
+/bin/easy_install-3.6 pip
+pip3 install virtualenv==20.2.1
+
+# asn1crypto==0.24.0
+# bcrypt==3.1.4
+# cffi==1.11.5
+# cryptography==2.1.4
+# Fabric==1.13.1
+# idna==2.6
+# mod-wsgi==4.5.14
+# paramiko==2.4.0
+# pyasn1==0.4.2
+# pycparser==2.18
+# PyNaCl==1.2.1
+# six==1.11.0
+# virtualenv==15.1.0
+
+# TODO: Review missing packages
+
+# yum -y install python-wheel
+yum -y install python-magic 
 yum -y install python-virtualenv
-yum -y install libxml2-python
-yum -y install libxml2-devel
-yum -y install libxslt-python
-yum -y install libxslt-devel
+# yum -y install libxml2-python
+# yum -y install libxml2-devel
+# yum -y install libxslt-python
+# yum -y install libxslt-devel
 yum -y install python-lxml
+
+
+# '/etc/httpd/conf.d/00_interact_wsgi.conf':
+#     ensure  => file,
+#     owner   => 'root',
+#     group   => 'root',
+#     mode    => '0644',
+
+# TODO - Run pip_tools_update_requirements pinned to Django 
 
 echo "###   Install gcc"
 yum -y install gcc gcc-c++
@@ -38,6 +75,7 @@ yum -y install mariadb-devel
 
 echo "###   Setup Web server components"
 yum -y install httpd
+# yum -y install httpd-devel # TODO - used in INTERACT
 yum -y install mod_wsgi
 
 echo "###   Install DB connectivity tools"
@@ -89,7 +127,7 @@ systemctl enable clamd@scan
 # Update virus DB
 /bin/freshclam
 
-echo "###   Install fabric (for deployment scripts) and other production Python eggs"
+echo "###   Install fabric (for deployment scripts) and other production Python 2 eggs"
 if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt ]
   then
     pip install -r /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt
@@ -146,7 +184,7 @@ chromedriver -v
 
 echo "###   Confirm install list"
 yum list installed 
-pip freeze
+pip3 freeze
 
 echo "###   Create directories normally managed by Puppet"
 mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d

@@ -42,8 +42,9 @@ script:
   - coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=slow
   - coverage report --skip-empty --skip-covered -m
   # NB: When deployed Fabric is installed at a system packages level and supports the CI/CD pipeline
-  - pip3 install fabric==2.5.0
-  - fab -l -f deploy/fabfile.py
+  # TODO: Add support for Python 2 fabric testing, see: https://docs.travis-ci.com/user/build-matrix/#using-different-programming-languages-per-job & https://docs.travis-ci.com/user/build-matrix/#listing-individual-jobs
+  # - pip install fabric==1.13.1
+  # - fab -l -f deploy/fabfile.py
 
 branches:
   only:
