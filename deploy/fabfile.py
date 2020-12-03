@@ -1,5 +1,7 @@
 """Fabric script used in CI and CD pipeline."""
 
+# TODO: See: https://www.fabfile.org/upgrading.html#upgrading
+
 from datetime import datetime
 import os
 
@@ -17,9 +19,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
-PIP_VERSION = '19.1.1'
-SETUPTOOLS_VERSION = '44.1.1'
-PIP_TOOLS_VERSION = '4.5.1'
+PIP_VERSION = '20.3.1'
+SETUPTOOLS_VERSION = '50.3.2'
+PIP_TOOLS_VERSION = '5.4.0'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -96,11 +98,11 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 caller('git pull')
 
         with change_dir(venv_dir):
-            caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-            caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
-            caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
-            caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
-            caller('./bin/pip freeze')
+            caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
+            caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
+            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip3 freeze')
 
         sym_link_private_settings(env, use_local_mode)
 
@@ -146,15 +148,15 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     with change_dir(venv_dir):
 
-        # Ensure pip and setup tools is up to expected version for existing environments.
-        caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-        caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
-        caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
+        # Ensure pip3 and setup tools is up to expected version for existing environments.
+        caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
+        caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
+        caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
 
         if use_pip_sync:
             caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
         else:
-            caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
 
         if migrate_db:
             caller('./bin/python src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
