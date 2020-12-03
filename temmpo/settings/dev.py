@@ -36,6 +36,6 @@ LOGGING['handlers']['console']['level'] = 'DEBUG'
 
 USING_APACHE = (os.environ.has_key("USING_APACHE") and os.environ["USING_APACHE"] == 'True')
 
-# Disable ClamAV for Django development runner
-if not USING_APACHE:
-    CLAMD_ENABLED = False
+# # Disable ClamAV for Django development runner
+# if not USING_APACHE:
+#     CLAMD_ENABLED = False

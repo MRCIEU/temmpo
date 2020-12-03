@@ -21,4 +21,4 @@ RESULTS_URL = MEDIA_URL + "results/testing/v4/"
 RESULTS_URL_V3 = MEDIA_URL + "results/testing/v3/"
 RESULTS_URL_V1 = MEDIA_URL + "results/testing/v1/"
 
-CLAMD_ENABLED = False
+# CLAMD_ENABLED = False

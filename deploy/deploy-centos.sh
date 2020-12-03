@@ -78,6 +78,9 @@ fi
 touch /var/log/clamd.scan
 chown clamscan:clamscan /var/log/clamd.scan
 usermod -a -G clamscan apache
+usermod -a -G virusgroup apache
+usermod -a -G clamscan vagrant
+usermod -a -G virusgroup vagrant
 
 systemctl start clamd@scan
 systemctl enable clamd@scan

@@ -116,7 +116,6 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     if configure_apache:
         collect_static(env, use_local_mode)
         setup_apache(env, use_local_mode)
-        os.environ["USING_APACHE"] = 'True' # Used to denote Apache vs Django development runner vagrant builds, as these share settings file
 
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
