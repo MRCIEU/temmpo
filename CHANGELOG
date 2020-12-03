@@ -7,10 +7,10 @@
         TMMA-400 Add download JSON from Sankey diagram option
         Update third party eggs and Python packing tools
 
-4.2.0   TMMA-299 Changed labling and size of Sankey diagram
+4.2.0   TMMA-299 Changed labeling and size of Sankey diagram
 
 4.1.1   TMMA-334 Bug fix sorting by mediator count on results listing table
-        TMMA-397 Update wording, help page and tooltips
+        TMMA-397 Update wording, help page and tool tips
 
 4.1.0   TMMA-391 Bug fix matching against MeSH Terms (or genes) that need escaping, e.g. H(+)-K(+)-Exchanging ATPase
         Improve speed of MeSH Term matching
@@ -20,7 +20,7 @@
 4.0.0   TMMA-343 Bug fix matching MeSH terms with sub headings
                  Add support for matching MeSH sub headings
                  Bug fix matching new genes and ones at the very start of Abstract sections
-                 Support case insenstive matching
+                 Support case insensitive matching
         TMMA-383 Expand definition of Abstract IDs CSV in help page
         TMMA-384 Re-run version 4 of the matching algorithm
 
@@ -84,7 +84,7 @@
 
 2.8.0   TMMA-268 Bug fix broken Sankey chart
         TMMA-270 Import 2019 MeSH Terms
-        TMMA-108 Add google analytics
+        TMMA-108 Add Google Analytics
         TMMA-269 Upgrade Django to 1.11.x
 
 2.7.0   TMMA-157 Make is clear when no results were found
