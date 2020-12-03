@@ -155,7 +155,11 @@ class Upload(models.Model):
     @property
     def filename(self):
         """Helper function to extrapolate only the file name part of an upload."""
-        return os.path.basename(self.abstracts_upload.file.name)
+        try:
+            return os.path.basename(self.abstracts_upload.file.name)
+        except:
+            logger.warning("File %s count not be found." % self.abstracts_upload.file.name)
+            return ""
 
     def delete(self):
         """ Override delete as we need to delete the file"""

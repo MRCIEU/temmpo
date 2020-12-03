@@ -1,9 +1,19 @@
 #!/bin/sh
 
-echo "Build script for a development TeMMPo environment on Centos"
+# TODO test Apache builds in Travis CI/CD build pipelines as well
+
+echo "###   Build script for a development TeMMPo environment on Centos"
 timedatectl set-timezone Europe/London
+
+echo "###   Install EPEL repo and run package updates"
 yum -y install epel-release
 yum -y update
+
+echo "Install Centos dev tools, like audit2allow"
+yum -y install policycoreutils-python
+yum -y install mlocate
+
+echo "###   Install Python components"
 yum -y install python-devel
 yum -y install python-wheel
 yum -y install python-magic
@@ -15,46 +25,87 @@ yum -y install libxslt-python
 yum -y install libxslt-devel
 yum -y install python-lxml
 
-# install gcc
+echo "###   Install gcc"
 yum -y install gcc gcc-c++
 
-# dev tools
+echo "###   Install dev tools"
 yum -y install git
 yum -y install nano
 yum -y install wget
 yum -y install mariadb # Database client - adds mysql alias to command line
 yum -y install unzip
-
 yum -y install mariadb-devel
 
-# Web server setup
+echo "###   Setup Web server components"
 yum -y install httpd
 yum -y install mod_wsgi
 
-# DB connectivity tools
+echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
 yum -y install mysql-utilities
-
 # Required to connect to DB successfully from web server and be able to send emails
 setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_can_network_connect_db 1
 setsebool -P httpd_can_sendmail 1
 
-# Production tools
+echo "###   Install anti-virus tools used with Apache fronted instances"
 yum -y install clamav
+yum -y install clamd
+# ref: https://github.com/vstoykov/django-clamd#configuration
+# Installed on prod
+yum -y install clamav-data
+yum -y install clamav-devel
 
-# install fabric for deployment scripts
-pip install fabric==1.13.1
+setsebool -P antivirus_can_scan_system 1
+setsebool -P daemons_enable_cluster_mode 1
+# Use production config as per puppet config,
+# see https://gitlab.isys.bris.ac.uk/research_it/clamav/-/blob/master/files/freshclam.conf
+# and https://gitlab.isys.bris.ac.uk/research_it/clamav/-/blob/master/templates/scan.conf.epp
+if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/freshclam.conf ]
+  then
+    cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/freshclam.conf /etc/
+  else
+    # apache VMs do not mount local source code
+    cp /vagrant/deploy/freshclam.conf /etc/
+fi
+if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/scan.conf ]
+  then
+    cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/scan.conf /etc/clamd.d/
+  else
+    # apache VMs do not mount local source code
+    cp /vagrant/deploy/scan.conf /etc/clamd.d/
+fi
 
-# Install redis
+touch /var/log/clamd.scan
+chown clamscan:clamscan /var/log/clamd.scan
+usermod -a -G clamscan apache
+usermod -a -G virusgroup apache
+usermod -a -G clamscan vagrant
+usermod -a -G virusgroup vagrant
+
+systemctl start clamd@scan
+systemctl enable clamd@scan
+
+# Update virus DB
+/bin/freshclam
+
+echo "###   Install fabric (for deployment scripts) and other production Python eggs"
+if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt ]
+  then
+    pip install -r /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt
+  else
+    pip install -r /vagrant/deploy/pip-freeze-2020-11-23.txt
+fi
+
+echo "###   Install redis"
 yum -y install redis
-
 sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
-
 systemctl start redis.service
 systemctl enable redis
+# Test redis
 redis-cli ping
 
+echo "###   Step up django-rq services"
 # TMMA-382: Review and increase number of workers for matching code
 for i in 1 2 3 4
 do
@@ -77,9 +128,8 @@ MESSAGE_QUEUE_WORKER
   systemctl start rqworker$1
 done
 
-# Install components for Selenium testing
+echo "###   Install components for Selenium testing"
 yum -y install Xvfb
-
 # Install Chrome and chromedriver
 cd /tmp
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
@@ -94,45 +144,11 @@ chmod g+rw /usr/bin/chromedriver
 chmod o+rw /usr/bin/chromedriver
 chromedriver -v
 
-# # Install Firefox and geckodriver
-# yum -y install firefox
-# cd /opt
-# wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-# tar -xvf geckodriver-v0.24.0-linux64.tar.gz
-# ln -s /opt/geckodriver /usr/local/bin/geckodriver
-# geckodriver --version
-
-# # Install PhantomJS NB: Deprecated usage with selenium
-# cd /opt
-# wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-# tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
-# ln -s /opt/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs
-# phantomjs --version
-
-# # Install Opera and operadriver
-# rpm --import https://rpm.opera.com/rpmrepo.key
-# tee /etc/yum.repos.d/opera.repo <<REPO
-# [opera]
-# name=Opera packages
-# type=rpm-md
-# baseurl=https://rpm.opera.com/rpm
-# gpgcheck=1
-# gpgkey=https://rpm.opera.com/rpmrepo.key
-# enabled=1
-# REPO
-# yum -y install opera-stable
-# cd /opt
-# wget https://github.com/operasoftware/operachromiumdriver/releases/download/v.2.45/operadriver_linux64.zip
-# unzip operadriver_linux64.zip
-# ls
-# ln -s /opt/operadriver_linux64/operadriver /usr/local/bin/operadriver
-# operadriver --version
-
-# Confirm install list
+echo "###   Confirm install list"
 yum list installed 
 pip freeze
 
-echo "Create directories normally managed by Puppet"
+echo "###   Create directories normally managed by Puppet"
 mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d
 mkdir -p /usr/local/projects/temmpo/etc/ssl
 mkdir -p /usr/local/projects/temmpo/lib/
@@ -147,7 +163,7 @@ mkdir -p /usr/local/projects/temmpo/var/results/testing/v1
 mkdir -p /usr/local/projects/temmpo/var/results/testing/v3
 mkdir -p /usr/local/projects/temmpo/var/results/testing/v4
 
-echo "Add directory for development emails"
+echo "###   Add directory for development emails"
 mkdir -p /usr/local/projects/temmpo/var/email
 
 touch /usr/local/projects/temmpo/var/log/django.log
@@ -174,11 +190,12 @@ chcon -R -t httpd_sys_rw_content_t /usr/local/projects/temmpo/var
 
 if [ -d "/home/vagrant/.ssh/" ]; then
 
-  echo "Copy a deployment key to allow fabric script testing"
+  echo "###   Copy a deployment key to allow fabric script testing"
   if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa ]
     then
       cp /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/id_rsa* /home/vagrant/.ssh/
     else
+      # apache VMs do not mount local source code
       cp /vagrant/deploy/id_rsa* /home/vagrant/.ssh/
   fi
 
@@ -193,7 +210,7 @@ if [ -d "/home/vagrant/.ssh/" ]; then
 
 fi
 
-echo "Add basic catch all Apache config normally managed by Puppet"
+echo "###   Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
 WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
@@ -219,7 +236,7 @@ WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 </VirtualHost>
 APACHE_CONF
 
-echo "Add placeholder private_settings.py"
+echo "###   Add placeholder private_settings.py"
 mkdir -p /usr/local/projects/temmpo/.settings/
 cat > /usr/local/projects/temmpo/.settings/private_settings.py <<PRIVATE_SETTINGS
 DATABASES = {
@@ -257,4 +274,6 @@ PRIVATE_SETTINGS
 chown -R vagrant:vagrant /usr/local/projects/temmpo/.settings/
 chmod -R ug+rwx /usr/local/projects/temmpo/.settings/
 
-echo "See README.md for ways to create virtual environments"
+# Update locate DB
+updatedb
+echo "###   See README.md for ways to create virtual environments"

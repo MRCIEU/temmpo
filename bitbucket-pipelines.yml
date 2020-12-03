@@ -1,4 +1,4 @@
-image: centos:7.6.1810
+image: centos7.9.2009
 
 pipelines:
   branches:
