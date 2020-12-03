@@ -57,6 +57,7 @@ yum -y install clamav-data
 yum -y install clamav-devel
 
 setsebool -P antivirus_can_scan_system 1
+setsebool -P daemons_enable_cluster_mode 1
 # Use production config as per puppet config,
 # see https://gitlab.isys.bris.ac.uk/research_it/clamav/-/blob/master/files/freshclam.conf
 # and https://gitlab.isys.bris.ac.uk/research_it/clamav/-/blob/master/templates/scan.conf.epp
