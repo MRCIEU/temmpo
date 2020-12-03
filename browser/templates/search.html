@@ -18,7 +18,7 @@
 <form action="{{ form_action }}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% include 'includes/form.html' %}
-    <button type="submit" class="btn btn-primary">Upload</button>
+    <button type="submit" class="btn btn-primary" id="upload_button">Upload</button>
 </form>
 
 <div class="controls">
