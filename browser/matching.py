@@ -329,8 +329,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         edge_row_id = -1
         # Ensure we only test citations with associated mesh headings
         if mesh_subject_headings in citation.fields:
-            search_result_for_mesh_term = search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mesh_filter])
-            if not mesh_filter or search_result_for_mesh_term is not None:
+            if not mesh_filter or search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mesh_filter]) is not None:
                 # Only search for genes in citations with an abstract section
                 if abstract in citation.fields:
                     for gene in genelist:
@@ -349,20 +348,20 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                 else:
                                     synomym_matches = (gene, )
                                 for genesyn in synomym_matches:
-                                    if searchgene(citation.fields[abstract], genesyn) >= 0:
+                                    if searchgene(citation.fields[abstract], genesyn) is not None:
                                         citation_id.add(citation.fields[unique_id].strip())
                                         found_gene_match = True
                                         countthis = 1
                                         for exposure in exposuremesh:
                                             edge_column_id += 1
                                             # NB: Removed AND splitting as not possible using the web app interface
-                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) >= 0:
+                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) is not None0:
                                                 edges[edge_row_id][edge_column_id] += 1
                                                 # identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                         for outcome in outcomemesh:
                                             edge_column_id += 1
                                             # NB: Removed AND splitting as not possible using the web app interface
-                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) >= 0:
+                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) is not None0:
                                                 edges[edge_row_id][edge_column_id] += 1
                                                 # identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                         # Stop comparing synonyms once a match is found
@@ -379,19 +378,19 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     edge_row_id += 1
                     edge_column_id = -1
                     try:
-                        if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mediator]) >= 0:
+                        if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mediator]) is not None0:
                             countthis = 1
                             citation_id.add(citation.fields[unique_id].strip())
                             for exposure in exposuremesh:
                                 edge_column_id += 1
                                 # NB: Removed AND splitting as not possible using the web app interface
-                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) >= 0:
+                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) is not None0:
                                     edges[edge_row_id][edge_column_id] += 1
                                     # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             for outcome in outcomemesh:
                                 edge_column_id += 1
                                 # NB: Removed AND splitting as not possible using the web app interface
-                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) >= 0:
+                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) is not None0:
                                     edges[edge_row_id][edge_column_id] += 1
                                     # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                     except KeyError:
