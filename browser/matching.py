@@ -1,3 +1,4 @@
+import csv
 import logging
 import math
 import numpy as np
@@ -6,7 +7,6 @@ import pandas as pd
 import re
 import string
 import sys
-import unicodecsv
 
 from django.core.cache import cache
 from django.conf import settings
@@ -405,8 +405,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     # Output all citation ids where a gene or mediator MeSH term match is found
     if citation_id:
-        resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
-        csv_writer = unicodecsv.writer(resultfile)
+        resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w', newline='', encoding='utf-8')
+        csv_writer = csv.writer(resultfile)
         csv_writer.writerow(("Abstract IDs", ))
         csv_writer.writerows([(cid, ) for cid in citation_id])
         resultfile.close()
@@ -416,8 +416,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
 def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
     """Write out edge file (*_edge.csv)"""
-    edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
-    csv_writer = unicodecsv.writer(edgefile)
+    edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w', newline='', encoding='utf-8')
+    csv_writer = csv.writer(edgefile)
     csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
     edge_score = 0
     edge_row_id = -1
@@ -453,7 +453,7 @@ def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
 def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
     """Create JSON formatted resulted file
        TODO - (Low priority improvement) can this be transformed from the CSV more efficiently?"""
-    resultfile = open('%s%s.json' % (results_path, resultfilename), 'w')
+    resultfile = open('%s%s.json' % (results_path, resultfilename), 'w', encoding='utf-8')
     nodes = []
     mnodes = []
     edgesout = []
