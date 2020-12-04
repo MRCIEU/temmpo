@@ -101,7 +101,7 @@ class MatchingTestCase(BaseTestCase):
         for citation in citations:
             citation_count +=1
             for field in expected_fields:
-                self.assertTrue(citation.fields.has_key(field))
+                self.assertTrue(field in citation.fields)
             if citation_count == 2:
                 # Spot check for expected contents
                 self.assertEqual("999992", citation.fields["Unique Identifier"].strip())
@@ -116,7 +116,7 @@ class MatchingTestCase(BaseTestCase):
         expected_field = "PMID"
         for citation in citations:
             citation_count +=1
-            self.assertTrue(citation.fields.has_key(expected_field))
+            self.assertTrue(expected_field in citation.fields)
             if citation.fields["PMID"] == "26124321":
                 self.assertTrue("Cell Line, Tumor" in citation.fields["MH"])
                 self.assertTrue("transfected with CYP27B" in citation.fields["AB"])
@@ -235,11 +235,11 @@ class MatchingTestCase(BaseTestCase):
         shutil.copyfile(settings.RESULTS_PATH + search_result.filename_stub + ".json", settings.RESULTS_PATH_V3 + search_result.filename_stub + ".json")
 
         # Add trailing commas to the V1 file no longer present in v4 files and write to v1 directory
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r") as v3_csv:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r", newline='') as v3_csv:
             data = v3_csv.readlines()
             for i in range(1, len(data)):
                 data[i] = data[i].strip() + ",\n"
-        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as v1_csv:
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w", newline='') as v1_csv:
             v1_csv.writelines(data)
 
         record_differences_between_match_runs(search_result.id)
@@ -264,7 +264,7 @@ class MatchingTestCase(BaseTestCase):
         # Create version 3 file with a changes
         search_result.mediator_match_counts_v3 = 1
         search_result.save()
-        with open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w") as file:
+        with open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w", newline='') as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             file.write("Genetic Markers,1,1,1,\n")
 
@@ -275,7 +275,7 @@ class MatchingTestCase(BaseTestCase):
         # Create version 1 file with a changes
         search_result.mediator_match_counts_v1 = 3
         search_result.save()
-        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w") as file:
+        with open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w", newline='') as file:
             file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             file.write("Genetic Markers,2,1,1.5,\n")
             file.write("Genetic Pleiotropy,2,1,1.5,\n")
@@ -287,7 +287,7 @@ class MatchingTestCase(BaseTestCase):
 
 
     def _add_line(self, previous_results_path, search_result):
-        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w", newline='') as results_file:
             results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             results_file.write("Genetic Markers,1,1,2.0,\n")
             results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
@@ -295,46 +295,46 @@ class MatchingTestCase(BaseTestCase):
             results_file.write("Psychiatry and Psychology,2,1,1.5,\n")
 
     def _rename_mediators(self, previous_results_path, search_result):
-        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w", newline='') as results_file:
             results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             results_file.write("Health Care,1,1,2.0,\n")
             results_file.write("Publication Characteristics,1,1,2.0,\n")
             results_file.write("Geographicals,1,1,2.0,\n")
 
     def _change_counts(self, previous_results_path, search_result):
-        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w", newline='') as results_file:
             results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             results_file.write("Genetic Markers,6,1,1.5,\n")
             results_file.write("Genetic Pleiotropy,1,5,2.0,\n")
             results_file.write("Serogroup,99,1,1.5,\n")
 
     def _remove_line_1(self, previous_results_path, search_result):
-        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w", newline='') as results_file:
             results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
             results_file.write("Serogroup,1,1,2.0,\n")
 
     def _remove_line_2(self, previous_results_path, search_result):
-        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w", newline='') as results_file:
             results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             results_file.write("Genetic Markers,1,1,2.0,\n")
             results_file.write("Serogroup,1,1,2.0,\n")
 
     def _remove_line_3(self, previous_results_path, search_result):
-        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w", newline='') as results_file:
             results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             results_file.write("Genetic Markers,1,1,2.0,\n")
             results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
 
     def _no_change(self, previous_results_path, search_result):
-        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w") as results_file:
+        with open(previous_results_path + search_result.filename_stub + "_edge.csv", "w", newline='') as results_file:
             results_file.write("Mediators,Exposure counts,Outcome counts,Scores\n")
             results_file.write("Genetic Markers,1,1,2.0,\n")
             results_file.write("Genetic Pleiotropy,1,1,2.0,\n")
             results_file.write("Serogroup,1,1,2.0,\n")
 
     def _assert_results_have_changed(self, search_result, mediator_difference):
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r") as results_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r", newline='') as results_file:
             logger.debug(results_file.readlines())
         self.assertTrue(search_result.has_changed)
         if mediator_difference:
@@ -344,7 +344,7 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_result.has_edge_file_changed)
 
     def _assert_results_not_changed(self, search_result):
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r") as results_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", "r", newline='') as results_file:
             logger.debug(results_file.readlines())
         self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_match_counts_changed)
@@ -449,8 +449,8 @@ class MatchingTestCase(BaseTestCase):
         content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         # Check for expected content
-        self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
-        self.assertTrue("Genetic Pleiotropy,1,1,2.0" in content)
+        self.assertTrue(b"Mediators,Exposure counts,Outcome counts,Scores" in content)
+        self.assertTrue(b"Genetic Pleiotropy,1,1,2.0" in content)
         # Validate CSV data
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
@@ -461,7 +461,7 @@ class MatchingTestCase(BaseTestCase):
         search_result.mediator_match_counts_v3 = 1
         search_result.save()
         # Create a test version 3 file
-        v3_file = open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w")
+        v3_file = open(settings.RESULTS_PATH_V3 + search_result.filename_stub + "_edge.csv", "w", newline='')
         v3_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v3 file,0,0,0,\n")
         v3_file.close()
         path = reverse('count_data_v3', kwargs={'pk': search_result.id })
@@ -470,7 +470,7 @@ class MatchingTestCase(BaseTestCase):
         content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         # Check for expected content
-        self.assertTrue("TESITNG v3 file,0,0,0" in content)
+        self.assertTrue(b"TESITNG v3 file,0,0,0" in content)
         # Validate CSV data
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
@@ -481,7 +481,7 @@ class MatchingTestCase(BaseTestCase):
         search_result.mediator_match_counts = 1
         search_result.save()
         # Create a test version 1 file
-        v1_file = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w")
+        v1_file = open(settings.RESULTS_PATH_V1 + search_result.filename_stub + "_edge.csv", "w", newline='')
         v1_file.write("Mediators,Exposure counts,Outcome counts,Scores\nTESITNG v1 file,0,0,0,\n")
         v1_file.close()
         path = reverse('count_data_v1', kwargs={'pk': search_result.id })
@@ -490,8 +490,8 @@ class MatchingTestCase(BaseTestCase):
         content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         # Check for expected content
-        self.assertTrue("Mediators,Exposure counts,Outcome counts,Scores" in content)
-        self.assertTrue("TESITNG v1 file,0,0,0" in content)
+        self.assertTrue(b"Mediators,Exposure counts,Outcome counts,Scores" in content)
+        self.assertTrue(b"TESITNG v1 file,0,0,0" in content)
         # Validate CSV data
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
@@ -505,7 +505,7 @@ class MatchingTestCase(BaseTestCase):
         response = self.client.get(path, follow=True)
         content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        self.assertTrue("Genetic Pleiotropy" in content)
+        self.assertTrue(b"Genetic Pleiotropy" in content)
         # Validate contents is valid JSON
         result_json_data = json.loads(content)
 
@@ -523,7 +523,7 @@ class MatchingTestCase(BaseTestCase):
         response = self.client.get(path, follow=True)
         content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        self.assertTrue("Genetic Pleiotropy" in content)
+        self.assertTrue(b"Genetic Pleiotropy" in content)
         # Validate contents is valid JSON
         result_json_data = json.loads(content)
 
@@ -543,10 +543,10 @@ class MatchingTestCase(BaseTestCase):
         response = self.client.get(path, follow=True)
         content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        self.assertTrue("999991" in content)
-        self.assertTrue("999992" in content)
-        self.assertTrue("999993" in content)
-        self.assertTrue("999995" in content)
+        self.assertTrue(b"999991" in content)
+        self.assertTrue(b"999992" in content)
+        self.assertTrue(b"999993" in content)
+        self.assertTrue(b"999995" in content)
         # Validate CSV data
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
@@ -565,12 +565,12 @@ class MatchingTestCase(BaseTestCase):
         response = self.client.get(path, follow=True)
         content = response.getvalue()
         self.assertRedirects(response, expected_url, status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        self.assertTrue("999991" in content)
-        self.assertTrue("999992" in content)
-        self.assertTrue("999993" in content)
-        self.assertTrue("999995" in content)
+        self.assertTrue(b"999991" in content)
+        self.assertTrue(b"999992" in content)
+        self.assertTrue(b"999993" in content)
+        self.assertTrue(b"999995" in content)
         # Should not have matched with any mediator terms
-        self.assertFalse("999994" in content)
+        self.assertFalse(b"999994" in content)
         # Validate CSV data
         csv_data = csv.reader(io.StringIO(content.decode('utf-8')))
         self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
@@ -692,7 +692,7 @@ class MatchingTestCase(BaseTestCase):
                 identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
                 results_file_path, results_file_name, file_format=file_format)
 
-        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+        with open(results_file_path + results_file_name + "_abstracts.csv", newline='') as csv_file:
             csv_data = csv_file.readlines()
             self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
             self.assertEqual(len(csv_data), 3)
@@ -754,7 +754,7 @@ class MatchingTestCase(BaseTestCase):
                 identifiers, edges, outcomemesh, mediatormesh, mesh_filter,
                 results_file_path, results_file_name, file_format=file_format)
 
-        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+        with open(results_file_path + results_file_name + "_abstracts.csv", newline='') as csv_file:
             csv_data = csv_file.readlines()
             self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
             self.assertEqual(len(csv_data), 2)
@@ -814,7 +814,7 @@ class MatchingTestCase(BaseTestCase):
         # Verify CSV file is valid CSV
         # Verify that is has a header
         # Verify that it contains the expected matches and no more
-        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+        with open(results_file_path + results_file_name + "_abstracts.csv", newline='') as csv_file:
             csv_data = csv_file.readlines()
             self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
             self.assertEqual(len(csv_data), 3)
@@ -871,7 +871,7 @@ class MatchingTestCase(BaseTestCase):
         # Verify CSV file is valid CSV
         # Verify that is has a header
         # Verify that it contains the expected matches and no more
-        with open(results_file_path + results_file_name + "_abstracts.csv") as csv_file:
+        with open(results_file_path + results_file_name + "_abstracts.csv", newline='') as csv_file:
             csv_data = csv_file.readlines()
             self.assertEqual(self._get_abstract_csv_data_validation_issues(csv_data), [])
             self.assertEqual(len(csv_data), 2)
@@ -908,40 +908,40 @@ class MatchingTestCase(BaseTestCase):
         mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
         self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
         mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term AA")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = ovid_prepare_mesh_term_search_text_function("Transcriptome")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = ovid_prepare_mesh_term_search_text_function("Genetics")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = ovid_prepare_mesh_term_search_text_function("Metabolism")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = ovid_prepare_mesh_term_search_text_function("Colorectal Neoplasms")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = ovid_prepare_mesh_term_search_text_function("H(+)-K(+)-Exchanging ATPase")  # TMMA-391: Test for bug fix
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
 
     def test_pubmed_matching(self):
         search_text = ";Adolescent;;H(+)-K(+)-Exchanging ATPase;;Adult;;Fetal Growth Retardation/complications/*physiopathology;;Cognition;;*DNA Copy Number Variations;;Educational Status;;Epilepsy/genetics;;Estonia;;Female;;Genome-Wide Association Study;;Great Britain;;*Heterozygote;;Humans;;Intellectual Disability/*genetics;;Italy;;Male;;Mental Disorders/*genetics;;Obesity/genetics;;Phenotype;;United States;"
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
         self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Genetics")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Epilepsy")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Adolescent")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("United States")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Mental Disorders")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("DNA Copy Number Variations")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("H(+)-K(+)-Exchanging ATPase")  # TMMA-391: Test for bug fix
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Complications")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Physiopathology")
-        self.assertTrue(search_for_mesh_term(search_text, mesh_term) >= 0)
+        self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
 
     def test_search_gene(self):
         search_text = """A number of preclinical studies have shown that the activation of the vitamin D
@@ -970,9 +970,9 @@ class MatchingTestCase(BaseTestCase):
       inhibition and that TMPRSS2:ETS status should be considered in future clinical
       trials."""
         gene = "CYP24A1"
-        self.assertTrue(searchgene(search_text, gene) >= 0)
+        self.assertTrue(searchgene(search_text, gene) is not None)
         gene = "TMPRSS2"
-        self.assertTrue(searchgene(search_text, gene) >= 0)
+        self.assertTrue(searchgene(search_text, gene) is not None)
         gene = "PRSS10"
         self.assertEqual(searchgene(search_text, gene), None)
 
@@ -1017,7 +1017,7 @@ class MatchingTestCase(BaseTestCase):
         resultfilename = "test_printedges"
         edge_score = printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename)
 
-        with open(results_path + resultfilename + "_edge.csv", 'rb') as csvfile:
+        with open(results_path + resultfilename + "_edge.csv", 'r', newline='') as csvfile:
             csv_data = csv.reader(csvfile)
             self.assertEqual(self._get_egde_csv_data_validation_issues(csv_data), [])
             self.assertEqual(edge_score, csv_data.line_num - 1)
@@ -1124,7 +1124,7 @@ class MatchingTestCase(BaseTestCase):
             for i in range(0, len(expected_nodes)):
                 node = nodes[i]
                 expected_name = expected_nodes[i]
-                self.assertTrue(node.has_key("name"))
+                self.assertTrue("name" in node)
                 self.assertTrue(node["name"], expected_name)
             links = json_data["links"]
             expected_links = [  {"source":6, "target":0,  "value":1},
@@ -1189,7 +1189,7 @@ class MatchingTestCase(BaseTestCase):
         management.call_command('loaddata', 'test_genes_ext.json', verbosity=0)
         search_result = self._prepare_gene_matches_only_search_result()
 
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as file_obj:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as file_obj:
             for line in file_obj:
                 logger.debug(line)
 
@@ -1199,7 +1199,7 @@ class MatchingTestCase(BaseTestCase):
 
         self.assertEqual(search_result.mediator_match_counts_v4, 6)
 
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv") as file_obj:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_abstracts.csv", newline='') as file_obj:
             for line in file_obj:
                 logger.debug(line)
 
@@ -1269,7 +1269,7 @@ class MatchingTestCase(BaseTestCase):
         # Confirmed can recreate the same or more mediator counts as found in v1 matching
         self.assertTrue(search_result.mediator_match_counts_v4 >= 118)
         
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = edge_csv_reader.loc[: , "Mediators"]
             logger.debug("Mediators")
@@ -1324,7 +1324,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = edge_csv_reader.loc[: , "Mediators"]
             logger.debug("Mediators")
@@ -1361,7 +1361,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = edge_csv_reader.loc[: , "Mediators"]
             logger.debug(list(mediators))
@@ -1384,7 +1384,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         # Expects 4 media matches (FICTIONAL-GENE-A, FICTIONAL-GENE-B, FICTIONAL-GENE-C, TRPC1, Metabolism)
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = edge_csv_reader.loc[: , "Mediators"]
             self.assertEqual("FICTIONAL-GENE-A", mediators[0]) # Start of abstract (new gene)
@@ -1448,7 +1448,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         # Expects 1 mediator match
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = edge_csv_reader.loc[: , "Mediators"]
             self.assertEqual("Adenosine", mediators[0])
@@ -1491,7 +1491,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         # Expects 1 mediator match
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = edge_csv_reader.loc[: , "Mediators"]
             self.assertEqual("Adenosine", mediators[0])
@@ -1536,7 +1536,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         # Expects 1 mediator match
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = edge_csv_reader.loc[: , "Mediators"]
             self.assertEqual("Adenosine", mediators[0])
@@ -1581,7 +1581,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         # Expects 1+ mediator match
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = list(edge_csv_reader.Mediators)
             self.assertTrue("Adenosine" in mediators)
@@ -1628,7 +1628,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         # Expect Adenosine not to be found as only a partial match is possible with Breast Neoplasms, Male
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = list(edge_csv_reader.Mediators)
             self.assertFalse("Adenosine" in mediators)
@@ -1674,7 +1674,7 @@ class MatchingTestCase(BaseTestCase):
         perform_search(search_result.id)
         search_result = SearchResult.objects.get(id=search_result.id)
         # Expect Adenosine not to be found as only a partial match is possible with Breast Neoplasms, Male
-        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv") as edge_csv_file:
+        with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
             edge_csv_reader = pd.read_csv(edge_csv_file, delimiter=',')
             mediators = list(edge_csv_reader.Mediators)
             self.assertFalse("Adenosine" in mediators)
