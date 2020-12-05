@@ -24,7 +24,7 @@ class MimetypeValidator(object):
 
     def __call__(self, value):
         try:
-            mime = magic.from_buffer(value.read(1024), mime=True)
+            mime = magic.from_buffer(value.read(1024).encode('utf-8'), mime=True)
             if mime not in self.mimetypes:
                 raise ValidationError('%s is not an acceptable file type. Please use a %s formatted file instead.' % (value, ' or '.join(self.mimetypes)))
         except AttributeError:
