@@ -575,7 +575,7 @@ class SearchingTestCase(BaseTestCase):
         """Test the MeshTerm JSON used in jsTree."""
         self._login_user()
         response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
-        self.assertTrue('"text": "%d"' % TEST_YEAR not in str(response.content))
+        self.assertNotContains(response, '"text": "%d"' % TEST_YEAR)
 
         # Assert valid JSON
         current_year_mesh_terms = json.loads(response.content)
@@ -606,16 +606,16 @@ class SearchingTestCase(BaseTestCase):
         path = reverse('mesh_terms_search_json') + "?str=Cell"
         response = self.client.get(path, follow=True)
         year_jstree_id = "mtid_" + str(MeshTerm.objects.get(term=str(TEST_YEAR)).id)
-        self.assertTrue(year_jstree_id not in str(response.content))
+        self.assertNotContains(response, year_jstree_id)
 
         # Assert valid JSON.
         assert(json.loads(response.content))
         # Assert IDs with mtid_ prefix for all instances of mesh terms with Cell in the name are found.
-        self.assertTrue("mtid_21072" in str(response.content))  # 21072 Cell Line
-        self.assertTrue("mtid_21082" in str(response.content))  # 21082, 21110  Cell Line, Tumor
-        self.assertTrue("mtid_21110" in str(response.content))
-        self.assertTrue("mtid_24271" in str(response.content))  # 24271 Cell Physiological Phenomena
-        self.assertTrue("mtid_24335" in str(response.content))  # 24335 Cell Death
+        self.assertContains(response, "mtid_21072")  # 21072 Cell Line
+        self.assertContains(response, "mtid_21082")  # 21082, 21110  Cell Line, Tumor
+        self.assertContains(response, "mtid_21110")
+        self.assertContains(response, "mtid_24271")  # 24271 Cell Physiological Phenomena
+        self.assertContains(response, "mtid_24335")  # 24335 Cell Death
 
     def test_search_for_new_mesh_terms_json(self):
         """Test that terms only in the previous term release is not present in current searches."""
@@ -623,7 +623,7 @@ class SearchingTestCase(BaseTestCase):
         path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_NEW_IN_CURRENT_RELEASE)
         response = self.client.get(path, follow=True)
         new_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=TEST_YEAR, term=str(TERM_NEW_IN_CURRENT_RELEASE)).id)
-        self.assertIn(new_term_tree_id, str(response.content))
+        self.assertContains(response, new_term_tree_id)
 
     def test_search_for_old_mesh_terms_json(self):
         """Test that terms only in the previous term release is not present in current searches."""
@@ -631,7 +631,7 @@ class SearchingTestCase(BaseTestCase):
         path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_MISSING_IN_CURRENT_RELEASE)
         response = self.client.get(path, follow=True)
         missing_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term=str(TERM_MISSING_IN_CURRENT_RELEASE)).id)
-        self.assertFalse(missing_term_tree_id in str(response.content))
+        self.assertNotContains(response, missing_term_tree_id)
 
     def test_mesh_terms_as_json_for_tree_population(self):
         """Test can retrieve JSON to top level items in the MeshTerm jsTree."""
@@ -705,6 +705,7 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
+        print(abstract_file_lines)
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
