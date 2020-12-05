@@ -503,10 +503,10 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
                     edgesout.append(thisedge)
                     counter[1] += 1
             if counter[0] == 0:     # TODO: Does this scenario occur? Has it not been dealt with earlier in line 467
-                for i in xrange(counter[1]):
+                for i in range(counter[1]):
                     edgesout.pop(-1)
             if counter[1] == 0:     # TODO: Does this scenario occur? Has it not been dealt with earlier in line 467
-                for i in xrange(counter[0]):
+                for i in range(counter[0]):
                     edgesout.pop(-1)
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)
