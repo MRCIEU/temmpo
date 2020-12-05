@@ -36,11 +36,12 @@ class ArchiveUploadTestCase(BaseTestCase):
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
 
     def _assert_upload_is_invalid_file_type(self, upload_file, search_path):
-        with open(upload_file, 'r') as upload:
+        with open(upload_file, 'rb',) as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': PUBMED},
-                                        follow=True)
+                                        follow=True,
+                                        format='multipart')
 
             self.assertContains(response, "errorlist")
             self.assertContains(response, "is not an acceptable file type")
@@ -50,11 +51,12 @@ class ArchiveUploadTestCase(BaseTestCase):
         self._login_user()
         search_path = reverse('search_ovid_medline')
 
-        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
+        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'rb',) as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': OVID},
-                                        follow=True)
+                                        follow=True,
+                                        format='multipart')
             self.assertContains(response, "errorlist")
             self.assertContains(response, "does not appear to be a Ovid MEDLINE® formatted")
 
@@ -67,11 +69,12 @@ class ArchiveUploadTestCase(BaseTestCase):
         self._login_user()
         search_path = reverse('search_pubmed')
 
-        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'r') as upload:
+        with open(TEST_NO_MESH_SUBJECT_HEADINGS_FILE, 'rb',) as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': PUBMED},
-                                        follow=True)
+                                        follow=True,
+                                        format='multipart')
             self.assertContains(response, "errorlist")
             self.assertContains(response, "does not appear to be a PubMed/MEDLINE® formatted")
 
@@ -85,11 +88,12 @@ class ArchiveUploadTestCase(BaseTestCase):
     def _setup_file_upload_response(self, test_archive_file, search_path):
         """Defaults to using pub med formatted search form"""
         self._login_user()
-        with open(test_archive_file, 'r') as upload:
+        with open(test_archive_file, 'rb',) as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': PUBMED},
-                                        follow=True)
+                                        follow=True,
+                                        format='multipart')
         return response
 
     def _assert_archive_file_is_uploaded_and_extracted(self, test_archive_file, search_path):
