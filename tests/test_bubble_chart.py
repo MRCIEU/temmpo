@@ -70,8 +70,8 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
             legend_item_1_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(2)")
             self.assertEqual(legend_item_1_label.get_attribute("column-id"), "1. Serogroup")  # Appears last in the file of matches but has the higher score.
         except WebDriverException as e:
-            print e
-            print self.driver.page_source
+            print(e)
+            print(self.driver.page_source)
             self.fail("A selenium exception occurred trying to access a legend element in a bubble chart")
 
         try:
@@ -81,8 +81,8 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
             self.assertFalse("(Top 20)" in chart_header_label.text)
 
         except WebDriverException as e:
-            print e
-            print self.driver.page_source
+            print(e)
+            print(self.driver.page_source)
             self.fail("A selenium exception occurred trying to access the chart label element in a bubble chart")
 
         search_result.delete()

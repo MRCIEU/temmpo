@@ -1,5 +1,5 @@
 """Test for import MeshTerm and Gene management commands using sample file snippets."""
-from StringIO import StringIO
+from io import StringIO
 import os
 
 from django.core.exceptions import ObjectDoesNotExist

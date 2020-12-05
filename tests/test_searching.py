@@ -150,8 +150,8 @@ class SearchingTestCase(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
 
-        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
-        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r', newline='')
+        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r', newline='')
         logger.debug("RESULTS ARE IN THE THESE FILES: ")
         logger.debug(test_results_edge_csv.name)
         logger.debug(test_results_abstract_csv.name)
@@ -285,8 +285,8 @@ class SearchingTestCase(BaseTestCase):
         self._login_user()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
         response = self.client.get(path, follow=True)
-        self.assertContains(response, "TRPC1", msg_prefix=response.content)
-        self.assertNotContains(response, "Gene: TRPC1", msg_prefix=response.content)
+        self.assertContains(response, "TRPC1", msg_prefix=str(response.content))
+        self.assertNotContains(response, "Gene: TRPC1", msg_prefix=str(response.content))
         search_criteria.delete()
 
     def _set_up_test_search_criteria(self, year=None):
@@ -529,7 +529,7 @@ class SearchingTestCase(BaseTestCase):
 
         # Assert no matches
         search_result = SearchResult.objects.get(criteria=search_criteria)
-        with open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r') as test_results_edge_csv:
+        with open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r', newline='') as test_results_edge_csv:
             edge_file_lines = test_results_edge_csv.readlines()
             count = len(edge_file_lines)
             self.assertEqual(count, 1)
@@ -575,7 +575,7 @@ class SearchingTestCase(BaseTestCase):
         """Test the MeshTerm JSON used in jsTree."""
         self._login_user()
         response = self.client.get(reverse('mesh_terms_as_json'), follow=True)
-        self.assertTrue('"text": "%d"' % TEST_YEAR not in response.content)
+        self.assertTrue('"text": "%d"' % TEST_YEAR not in str(response.content))
 
         # Assert valid JSON
         current_year_mesh_terms = json.loads(response.content)
@@ -606,16 +606,16 @@ class SearchingTestCase(BaseTestCase):
         path = reverse('mesh_terms_search_json') + "?str=Cell"
         response = self.client.get(path, follow=True)
         year_jstree_id = "mtid_" + str(MeshTerm.objects.get(term=str(TEST_YEAR)).id)
-        self.assertTrue(year_jstree_id not in response.content)
+        self.assertTrue(year_jstree_id not in str(response.content))
 
         # Assert valid JSON.
         assert(json.loads(response.content))
         # Assert IDs with mtid_ prefix for all instances of mesh terms with Cell in the name are found.
-        self.assertTrue("mtid_21072" in response.content)  # 21072 Cell Line
-        self.assertTrue("mtid_21082" in response.content)  # 21082, 21110  Cell Line, Tumor
-        self.assertTrue("mtid_21110" in response.content)
-        self.assertTrue("mtid_24271" in response.content)  # 24271 Cell Physiological Phenomena
-        self.assertTrue("mtid_24335" in response.content)  # 24335 Cell Death
+        self.assertTrue("mtid_21072" in str(response.content))  # 21072 Cell Line
+        self.assertTrue("mtid_21082" in str(response.content))  # 21082, 21110  Cell Line, Tumor
+        self.assertTrue("mtid_21110" in str(response.content))
+        self.assertTrue("mtid_24271" in str(response.content))  # 24271 Cell Physiological Phenomena
+        self.assertTrue("mtid_24335" in str(response.content))  # 24335 Cell Death
 
     def test_search_for_new_mesh_terms_json(self):
         """Test that terms only in the previous term release is not present in current searches."""
@@ -623,7 +623,7 @@ class SearchingTestCase(BaseTestCase):
         path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_NEW_IN_CURRENT_RELEASE)
         response = self.client.get(path, follow=True)
         new_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=TEST_YEAR, term=str(TERM_NEW_IN_CURRENT_RELEASE)).id)
-        self.assertIn(new_term_tree_id, response.content)
+        self.assertIn(new_term_tree_id, str(response.content))
 
     def test_search_for_old_mesh_terms_json(self):
         """Test that terms only in the previous term release is not present in current searches."""
@@ -631,7 +631,7 @@ class SearchingTestCase(BaseTestCase):
         path = "%s?str=%s" % (reverse('mesh_terms_search_json'), TERM_MISSING_IN_CURRENT_RELEASE)
         response = self.client.get(path, follow=True)
         missing_term_tree_id = "mtid_" + str(MeshTerm.objects.get(year=PREVIOUS_TEST_YEAR, term=str(TERM_MISSING_IN_CURRENT_RELEASE)).id)
-        self.assertFalse(missing_term_tree_id in response.content)
+        self.assertFalse(missing_term_tree_id in str(response.content))
 
     def test_mesh_terms_as_json_for_tree_population(self):
         """Test can retrieve JSON to top level items in the MeshTerm jsTree."""
@@ -644,7 +644,7 @@ class SearchingTestCase(BaseTestCase):
                                        'mediator': root_nodes,
                                        'outcome': root_nodes, }
         # Test retrieve root nodes if no node is supplied on the query string.
-        for type_key, examples in term_type_to_expected_nodes.iteritems():
+        for type_key, examples in term_type_to_expected_nodes.items():
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key})
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
@@ -670,7 +670,7 @@ class SearchingTestCase(BaseTestCase):
         term_type_to_expected_nodes = {'exposure': children_nodes,
                                        'mediator': children_nodes,
                                        'outcome': children_nodes, }
-        for type_key, examples in term_type_to_expected_nodes.iteritems():
+        for type_key, examples in term_type_to_expected_nodes.items():
             path = reverse("mesh_terms_as_json_for_criteria", kwargs={"pk": search_criteria.id, "type": type_key}) + expanded_node_query_string
             self._find_expected_content(path, msg_list=examples, content_type="application/json")
 
@@ -697,8 +697,8 @@ class SearchingTestCase(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
 
-        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
-        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r', newline='')
+        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r', newline='')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
@@ -815,8 +815,8 @@ class SearchingTestCase(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
 
-        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r')
-        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r', newline='')
+        test_results_abstract_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r', newline='')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         self.assertEqual(len(edge_file_lines), 3)  # Expected two matches and a line of column headings
