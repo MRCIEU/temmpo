@@ -221,7 +221,7 @@ class SearchCriteria(models.Model):
         else:
             return tuple()
 
-    def __unicode__(self):
+    def __str__(self):
         """Provide a flexible method for determining the search criteria object's name.
 
         At present user's cannot assign names to search criteria through the user interface.
@@ -339,7 +339,7 @@ class SearchResult(models.Model):
     def has_match_counts_changed(self):
         return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3) or (self.mediator_match_counts_v3 is not None and self.mediator_match_counts_v3 != self.mediator_match_counts_v4)
 
-    def __unicode__(self):
+    def __str__(self):
         """Provide a flexible method for determining the search result object's name."""
         if self.filename_stub:
             return self.filename_stub + " (" + self.status + ") started: " + naturaltime(self.started_processing)
@@ -372,7 +372,7 @@ class Message(models.Model):
 
     objects = MessageManager()
 
-    def __unicode__(self):
+    def __str__(self):
         if self.body:
             return self.body
         else:
