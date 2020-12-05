@@ -65,7 +65,7 @@ class BaseTestCase(TestCase):
 
         for text in msg_list:
             if text == "Not found":
-                print(response)
+                print(str(response.content))
             self.assertContains(response,
                                 text,
                                 status_code=status_code,
