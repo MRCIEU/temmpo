@@ -1,6 +1,7 @@
 import csv
 import logging
 import math
+from more_itertools import unique_everseen
 import numpy as np
 import os
 import pandas as pd
@@ -299,7 +300,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     # Go through and count edges
     papercounter = 0
-    citation_id = set()
+    citation_ids_list = list()
 
     if file_format == OVID:
         unique_id = "Unique Identifier"
@@ -349,7 +350,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                     synomym_matches = (gene, )
                                 for genesyn in synomym_matches:
                                     if searchgene(citation.fields[abstract], genesyn) is not None:
-                                        citation_id.add(citation.fields[unique_id].strip())
+                                        citation_ids_list.append(citation.fields[unique_id].strip())
                                         found_gene_match = True
                                         countthis = 1
                                         for exposure in exposuremesh:
@@ -380,7 +381,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     try:
                         if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mediator]) is not None:
                             countthis = 1
-                            citation_id.add(citation.fields[unique_id].strip())
+                            citation_ids_list.append(citation.fields[unique_id].strip())
                             for exposure in exposuremesh:
                                 edge_column_id += 1
                                 # NB: Removed AND splitting as not possible using the web app interface
@@ -404,11 +405,13 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
             papercounter += 1
 
     # Output all citation ids where a gene or mediator MeSH term match is found
-    if citation_id:
+    if citation_ids_list:
         resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w', newline='', encoding='utf-8')
         csv_writer = csv.writer(resultfile)
         csv_writer.writerow(("Abstract IDs", ))
-        csv_writer.writerows([(cid, ) for cid in citation_id])
+        citation_ids_list.reverse()
+        # TODO: PYTHON3 Optimise - Change return ordering and whether repeats are shown
+        csv_writer.writerows([(cid, ) for cid in unique_everseen(citation_ids_list)])
         resultfile.close()
 
     return papercounter, edges, identifiers
