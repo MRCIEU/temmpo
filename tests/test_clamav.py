@@ -47,8 +47,8 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
     def _assert_virus_scanning(self, upload_url, virus_file_url):
         file_path = BASE_DIR + "/test_virus_file"
         response = requests.get(virus_file_url)
-        with open(file_path, 'w') as f:
-            f.write(str(response.content))
+        with open(file_path, 'wb') as f:
+            f.write(response.content)
         previous_upload_count = Upload.objects.all().count()
         self._upload_file(upload_url, file_path)
         self.assertTrue("File is infected with malware" in self.driver.page_source)
