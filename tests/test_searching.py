@@ -100,6 +100,7 @@ class SearchingTestCase(BaseTestCase):
             response = self.client.post(search_url,
                                         {'abstracts_upload': upload,
                                          'file_format': file_format},
+                                        format='multipart',
                                         follow=True)
 
             self.assertContains(response, "Select exposures")
@@ -262,6 +263,7 @@ class SearchingTestCase(BaseTestCase):
             response = self.client.post(reverse('search_ovid_medline'),
                                         {'abstracts_upload': upload,
                                          'file_format': OVID},
+                                        format='multipart',
                                         follow=True)
 
             search_criteria = SearchCriteria.objects.latest("created")
@@ -274,6 +276,7 @@ class SearchingTestCase(BaseTestCase):
             response = self.client.post(reverse('search_pubmed'),
                                         {'abstracts_upload': upload,
                                          'file_format': PUBMED},
+                                        format='multipart',
                                         follow=True)
 
             search_criteria = SearchCriteria.objects.latest("created")
@@ -705,7 +708,6 @@ class SearchingTestCase(BaseTestCase):
         self.assertEqual(edge_file_lines[0].strip(), "Mediators,Exposure counts,Outcome counts,Scores")
         self.assertEqual(edge_file_lines[2].strip(), "Phenotype,4,1,1.25")
         self.assertEqual(len(abstract_file_lines), 9)  # Expected 9 lines including header
-        print(abstract_file_lines)
         self.assertEqual(abstract_file_lines[0].strip(), "Abstract IDs")
         self.assertEqual(abstract_file_lines[1].strip(), "23266572")
         self.assertTrue(search_result.has_completed)
