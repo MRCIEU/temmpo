@@ -7,12 +7,12 @@ from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
-OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile(b"^<\d+>")
-OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile(b"^Unique Identifier")
-OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile(b"^MeSH Subject Headings")
+OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile("^<\d+>")
+OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile("^Unique Identifier")
+OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile("^MeSH Subject Headings")
 
-PUBMED_IDENTIFIER_PATTERN = re.compile(b"^PMID- \d+")
-PUBMED_IDENTIFIER_MH_PATTERN = re.compile(b"^MH  -")
+PUBMED_IDENTIFIER_PATTERN = re.compile("^PMID- \d+")
+PUBMED_IDENTIFIER_MH_PATTERN = re.compile("^MH  -")
 
 
 class MimetypeValidator(object):
@@ -96,21 +96,21 @@ def has_ovid_medline_file_header(first_line, second_line):
     # Very basic test if the file appears to be in the correct format
     # Test first line if <1> or "\<\d\>"
     # Test second line equals: Unique Identifier
-    return (OVID_MEDLINE_IDENTIFIER_PATTERN.match(first_line) and
-            OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN.match(second_line))
+    return (OVID_MEDLINE_IDENTIFIER_PATTERN.match(str(first_line)) and
+            OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN.match(str(second_line)))
 
 
 def has_pubmed_file_header(first_line, second_line):
     # First line is blank
     # Second line should be PMID- {number}
     return (not first_line.strip() and
-            PUBMED_IDENTIFIER_PATTERN.match(second_line))
+            PUBMED_IDENTIFIER_PATTERN.match(str(second_line)))
 
 
 def has_ovid_medline_mesh_headings(value):
     """Check entire file for an instance of Mesh Subject Headings"""
     for line in value:
-        if OVID_MEDLINE_IDENTIFIER_MESH_PATTERN.match(line):
+        if OVID_MEDLINE_IDENTIFIER_MESH_PATTERN.match(str(line)):
             return True
     return False
 
@@ -118,6 +118,6 @@ def has_ovid_medline_mesh_headings(value):
 def has_pubmed_mh(value):
     """Check entire file for an instance MH  - prefixed line"""
     for line in value:
-        if PUBMED_IDENTIFIER_MH_PATTERN.match(line):
+        if PUBMED_IDENTIFIER_MH_PATTERN.match(str(line)):
             return True
     return False
