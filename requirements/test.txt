@@ -27,6 +27,7 @@ hiredis==1.1.0            # via -r requirements/requirements.txt
 idna==2.10                # via requests
 jeepney==0.6.0            # via pyscreenshot
 lxml==4.6.2               # via -r requirements/requirements.txt
+more-itertools==8.6.0     # via -r requirements/requirements.txt
 mss==6.1.0                # via pyscreenshot
 mysqlclient==2.0.1        # via -r requirements/requirements.txt
 numpy==1.19.4             # via -r requirements/requirements.txt, pandas
