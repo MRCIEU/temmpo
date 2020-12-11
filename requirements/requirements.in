@@ -17,3 +17,4 @@ python-magic==0.4.18
 rq==1.3.0 # Needed to pin for django-rq - can remove when django-rq >= 2.3.2
 redis==3.5.3
 unicodecsv==0.14.1
+xtract==0.1a3
