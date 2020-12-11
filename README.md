@@ -15,8 +15,8 @@ NB: The vagrant installation also requires an additional plugin to mount the dev
 
 Tested with these versions:
 
-* VirtualBox 6.1.8 r137981 (Qt5.6.3)
-* vagrant 2.2.9
+* VirtualBox 6.1.16 r140961 (Qt5.6.3)
+* Vagrant 2.2.14
 * vagrant-sshfs 1.3.5
 
 NB: Additional development IDE support for Visual Code can be added by installing
