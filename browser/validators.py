@@ -7,12 +7,12 @@ from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
-OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile("^<\d+>")
-OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile("^Unique Identifier")
-OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile("^MeSH Subject Headings")
+OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile(b"^<\d+>")
+OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile(b"^Unique Identifier")
+OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile(b"^MeSH Subject Headings")
 
-PUBMED_IDENTIFIER_PATTERN = re.compile("^PMID- \d+")
-PUBMED_IDENTIFIER_MH_PATTERN = re.compile("^MH  -")
+PUBMED_IDENTIFIER_PATTERN = re.compile(b"^PMID- \d+")
+PUBMED_IDENTIFIER_MH_PATTERN = re.compile(b"^MH  -")
 
 
 class MimetypeValidator(object):
@@ -24,10 +24,12 @@ class MimetypeValidator(object):
 
     def __call__(self, value):
         try:
-            mime = magic.from_buffer(value.read(1024).encode('utf-8'), mime=True)
+            mime = magic.from_buffer(value.read(1024), mime=True)
             if mime not in self.mimetypes:
                 raise ValidationError('%s is not an acceptable file type. Please use a %s formatted file instead.' % (value, ' or '.join(self.mimetypes)))
-        except AttributeError:
+        except AttributeError as e:
+            logger.debug("AttributeError")
+            logger.debug(e)
             raise ValidationError('There is a problem validating %s as a file.' % value)
 
 
@@ -96,21 +98,22 @@ def has_ovid_medline_file_header(first_line, second_line):
     # Very basic test if the file appears to be in the correct format
     # Test first line if <1> or "\<\d\>"
     # Test second line equals: Unique Identifier
-    return (OVID_MEDLINE_IDENTIFIER_PATTERN.match(str(first_line)) and
-            OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN.match(str(second_line)))
+    # When extracted file is passed this not openned in binary file mode
+    return (OVID_MEDLINE_IDENTIFIER_PATTERN.match(first_line) and
+            OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN.match(second_line))
 
 
 def has_pubmed_file_header(first_line, second_line):
     # First line is blank
     # Second line should be PMID- {number}
     return (not first_line.strip() and
-            PUBMED_IDENTIFIER_PATTERN.match(str(second_line)))
+            PUBMED_IDENTIFIER_PATTERN.match(second_line))
 
 
 def has_ovid_medline_mesh_headings(value):
     """Check entire file for an instance of Mesh Subject Headings"""
     for line in value:
-        if OVID_MEDLINE_IDENTIFIER_MESH_PATTERN.match(str(line)):
+        if OVID_MEDLINE_IDENTIFIER_MESH_PATTERN.match(line):
             return True
     return False
 
@@ -118,6 +121,6 @@ def has_ovid_medline_mesh_headings(value):
 def has_pubmed_mh(value):
     """Check entire file for an instance MH  - prefixed line"""
     for line in value:
-        if PUBMED_IDENTIFIER_MH_PATTERN.match(str(line)):
+        if PUBMED_IDENTIFIER_MH_PATTERN.match(line):
             return True
     return False

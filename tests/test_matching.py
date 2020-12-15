@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """ TeMMPo unit test suite for matching code
+
+# TODO consider removing usage of readlines in favour of looping file instead
 """
 import csv
 import io
@@ -96,7 +98,7 @@ class MatchingTestCase(BaseTestCase):
         citations = read_citations(file_path=BASE_DIR + "/test-abstract-ovid-test-sample-5.txt", file_format=OVID)
 
         # Check for expected structure
-        expected_fields = ("Unique Identifier", "MeSH Subject Headings", "Abstract", )
+        expected_fields = (b"Unique Identifier", b"MeSH Subject Headings", b"Abstract", )
         citation_count = 0
         for citation in citations:
             citation_count +=1
@@ -104,28 +106,28 @@ class MatchingTestCase(BaseTestCase):
                 self.assertTrue(field in citation.fields)
             if citation_count == 2:
                 # Spot check for expected contents
-                self.assertEqual("999992", citation.fields["Unique Identifier"].strip())
-                self.assertTrue("Pyroptosis" in citation.fields["MeSH Subject Headings"])
-                self.assertTrue("pulvinar placerat exexex" in citation.fields["Abstract"])
+                self.assertEqual(b"999992", citation.fields[b"Unique Identifier"].strip())
+                self.assertTrue(b"Pyroptosis" in citation.fields[b"MeSH Subject Headings"])
+                self.assertTrue(b"pulvinar placerat exexex" in citation.fields[b"Abstract"])
 
         self.assertEqual(citation_count, 5)
 
     def test_read_citations_pubmed(self):
         citations = read_citations(file_path=BASE_DIR + "/pubmed_result_100.txt", file_format=PUBMED)
         citation_count = 0
-        expected_field = "PMID"
+        expected_field = b"PMID"
         for citation in citations:
             citation_count +=1
             self.assertTrue(expected_field in citation.fields)
-            if citation.fields["PMID"] == "26124321":
-                self.assertTrue("Cell Line, Tumor" in citation.fields["MH"])
-                self.assertTrue("transfected with CYP27B" in citation.fields["AB"])
+            if citation.fields[b"PMID"] == b"26124321":
+                self.assertTrue(b"Cell Line, Tumor" in citation.fields[b"MH"])
+                self.assertTrue(b"transfected with CYP27B" in citation.fields[b"AB"])
         self.assertEqual(citation_count, 100)
 
     def _prepare_base_search_criteria(self, year, file_name=u'test-abstract-ovid-test-sample-5.txt', file_format=OVID):
         BASE_DIR = os.path.dirname(__file__)
         test_file_path = os.path.join(BASE_DIR, file_name)
-        test_file = open(test_file_path, 'r')
+        test_file = open(test_file_path, 'r') # TODO: Should this be rb???
         upload = Upload(user=self.user, abstracts_upload=File(test_file, file_name), file_format=file_format)
         upload.save()
         test_file.close()
@@ -590,44 +592,44 @@ class MatchingTestCase(BaseTestCase):
 
     def _get_ovid_citation_generator(self):
         citation_1 = Citation(1)
-        citation_1.addfield("Unique Identifier")
-        citation_1.addfieldcontent("999991")
-        citation_1.addfield("MeSH Subject Headings")
-        citation_1.addfieldcontent(";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;")
-        citation_1.addfield("Abstract")
-        citation_1.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. Example Gene B. ")
+        citation_1.addfield(b"Unique Identifier")
+        citation_1.addfieldcontent(b"999991")
+        citation_1.addfield(b"MeSH Subject Headings")
+        citation_1.addfieldcontent(b";Cells;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;")
+        citation_1.addfield(b"Abstract")
+        citation_1.addfieldcontent(b"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. Example Gene B. ")
 
         citation_2 = Citation(2)
-        citation_2.addfield("Unique Identifier")
-        citation_2.addfieldcontent("999992")
-        citation_2.addfield("MeSH Subject Headings")
-        citation_2.addfieldcontent(";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Pyroptosis;;Serogroup;;*Transcriptome;")
-        citation_2.addfield("Abstract")
-        citation_2.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat exexex.")
+        citation_2.addfield(b"Unique Identifier")
+        citation_2.addfieldcontent(b"999992")
+        citation_2.addfield(b"MeSH Subject Headings")
+        citation_2.addfieldcontent(b";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Pyroptosis;;Serogroup;;*Transcriptome;")
+        citation_2.addfield(b"Abstract")
+        citation_2.addfieldcontent(b"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat exexex.")
 
         citation_3 = Citation(3)
-        citation_3.addfield("Unique Identifier")
-        citation_3.addfieldcontent("999993")
-        citation_3.addfield("MeSH Subject Headings")
-        citation_3.addfieldcontent(";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Genetic Markers;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Serogroup;;*Transcriptome;")
-        citation_3.addfield("Abstract")
-        citation_3.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. ")
+        citation_3.addfield(b"Unique Identifier")
+        citation_3.addfieldcontent(b"999993")
+        citation_3.addfield(b"MeSH Subject Headings")
+        citation_3.addfieldcontent(b";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Genetic Markers;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Serogroup;;*Transcriptome;")
+        citation_3.addfield(b"Abstract")
+        citation_3.addfieldcontent(b"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. ")
 
         citation_4 = Citation(4)
-        citation_4.addfield("Unique Identifier")
-        citation_4.addfieldcontent("999994")
-        citation_4.addfield("MeSH Subject Headings")
-        citation_4.addfieldcontent(";Fictional MeSH Term A;;Fictional MeSH Term B;;Fictional MeSH Term C;")
-        citation_4.addfield("Abstract")
-        citation_4.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. Example Gene X, Example Gene B2, Example Gene A, Example Gene Sym C. ")
+        citation_4.addfield(b"Unique Identifier")
+        citation_4.addfieldcontent(b"999994")
+        citation_4.addfield(b"MeSH Subject Headings")
+        citation_4.addfieldcontent(b";Fictional MeSH Term A;;Fictional MeSH Term B;;Fictional MeSH Term C;")
+        citation_4.addfield(b"Abstract")
+        citation_4.addfieldcontent(b"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. Example Gene X, Example Gene B2, Example Gene A, Example Gene Sym C. ")
 
         citation_5 = Citation(5)
-        citation_5.addfield("Unique Identifier")
-        citation_5.addfieldcontent("999995")
-        citation_5.addfield("MeSH Subject Headings")
-        citation_5.addfieldcontent(";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Genetic Markers;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Penetrance;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Serogroup;;*Transcriptome;")
-        citation_5.addfield("Abstract")
-        citation_5.addfieldcontent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. ")
+        citation_5.addfield(b"Unique Identifier")
+        citation_5.addfieldcontent(b"999995")
+        citation_5.addfield(b"MeSH Subject Headings")
+        citation_5.addfieldcontent(b";Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Genetic Markers;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Penetrance;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Serogroup;;*Transcriptome;")
+        citation_5.addfield(b"Abstract")
+        citation_5.addfieldcontent(b"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in turpis aliquet, cursus nisi id, mattis augue. Pellentesque vehicula at ligula vel porta. Fusce suscipit malesuada justo. Cras convallis odio nec dolor elementum facilisis. Donec vel lobortis felis, ut gravida risus. Vivamus interdum ex libero. Phasellus id pharetra tortor. Mauris euismod convallis augue, sit amet aliquet metus hendrerit ac. Duis mattis leo maximus nisi sagittis, a pulvinar turpis fringilla. Ut pellentesque ligula purus, ut iaculis metus finibus nec. Suspendisse diam felis, aliquam sed nisl at, luctus rhoncus magna. Nullam porttitor neque eget sem sagittis rhoncus. Praesent accumsan fermentum odio, ac pellentesque dui feugiat at. In metus nisl, scelerisque eget velit at, pulvinar placerat ex. ")
 
         citations = [citation_1, citation_2, citation_3, citation_4, citation_5, ]
 
@@ -637,12 +639,12 @@ class MatchingTestCase(BaseTestCase):
     def _get_pubmed_citation_generator(self):
         for citation in self._get_ovid_citation_generator():
             # Convert to PubMed headers
-            citation.fields["MH"] = citation.fields["MeSH Subject Headings"]
-            del citation.fields["MeSH Subject Headings"]
-            citation.fields["PMID"] = citation.fields["Unique Identifier"]
-            del citation.fields["Unique Identifier"]
-            citation.fields["AB"] = citation.fields["Abstract"]
-            del citation.fields["Abstract"]
+            citation.fields[b"MH"] = citation.fields[b"MeSH Subject Headings"]
+            del citation.fields[b"MeSH Subject Headings"]
+            citation.fields[b"PMID"] = citation.fields[b"Unique Identifier"]
+            del citation.fields[b"Unique Identifier"]
+            citation.fields[b"AB"] = citation.fields[b"Abstract"]
+            del citation.fields[b"Abstract"]
             yield citation
 
     def _get_synonym_listing(self):
@@ -904,7 +906,7 @@ class MatchingTestCase(BaseTestCase):
         os.remove(results_file_path + results_file_name + "_abstracts.csv")
 
     def test_ovid_matching(self):
-        search_text = ";Cells;;H(+)-K(+)-Exchanging ATPase;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
+        search_text = b";Cells;;H(+)-K(+)-Exchanging ATPase;;Colorectal Neoplasms/ge [Genetics];;Colorectal Neoplasms/me [Metabolism];;Eryptosis;;Fictional MeSH Term AA;;Fictional MeSH Term B;;Genetic Markers;;Genetic Pleiotropy;;Histamine/me [Metabolism];;Humans;;Male;;*Metabolic Networks and Pathways/ge [Genetics];;*Metabolomics;;Neoplasm Metastasis;;Prostatic Neoplasms/ge [Genetics];;Prostatic Neoplasms/me [Metabolism];;Prostatic Neoplasms/pa [Pathology];;Public Health Systems Research;;Serogroup;;*Transcriptome;"
         mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
         self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
         mesh_term = ovid_prepare_mesh_term_search_text_function("Fictional MeSH Term AA")
@@ -921,7 +923,7 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
 
     def test_pubmed_matching(self):
-        search_text = ";Adolescent;;H(+)-K(+)-Exchanging ATPase;;Adult;;Fetal Growth Retardation/complications/*physiopathology;;Cognition;;*DNA Copy Number Variations;;Educational Status;;Epilepsy/genetics;;Estonia;;Female;;Genome-Wide Association Study;;Great Britain;;*Heterozygote;;Humans;;Intellectual Disability/*genetics;;Italy;;Male;;Mental Disorders/*genetics;;Obesity/genetics;;Phenotype;;United States;"
+        search_text = b";Adolescent;;H(+)-K(+)-Exchanging ATPase;;Adult;;Fetal Growth Retardation/complications/*physiopathology;;Cognition;;*DNA Copy Number Variations;;Educational Status;;Epilepsy/genetics;;Estonia;;Female;;Genome-Wide Association Study;;Great Britain;;*Heterozygote;;Humans;;Intellectual Disability/*genetics;;Italy;;Male;;Mental Disorders/*genetics;;Obesity/genetics;;Phenotype;;United States;"
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Fictional MeSH Term A")
         self.assertEqual(search_for_mesh_term(search_text, mesh_term), None)
         mesh_term = pubmed_prepare_mesh_term_search_text_function("Genetics")
@@ -944,7 +946,7 @@ class MatchingTestCase(BaseTestCase):
         self.assertTrue(search_for_mesh_term(search_text, mesh_term) is not None)
 
     def test_search_gene(self):
-        search_text = """A number of preclinical studies have shown that the activation of the vitamin D
+        search_text = b"""A number of preclinical studies have shown that the activation of the vitamin D
       receptor (VDR) reduces prostate cancer (PCa) cell and tumor growth. The majority 
       of human PCas express a transmembrane protease serine 2 (TMPRSS2):erythroblast
       transformation-specific (ETS) fusion gene, but most preclinical studies have been
@@ -1228,7 +1230,7 @@ class MatchingTestCase(BaseTestCase):
         self.assertEqual(search_criteria.get_wcrf_input_variables("outcome"), ("Cells", "Public Health Systems Research", ))
         self.assertEqual(search_criteria.get_wcrf_input_variables("gene"), ("A1BG", "A2M", "A2MP1", "AAVS1", "LBM180", "NAT2", ))
 
-    @tag("slow")
+    @tag("slow", 'upload', 'archive')
     def test_recreate_search_result_630(self):
         """Resolve mismatching: Prostaglandin D2 in MeSH term entries like *Prostaglandin D2/bl [Blood]"""
 
@@ -1246,11 +1248,16 @@ class MatchingTestCase(BaseTestCase):
         abstract_file_path = os.path.join(BASE_DIR, "07-32-54-exercise-inflamm-breast-cancer-may-3-2019-expanded-terms.txt.gz")
         self._login_user()
         search_path = reverse('search_ovid_medline')
-        with open(abstract_file_path, 'r') as upload:
+        logger.debug("pre count: ")
+        logger.debug(SearchCriteria.objects.all().count())
+        with open(abstract_file_path, 'rb') as upload:
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': OVID},
+                                        format='multipart',
                                         follow=True)
+        logger.debug("post count: ")
+        logger.debug(SearchCriteria.objects.all().count())
         search_criteria = SearchCriteria.objects.last()
         exposure_terms = MeshTerm.objects.filter(term__in=exposure_list, year=year)
         mediator_terms = MeshTerm.objects.filter(term__in=mediator_list, year=year)
@@ -1267,6 +1274,7 @@ class MatchingTestCase(BaseTestCase):
         search_result = SearchResult.objects.get(id=search_result.id)
 
         # Confirmed can recreate the same or more mediator counts as found in v1 matching
+        logger.debug(search_result.mediator_match_counts_v4)
         self.assertTrue(search_result.mediator_match_counts_v4 >= 118)
         
         with open(settings.RESULTS_PATH + search_result.filename_stub + "_edge.csv", newline='') as edge_csv_file:
@@ -1279,7 +1287,7 @@ class MatchingTestCase(BaseTestCase):
             self.assertEqual("Acute-Phase Proteins", mediators[2])
             self.assertTrue("Prostaglandin D2" in [x for x in mediators])
 
-    @tag('slow', 'insulin')
+    @tag('slow', 'insulin', 'testit', 'upload', 'archive')
     def test_verify_missing_insulin_markers(self):
         """TMMA-343 Ensure matching missing IGF-II (Insulin-Like Growth Factor II) and IGFBP-5 (Insulin-Like Growth Factor Binding Protein 5) terms.
             Exposures	Basketball; Yoga; Athletic Performance; Bicycling; Circuit-Based Exercise; Water Sports; Boxing; Dancing; Physical Fitness; Breathing Exercises; Warm-Up Exercise; Cool-Down Exercise; Hockey; Dance Therapy; Physical Conditioning, Human; Exercise; Soccer; Football; Endurance Training; Running; Cardiorespiratory Fitness; Baseball; Exercise Therapy; Plyometric Exercise; Track and Field; Racquet Sports; Tennis; Stair Climbing; Weight Lifting; Volleyball; High-Intensity Interval Training; Return to Sport; Jogging; Tai Ji; Motion Therapy, Continuous Passive; Exercise Movement Techniques; Snow Sports; Resistance Training; Sports for Persons with Disabilities; Sports; Physical Endurance; Swimming; Skating; Muscle Stretching Exercises; Walking; Golf; Youth Sports; Wrestling; Mountaineering; Qigong; Gymnastics; Skiing; Diving; Martial Arts
@@ -1304,11 +1312,16 @@ class MatchingTestCase(BaseTestCase):
         abstract_file_path = os.path.join(BASE_DIR, "08-15-08-insulin-may-27-2019.txt.gz")
         self._login_user()
         search_path = reverse('search_ovid_medline')
-        with open(abstract_file_path, 'r') as upload:
+        logger.debug("pre count: ")
+        logger.debug(SearchCriteria.objects.all().count())
+        with open(abstract_file_path, 'rb') as upload:  # With and without b ; Then look at effects down stream; 
             response = self.client.post(search_path,
                                         {'abstracts_upload': upload,
                                          'file_format': OVID},
+                                        format='multipart',
                                         follow=True)
+        logger.debug("post count: ")
+        logger.debug(SearchCriteria.objects.all().count())
         search_criteria = SearchCriteria.objects.last()
         exposure_terms = MeshTerm.objects.filter(term__in=exposure_list, year=year)
         mediator_terms = MeshTerm.objects.filter(term__in=mediator_list, year=year)
@@ -1331,6 +1344,7 @@ class MatchingTestCase(BaseTestCase):
             for x in mediators:
                 logger.debug(x)
             # Confirmed can recreate or surpass mediator counts in v1
+            logger.debug(search_result.mediator_match_counts_v4)
             self.assertTrue(search_result.mediator_match_counts_v4 >= 17)
             self.assertTrue("Insulin" in [x for x in mediators])
             self.assertTrue("Insulin-Like Growth Factor I" in [x for x in mediators])
@@ -1410,7 +1424,7 @@ class MatchingTestCase(BaseTestCase):
 
     def test_searchgene(self):
         """TMMA-391 Ensure gene's don't need to be escaped for matching"""
-        texttosearch = " Various 'omics' technologies, RP11-153M24.1, including microarrays and gas chromatography mass spectrometry, can be used to identify hundreds of interesting genes, proteins and metabolites, such as differential genes, proteins and metabolites associated with diseases. Identifying metabolic pathways has become an invaluable aid to understanding the genes and metabolites associated with studying conditions. However, the classical methods used to identify pathways fail to accurately consider joint power of interesting gene/metabolite and the key regions impacted by them within metabolic pathways. In this study, we propose a powerful analytical method referred to as Subpathway-GM for the identification of metabolic subpathways. This provides a more accurate level of pathway analysis by integrating information from genes and metabolites, and their positions and cascade regions within the given pathway. We analyzed two colorectal cancer and one metastatic prostate cancer data sets and demonstrated that Subpathway-GM was able to identify disease-relevant subpathways whose corresponding entire pathways might be ignored using classical entire pathway identification methods. Further analysis indicated that the power of a joint genes/metabolites and subpathway strategy based on their topologies may play a key role in reliably recalling disease-relevant subpathways and finding novel subpathways. "
+        texttosearch = b" Various 'omics' technologies, RP11-153M24.1, including microarrays and gas chromatography mass spectrometry, can be used to identify hundreds of interesting genes, proteins and metabolites, such as differential genes, proteins and metabolites associated with diseases. Identifying metabolic pathways has become an invaluable aid to understanding the genes and metabolites associated with studying conditions. However, the classical methods used to identify pathways fail to accurately consider joint power of interesting gene/metabolite and the key regions impacted by them within metabolic pathways. In this study, we propose a powerful analytical method referred to as Subpathway-GM for the identification of metabolic subpathways. This provides a more accurate level of pathway analysis by integrating information from genes and metabolites, and their positions and cascade regions within the given pathway. We analyzed two colorectal cancer and one metastatic prostate cancer data sets and demonstrated that Subpathway-GM was able to identify disease-relevant subpathways whose corresponding entire pathways might be ignored using classical entire pathway identification methods. Further analysis indicated that the power of a joint genes/metabolites and subpathway strategy based on their topologies may play a key role in reliably recalling disease-relevant subpathways and finding novel subpathways. "
         searchstring = "RP11-153M24.1"
         self.assertFalse(searchgene(texttosearch, searchstring) == None)
 
