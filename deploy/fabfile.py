@@ -19,7 +19,7 @@ GIT_SSH_HOSTS = ('104.192.143.1',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
-PIP_VERSION = '20.3.1'
+PIP_VERSION = '20.3.3'
 SETUPTOOLS_VERSION = '50.3.2'
 PIP_TOOLS_VERSION = '5.4.0'
 
@@ -81,7 +81,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('virtualenv %s' % env)
+        caller('python3 -m venv %s' % env)
 
         if clone_repo:
             caller('mkdir -p %s' % src_dir)

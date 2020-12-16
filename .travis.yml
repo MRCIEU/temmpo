@@ -25,7 +25,7 @@ before_install:
 install:
   - cd $TRAVIS_BUILD_DIR
   - cd lib/test/src/temmpo
-  - pip3 install -U pip==20.3.1
+  - pip3 install -U pip==20.3.3
   - pip3 install setuptools==50.3.2
   - pip3 install pip-tools==5.4.0
   - pip3 install coverage==5.3
@@ -47,6 +47,8 @@ script:
   # TODO: Add support for Python 2 fabric testing, see: https://docs.travis-ci.com/user/build-matrix/#using-different-programming-languages-per-job & https://docs.travis-ci.com/user/build-matrix/#listing-individual-jobs
   # - pip install fabric==1.13.1
   # - fab -l -f deploy/fabfile.py
+
+# TODO: Add a separate slow tests step to maintain comparisons for previous test runs times
 
 branches:
   only:
