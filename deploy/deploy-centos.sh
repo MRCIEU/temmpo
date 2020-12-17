@@ -46,7 +46,7 @@ echo "###   Setup Web server components"
 yum -y install httpd
 yum -y install httpd-devel
 pip3 install mod-wsgi==4.7.1
-usermod -a -G apache vagrant
+# usermod -a -G apache vagrant
 
 echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
