@@ -23,10 +23,11 @@ echo "###   Install Python 3 and components"
 yum -y install python3
 yum -y install python3-setuptools
 yum -y install python3-devel
+yum -y install python3-mod_wsgi
 yum -y install python3-pip
-yum -y install python3-virtualenv
+yum -y install python36-virtualenv
 yum -y install python3-wheel
-yum -y install python3-lxml
+yum -y install python36-lxml
 
 echo "###   Install gcc"
 yum -y install gcc gcc-c++
@@ -41,8 +42,6 @@ yum -y install mariadb-devel
 
 echo "###   Setup Web server components"
 yum -y install httpd
-yum -y install httpd-devel
-pip3 install mod-wsgi==4.7.1
 
 echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
