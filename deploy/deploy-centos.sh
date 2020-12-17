@@ -46,7 +46,6 @@ echo "###   Setup Web server components"
 yum -y install httpd
 yum -y install httpd-devel
 pip3 install mod-wsgi==4.7.1
-# usermod -a -G apache vagrant
 
 echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
@@ -175,18 +174,23 @@ mkdir -p /usr/local/projects/temmpo/var/results/testing/v4
 echo "###   Add directory for development emails"
 mkdir -p /usr/local/projects/temmpo/var/email
 
+echo "###   Add new tmp directory location"
+mkdir -p /usr/local/projects/temmpo/var/tmp
+
 touch /usr/local/projects/temmpo/var/log/django.log
 
 chown vagrant:vagrant /usr/local/projects/temmpo/
 chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
 chown apache:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
 chown -R vagrant:vagrant /usr/local/projects/temmpo/var
+chown apache:vagrant /usr/local/projects/temmpo/var/tmp
 chown apache:vagrant /usr/local/projects/temmpo/var/abstracts
 chown apache:vagrant /usr/local/projects/temmpo/var/data
 chown apache:vagrant /usr/local/projects/temmpo/var/results
 chown apache:vagrant /usr/local/projects/temmpo/var/email
 chown apache:vagrant /usr/local/projects/temmpo/var/www
 chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
+chmod -R g+xw /usr/local/projects/temmpo/var/tmp
 chmod -R g+xw /usr/local/projects/temmpo/var/log
 chmod -R g+xw /usr/local/projects/temmpo/var/data
 chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
