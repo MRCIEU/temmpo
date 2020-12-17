@@ -21,6 +21,7 @@ before_install:
   - mkdir -p var/results/testing/v1
   - mkdir -p var/results/testing/v3
   - mkdir -p var/results/testing/v4
+  - mkdir -p var/tmp
 
 install:
   - cd $TRAVIS_BUILD_DIR
