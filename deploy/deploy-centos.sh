@@ -44,7 +44,9 @@ yum -y install mariadb-devel
 
 echo "###   Setup Web server components"
 yum -y install httpd
-yum -y install mod_wsgi
+yum -y install httpd-devel
+pip3 install mod-wsgi==4.7.1
+usermod -a -G apache vagrant
 
 echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
@@ -100,7 +102,7 @@ if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-
   then
     pip install -r /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt
   else
-    pip install -r /vagrant/pip-freeze-2020-11-23.txt
+    pip install -r /vagrant/deploy/pip-freeze-2020-11-23.txt
 fi
 
 echo "###   Install redis"
@@ -152,6 +154,7 @@ chromedriver -v
 
 echo "###   Confirm install list"
 yum list installed 
+pip freeze
 pip3 freeze
 
 echo "###   Create directories normally managed by Puppet"
@@ -218,6 +221,7 @@ fi
 
 echo "###   Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
+LoadModule wsgi_module "/usr/local/lib64/python3.6/site-packages/mod_wsgi/server/mod_wsgi-py36.cpython-36m-x86_64-linux-gnu.so"
 WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
 <VirtualHost *:*>
