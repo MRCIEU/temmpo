@@ -190,6 +190,8 @@ def setup_apache(env="dev", use_local_mode=False):
     Header set X-Frame-Options "DENY"
 
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
+    # WSGIPythonHome /usr/local/projects/temmpo/bin/python
+    # WSGIPythonPath /usr/local/projects/temmpo/lib/%(env)s/src
     # WSGIApplicationGroup %%{GLOBAL}
     # WSGIDaemonProcess temmpo
     # WSGIProcessGroup temmpo
@@ -253,7 +255,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
     # Set up SE Linux contexts
     caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-    caller('chcon -R -t httpd_sys_script_exec_t %slib/python2.7/' % venv_dir)
+    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.6/' % venv_dir)
     caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
     caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
