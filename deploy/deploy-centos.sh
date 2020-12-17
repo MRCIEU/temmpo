@@ -9,9 +9,6 @@ echo "###   Install EPEL repo and run package updates"
 yum -y install epel-release
 yum -y update
 
-echo "### Install EPEL package repo"
-yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-
 echo "Install Centos dev tools, like audit2allow"
 yum -y install policycoreutils-python
 yum -y install mlocate
@@ -27,7 +24,6 @@ yum -y install python3
 yum -y install python3-setuptools
 yum -y install python3-devel
 yum -y install python3-pip
-yum -y install python3-magic
 yum -y install python3-virtualenv
 yum -y install python3-lxml
 
@@ -174,7 +170,7 @@ mkdir -p /usr/local/projects/temmpo/var/results/testing/v4
 echo "###   Add directory for development emails"
 mkdir -p /usr/local/projects/temmpo/var/email
 
-echo "###   Add new tmp directory location"
+echo "###   Add new tmp directory location # TODO Add to clamav scan where necessary"
 mkdir -p /usr/local/projects/temmpo/var/tmp
 
 touch /usr/local/projects/temmpo/var/log/django.log
