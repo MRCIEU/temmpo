@@ -25,6 +25,7 @@ yum -y install python3-setuptools
 yum -y install python3-devel
 yum -y install python3-pip
 yum -y install python3-virtualenv
+yum -y install python3-wheel
 yum -y install python3-lxml
 
 echo "###   Install gcc"
