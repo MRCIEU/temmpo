@@ -162,9 +162,7 @@ Optionally pass in a package or update them all within any requirements.in file 
 Run the entire test suite using MySQL and generate a coverage report.
 
     vagrant ssh
-    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql
-    coverage report --skip-empty --skip-covered -m
+    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo && coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql && coverage report --skip-empty --skip-covered -m
 
 Or run the entire test suite using SQLlite and generate a coverage report.
 
