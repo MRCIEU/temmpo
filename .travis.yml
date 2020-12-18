@@ -1,19 +1,13 @@
 os: linux
 dist: xenial
 language: python
-
 jobs:
   include:
     - name: "Django tests excludling selenium"
       language: python
       python: 3.6
-        # - 3.8  TODO: Consider v.3.8 support after Django upgrade        
       before_install:
         # Move source code to a directory structure the application expects.
-        - which python
-        - which python3
-        - which pip
-        - which pip3
         - mkdir -p lib/test/src/temmpo
         - shopt -s extglob
         - mv !(lib) lib/test/src/temmpo/
@@ -49,15 +43,13 @@ jobs:
         - coverage report --skip-empty --skip-covered -m
         - coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --tag=slow
         - coverage report --skip-empty --skip-covered -m
-    - name: "Syntax check Python 2 Fabric script"
+    - name: "Syntax check Python 2 Fabric deployment script"
       language: python
       python: 2.7
       script:
         - pip install fabric==1.13.1
         - fab -l -f deploy/fabfile.py
         # NB: When deployed Fabric is installed at a system packages level and supports the CI/CD pipeline
-        # TODO: Add support for Python 2 fabric testing, see: https://docs.travis-ci.com/user/build-matrix/#using-different-programming-languages-per-job & https://docs.travis-ci.com/user/build-matrix/#listing-individual-jobs
-
 branches:
   only:
   - master
