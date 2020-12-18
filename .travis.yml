@@ -1,13 +1,12 @@
 os: linux
 dist: xenial
 language: python
-python:
-  - 3.6
-  - 3.7
 
 jobs:
   include:
     - name: "Django tests excludling selenium"
+      language: python
+      python: 3.6
         # - 3.8  TODO: Consider v.3.8 support after Django upgrade        
       before_install:
         # Move source code to a directory structure the application expects.
