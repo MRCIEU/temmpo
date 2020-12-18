@@ -7,6 +7,10 @@ python:
 
 before_install:
   # Move source code to a directory structure the application expects.
+  - which python
+  - which python3
+  - which pip
+  - which pip3
   - mkdir -p lib/test/src/temmpo
   - shopt -s extglob
   - mv !(lib) lib/test/src/temmpo/
@@ -22,8 +26,6 @@ before_install:
   - mkdir -p var/results/testing/v3
   - mkdir -p var/results/testing/v4
   - mkdir -p var/tmp
-  - which python
-  - which python3
 
 install:
   - cd $TRAVIS_BUILD_DIR
@@ -39,11 +41,6 @@ services:
   - mysql
   - redis
 
-  # NB: When deployed Fabric is installed at a system packages level and supports the CI/CD pipeline
-  # TODO: Add support for Python 2 fabric testing, see: https://docs.travis-ci.com/user/build-matrix/#using-different-programming-languages-per-job & https://docs.travis-ci.com/user/build-matrix/#listing-individual-jobs
-  # - pip install fabric==1.13.1
-  # - fab -l -f deploy/fabfile.py
-
 jobs:
   include:
     - script:
@@ -52,14 +49,20 @@ jobs:
       - coverage
       - coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=slow
       - coverage report --skip-empty --skip-covered -m
-      # name: "Django tests excludling selenium and slow tags"
+      name: "Django tests excludling selenium and slow tags"
     - script:
       - cd $TRAVIS_BUILD_DIR
       - cd lib/test/src/temmpo
       - coverage
       - coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --tag=slow
       - coverage report --skip-empty --skip-covered -m
-      # name: "Django tests including slow and exclude selenium tags"
+      name: "Django tests including slow and exclude selenium tags"
+    - script:
+  # NB: When deployed Fabric is installed at a system packages level and supports the CI/CD pipeline
+  # TODO: Add support for Python 2 fabric testing, see: https://docs.travis-ci.com/user/build-matrix/#using-different-programming-languages-per-job & https://docs.travis-ci.com/user/build-matrix/#listing-individual-jobs
+      - pip install fabric==1.13.1
+      - fab -l -f deploy/fabfile.py
+      name: "Test Python 2 Fabric script"
 
 branches:
   only:
