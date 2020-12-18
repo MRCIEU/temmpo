@@ -25,7 +25,6 @@ yum -y install libxslt-python # legacy
 yum -y install libxslt-devel # legacy
 yum -y install python-lxml
 
-
 echo "###   Install Python 3 and components"
 yum -y install python3
 yum -y install python3-setuptools
@@ -38,7 +37,6 @@ yum -y install python36-lxml
 
 echo "###   Install gcc"
 yum -y install gcc gcc-c++
-yum -y install mariadb-devel
 
 echo "###   Install dev tools"
 yum -y install git
@@ -50,6 +48,7 @@ yum -y install mariadb-devel
 
 echo "###   Setup Web server components"
 yum -y install httpd
+yum -y install mod_wsgi # legacy
 
 echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
