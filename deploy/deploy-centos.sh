@@ -13,9 +13,15 @@ echo "Install Centos dev tools, like audit2allow"
 yum -y install policycoreutils-python
 yum -y install mlocate
 
-echo "# Install python 2 components for Fabric usage"
+echo "# Install python 2 components for Fabric usage (and legacy Python 2 builds <= v4.4.0)"
 yum -y install python-devel
+yum -y install python-wheel # legacy
 yum -y install python-pip
+yum -y install python-virtualenv # legacy
+yum -y install libxml2-python # legacy
+yum -y install libxml2-devel # legacy
+yum -y install libxslt-python # legacy
+yum -y install libxslt-devel # legacy
 yum -y install python-lxml
 yum -y install python-magic
 
