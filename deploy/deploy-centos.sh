@@ -16,6 +16,7 @@ yum -y install mlocate
 echo "# Install python 2 components for Fabric usage (and legacy Python 2 builds <= v4.4.0)"
 yum -y install python-devel
 yum -y install python-wheel # legacy
+yum -y install python-magic
 yum -y install python-pip
 yum -y install python-virtualenv # legacy
 yum -y install libxml2-python # legacy
@@ -23,7 +24,7 @@ yum -y install libxml2-devel # legacy
 yum -y install libxslt-python # legacy
 yum -y install libxslt-devel # legacy
 yum -y install python-lxml
-yum -y install python-magic
+
 
 echo "###   Install Python 3 and components"
 yum -y install python3
@@ -37,6 +38,7 @@ yum -y install python36-lxml
 
 echo "###   Install gcc"
 yum -y install gcc gcc-c++
+yum -y install mariadb-devel
 
 echo "###   Install dev tools"
 yum -y install git
