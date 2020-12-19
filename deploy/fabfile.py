@@ -190,7 +190,7 @@ def setup_apache(env="dev", use_local_mode=False):
     Header set X-Frame-Options "DENY"
 
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
-    # WSGIPythonHome /usr/local/projects/temmpo/bin/python
+    # WSGIPythonHome /usr/local/projects/temmpo/bin/python3
     # WSGIPythonPath /usr/local/projects/temmpo/lib/%(env)s/src
     # WSGIApplicationGroup %%{GLOBAL}
     # WSGIDaemonProcess temmpo
@@ -453,7 +453,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
@@ -477,7 +477,7 @@ def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="my
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python3 manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def update_requires_io(requires_io_token, env="test", use_local_mode=False):
     """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
@@ -506,7 +506,7 @@ def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir):
-        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin --settings=temmpo.settings.%s' % (database_name, database_name, venv_dir, env), pty=True)
+        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python3 src/temmpo/manage.py dbshell --database=admin --settings=temmpo.settings.%s' % (database_name, database_name, venv_dir, env), pty=True)
         caller('echo "TeMMPo database was recreated".')
 
 
