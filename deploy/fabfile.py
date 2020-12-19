@@ -113,7 +113,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if migrate_db:
         with change_dir(PROJECT_ROOT + 'lib/' + env):
-            caller('./bin/python src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
+            caller('./bin/python3 src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
 
     if configure_apache:
         collect_static(env, use_local_mode)
@@ -159,7 +159,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
 
         if migrate_db:
-            caller('./bin/python src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
+            caller('./bin/python3 src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
 
         if using_apache:
             collect_static(env, use_local_mode)
@@ -273,7 +273,7 @@ def collect_static(env="dev", use_local_mode=False):
     venv_dir = PROJECT_ROOT + "lib/" + env
 
     with change_dir(venv_dir):
-        caller('./bin/python src/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
+        caller('./bin/python3 src/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
 
 
 def restart_apache(env="dev", use_local_mode=False, run_checks=True):
@@ -297,7 +297,7 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
         caller("wget --timeout=60 --tries=1 127.0.0.1")
         caller("rm index.html")
         with change_dir(venv_dir):
-            caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
+            caller("./bin/python33 src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
 
         if toggled_maintenance_mode:
             disable_apache_site(use_local_mode)
@@ -353,14 +353,14 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
         caller("sqlite3 %s .dump > %s" % (sqlite_db, output_file))
         # Export comparison from SQLite
         caller("sqlite3 %s '%s' > %s" % (sqlite_db, compare_data, sqlite_table_counts_file))
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite > %s" % (compare_sqlite, env, sqlite_status_file))
+        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite > %s" % (compare_sqlite, env, sqlite_status_file))
         # Convert certain commands from SQLite to the MySQL equivalents
         caller("sed -i -e 's/PRAGMA.*/SET SESSION sql_mode = ANSI_QUOTES;/' -e 's/BEGIN/START/' -e 's/AUTOINCREMENT/AUTO_INCREMENT/g' -e 's/^.*sqlite_sequence.*$//g' %s" % output_file)
         # Import data
-        caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=admin" % (output_file, env))
+        caller("cat %s | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=admin" % (output_file, env))
         # Export comparison data from MySQL
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_mysql, env, mysql_status_file))
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_data, env, mysql_table_counts_file))
+        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_mysql, env, mysql_status_file))
+        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_data, env, mysql_table_counts_file))
         # Trim header of MySQL output file
         caller("sed -i 1,1d %s " % mysql_status_file)
         # Trim output headers from MySQL table counts
