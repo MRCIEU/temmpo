@@ -81,7 +81,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('python3 -m venv %s' % env)
+        caller('python3 -m venv --upgrade %s' % env)
 
         if clone_repo:
             caller('mkdir -p %s' % src_dir)
