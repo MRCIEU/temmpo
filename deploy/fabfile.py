@@ -297,7 +297,7 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
         caller("wget --timeout=60 --tries=1 127.0.0.1")
         caller("rm index.html")
         with change_dir(venv_dir):
-            caller("./bin/python33 src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
+            caller("./bin/python3 src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
 
         if toggled_maintenance_mode:
             disable_apache_site(use_local_mode)
