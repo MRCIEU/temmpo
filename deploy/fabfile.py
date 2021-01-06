@@ -92,6 +92,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 with change_dir(src_dir):
                     caller('git clone %s temmpo' % GIT_URL)
             with change_dir(src_dir + "temmpo"):
+                # Remove any Python 2 cached files
+                caller('rm `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
