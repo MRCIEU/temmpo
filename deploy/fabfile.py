@@ -94,6 +94,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             with change_dir(src_dir + "temmpo"):
                 # Remove any Python 2 cached files
                 caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
+                # Alternatively Remove all cache file -  find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
@@ -499,6 +500,9 @@ def update_requires_io(requires_io_token, env="test", use_local_mode=False):
             caller('git pull')
         with change_dir(venv_dir):
             caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements' % (requires_io_token, branch, src_dir, ))
+    # Ensure test instance is left running on main branch
+    with change_dir(src_dir):
+        caller('git checkout master')
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
