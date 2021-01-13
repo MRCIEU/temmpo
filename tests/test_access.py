@@ -71,7 +71,7 @@ class AccessTestCase(BaseTestCase):
                                      "password2": "THISISJUSTATEST"},
                                     follow=True)
 
-        self.assertContains(response, "Your registration is complete.", msg_prefix=response.content)
+        self.assertContains(response, "Your registration is complete.", msg_prefix=str(response.content))
 
     def test_login_page(self):
         """Test can view the sign in page."""

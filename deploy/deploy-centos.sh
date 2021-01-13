@@ -13,17 +13,21 @@ echo "Install Centos dev tools, like audit2allow"
 yum -y install policycoreutils-python
 yum -y install mlocate
 
-echo "###   Install Python components"
+echo "# Install python 2 components for Fabric usage (and legacy Python 2 builds <= v4.4.0)"
 yum -y install python-devel
-yum -y install python-wheel
 yum -y install python-magic
 yum -y install python-pip
-yum -y install python-virtualenv
-yum -y install libxml2-python
-yum -y install libxml2-devel
-yum -y install libxslt-python
-yum -y install libxslt-devel
 yum -y install python-lxml
+
+echo "###   Install Python 3 and components"
+yum -y install python3
+yum -y install python3-setuptools
+yum -y install python3-devel
+yum -y install python3-mod_wsgi
+yum -y install python3-pip
+yum -y install python36-virtualenv
+yum -y install python3-wheel
+yum -y install python36-lxml
 
 echo "###   Install gcc"
 yum -y install gcc gcc-c++
@@ -38,7 +42,6 @@ yum -y install mariadb-devel
 
 echo "###   Setup Web server components"
 yum -y install httpd
-yum -y install mod_wsgi
 
 echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
@@ -89,7 +92,7 @@ systemctl enable clamd@scan
 # Update virus DB
 /bin/freshclam
 
-echo "###   Install fabric (for deployment scripts) and other production Python eggs"
+echo "###   Install fabric (for deployment scripts) and other production Python 2 eggs"
 if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt ]
   then
     pip install -r /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt
@@ -147,6 +150,7 @@ chromedriver -v
 echo "###   Confirm install list"
 yum list installed 
 pip freeze
+pip3 freeze
 
 echo "###   Create directories normally managed by Puppet"
 mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d
@@ -166,18 +170,23 @@ mkdir -p /usr/local/projects/temmpo/var/results/testing/v4
 echo "###   Add directory for development emails"
 mkdir -p /usr/local/projects/temmpo/var/email
 
+echo "###   Add new tmp directory location # TODO Add to clamav scan where necessary"
+mkdir -p /usr/local/projects/temmpo/var/tmp
+
 touch /usr/local/projects/temmpo/var/log/django.log
 
 chown vagrant:vagrant /usr/local/projects/temmpo/
 chown --silent -R vagrant:vagrant /usr/local/projects/temmpo/lib/
 chown apache:vagrant /usr/local/projects/temmpo/etc/apache/conf.d
 chown -R vagrant:vagrant /usr/local/projects/temmpo/var
+chown apache:vagrant /usr/local/projects/temmpo/var/tmp
 chown apache:vagrant /usr/local/projects/temmpo/var/abstracts
 chown apache:vagrant /usr/local/projects/temmpo/var/data
 chown apache:vagrant /usr/local/projects/temmpo/var/results
 chown apache:vagrant /usr/local/projects/temmpo/var/email
 chown apache:vagrant /usr/local/projects/temmpo/var/www
 chown apache:vagrant /usr/local/projects/temmpo/var/log/django.log
+chmod -R g+xw /usr/local/projects/temmpo/var/tmp
 chmod -R g+xw /usr/local/projects/temmpo/var/log
 chmod -R g+xw /usr/local/projects/temmpo/var/data
 chmod -R g+xw /usr/local/projects/temmpo/var/abstracts
@@ -212,6 +221,7 @@ fi
 
 echo "###   Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
+LoadModule wsgi_module "/usr/local/lib64/python3.6/site-packages/mod_wsgi/server/mod_wsgi-py36.cpython-36m-x86_64-linux-gnu.so"
 WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
 <VirtualHost *:*>

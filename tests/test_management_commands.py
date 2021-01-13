@@ -1,5 +1,5 @@
 """Test for import MeshTerm and Gene management commands using sample file snippets."""
-from StringIO import StringIO
+from io import StringIO
 import os
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -31,7 +31,7 @@ class RunSearchManagementCommandTestCase(TestCase):
             call_command('run_search', stdout=out)
             assert(False)
         except CommandError as e:
-            self.assertIn('Error: too few arguments', str(e))
+            self.assertIn('Error: the following arguments are required: search_result_id', str(e))
 
     def test_run_search_with_unknown_args(self):
         """Check command handles an unknown search results ID parameters."""
@@ -78,7 +78,7 @@ class ImportMeshTermsManagementCommandTest(TestCase):
             call_command('import_mesh_terms', stdout=out)
             assert(False)
         except CommandError as e:
-            self.assertIn('Error: too few arguments', str(e))
+            self.assertIn('Error: the following arguments are required: mesh_term_file_path, year', str(e))
 
     def test_import_mesh_terms_command_with_unknown_args(self):
         """Check command handles unexpected parameters."""

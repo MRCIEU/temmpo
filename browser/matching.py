@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
+import csv
 import logging
 import math
+from more_itertools import unique_everseen
 import numpy as np
 import os
 import pandas as pd
 import re
 import string
 import sys
-import unicodecsv
 
 from django.core.cache import cache
 from django.conf import settings
@@ -16,12 +18,13 @@ from django.utils import timezone
 
 from browser.models import SearchResult, Gene, OVID, PUBMED
 
-ERROR_TEXT = "Error occurred"
+ERROR_TEXT = b"Error occurred"
 logger = logging.getLogger(__name__)
-TERM_DELIMITER = ";"
+TERM_DELIMITER = b";"
 
 
 class Citation:
+    """Store data as bytes read from user uploaded files"""
 
     def __init__(self, id):
         self.fields = {}
@@ -29,7 +32,7 @@ class Citation:
 
     def addfield(self, fieldname):
         self.currentfield = fieldname
-        self.fields[fieldname] = ""
+        self.fields[fieldname] = b""
 
     def addfieldcontent(self, fieldcontent):
         self.fields[self.currentfield] += fieldcontent
@@ -191,28 +194,25 @@ def read_citations(file_path, file_format=OVID):
 def _ovid_medline_read_citations(abstract_file_path):
     """ Read the Abstract data from an OVID Medline formatted text file.
         Create a generator and yield an instance of the Citation class per item """
-
-    infile = open(abstract_file_path, 'r')
+    infile = open(abstract_file_path, 'rb')
     citation = None
-
     for line in infile:
-        line = line.strip("\r\n")
+        line = line.strip(b"\r\n")
         if len(line) == 0:
             pass
-        elif line[0] == "<":
+        elif line[0:1] == b"<":
             # Starting a new citation, yield if one has already been set up
             if citation:
                 yield citation
-
-            citation_id = int(line.strip("<").strip(">"))
+            citation_id = int(line.strip(b"<").strip(b">"))
             citation = Citation(citation_id)
-        elif line[0] != " ":
+        elif line[0:1] != b" ":
             citation.addfield(line)
         else:
-            if citation.currentfield == "MeSH Subject Headings":
+            if citation.currentfield == b"MeSH Subject Headings":
                 citation.addfieldcontent(TERM_DELIMITER + line.lstrip() + TERM_DELIMITER)  # Mesh Terms need clear delimiters not found in Mesh Terms to perform clean matching
-            elif citation.currentfield == "Abstract":
-                citation.addfieldcontent(line + " ")
+            elif citation.currentfield == b"Abstract":
+                citation.addfieldcontent(line + b" ")
             else:
                 citation.addfieldcontent(line.lstrip())
 
@@ -231,13 +231,13 @@ def _pubmed_read_citations(abstract_file_path):
 
     citation = None
     counter = -1
-    infile = open(abstract_file_path, 'r')
+    infile = open(abstract_file_path, 'rb')
 
     for line in infile:
-        line = line.strip("\r\n")
+        line = line.strip(b"\r\n")
         if len(line) == 0 or ERROR_TEXT in line:
             nothing = 0
-        elif line[0:4] == "PMID":
+        elif line[0:4] == b"PMID":
             # Starting a new citation, yield if one has already been set up
             if citation:
                 yield citation
@@ -246,22 +246,22 @@ def _pubmed_read_citations(abstract_file_path):
             citation_id = counter + 1
             citation = Citation(citation_id)
             counter += 1
-            citation.addfield(line.split("-", 1)[0].strip())
-            citation.addfieldcontent(line.split("-", 1)[1].strip())
-        elif line[0:2] == "MH":
+            citation.addfield(line.split(b"-", 1)[0].strip())
+            citation.addfieldcontent(line.split(b"-", 1)[1].strip())
+        elif line[0:2] == b"MH":
             if in_mesh == False:
-                citation.addfield(line.split("-", 1)[0].strip())
+                citation.addfield(line.split(b"-", 1)[0].strip())
             in_mesh = True
-            citation.addfieldcontent(TERM_DELIMITER + line.split("-", 1)[1].strip() + TERM_DELIMITER) # Mesh Terms need clear delimiters not found in Mesh Terms to perform clean matching
-        elif line[0] != " ":
-            field = line.split("-", 1)[0].strip()
+            citation.addfieldcontent(TERM_DELIMITER + line.split(b"-", 1)[1].strip() + TERM_DELIMITER) # Mesh Terms need clear delimiters not found in Mesh Terms to perform clean matching
+        elif line[0:1] != b" ":
+            field = line.split(b"-", 1)[0].strip()
             citation.addfield(field)
-            if field == "AB":
-                citation.addfieldcontent(line.split("-", 1)[1] + " ")
+            if field == b"AB":
+                citation.addfieldcontent(line.split(b"-", 1)[1] + b" ")
             else:
-                citation.addfieldcontent(line.split("-", 1)[1].strip() + " ")
+                citation.addfieldcontent(line.split(b"-", 1)[1].strip() + b" ")
         else:
-            citation.addfieldcontent(line.strip() + " ")
+            citation.addfieldcontent(line.strip() + b" ")
 
     # Yield last citation
     if citation:
@@ -273,7 +273,7 @@ def _pubmed_read_citations(abstract_file_path):
 def searchgene(texttosearch, searchstring):
     """Return None for no matches >= 0 for match found.
     Gene symbols guidance ref https://www.genenames.org/about/guidelines/#!/#tocAnchor-1-8"""
-    searchstringre = re.compile('[^A-Za-z0-9#@_]' + re.escape(searchstring) + '[^A-Za-z0-9#@_]', re.IGNORECASE)
+    searchstringre = re.compile(b'[^A-Za-z0-9#@_]' + re.escape(searchstring).encode() + b'[^A-Za-z0-9#@_]', re.IGNORECASE)
     return searchstringre.search(texttosearch)
 
 def ovid_prepare_mesh_term_search_text_function(mesh_term):
@@ -281,14 +281,14 @@ def ovid_prepare_mesh_term_search_text_function(mesh_term):
     NB: An asterisk prefix indicates a major topic of article.
         /?? [Mesh term] denotes sub headings
         ref: http://zatoka.icm.edu.pl/OVIDWEB/fldguide/medline.htm"""
-    return re.compile('[;*/\\[]' + re.escape(mesh_term) + '[;/\\]]', re.IGNORECASE)
+    return re.compile(b'[;*/\\[]' + re.escape(mesh_term).encode() + b'[;/\\]]', re.IGNORECASE)
 
 def pubmed_prepare_mesh_term_search_text_function(mesh_term):
     """Return None for no matches >= 0 for match found.
     NB: An asterisk prefix indicates a major topic of article.
         /mesh term denotes sub headings in lowercase normally
         ref: https://www.nlm.nih.gov/bsd/mms/medlineelements.html#mh"""
-    return re.compile('[;*/\\[]' + re.escape(mesh_term) + '[;/\\]]', re.IGNORECASE)  # TODO (Low priority) Performance improvement - Confirm that square braces matching is not needed for PubMED formatted files.
+    return re.compile(b'[;*/\\[]' + re.escape(mesh_term).encode() + b'[;/\\]]', re.IGNORECASE)  # TODO (Low priority) Performance improvement - Confirm that square braces matching is not needed for PubMED formatted files.
 
 def search_for_mesh_term(mesh_term_search_text, compiled_mesh_term_re):
     return compiled_mesh_term_re.search(mesh_term_search_text)
@@ -299,18 +299,18 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
     # Go through and count edges
     papercounter = 0
-    citation_id = set()
+    citation_ids_list = list()
 
     if file_format == OVID:
-        unique_id = "Unique Identifier"
-        mesh_subject_headings = "MeSH Subject Headings"
-        abstract = "Abstract"
+        unique_id = b"Unique Identifier"
+        mesh_subject_headings = b"MeSH Subject Headings"
+        abstract = b"Abstract"
         prepare_mesh_term_match_text = ovid_prepare_mesh_term_search_text_function
 
     elif file_format == PUBMED:
-        unique_id = "PMID"
-        mesh_subject_headings = "MH"
-        abstract = "AB"
+        unique_id = b"PMID"
+        mesh_subject_headings = b"MH"
+        abstract = b"AB"
         prepare_mesh_term_match_text = pubmed_prepare_mesh_term_search_text_function
 
     # Prepare dictionary of compiled regular expressions for reuse in mesh term matching
@@ -329,7 +329,7 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
         edge_row_id = -1
         # Ensure we only test citations with associated mesh headings
         if mesh_subject_headings in citation.fields:
-            if not mesh_filter or search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mesh_filter]) >= 0:
+            if not mesh_filter or search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mesh_filter]) is not None:
                 # Only search for genes in citations with an abstract section
                 if abstract in citation.fields:
                     for gene in genelist:
@@ -348,20 +348,20 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                                 else:
                                     synomym_matches = (gene, )
                                 for genesyn in synomym_matches:
-                                    if searchgene(citation.fields[abstract], genesyn) >= 0:
-                                        citation_id.add(citation.fields[unique_id].strip())
+                                    if searchgene(citation.fields[abstract], genesyn) is not None:
+                                        citation_ids_list.append(citation.fields[unique_id].strip())
                                         found_gene_match = True
                                         countthis = 1
                                         for exposure in exposuremesh:
                                             edge_column_id += 1
                                             # NB: Removed AND splitting as not possible using the web app interface
-                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) >= 0:
+                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) is not None:
                                                 edges[edge_row_id][edge_column_id] += 1
                                                 # identifiers[gene][0][exposure].append(citation.fields[unique_id])
                                         for outcome in outcomemesh:
                                             edge_column_id += 1
                                             # NB: Removed AND splitting as not possible using the web app interface
-                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) >= 0:
+                                            if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) is not None:
                                                 edges[edge_row_id][edge_column_id] += 1
                                                 # identifiers[gene][1][outcome].append(citation.fields[unique_id])
                                         # Stop comparing synonyms once a match is found
@@ -378,23 +378,24 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
                     edge_row_id += 1
                     edge_column_id = -1
                     try:
-                        if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mediator]) >= 0:
+                        if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[mediator]) is not None:
                             countthis = 1
-                            citation_id.add(citation.fields[unique_id].strip())
+                            citation_ids_list.append(citation.fields[unique_id].strip())
                             for exposure in exposuremesh:
                                 edge_column_id += 1
                                 # NB: Removed AND splitting as not possible using the web app interface
-                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) >= 0:
+                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[exposure]) is not None:
                                     edges[edge_row_id][edge_column_id] += 1
                                     # identifiers[mediator][0][exposure].append(citation.fields[unique_id])
                             for outcome in outcomemesh:
                                 edge_column_id += 1
                                 # NB: Removed AND splitting as not possible using the web app interface
-                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) >= 0:
+                                if search_for_mesh_term(citation.fields[mesh_subject_headings], compiled_mesh_term_reg_exp_hash[outcome]) is not None:
                                     edges[edge_row_id][edge_column_id] += 1
                                     # identifiers[mediator][1][outcome].append(citation.fields[unique_id])
                     except KeyError:
                         # Some citations have no MeSH Terms, so mediator comparisons are not possible
+                        # logger.warning("No mesh terms for citation %d" % int(citation.id))
                         pass
                     except:
                         # Report unexpected errors as warning.
@@ -404,11 +405,13 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
             papercounter += 1
 
     # Output all citation ids where a gene or mediator MeSH term match is found
-    if citation_id:
-        resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w')
-        csv_writer = unicodecsv.writer(resultfile)
+    if citation_ids_list:
+        resultfile = open('%s%s_abstracts.csv' % (results_file_path, results_file_name), 'w', newline='', encoding='utf-8')
+        csv_writer = csv.writer(resultfile)
         csv_writer.writerow(("Abstract IDs", ))
-        csv_writer.writerows([(cid, ) for cid in citation_id])
+        citation_ids_list.reverse()
+        # TODO: PYTHON3 Optimise - Change return ordering and whether repeats are shown
+        csv_writer.writerows([(cid.decode("utf-8"), ) for cid in unique_everseen(citation_ids_list)])
         resultfile.close()
 
     return papercounter, edges, identifiers
@@ -416,8 +419,8 @@ def countedges(citations, genelist, synonymlookup, synonymlisting, exposuremesh,
 
 def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
     """Write out edge file (*_edge.csv)"""
-    edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w')
-    csv_writer = unicodecsv.writer(edgefile)
+    edgefile = open('%s%s_edge.csv' % (results_path, resultfilename), 'w', newline='', encoding='utf-8')
+    csv_writer = csv.writer(edgefile)
     csv_writer.writerow(("Mediators", "Exposure counts", "Outcome counts", "Scores",))
     edge_score = 0
     edge_row_id = -1
@@ -453,13 +456,14 @@ def printedges(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
 def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results_path, resultfilename):
     """Create JSON formatted resulted file
        TODO - (Low priority improvement) can this be transformed from the CSV more efficiently?"""
-    resultfile = open('%s%s.json' % (results_path, resultfilename), 'w')
+    resultfile = open('%s%s.json' % (results_path, resultfilename), 'w', encoding='utf-8')
     nodes = []
     mnodes = []
     edgesout = []
     nodesout = []
     edge_row_id = -1
-
+    # logger.debug("edges")
+    # logger.debug(edges)
     for mediator in _get_genes_and_mediators(genelist, mediatormesh):
         edge_col_id = -1
         edge_row_id += 1
@@ -503,10 +507,10 @@ def createjson(edges, genelist, mediatormesh, exposuremesh, outcomemesh, results
                     edgesout.append(thisedge)
                     counter[1] += 1
             if counter[0] == 0:     # TODO: Does this scenario occur? Has it not been dealt with earlier in line 467
-                for i in xrange(counter[1]):
+                for i in range(counter[1]):
                     edgesout.pop(-1)
             if counter[1] == 0:     # TODO: Does this scenario occur? Has it not been dealt with earlier in line 467
-                for i in xrange(counter[0]):
+                for i in range(counter[0]):
                     edgesout.pop(-1)
     output = """{"nodes":[%s],"links":[%s]}""" % (",\n".join(nodesout), ",\n".join(edgesout))
     resultfile.write(output)

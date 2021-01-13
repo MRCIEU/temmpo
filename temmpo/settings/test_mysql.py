@@ -1,6 +1,6 @@
 """Test specific settings file, currently used for Vagrant test suites."""
 
-from base import *
+from temmpo.settings.base import *
 
 if DATABASES:
 

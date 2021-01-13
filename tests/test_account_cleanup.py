@@ -82,10 +82,10 @@ class UserDeletionTest(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
 
-        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'),
-                                     'r')
+        test_results_edge_csv = open(
+            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r',  newline='')
         test_results_abstract_csv = open(
-            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r', newline='')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         test_results_edge_csv.close()
@@ -199,10 +199,10 @@ class UserDeletionTest(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
 
-        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'),
-                                     'r')
+        test_results_edge_csv = open(
+            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r',  newline='')
         test_results_abstract_csv = open(
-            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r', newline='')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         test_results_edge_csv.close()
@@ -506,10 +506,10 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         # Retrieve results object
         search_result = SearchResult.objects.get(criteria=search_criteria)
 
-        test_results_edge_csv = open(os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'),
-                                     'r')
+        test_results_edge_csv = open(
+            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_edge.csv'), 'r',  newline='')
         test_results_abstract_csv = open(
-            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r')
+            os.path.join(settings.RESULTS_PATH, search_result.filename_stub + '_abstracts.csv'), 'r', newline='')
         edge_file_lines = test_results_edge_csv.readlines()
         abstract_file_lines = test_results_abstract_csv.readlines()
         logger.debug(edge_file_lines)

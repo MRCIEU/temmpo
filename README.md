@@ -15,13 +15,14 @@ NB: The vagrant installation also requires an additional plugin to mount the dev
 
 Tested with these versions:
 
-* VirtualBox 6.1.8 r137981 (Qt5.6.3)
-* vagrant 2.2.9
+* VirtualBox 6.1.16 r140961 (Qt5.6.3)
+* Vagrant 2.2.14
 * vagrant-sshfs 1.3.5
 
 NB: Additional development IDE support for Visual Code can be added by installing
 
-    pip install pylint==1.9.5
+    cd /usr/local/projects/temmpo/lib/dev/bin
+    pip3 install pylint==2.6.0
 
 ### Installing
 
@@ -160,12 +161,12 @@ Optionally pass in a package or update them all within any requirements.in file 
 ## Running the tests
 Run the entire test suite using MySQL and generate a coverage report.
 
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
-    coverage report --skip-empty --skip-covered -m
+    vagrant ssh
+    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo && coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql && coverage report --skip-empty --skip-covered -m
 
 Or run the entire test suite using SQLlite and generate a coverage report.
 
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite --exclude-tag=slow
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
     coverage report --skip-empty --skip-covered -m
 
 ### Running specific tests
@@ -173,6 +174,10 @@ Or run the entire test suite using SQLlite and generate a coverage report.
 e.g. Just the searching related tests and fail at the first error
 
     python manage.py test tests.test_searching --settings=temmpo.settings.test_mysql --failfast
+
+e.g. Skipping slow tests
+
+    python manage.py test --settings=temmpo.settings.test_mysql --failfast --exclude-tag=slow
 
 ## Warnings
 

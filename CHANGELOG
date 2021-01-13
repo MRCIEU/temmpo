@@ -1,3 +1,5 @@
+5.0.0   TMMA-333 Upgrade Python from version 2.7.x to 3.6+
+
 4.4.0   TMMA-406 Enable virus scanning on upload
 
 4.3.0   TMMA-405 Add node IDs to JSON output

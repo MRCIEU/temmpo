@@ -1,6 +1,6 @@
 """Production specific general settings file."""
 
-from base import *
+from temmpo.settings.base import *
 
 DEBUG = False
 SESSION_COOKIE_SECURE = True
