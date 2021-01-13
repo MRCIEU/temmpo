@@ -203,7 +203,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
     RewriteEngine On
     RewriteCond %%{DOCUMENT_ROOT}/_MAINTENANCE_ -f
-    RewriteCond %%{REQUEST_URI} !/static/maintenance/maintenance.html
+    RewriteCond %%{REQUEST_URI} !/static/(.*)$
     RewriteRule ^(.+) /static/maintenance/maintenance.html [R,L]
 
     <Directory /usr/local/projects/temmpo/lib/%(env)s/src/temmpo>
