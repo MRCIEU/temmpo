@@ -1,5 +1,7 @@
 """Fabric script used in CI and CD pipeline."""
 
+# TODO: See: https://www.fabfile.org/upgrading.html#upgrading
+
 from datetime import datetime
 import os
 
@@ -17,9 +19,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
-PIP_VERSION = '19.1.1'
-SETUPTOOLS_VERSION = '44.1.1'
-PIP_TOOLS_VERSION = '4.5.1'
+PIP_VERSION = '20.3.3'
+SETUPTOOLS_VERSION = '50.3.2'
+PIP_TOOLS_VERSION = '5.4.0'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -79,7 +81,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('virtualenv %s' % env)
+        caller('python3 -m venv --upgrade %s' % env)
 
         if clone_repo:
             caller('mkdir -p %s' % src_dir)
@@ -90,17 +92,20 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 with change_dir(src_dir):
                     caller('git clone %s temmpo' % GIT_URL)
             with change_dir(src_dir + "temmpo"):
+                # Remove any Python 2 cached files
+                caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
+                # Alternatively Remove all cache file -  find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
                 caller('git pull')
 
         with change_dir(venv_dir):
-            caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-            caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
-            caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
-            caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
-            caller('./bin/pip freeze')
+            caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
+            caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
+            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip3 freeze')
 
         sym_link_private_settings(env, use_local_mode)
 
@@ -111,7 +116,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if migrate_db:
         with change_dir(PROJECT_ROOT + 'lib/' + env):
-            caller('./bin/python src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
+            caller('./bin/python3 src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
 
     if configure_apache:
         collect_static(env, use_local_mode)
@@ -139,6 +144,8 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with cd(src_dir):
+        # Remove any Python 2 cached files
+        caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
         caller('git fetch --all')
         caller('git fetch origin %s' % branch)
         caller('git checkout %s' % branch)
@@ -146,18 +153,18 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     with change_dir(venv_dir):
 
-        # Ensure pip and setup tools is up to expected version for existing environments.
-        caller('./bin/pip install -U pip==%s' % PIP_VERSION)
-        caller('./bin/pip install -U setuptools==%s' % SETUPTOOLS_VERSION)
-        caller('./bin/pip install pip-tools==%s' % PIP_TOOLS_VERSION)
+        # Ensure pip3 and setup tools is up to expected version for existing environments.
+        caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
+        caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
+        caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
 
         if use_pip_sync:
             caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
         else:
-            caller('./bin/pip install -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
 
         if migrate_db:
-            caller('./bin/python src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
+            caller('./bin/python3 src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
 
         if using_apache:
             collect_static(env, use_local_mode)
@@ -188,6 +195,8 @@ def setup_apache(env="dev", use_local_mode=False):
     Header set X-Frame-Options "DENY"
 
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
+    # WSGIPythonHome /usr/local/projects/temmpo/bin/python3
+    # WSGIPythonPath /usr/local/projects/temmpo/lib/%(env)s/src
     # WSGIApplicationGroup %%{GLOBAL}
     # WSGIDaemonProcess temmpo
     # WSGIProcessGroup temmpo
@@ -251,7 +260,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
     # Set up SE Linux contexts
     caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-    caller('chcon -R -t httpd_sys_script_exec_t %slib/python2.7/' % venv_dir)
+    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.6/' % venv_dir)
     caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
     caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
@@ -269,7 +278,7 @@ def collect_static(env="dev", use_local_mode=False):
     venv_dir = PROJECT_ROOT + "lib/" + env
 
     with change_dir(venv_dir):
-        caller('./bin/python src/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
+        caller('./bin/python3 src/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
 
 
 def restart_apache(env="dev", use_local_mode=False, run_checks=True):
@@ -293,7 +302,7 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
         caller("wget --timeout=60 --tries=1 127.0.0.1")
         caller("rm index.html")
         with change_dir(venv_dir):
-            caller("./bin/python src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
+            caller("./bin/python3 src/temmpo/manage.py check --deploy --settings=temmpo.settings.%s" % env)
 
         if toggled_maintenance_mode:
             disable_apache_site(use_local_mode)
@@ -349,14 +358,14 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
         caller("sqlite3 %s .dump > %s" % (sqlite_db, output_file))
         # Export comparison from SQLite
         caller("sqlite3 %s '%s' > %s" % (sqlite_db, compare_data, sqlite_table_counts_file))
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite > %s" % (compare_sqlite, env, sqlite_status_file))
+        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite > %s" % (compare_sqlite, env, sqlite_status_file))
         # Convert certain commands from SQLite to the MySQL equivalents
         caller("sed -i -e 's/PRAGMA.*/SET SESSION sql_mode = ANSI_QUOTES;/' -e 's/BEGIN/START/' -e 's/AUTOINCREMENT/AUTO_INCREMENT/g' -e 's/^.*sqlite_sequence.*$//g' %s" % output_file)
         # Import data
-        caller("cat %s | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=admin" % (output_file, env))
+        caller("cat %s | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=admin" % (output_file, env))
         # Export comparison data from MySQL
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_mysql, env, mysql_status_file))
-        caller("echo '%s' | ./bin/python src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_data, env, mysql_table_counts_file))
+        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_mysql, env, mysql_status_file))
+        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_data, env, mysql_table_counts_file))
         # Trim header of MySQL output file
         caller("sed -i 1,1d %s " % mysql_status_file)
         # Trim output headers from MySQL table counts
@@ -449,7 +458,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
@@ -473,7 +482,7 @@ def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="my
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python3 manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def update_requires_io(requires_io_token, env="test", use_local_mode=False):
     """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
@@ -491,6 +500,9 @@ def update_requires_io(requires_io_token, env="test", use_local_mode=False):
             caller('git pull')
         with change_dir(venv_dir):
             caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements' % (requires_io_token, branch, src_dir, ))
+    # Ensure test instance is left running on main branch
+    with change_dir(src_dir):
+        caller('git checkout master')
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
@@ -502,7 +514,7 @@ def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir):
-        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python src/temmpo/manage.py dbshell --database=admin --settings=temmpo.settings.%s' % (database_name, database_name, venv_dir, env), pty=True)
+        caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python3 src/temmpo/manage.py dbshell --database=admin --settings=temmpo.settings.%s' % (database_name, database_name, venv_dir, env), pty=True)
         caller('echo "TeMMPo database was recreated".')
 
 

@@ -5,7 +5,6 @@ NB: Abstract files are not reproduced in the database.  Instead matching is perf
 
 import logging
 import re
-import unicodedata
 import os
 import datetime
 import glob
@@ -15,7 +14,6 @@ from django.db.models import Max, Q
 from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
@@ -24,9 +22,8 @@ logger = logging.getLogger(__name__)
 
 def get_user_upload_location(instance, filename):
     """Based on slugify code - from django.utils.text import slugify."""
-
-    filename = unicodedata.normalize('NFKD', filename).encode('ascii', 'ignore')
-    filename = unicode(re.sub('[^\.\w\s-]', '', filename).strip().lower())
+    # TODO Test changes explictly
+    filename = re.sub('[^\.\w\s-]', '', filename).strip().lower()
     filename = re.sub('[-\s]+', '-', filename)
 
     return timezone.now().strftime('/'.join(['abstracts', str(instance.user.id), '%Y-%m-%d', '%H-%M-%S-' + filename]))
@@ -50,7 +47,6 @@ class Gene(models.Model):
         return "Gene: " + self.name
 
 
-@python_2_unicode_compatible
 class MeshTerm(MPTTModel):
     """Pre-populated with MeSH terms from http://www.nlm.nih.gov/mesh/.
 
@@ -136,7 +132,6 @@ ABSTRACT_FORMATS = (
 )
 
 
-@python_2_unicode_compatible
 class Upload(models.Model):
     """Used to record user uploaded abstract files.
 
@@ -226,7 +221,7 @@ class SearchCriteria(models.Model):
         else:
             return tuple()
 
-    def __unicode__(self):
+    def __str__(self):
         """Provide a flexible method for determining the search criteria object's name.
 
         At present user's cannot assign names to search criteria through the user interface.
@@ -344,7 +339,7 @@ class SearchResult(models.Model):
     def has_match_counts_changed(self):
         return (self.mediator_match_counts is not None and self.mediator_match_counts != self.mediator_match_counts_v3) or (self.mediator_match_counts_v3 is not None and self.mediator_match_counts_v3 != self.mediator_match_counts_v4)
 
-    def __unicode__(self):
+    def __str__(self):
         """Provide a flexible method for determining the search result object's name."""
         if self.filename_stub:
             return self.filename_stub + " (" + self.status + ") started: " + naturaltime(self.started_processing)
@@ -377,7 +372,7 @@ class Message(models.Model):
 
     objects = MessageManager()
 
-    def __unicode__(self):
+    def __str__(self):
         if self.body:
             return self.body
         else:

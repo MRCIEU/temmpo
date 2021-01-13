@@ -17,7 +17,6 @@ from django.views.generic.edit import CreateView, UpdateView, FormView, DeleteVi
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 
-
 from browser.forms import OvidMedLineFileUploadForm, PubMedFileUploadForm, TermSelectorForm, FilterForm
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, Message
 from browser.matching import perform_search

@@ -1,4 +1,4 @@
-from base import *
+from temmpo.settings.base import *
 
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK' : lambda request: True,

@@ -39,7 +39,7 @@ for search_result in v4:
         # Confirm mediator counts match edge file lines
         data_rows_count = -1 # Less the header
         for line in edge_file.xreadlines(  ): data_rows_count += 1
-        if search_result.mediator_match_counts_v4 <> data_rows_count:
+        if search_result.mediator_match_counts_v4 != data_rows_count:
             print("Result %d has %d rows in the edge file and %d as a mediator count recorded." % (search_result.id, data_rows_count, search_result.mediator_match_counts_v4))
 
 priority_users = ('BMLynch', 'drbrigidmlynch', 'anndrummond', )

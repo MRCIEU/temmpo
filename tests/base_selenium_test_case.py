@@ -82,5 +82,5 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
     #     for entry in self.driver.get_log('browser'):
     #         logger.info(entry)
     #         if also_print:
-    #             print entry
+    #             print(entry)
 

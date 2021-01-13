@@ -10,22 +10,22 @@ from django.db import migrations
 logger = logging.getLogger(__name__)
 
 def populate_mediator_match_counts(apps, schema_editor):
-	SearchResult = apps.get_model('browser', 'SearchResult')
-	completed_search_results = SearchResult.objects.filter(has_completed=True)
-	for result in completed_search_results:
+    SearchResult = apps.get_model('browser', 'SearchResult')
+    completed_search_results = SearchResult.objects.filter(has_completed=True)
+    for result in completed_search_results:
         # Using the original RESULTS_PATH to ensure older sites still requiring this migration will work.
-		file_path = settings.ORIGINAL_RESULTS_PATH + result.filename_stub + '_edge.csv'
+        file_path = settings.ORIGINAL_RESULTS_PATH + result.filename_stub + '_edge.csv'
         try:
-    		with open(file_path, 'r') as mediator_count_csv:
-    			result.mediator_match_counts = len(mediator_count_csv.readlines()) - 1
-    			logger.debug("Setting result id %s to this count %s", result.id, result.mediator_match_counts)
-    			result.save()
+            with open(file_path, 'r') as mediator_count_csv:
+                result.mediator_match_counts = len(mediator_count_csv.readlines()) - 1
+                logger.debug("Setting result id %s to this count %s", result.id, result.mediator_match_counts)
+                result.save()
         except Exception as e:
             logger.debug("There was a problem opening a results file and recording the count result")
             logger.debug(e)
 
-	if not completed_search_results:
-		logger.debug("No results found to update.")
+    if not completed_search_results:
+        logger.debug("No results found to update.")
 
 
 class Migration(migrations.Migration):
@@ -35,5 +35,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-    	migrations.RunPython(populate_mediator_match_counts)
+        migrations.RunPython(populate_mediator_match_counts)
     ]
