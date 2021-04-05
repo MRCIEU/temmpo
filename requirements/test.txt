@@ -59,7 +59,7 @@ idna==2.10
     # via requests
 jeepney==0.6.0
     # via pyscreenshot
-lxml==4.6.2
+lxml==4.6.3
     # via -r requirements.txt
 more-itertools==8.6.0
     # via -r requirements.txt
