@@ -171,7 +171,7 @@ traitlets==4.3.3
     # via ipython
 unicodecsv==0.14.1
     # via -r test.txt
-urllib3==1.26.2
+urllib3==1.26.3
     # via
     #   -r test.txt
     #   requests
