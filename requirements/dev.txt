@@ -34,7 +34,7 @@ isort==5.6.4              # via -r requirements/dev.in
 jedi==0.18.0              # via ipython
 jeepney==0.6.0            # via -r requirements/test.txt, pyscreenshot
 lazy-object-proxy==1.4.3  # via astroid
-lxml==4.6.2               # via -r requirements/test.txt
+lxml==4.6.3               # via -r requirements/test.txt
 more-itertools==8.6.0     # via -r requirements/test.txt
 mss==6.1.0                # via -r requirements/test.txt, pyscreenshot
 mysqlclient==2.0.1        # via -r requirements/test.txt

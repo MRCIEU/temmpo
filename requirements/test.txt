@@ -25,7 +25,7 @@ entrypoint2==0.2.4        # via pyscreenshot
 hiredis==1.1.0            # via -r requirements/requirements.txt
 idna==2.10                # via requests
 jeepney==0.6.0            # via pyscreenshot
-lxml==4.6.2               # via -r requirements/requirements.txt
+lxml==4.6.3               # via -r requirements/requirements.txt
 more-itertools==8.6.0     # via -r requirements/requirements.txt
 mss==6.1.0                # via pyscreenshot
 mysqlclient==2.0.1        # via -r requirements/requirements.txt
