@@ -19,6 +19,9 @@ yum -y install python-magic
 yum -y install python-pip
 yum -y install python-lxml
 
+pip2 install -U pip==20.3.4
+pip2 install Fabric==1.14.1
+
 echo "###   Install Python 3 and components"
 yum -y install python3
 yum -y install python3-setuptools
