@@ -15,9 +15,9 @@ NB: The vagrant installation also requires an additional plugin to mount the dev
 
 Tested with these versions:
 
-* VirtualBox 6.1.18 r142142 (Qt5.6.3)
-* Vagrant 2.2.15
-* vagrant-sshfs 1.3.5
+* VirtualBox 6.1.22 r144080 (Qt5.6.3)
+* Vagrant 2.2.16
+* vagrant-sshfs 1.3.6
 
 NB: Additional development IDE support for Visual Code can be added by installing additional packages within your development environment
 
@@ -169,6 +169,7 @@ Or run the entire test suite using SQLlite and generate a coverage report.
     coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
     coverage report --skip-empty --skip-covered -m
 
+    <!-- Add run_tests -->
 ### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
