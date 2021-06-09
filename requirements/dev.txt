@@ -36,7 +36,7 @@ decorator==5.0.5
     #   traitlets
 django-clamd==0.4.0
     # via -r test.txt
-django-debug-toolbar==2.2
+django-debug-toolbar==2.2.1
     # via -r dev.in
 django-js-asset==1.2.2
     # via
