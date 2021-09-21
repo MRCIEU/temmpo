@@ -1,5 +1,8 @@
 #!/bin/sh
 
+pip3 freeze
+pip3 uninstall mysqlclient
+
 cd $GITHUB_WORKSPACE
 # Move source code to a directory structure the application expects.
 mkdir -p lib/test/src/temmpo
