@@ -11,10 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     services:
-      mysql:
-        image: mysql
-        ports:
-          - 3306:3306
       redis:
         image: redis
         ports:
@@ -32,10 +28,3 @@ jobs:
           mysql database: 'ci'
           mysql root password: 'ci-db-pswd'
       - run: bash tests/run-django-tests.sh
-      - name: "Syntax check Python 2 Fabric deployment script"
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '2.7'
-          architecture: 'x64'
-      - run: bash tests/run-fabric-tests.sh
-
