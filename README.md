@@ -159,6 +159,14 @@ Optionally pass in a package or update them all within any requirements.in file 
     fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ## Running the tests
+
+Without activate script
+
+    vagrant ssh
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql
+
+
 Run the entire test suite using MySQL and generate a coverage report.
 
     vagrant ssh
@@ -169,7 +177,6 @@ Or run the entire test suite using SQLlite and generate a coverage report.
     coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
     coverage report --skip-empty --skip-covered -m
 
-    <!-- Add run_tests -->
 ### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
