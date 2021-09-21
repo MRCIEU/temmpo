@@ -2,7 +2,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ci',
-        'USER': 'ci',
+        'USER': 'root',
         'PASSWORD': 'ci-db-pswd',
         'HOST': '127.0.0.1',
         'PORT': '',
