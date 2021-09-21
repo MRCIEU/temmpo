@@ -22,6 +22,13 @@ coverage==5.3
     # via -r test.in
 csvvalidator==1.2
     # via -r test.in
+django==2.2.24
+    # via
+    #   -r requirements.txt
+    #   django-clamd
+    #   django-mptt
+    #   django-rq
+    #   django-simple-autocomplete
 django-clamd==0.4.0
     # via -r requirements.txt
 django-js-asset==1.2.2
@@ -38,13 +45,6 @@ django-rq==2.1.0
     # via -r requirements.txt
 django-simple-autocomplete==1.11
     # via -r requirements.txt
-django==1.11.29
-    # via
-    #   -r requirements.txt
-    #   django-clamd
-    #   django-mptt
-    #   django-rq
-    #   django-simple-autocomplete
 easyprocess==0.3
     # via
     #   pyscreenshot
@@ -111,6 +111,10 @@ six==1.15.0
     #   -r requirements.txt
     #   django-redis-cache
     #   python-dateutil
+sqlparse==0.4.2
+    # via
+    #   -r requirements.txt
+    #   django
 unicodecsv==0.14.1
     # via -r requirements.txt
 urllib3==1.26.5

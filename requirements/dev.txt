@@ -34,7 +34,7 @@ decorator==5.0.5
     # via
     #   ipython
     #   traitlets
-django==1.11.29
+django==2.2.24
     # via
     #   -r test.txt
     #   django-clamd
@@ -162,7 +162,10 @@ six==1.15.0
     #   python-dateutil
     #   traitlets
 sqlparse==0.4.2
-    # via django-debug-toolbar
+    # via
+    #   -r test.txt
+    #   django
+    #   django-debug-toolbar
 traitlets==4.3.3
     # via ipython
 unicodecsv==0.14.1
