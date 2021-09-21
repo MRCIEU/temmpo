@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 cd $GITHUB_WORKSPACE
 # Move source code to a directory structure the application expects.
 mkdir -p lib/test/src/temmpo
