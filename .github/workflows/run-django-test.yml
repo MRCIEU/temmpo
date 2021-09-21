@@ -16,15 +16,15 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - name: Run Python 3/Django tests
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.6'
-          architecture: 'x64'
-      - uses: samin/mysql-action@v1
-        with:
-          mysql version: '5.7'
-          mysql database: 'ci'
-          mysql root password: 'ci-db-pswd'
-      - run: bash tests/run-django-tests.sh
+    - name: Run Python 3/Django tests
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+        architecture: 'x64'
+    - uses: samin/mysql-action@v1
+      with:
+        mysql version: '5.7'
+        mysql database: 'ci'
+        mysql root password: 'ci-db-pswd'
+      run: bash tests/run-django-tests.sh

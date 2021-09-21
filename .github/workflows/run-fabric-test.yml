@@ -11,10 +11,10 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - name: Syntax check Python 2 Fabric deployment script
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '2.7'
-          architecture: 'x64'
-      - run: bash tests/run-fabric-tests.sh
+    - name: Syntax check Python 2 Fabric deployment script
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '2.7'
+        architecture: 'x64'
+      run: bash tests/run-fabric-tests.sh
