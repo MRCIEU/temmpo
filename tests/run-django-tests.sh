@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apt-get install libmysqlclient20
+sudo apt-get install libmysqlclient20
 
 cd $GITHUB_WORKSPACE
 # Move source code to a directory structure the application expects.
