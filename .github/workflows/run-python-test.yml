@@ -2,10 +2,10 @@ name: Run Python/Django test suite
 
 on:
   push:
-    branches:
-      - master
-      - 'TMMA-*'
-      - 'dependabot*'
+    branches-ignore:
+      - last_known_good
+      - demo_stable
+      - prod_stable
 
 jobs:
   build:
