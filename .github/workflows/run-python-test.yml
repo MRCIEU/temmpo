@@ -31,12 +31,11 @@ jobs:
           mysql version: '5.7'
           mysql database: 'ci'
           mysql root password: 'ci-db-pswd'
-      - run: bash tests/.shrun-tests.sh
+      - run: bash tests/run-django-tests.sh
       - name: "Syntax check Python 2 Fabric deployment script"
       - uses: actions/setup-python@v2
         with:
           python-version: '2.7'
           architecture: 'x64'
-      - run: |
-        pip install fabric==1.13.1
-        fab -l -f deploy/fabfile.py
+      - run: bash tests/run-fabric-tests.sh
+
