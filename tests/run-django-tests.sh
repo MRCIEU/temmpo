@@ -1,7 +1,6 @@
 #!/bin/sh
 
-pip3 freeze
-pip3 uninstall mysqlclient
+apt-get install libmysqlclient20
 
 cd $GITHUB_WORKSPACE
 # Move source code to a directory structure the application expects.
