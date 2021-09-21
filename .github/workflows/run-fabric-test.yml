@@ -1,4 +1,4 @@
-name: Run Python/Django test suite
+name: Run Fabric test suite
 
 on:
   push:
