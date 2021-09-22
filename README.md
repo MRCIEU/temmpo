@@ -63,7 +63,8 @@ Various options exist.  For example set up with Apache proxying and that by defa
 
 #### Create a super user
 
-    python manage.py createsuperuser --settings=temmpo.settings.dev
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py createsuperuser --settings=temmpo.settings.dev
 
 #### Importing MeSH Terms
 
@@ -71,23 +72,26 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
 1. Load fixture data
 
-    NB: this can take a few minutes.
+NB: this can take a few minutes.
 
-        python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019.json  --settings=temmpo.settings.dev
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019.json  --settings=temmpo.settings.dev
 
 2. Management command
 
-    Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/
+    Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/ or see newer location: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/mtrees2021.bin
 
     NB: This command each take over 50 minutes to run depending on your environment.
 
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2020.bin 2020
+        cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+        /usr/local/projects/temmpo/lib/dev/bin/python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2020.bin 2020
 
 ##### Dumping MeSH terms to a fixture file
 
 After importing a new year of mesh terms, create a fixture file for testing and development purposes.  For example:
 
-    python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020.json
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020.json
 
 #### Importing Genes - optional
 
@@ -97,13 +101,15 @@ A database of existing gene terms can be imported into the Django application da
 
     NB: This can take a few minutes.
 
-        python manage.py loaddata browser/fixtures/genes_snap_shot_2020_06_29.json --settings=temmpo.settings.dev
+        cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+        /usr/local/projects/temmpo/lib/dev/bin/python manage.py loaddata browser/fixtures/genes_snap_shot_2020_06_29.json --settings=temmpo.settings.dev
 
 2. Management command
 
     A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
 
-        python manage.py import_genes --settings=temmpo.settings.dev
+        cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+        /usr/local/projects/temmpo/lib/dev/bin/python manage.py import_genes --settings=temmpo.settings.dev
 
 #### Run the development server and workers
 
@@ -115,8 +121,8 @@ In development you will need to restart the worker whenever any changes to the m
 In a separate terminal window run the development server
 
     vagrant ssh
-    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 #### View application in your local browser
 
@@ -132,7 +138,8 @@ In a separate terminal window run the development server
 
 NB: If you want to manually run migrations you need to use the --database flag
 
-    python manage.py migrate --database=admin --settings=temmpo.settings.dev
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
 #### Updating the requirements file using pip-tools (via Vagrant VM)
 
@@ -181,11 +188,13 @@ Or run the entire test suite using SQLlite and generate a coverage report.
 
 e.g. Just the searching related tests and fail at the first error
 
-    python manage.py test tests.test_searching --settings=temmpo.settings.test_mysql --failfast
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test tests.test_searching --settings=temmpo.settings.test_mysql --failfast
 
 e.g. Skipping slow tests
 
-    python manage.py test --settings=temmpo.settings.test_mysql --failfast --exclude-tag=slow
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --failfast --exclude-tag=slow
 
 ## Warnings
 
