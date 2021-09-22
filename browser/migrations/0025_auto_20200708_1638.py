@@ -59,6 +59,6 @@ class Migration(migrations.Migration):
 
     operations = [
 
-        migrations.RunPython(enqueue_regenerating_matches),
-        migrations.RunPython(create_reprocessing_message),
+        migrations.RunPython(enqueue_regenerating_matches, elidable=True),
+        migrations.RunPython(create_reprocessing_message, elidable=True),
     ]

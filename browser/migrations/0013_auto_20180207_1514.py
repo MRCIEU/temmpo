@@ -31,4 +31,4 @@ class Migration(migrations.Migration):
     """Create a data migration to restructure to be filtered by years."""
     dependencies = [('browser', '0012_auto_20180206_2354'), ]
 
-    operations = [migrations.RunPython(filter_terms_by_year), ]
+    operations = [migrations.RunPython(filter_terms_by_year, elidable=True), ]

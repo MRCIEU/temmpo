@@ -27,5 +27,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(reprocess_all_matches),
+        migrations.RunPython(reprocess_all_matches, elidable=True),
     ]

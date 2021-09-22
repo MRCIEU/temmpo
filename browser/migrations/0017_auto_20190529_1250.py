@@ -27,5 +27,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(move_results_files),
+        migrations.RunPython(move_results_files, elidable=True),
     ]
