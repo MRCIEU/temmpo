@@ -75,7 +75,7 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 NB: this can take a few minutes.
 
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019.json  --settings=temmpo.settings.dev
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019_2020.json  --settings=temmpo.settings.dev
 
 2. Management command
 
@@ -84,14 +84,14 @@ NB: this can take a few minutes.
     NB: This command each take over 50 minutes to run depending on your environment.
 
         cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-        /usr/local/projects/temmpo/lib/dev/bin/python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2020.bin 2020
+        /usr/local/projects/temmpo/lib/dev/bin/python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2021.bin 2021
 
 ##### Dumping MeSH terms to a fixture file
 
 After importing a new year of mesh terms, create a fixture file for testing and development purposes.  For example:
 
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020.json
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020_2021.json
 
 #### Importing Genes - optional
 
