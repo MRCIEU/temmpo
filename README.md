@@ -179,11 +179,6 @@ Run the entire test suite using MySQL and generate a coverage report.
     vagrant ssh
     cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo && coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql && coverage report --skip-empty --skip-covered -m
 
-Or run the entire test suite using SQLlite and generate a coverage report.
-
-    coverage run --source='.' manage.py test --settings=temmpo.settings.test_sqlite
-    coverage report --skip-empty --skip-covered -m
-
 ### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
