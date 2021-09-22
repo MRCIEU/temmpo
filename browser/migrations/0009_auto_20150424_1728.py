@@ -17,5 +17,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-    	migrations.RunPython(populate_filename_stubs),
+        migrations.RunPython(populate_filename_stubs, elidable=True),
     ]

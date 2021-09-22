@@ -35,5 +35,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_mediator_match_counts)
+        migrations.RunPython(populate_mediator_match_counts, elidable=True)
     ]
