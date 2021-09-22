@@ -6,6 +6,8 @@
 Vagrant.configure("2") do |config|
 
   config.vm.box = "centos/7"
+  config.vm.box_version = "2004.01"
+  config.vbguest.installer_options = { allow_kernel_upgrade: true }
 
   # Used to allow pass phrase free SSH access to allow
   # remote testing of Fabric scripts against Vagrant VMs

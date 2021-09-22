@@ -1,0 +1,29 @@
+name: Run Python/Django test suite
+
+on:
+  push:
+    branches-ignore:
+      - last_known_good
+      - demo_stable
+      - prod_stable
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+        architecture: 'x64'
+    - uses: shogo82148/actions-setup-mysql@v1
+      with:
+        mysql-version: '5.7'
+        root-password: 'ci-db-pswd'
+    - name: Run Python 3/Django tests
+      run: bash tests/run-django-tests.sh

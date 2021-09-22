@@ -15,9 +15,9 @@ NB: The vagrant installation also requires an additional plugin to mount the dev
 
 Tested with these versions:
 
-* VirtualBox 6.1.18 r142142 (Qt5.6.3)
-* Vagrant 2.2.15
-* vagrant-sshfs 1.3.5
+* VirtualBox 6.1.22 r144080 (Qt5.6.3)
+* Vagrant 2.2.16
+* vagrant-sshfs 1.3.6
 
 NB: Additional development IDE support for Visual Code can be added by installing additional packages within your development environment
 
@@ -159,6 +159,14 @@ Optionally pass in a package or update them all within any requirements.in file 
     fab deploy:env=dev,branch=prod_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
 ## Running the tests
+
+Without activate script
+
+    vagrant ssh
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql
+
+
 Run the entire test suite using MySQL and generate a coverage report.
 
     vagrant ssh
