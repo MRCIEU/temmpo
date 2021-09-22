@@ -23,5 +23,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_mesh_filter),
+        migrations.RunPython(populate_mesh_filter, elidable=True),
     ]

@@ -24,5 +24,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(enqueue_comparisons),
+        migrations.RunPython(enqueue_comparisons, elidable=True),
     ]
