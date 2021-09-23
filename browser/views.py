@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from dal import autocomplete
 import logging
 import django_rq
 
@@ -911,3 +912,24 @@ class DeleteUser(DeleteView):
         messages.add_message(self.request, messages.INFO, "User '%s' deleted" % user_to_delete.username)
 
         return super(DeleteUser, self).delete(request, *args, **kwargs)
+
+
+class MeSHTermAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return MeshTerm.objects.none()
+
+        qs = MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None)
+
+        if self.q:
+            qs = qs.filter(term__istartswith=self.q)
+
+        return qs
+
+    def get_result_label(self, obj):
+        # Custom label to denote parent path so user can differentiate between duplicated MeSH terms
+        return '%s' % " > ".join([x.term for x in obj.get_ancestors(include_self=True) if x.parent != None])
+
+    def get_selected_result_label(self, obj):
+        # Only show/use MeSH term once selected
+        return obj.term

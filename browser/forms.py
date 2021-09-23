@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from dal import autocomplete
 import logging
 import re
 
@@ -156,7 +157,8 @@ class FilterForm(forms.ModelForm):
     mesh_filter = forms.ModelChoiceField(queryset=MeshTerm.objects.filter(year=MeshTerm.get_latest_mesh_term_release_year()).exclude(parent=None),
                                          required=False,
                                          label='Filter',
-                                         help_text="Enter a MeSH Term, e.g. Humans")
+                                         help_text="Enter a MeSH Term, e.g. Humans",
+                                         widget=autocomplete.ModelSelect2(url='meshterm-autocomplete'))
 
     class Meta:
         model = SearchCriteria

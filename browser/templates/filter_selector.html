@@ -3,12 +3,11 @@
 {% block title %}TeMMPo: Select genes and filter{% endblock %}
 
 {% block section_title %}Select genes and filter{% endblock %}
-
-{% block scripts %}{{ form.media.js }}{% endblock %}
-{% block styles %}
-{# Appears to need to be loaded in the header vs the footer of the page #}
+{# Appears to need to be loaded in the header vs the footer of the page and autocomplete needs this before form media #}
 <script src="{{ STATIC_URL }}admin/js/vendor/jquery/jquery.min.js"></script>
 <script src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+{% block scripts %}{{ form.media.js }}{% endblock %}
+{% block styles %}
 {{ form.media.css }}
 {% endblock %}
 
