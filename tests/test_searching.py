@@ -59,7 +59,7 @@ import magic
 
 from django.conf import settings
 from django.core.files import File
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import tag
 from django.utils import timezone
 
@@ -309,9 +309,9 @@ class SearchingTestCase(BaseTestCase):
         search_criteria.save()
 
         search_criteria.genes.add(gene)
-        search_criteria.exposure_terms = exposure_terms
-        search_criteria.outcome_terms = outcome_terms
-        search_criteria.mediator_terms = mediator_terms
+        search_criteria.exposure_terms.set(exposure_terms)
+        search_criteria.outcome_terms.set(outcome_terms)
+        search_criteria.mediator_terms.set(mediator_terms)
         search_criteria.save()
 
         return search_criteria
@@ -463,7 +463,7 @@ class SearchingTestCase(BaseTestCase):
         self._login_user()
         self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent", ])
 
-        search_criteria.exposure_terms = MeshTerm.objects.get(term="Animals", year=TEST_YEAR).get_descendants(include_self=True)
+        search_criteria.exposure_terms.set(MeshTerm.objects.get(term="Animals", year=TEST_YEAR).get_descendants(include_self=True))
         search_criteria.save()
         self._find_expected_content(path, msg_list=["Current exposure terms", "Bulk edit",
                                                     "Replace", "Select descendent", "Animals", ])
@@ -483,7 +483,7 @@ class SearchingTestCase(BaseTestCase):
                                                     "Save and choose more mediator terms",
                                                     "Save and move on to select outcomes"])
 
-        search_criteria.mediator_terms = MeshTerm.objects.get(term="Phenotype", year=TEST_YEAR).get_descendants(include_self=True)
+        search_criteria.mediator_terms.set(MeshTerm.objects.get(term="Phenotype", year=TEST_YEAR).get_descendants(include_self=True))
         search_criteria.save()
         self._find_expected_content(path, msg_list=["Current mediator terms", "Bulk edit",
                                                     "Replace", "Select descendent", "Phenotype",
@@ -504,7 +504,7 @@ class SearchingTestCase(BaseTestCase):
         self._find_expected_content(path, msg_list=["Bulk edit", "Add", "Select descendent",
                                                     "Save and choose more outcome terms", ])
 
-        search_criteria.outcome_terms = MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True)
+        search_criteria.outcome_terms.set(MeshTerm.objects.get(term="Apoptosis", year=TEST_YEAR).get_descendants(include_self=True))
         search_criteria.save()
         self._find_expected_content(path, msg_list=["Current outcome terms", "Bulk edit",
                                                     "Replace", "Select descendent", "Apoptosis",
@@ -891,9 +891,9 @@ class SearchingTestCase(BaseTestCase):
 
         criteria = SearchCriteria(upload=upload, mesh_terms_year_of_release=year)
         criteria.save()
-        criteria.exposure_terms = exposure_terms
-        criteria.outcome_terms = outcome_terms
-        criteria.mediator_terms = mediator_terms
+        criteria.exposure_terms.set(exposure_terms)
+        criteria.outcome_terms.set(outcome_terms)
+        criteria.mediator_terms.set(mediator_terms)
         criteria.save()
 
         return criteria

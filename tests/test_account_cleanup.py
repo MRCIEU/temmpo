@@ -9,7 +9,7 @@ import shutil
 from django.utils import timezone
 from django.conf import settings
 from django.core.files import File
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core import mail
 from django.test import tag
@@ -53,9 +53,9 @@ class UserDeletionTest(BaseTestCase):
         search_criteria.save()
 
         search_criteria.genes.add(gene)
-        search_criteria.exposure_terms = exposure_terms
-        search_criteria.outcome_terms = outcome_terms
-        search_criteria.mediator_terms = mediator_terms
+        search_criteria.exposure_terms.set(exposure_terms)
+        search_criteria.outcome_terms.set(outcome_terms)
+        search_criteria.mediator_terms.set(mediator_terms)
         search_criteria.save()
 
         return search_criteria
@@ -411,9 +411,9 @@ class UserCleanUpManagementCommandTest(BaseTestCase):
         search_criteria.save()
 
         search_criteria.genes.add(gene)
-        search_criteria.exposure_terms = exposure_terms
-        search_criteria.outcome_terms = outcome_terms
-        search_criteria.mediator_terms = mediator_terms
+        search_criteria.exposure_terms.set(exposure_terms)
+        search_criteria.outcome_terms.set(outcome_terms)
+        search_criteria.mediator_terms.set(mediator_terms)
         search_criteria.save()
         return search_criteria
 
