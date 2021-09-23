@@ -8,6 +8,7 @@ django-rq==2.4.1
 django-autocomplete-light==3.8.2
 Django==2.2.24  # rq.filter: >=2.2,<3
 lxml==4.6.3
+more-itertools==8.10.0
 mysqlclient==2.0.3
 numpy==1.19.5
 pandas==1.1.5

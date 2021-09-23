@@ -87,6 +87,8 @@ lazy-object-proxy==1.4.3
     # via astroid
 lxml==4.6.3
     # via -r requirements/test.txt
+more-itertools==8.10.0
+    # via -r requirements/test.txt
 mss==6.1.0
     # via
     #   -r requirements/test.txt
