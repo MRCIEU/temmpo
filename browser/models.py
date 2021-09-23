@@ -153,15 +153,18 @@ class Upload(models.Model):
         try:
             return os.path.basename(self.abstracts_upload.file.name)
         except:
-            logger.warning("File %s count not be found." % self.abstracts_upload.file.name)
-            return ""
+            logger.warning("Upload id: %s file is missing." % self.id)
+            return "File missing"
 
     def delete(self):
         """ Override delete as we need to delete the file"""
         upload_usage_count = SearchCriteria.objects.filter(upload=self).count()
         if upload_usage_count <= 1:
             # Not associated with more than one search criteria so we delete Upload record and file
-            os.remove(self.abstracts_upload.file.name)
+            try:
+                os.remove(self.abstracts_upload.file.name)
+            except:
+                pass
             super(Upload, self).delete()
 
 
