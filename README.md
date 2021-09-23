@@ -189,7 +189,7 @@ e.g. Just the searching related tests and fail at the first error
 e.g. Skipping slow tests
 
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --failfast --exclude-tag=slow
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
 
 ## Warnings
 
