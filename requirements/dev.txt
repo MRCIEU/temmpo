@@ -67,6 +67,8 @@ entrypoint2==0.2.4
     # via
     #   -r requirements/test.txt
     #   pyscreenshot
+hiredis==2.0.0
+    # via -r requirements/test.txt
 idna==2.10
     # via
     #   -r requirements/test.txt

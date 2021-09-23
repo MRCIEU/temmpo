@@ -29,6 +29,8 @@ django-registration-redux==2.9
     # via -r requirements/requirements.in
 django-rq==2.4.1
     # via -r requirements/requirements.in
+hiredis==2.0.0
+    # via -r requirements/requirements.in
 lxml==4.6.3
     # via -r requirements/requirements.in
 more-itertools==8.10.0

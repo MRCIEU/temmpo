@@ -49,6 +49,8 @@ easyprocess==0.3
     #   pyvirtualdisplay
 entrypoint2==0.2.4
     # via pyscreenshot
+hiredis==2.0.0
+    # via -r requirements/requirements.txt
 idna==2.10
     # via requests
 jeepney==0.6.0
