@@ -38,9 +38,9 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
         search_criteria.save()
 
         search_criteria.genes.add(gene)
-        search_criteria.exposure_terms = exposure_terms
-        search_criteria.outcome_terms = outcome_terms
-        search_criteria.mediator_terms = mediator_terms
+        search_criteria.exposure_terms.set(exposure_terms)
+        search_criteria.outcome_terms.set(outcome_terms)
+        search_criteria.mediator_terms.set(mediator_terms)
         search_criteria.save()
 
         # Create search result object

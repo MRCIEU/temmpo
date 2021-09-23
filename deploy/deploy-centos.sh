@@ -275,10 +275,6 @@ DATABASES = {
             'sql_mode': 'STRICT_ALL_TABLES'
         }
     },
-    'sqlite': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/usr/local/projects/temmpo/var/data/db.sqlite3',
-    },
 }
 
 # Prepare for database migration

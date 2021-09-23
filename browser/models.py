@@ -40,7 +40,7 @@ class Gene(models.Model):
     """
 
     name = models.CharField(max_length=300)
-    synonym_for = models.ForeignKey('self', null=True, blank=True, related_name='primary_gene')
+    synonym_for = models.ForeignKey('self', null=True, blank=True, related_name='primary_gene', on_delete=models.SET_NULL)
 
     def __str__(self):
         """Create a string version of each Gene."""
@@ -61,7 +61,7 @@ class MeshTerm(MPTTModel):
     """
     term = models.CharField(max_length=300)
     tree_number = models.CharField(max_length=250)
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
     # TMMA-131 Add year index to speed up searching for terms within a specific year, default 2015
     year = models.PositiveSmallIntegerField(default=2015, db_index=True)
 
@@ -139,7 +139,7 @@ class Upload(models.Model):
     """
 
     user = models.ForeignKey(User, null=False, blank=False,
-                             related_name="uploads")
+                             related_name="uploads", on_delete=models.CASCADE)
     abstracts_upload = models.FileField(upload_to=get_user_upload_location)
     file_format = models.CharField(choices=ABSTRACT_FORMATS, max_length=6, default=OVID)
 
@@ -153,22 +153,25 @@ class Upload(models.Model):
         try:
             return os.path.basename(self.abstracts_upload.file.name)
         except:
-            logger.warning("File %s count not be found." % self.abstracts_upload.file.name)
-            return ""
+            logger.warning("Upload id: %s file is missing." % self.id)
+            return "File missing"
 
     def delete(self):
         """ Override delete as we need to delete the file"""
         upload_usage_count = SearchCriteria.objects.filter(upload=self).count()
         if upload_usage_count <= 1:
             # Not associated with more than one search criteria so we delete Upload record and file
-            os.remove(self.abstracts_upload.file.name)
+            try:
+                os.remove(self.abstracts_upload.file.name)
+            except:
+                pass
             super(Upload, self).delete()
 
 
 class SearchCriteria(models.Model):
     """Used to describe the criteria for a search - which file, which terms, which genes and which filters used."""
 
-    upload = models.ForeignKey(Upload, related_name="searches")
+    upload = models.ForeignKey(Upload, related_name="searches", on_delete=models.CASCADE)
     name = models.CharField(help_text="Optional name for search criteria",
                             max_length=300, blank=True, default="")
     created = models.DateTimeField(auto_now_add=True)
@@ -229,13 +232,13 @@ class SearchCriteria(models.Model):
         if self.name:
             return self.name
         else:
-            return naturaltime(self.created)
+            return str(naturaltime(self.created))
 
 
 class SearchResult(models.Model):
     """This object holds references to the file system files that represent the results of a given search criteria."""
 
-    criteria = models.ForeignKey(SearchCriteria, related_name='search_results')
+    criteria = models.ForeignKey(SearchCriteria, related_name='search_results', on_delete=models.CASCADE)
 
     # Abstracting out mesh filter and results as more likely to change the filter
     # but use the same set of other search criteria
@@ -265,7 +268,7 @@ class SearchResult(models.Model):
         elif self.has_completed:
             return "Completed"
         elif self.has_started:
-            return "Processing (started %s)" % naturaltime(self.started_processing)
+            return "Processing (started %s)" % str(naturaltime(self.started_processing))
         else:
             return "Not started" 
 
@@ -342,7 +345,7 @@ class SearchResult(models.Model):
     def __str__(self):
         """Provide a flexible method for determining the search result object's name."""
         if self.filename_stub:
-            return self.filename_stub + " (" + self.status + ") started: " + naturaltime(self.started_processing)
+            return self.filename_stub + " (" + self.status + ") started: " + str(naturaltime(self.started_processing))
         else:
             return "SearchResult id: %d status: %s " % (self.id, self.status)
 
@@ -368,7 +371,7 @@ class Message(models.Model):
     end = models.DateTimeField(blank=True, null=True)
     is_disabled = models.BooleanField(default=False)
     user = models.ForeignKey(User, null=False, blank=False,
-                             related_name="author")
+                             related_name="author", on_delete=models.CASCADE)
 
     objects = MessageManager()
 
@@ -376,4 +379,4 @@ class Message(models.Model):
         if self.body:
             return self.body
         else:
-            return naturaltime(self.start)
+            return str(naturaltime(self.start))

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('sites', '0002_alter_domain_unique'),
-        ('browser', '0013_auto_20180207_1514'),
+        ('browser', '0001_initial_squashed_0013_auto_20180207_1514'),
     ]
 
     operations = [
