@@ -4,7 +4,7 @@ import os
 from datetime import timedelta
 
 from django.core.files import File
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import tag
 from django.utils import timezone
 
@@ -50,9 +50,9 @@ class AdminTestCase(BaseTestCase):
         search_criteria.save()
 
         search_criteria.genes.add(gene)
-        search_criteria.exposure_terms = exposure_term
-        search_criteria.outcome_terms = outcome_terms
-        search_criteria.mediator_terms = mediator_terms
+        search_criteria.exposure_terms.set(exposure_term)
+        search_criteria.outcome_terms.set(outcome_terms)
+        search_criteria.mediator_terms.set(mediator_terms)
         search_criteria.save()
 
         return search_criteria
@@ -66,7 +66,7 @@ class AdminTestCase(BaseTestCase):
     def test_mesh_terms_admin_list(self):
         """Test super user accessing mesh term listing admin pages"""
         expected_form = ["Select mesh term to change", "Search", "Add mesh term"]
-        self._find_expected_content('/admin/browser/meshterm', msg_list=expected_form)
+        self._find_expected_content('/admin/browser/meshterm/', msg_list=expected_form)
 
     def test_mesh_terms_admin_edit(self):
         """Test super user accessing mesh term edit admin pages"""
@@ -78,8 +78,8 @@ class AdminTestCase(BaseTestCase):
 
     def test_genes_admin_list(self):
         """Test super user accessing gene listing admin pages"""
-        expected_form = ["Select gene to change", "Search", "Add gene"]
-        self._find_expected_content('/admin/browser/gene', msg_list=expected_form)
+        expected_form = ["Select gene to change", "Add gene", "Search", ]
+        self._find_expected_content('/admin/browser/gene/', msg_list=expected_form)
 
     def test_genes_admin_edit(self):
         """Test super user accessing gene edit admin pages"""
@@ -93,7 +93,7 @@ class AdminTestCase(BaseTestCase):
         """Test super user accessing message listing admin pages"""
         message = Message.objects.create(body="Testing 1, 2, 3", user=self.user, end=timezone.now() + timedelta(days=1))
         expected_form = ["Select message to change", "Add message", "Testing 1, 2, 3", ]
-        self._find_expected_content('/admin/browser/message', msg_list=expected_form)
+        self._find_expected_content('/admin/browser/message/', msg_list=expected_form)
         message.delete()
 
     def test_messages_admin_edit(self):
@@ -110,7 +110,7 @@ class AdminTestCase(BaseTestCase):
         """Test super user accessing upload listing admin pages"""
         expected_form = ["Select upload to change", "Add upload"]
         upload = self._create_upload_object()
-        self._find_expected_content('/admin/browser/upload', msg_list=expected_form)
+        self._find_expected_content('/admin/browser/upload/', msg_list=expected_form)
         upload.delete()
 
     def test_upload_admin_edit(self):
@@ -129,7 +129,7 @@ class AdminTestCase(BaseTestCase):
         """Test super user accessing search criteria listing admin pages"""
         search_criteria = self._create_search_criteria()
         expected_form = ["Select search criteria to change", "Add search criteria"]
-        self._find_expected_content('/admin/browser/searchcriteria', msg_list=expected_form)
+        self._find_expected_content('/admin/browser/searchcriteria/', msg_list=expected_form)
         search_criteria.delete()
 
     def test_search_criteria_admin_edit(self):
@@ -149,13 +149,13 @@ class AdminTestCase(BaseTestCase):
         # Check listing with a stub search result object
         search_result = self._create_search_result()
         expected_form = ["Select search result to change", "Add search result", "SearchResult id:", "Not started"]
-        self._find_expected_content('/admin/browser/searchresult', msg_list=expected_form)
+        self._find_expected_content('/admin/browser/searchresult/', msg_list=expected_form)
         # Check listing matching has been performed
         perform_search(search_result.id)
         # Retrieve the updated search results object
         search_result = SearchResult.objects.get(id=search_result.id)
         expected_form = [search_result.filename_stub, "Completed"]
-        self._find_expected_content('/admin/browser/searchresult', msg_list=expected_form)
+        self._find_expected_content('/admin/browser/searchresult/', msg_list=expected_form)
         search_result.delete()
 
     def test_search_result_edit(self):

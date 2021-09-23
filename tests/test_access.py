@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test view authorisation"""
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tests.base_test_case import BaseTestCase
 
@@ -99,7 +99,7 @@ class AccessTestCase(BaseTestCase):
         self._find_expected_content('/admin', msg_list=["Django administration", "Log in", ])
         self._login_staff_user()
         self._find_expected_content('/admin', msg_list=["Site administration",
-                                                        "You don't have permission to edit anything.", ])
+                                                        "You don't have permission to view or edit anything.", ])
 
     def test_super_access_to_admin(self):
         """Test super user have access to the Django admin."""

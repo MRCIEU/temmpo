@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
+from django.urls import path
 from django.views.decorators.cache import cache_page
 from django.views.static import serve
 
@@ -16,12 +17,10 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
                            SearchPubMedView, ReuseSearchView, DeleteSearch, UserAccountView,
                            CloseAccount, AccountClosedConfirmation, UsersListingView, DeleteUser,
                            CountDataViewV1, AbstractDataViewV1, JSONDataViewV1,
-                           CountDataViewV3, AbstractDataViewV3, JSONDataViewV3)
+                           CountDataViewV3, AbstractDataViewV3, JSONDataViewV3,
+                           MeSHTermAutocomplete)
 
 urlpatterns = [
-
-    # auto complete functionality
-    url(r'^simple-autocomplete/', include('simple_autocomplete.urls', namespace='simple_autocomplete')),
 
     # browser app
     url(r'^$', HomeView.as_view(), name='home'),
@@ -70,7 +69,7 @@ urlpatterns = [
     url(r'^delete-user/(?P<pk>\d+)/$', DeleteUser.as_view(), name='delete_user'),
 
     # Django admin
-    url(r'^admin/', include(admin.site.urls)),
+    path('admin/', admin.site.urls),
 
     # Django user authentication
     url(r'^logout/$', LogoutView.as_view(), name="logout"),
@@ -79,6 +78,9 @@ urlpatterns = [
 
     # django-rq Redis backed message queue
     url(r'^django-rq/', include('django_rq.urls')),
+
+    # autocomplete
+    url(r'^meshterm-autocomplete/$', MeSHTermAutocomplete.as_view(), name='meshterm-autocomplete'),
 ]
 
 # For non Apache fronted Django development server scenarios.

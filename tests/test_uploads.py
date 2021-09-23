@@ -3,7 +3,7 @@ import logging
 import os
 import magic
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 

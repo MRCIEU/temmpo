@@ -21,9 +21,9 @@ mkdir -p var/results/testing/v4
 mkdir -p var/tmp
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
-pip3 install -U pip==20.3.3
-pip3 install setuptools==50.3.2
-pip3 install pip-tools==5.4.0
+pip3 install -U pip==21.2.4
+pip3 install setuptools==58.1.0
+pip3 install pip-tools==6.3.0
 pip3 freeze
 pip3 install -r requirements/requirements.txt
 pip-sync requirements/test.txt
