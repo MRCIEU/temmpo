@@ -41,7 +41,7 @@ class SizeValidator(object):
 
     def __call__(self, value):
         if value:
-            if value._size > (self.max_size * 1024 * 1024):
+            if value.size > (self.max_size * 1024 * 1024):
                 raise ValidationError('%s is too large. Please try to upload a file smaller than %sMB instead.' % (value, self.max_size))
             else:
                 return value

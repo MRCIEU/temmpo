@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -277,16 +277,16 @@ class SearchExisting(RedirectView):
         current_year = MeshTerm.get_latest_mesh_term_release_year()
         criteria_copy = SearchCriteria(upload=original_criteria.upload, mesh_terms_year_of_release=current_year)
         criteria_copy.save()
-        criteria_copy.genes = original_criteria.genes.all()
+        criteria_copy.genes.set(original_criteria.genes.all())
         original_exposures = original_criteria.exposure_terms.all()
         original_mediators = original_criteria.mediator_terms.all()
         original_outcomes = original_criteria.outcome_terms.all()
         original_year = original_criteria.mesh_terms_year_of_release
         if original_year != current_year:
             messages.add_message(self.request, messages.INFO, "Converting search from MeshTerm Terms released in %s" % str(original_criteria.mesh_terms_year_of_release))
-            criteria_copy.exposure_terms = MeshTerm.convert_terms_to_current_year(original_exposures, original_year, current_year)
-            criteria_copy.mediator_terms = MeshTerm.convert_terms_to_current_year(original_mediators, original_year, current_year)
-            criteria_copy.outcome_terms = MeshTerm.convert_terms_to_current_year(original_outcomes, original_year, current_year)
+            criteria_copy.exposure_terms.set(MeshTerm.convert_terms_to_current_year(original_exposures, original_year, current_year))
+            criteria_copy.mediator_terms.set(MeshTerm.convert_terms_to_current_year(original_mediators, original_year, current_year))
+            criteria_copy.outcome_terms.set(MeshTerm.convert_terms_to_current_year(original_outcomes, original_year, current_year))
             # Report any differences via messages.
             term_types = ('exposure', 'mediator', 'outcome', )
             for term_type in term_types:
@@ -296,9 +296,9 @@ class SearchExisting(RedirectView):
                     diff_terms = ", ".join(sorted(list(new_terms - old_terms)))
                     messages.add_message(self.request, messages.WARNING, "The following %s term(s) could not be translated into current MeSH Term equivalents: %s" % (term_type, diff_terms, ))
         else:
-            criteria_copy.exposure_terms = original_exposures
-            criteria_copy.mediator_terms = original_mediators
-            criteria_copy.outcome_terms = original_outcomes
+            criteria_copy.exposure_terms.set(original_exposures)
+            criteria_copy.mediator_terms.set(original_mediators)
+            criteria_copy.outcome_terms.set(original_outcomes)
         criteria_copy.save()
 
         return reverse('exposure_selector', kwargs={'pk': criteria_copy.pk})
