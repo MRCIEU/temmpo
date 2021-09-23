@@ -62,8 +62,8 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'simple_autocomplete', 'django_rq', 'django_clamd', ]
-LOCAL_APPS = ['browser', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'django_rq', 'django_clamd', ]
+LOCAL_APPS = ['browser', 'dal', 'dal_select2',] # 'dal','dal_select2' are third party apps that need to be installed before 'django.contrib.admin'
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
 
@@ -195,12 +195,6 @@ TEMPLATES = [
 
 X_FRAME_OPTIONS = 'DENY'
 CSRF_COOKIE_HTTPONLY = True
-
-SIMPLE_AUTOCOMPLETE = {'browser.meshterm':
-    {'search_field': 'term',
-     'max_items': 10,
-     'duplicate_format_function': lambda obj, model, content_type: '%s'.strip() % " > ".join([x.term for x in obj.parent.get_ancestors() if x.parent != None])
-     }}
 
 # Number of days of inactivity before warning of deletion
 # Gives 60 days of grace before deletion
