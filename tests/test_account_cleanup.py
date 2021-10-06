@@ -278,7 +278,7 @@ class UserDeletionTest(BaseTestCase):
         self.assertNotContains(response, 'This user has a search that is still running')
         self.assertContains(response, 'Delete user (inc. their searches and uploads)')
         response = self.client.post(reverse('delete_user', kwargs={'pk': test_user.id}), follow=True)
-        self.assertContains(response, "User &#39;may&#39; deleted")
+        self.assertContains(response, "User &#x27;may&#x27; deleted")
 
         # Check records have gone
         self.assertFalse(SearchResult.objects.filter(pk=search_result_id).exists())

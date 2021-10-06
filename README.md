@@ -167,7 +167,7 @@ Optionally pass in a package or update them all within any requirements.in file 
 
 ## Running the tests
 
-Without activate script
+Entire test suite
 
     vagrant ssh
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
@@ -190,6 +190,11 @@ e.g. Skipping slow tests
 
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
     /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
+
+e.g. Skipping selenium and clamav tests
+
+    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=clamav
 
 ## Warnings
 
