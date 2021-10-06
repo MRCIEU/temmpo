@@ -187,7 +187,8 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages'
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request'
             ],
         },
     },
@@ -238,6 +239,8 @@ CLAMD_USE_TCP = False
 CLAMD_TCP_SOCKET = 3310
 CLAMD_TCP_ADDR = '127.0.0.1'
 CLAMD_ENABLED = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
