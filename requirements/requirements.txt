@@ -6,11 +6,13 @@
 #
 --index-url https://pypi.python.org/simple/
 
+asgiref==3.4.1
+    # via django
 clamd==1.0.2
     # via django-clamd
 click==8.0.1
     # via rq
-django==2.2.24
+django==3.2.8
     # via
     #   -r requirements/requirements.in
     #   django-clamd
@@ -21,9 +23,9 @@ django-clamd==0.4.0
     # via -r requirements/requirements.in
 django-js-asset==1.2.2
     # via django-mptt
-django-mptt==0.13.3
+django-mptt==0.13.4
     # via -r requirements/requirements.in
-django-redis-cache==2.1.3
+django-redis-cache==3.0.0
     # via -r requirements/requirements.in
 django-registration-redux==2.9
     # via -r requirements/requirements.in
@@ -51,7 +53,7 @@ python-magic==0.4.24
     # via
     #   -r requirements/requirements.in
     #   xtract
-pytz==2021.1
+pytz==2021.3
     # via
     #   django
     #   pandas
@@ -66,15 +68,16 @@ rq==1.10.0
 six==1.16.0
     # via
     #   django-autocomplete-light
-    #   django-redis-cache
     #   python-dateutil
 sqlparse==0.4.2
     # via django
 typing-extensions==3.10.0.2
-    # via importlib-metadata
+    # via
+    #   asgiref
+    #   importlib-metadata
 unicodecsv==0.14.1
     # via -r requirements/requirements.in
 xtract==0.1a3
     # via -r requirements/requirements.in
-zipp==3.5.0
+zipp==3.6.0
     # via importlib-metadata
