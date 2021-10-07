@@ -1,9 +1,9 @@
 -r requirements.txt
 
-coverage==5.3
+coverage==6.0.1
 csvvalidator==1.2
-pyvirtualdisplay==1.3.2
-pyscreenshot==2.2
-requests==2.25.0
+pyvirtualdisplay==2.2
+pyscreenshot==3.0
+requests==2.26.0
 requires.io==0.2.6
 selenium==3.141.0
