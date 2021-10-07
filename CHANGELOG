@@ -1,3 +1,7 @@
+6.0.1   TMMA-352 Update third party python tools
+
+6.0.0   TMMA-356 Upgrade to Django to latest long term supported version
+
 5.0.0   TMMA-333 Upgrade Python from version 2.7.x to 3.6+
 
 4.4.0   TMMA-406 Enable virus scanning on upload
