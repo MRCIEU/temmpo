@@ -32,25 +32,24 @@ NB: Additional development IDE support for Visual Code can be added by installin
 Use one of the techniques below to set up your virtual environment and create your Django application.
 Various options exist.  For example set up with Apache proxying and that by default run database migrations.
 
-#### a. Installing a Vagrant development virtual environment.
+#### a. Installing a Vagrant development virtual environment
 
     cd temmpo/deploy
     vagrant up && vagrant ssh
     fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=dev -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-#### b. Installing a Vagrant development virtual environment using a remotely run Fabric command.
+#### b. Installing a Vagrant development virtual environment using a remotely run Fabric command
 
     cd temmpo/deploy
     vagrant up && fab make_virtualenv:env=dev,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=False,requirements=dev  -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh
 
-#### c. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive.
+#### c. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive
 
     cd temmpo/deploy
     vagrant up db && vagrant up apache && vagrant ssh apache
     fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=True,requirements=dev -f /vagrant/deploy/fabfile.py
 
-
-#### d. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using a remotely run Fabric command.
+#### d. Installing a Vagrant Apache fronted virtual environment not mounted to your local development drive using a remotely run Fabric command
 
     cd temmpo/deploy
     vagrant up db && vagrant up apache && fab make_virtualenv:env=dev,configure_apache=True,clone_repo=True,branch=master,migrate_db=True,use_local_mode=False,requirements=dev -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200 && vagrant ssh apache
@@ -77,7 +76,7 @@ NB: this can take a few minutes.
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
     /usr/local/projects/temmpo/lib/dev/bin/python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019_2020.json  --settings=temmpo.settings.dev
 
-2. Management command
+1. Management command
 
     Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/ or see newer location: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/mtrees2021.bin
 
@@ -117,7 +116,6 @@ In development you will need to restart the worker whenever any changes to the m
 
     fab restart_rqworker_service:use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-
 In a separate terminal window run the development server
 
     vagrant ssh
@@ -151,13 +149,13 @@ Optionally pass in a package or update them all within any requirements.in file 
 
     fab pip_tools_update_requirements:env=dev,use_local_mode=True,package="" -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-#### Development deployment commands when working with the apache Vagrant VM.
+#### Development deployment commands when working with the apache Vagrant VM
 
 ##### a. Deploy master branch to Vagrant Apache VM
 
     fab deploy:env=dev,branch=master,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
-##### b. Deploy demo_stable branch on Vagrant Apache VM:
+##### b. Deploy demo_stable branch on Vagrant Apache VM
 
     fab deploy:env=dev,branch=demo_stable,using_apache=True,migrate_db=True,use_local_mode=False,use_pip_sync=True,requirements=base -u vagrant -i ~/.vagrant.d/insecure_private_key -H 127.0.0.1:2200
 
@@ -172,7 +170,6 @@ Entire test suite
     vagrant ssh
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
     /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql
-
 
 Run the entire test suite using MySQL and generate a coverage report.
 
@@ -214,7 +211,7 @@ The project needs the following additional services to be running:
     sudo systemctl status rqworker4
     sudo systemctl status httpd      # Not relevant for the django Vagrant VM
 
-# Check all services
+### Check all services
 
     sudo systemctl status
 
