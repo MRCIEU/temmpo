@@ -10,15 +10,15 @@ asgiref==3.4.1
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.8.2
+astroid==2.8.3
     # via -r requirements/dev.in
 backcall==0.2.0
     # via ipython
-certifi==2021.5.30
+certifi==2021.10.8
     # via
     #   -r requirements/test.txt
     #   requests
-charset-normalizer==2.0.6
+charset-normalizer==2.0.7
     # via
     #   -r requirements/test.txt
     #   requests
@@ -26,11 +26,11 @@ clamd==1.0.2
     # via
     #   -r requirements/test.txt
     #   django-clamd
-click==8.0.1
+click==8.0.3
     # via
     #   -r requirements/test.txt
     #   rq
-coverage==6.0.1
+coverage==6.0.2
     # via -r requirements/test.txt
 csvvalidator==1.2
     # via -r requirements/test.txt
@@ -38,7 +38,7 @@ decorator==5.1.0
     # via
     #   ipython
     #   traitlets
-django==3.2.8
+django==3.2.9
     # via
     #   -r requirements/test.txt
     #   django-clamd
@@ -73,7 +73,7 @@ entrypoint2==0.2.4
     #   pyscreenshot
 hiredis==2.0.0
     # via -r requirements/test.txt
-idna==3.2
+idna==3.3
     # via
     #   -r requirements/test.txt
     #   requests
@@ -117,7 +117,7 @@ pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-prompt-toolkit==3.0.20
+prompt-toolkit==3.0.21
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
@@ -190,7 +190,7 @@ urllib3==1.26.7
     #   selenium
 wcwidth==0.2.5
     # via prompt-toolkit
-wrapt==1.12.1
+wrapt==1.13.3
     # via astroid
 xtract==0.1a3
     # via -r requirements/test.txt
