@@ -10,9 +10,9 @@ asgiref==3.4.1
     # via django
 clamd==1.0.2
     # via django-clamd
-click==8.0.1
+click==8.0.3
     # via rq
-django==3.2.8
+django==3.2.9
     # via
     #   -r requirements/requirements.in
     #   django-clamd
