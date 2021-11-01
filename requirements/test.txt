@@ -22,7 +22,7 @@ click==8.0.3
     # via
     #   -r requirements/requirements.txt
     #   rq
-coverage==6.0.2
+coverage==6.1.1
     # via -r requirements/test.in
 csvvalidator==1.2
     # via -r requirements/test.in

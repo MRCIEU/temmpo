@@ -10,7 +10,7 @@ asgiref==3.4.1
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.8.3
+astroid==2.8.4
     # via -r requirements/dev.in
 backcall==0.2.0
     # via ipython
@@ -30,7 +30,7 @@ click==8.0.3
     # via
     #   -r requirements/test.txt
     #   rq
-coverage==6.0.2
+coverage==6.1.1
     # via -r requirements/test.txt
 csvvalidator==1.2
     # via -r requirements/test.txt
