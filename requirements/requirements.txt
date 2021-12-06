@@ -29,13 +29,13 @@ django-redis-cache==3.0.0
     # via -r requirements/requirements.in
 django-registration-redux==2.9
     # via -r requirements/requirements.in
-django-rq==2.4.1
+django-rq==2.5.1
     # via -r requirements/requirements.in
 hiredis==2.0.0
     # via -r requirements/requirements.in
-importlib-metadata==4.8.1
+importlib-metadata==4.8.2
     # via click
-lxml==4.6.3
+lxml==4.6.4
     # via -r requirements/requirements.in
 more-itertools==8.10.0
     # via -r requirements/requirements.in
@@ -71,7 +71,7 @@ six==1.16.0
     #   python-dateutil
 sqlparse==0.4.2
     # via django
-typing-extensions==3.10.0.2
+typing-extensions==4.0.1
     # via
     #   asgiref
     #   importlib-metadata

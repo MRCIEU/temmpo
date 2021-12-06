@@ -12,7 +12,7 @@ asgiref==3.4.1
     #   django
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.7
+charset-normalizer==2.0.9
     # via requests
 clamd==1.0.2
     # via
@@ -22,7 +22,7 @@ click==8.0.3
     # via
     #   -r requirements/requirements.txt
     #   rq
-coverage==6.1.1
+coverage==6.2
     # via -r requirements/test.in
 csvvalidator==1.2
     # via -r requirements/test.in
@@ -45,7 +45,7 @@ django-redis-cache==3.0.0
     # via -r requirements/requirements.txt
 django-registration-redux==2.9
     # via -r requirements/requirements.txt
-django-rq==2.4.1
+django-rq==2.5.1
     # via -r requirements/requirements.txt
 easyprocess==0.3
     # via
@@ -57,13 +57,13 @@ hiredis==2.0.0
     # via -r requirements/requirements.txt
 idna==3.3
     # via requests
-importlib-metadata==4.8.1
+importlib-metadata==4.8.2
     # via
     #   -r requirements/requirements.txt
     #   click
 jeepney==0.7.1
     # via pyscreenshot
-lxml==4.6.3
+lxml==4.6.4
     # via -r requirements/requirements.txt
 more-itertools==8.10.0
     # via -r requirements/requirements.txt
@@ -121,7 +121,7 @@ sqlparse==0.4.2
     # via
     #   -r requirements/requirements.txt
     #   django
-typing-extensions==3.10.0.2
+typing-extensions==4.0.1
     # via
     #   -r requirements/requirements.txt
     #   asgiref
