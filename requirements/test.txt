@@ -26,7 +26,7 @@ coverage==6.2
     # via -r requirements/test.in
 csvvalidator==1.2
     # via -r requirements/test.in
-django==3.2.9
+django==3.2.10
     # via
     #   -r requirements/requirements.txt
     #   django-clamd

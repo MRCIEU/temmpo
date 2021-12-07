@@ -258,7 +258,7 @@ DATABASES = {
         'NAME': 'temmpo_d',
         'USER': 'temmpo',
         'PASSWORD': 'notsosecret',
-        'HOST': '192.168.50.70',
+        'HOST': '192.168.56.20',
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'STRICT_ALL_TABLES'
@@ -269,7 +269,7 @@ DATABASES = {
         'NAME': 'temmpo_d',
         'USER': 'temmpo_a',
         'PASSWORD': 'notsosecret_a',
-        'HOST': '192.168.50.70',
+        'HOST': '192.168.56.20',
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'STRICT_ALL_TABLES'
