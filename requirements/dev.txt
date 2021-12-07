@@ -10,7 +10,7 @@ asgiref==3.4.1
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.8.4
+astroid==2.9.0
     # via -r requirements/dev.in
 backcall==0.2.0
     # via ipython
@@ -18,7 +18,7 @@ certifi==2021.10.8
     # via
     #   -r requirements/test.txt
     #   requests
-charset-normalizer==2.0.7
+charset-normalizer==2.0.9
     # via
     #   -r requirements/test.txt
     #   requests
@@ -30,7 +30,7 @@ click==8.0.3
     # via
     #   -r requirements/test.txt
     #   rq
-coverage==6.1.1
+coverage==6.2
     # via -r requirements/test.txt
 csvvalidator==1.2
     # via -r requirements/test.txt
@@ -38,7 +38,7 @@ decorator==5.1.0
     # via
     #   ipython
     #   traitlets
-django==3.2.9
+django==3.2.10
     # via
     #   -r requirements/test.txt
     #   django-clamd
@@ -60,7 +60,7 @@ django-redis-cache==3.0.0
     # via -r requirements/test.txt
 django-registration-redux==2.9
     # via -r requirements/test.txt
-django-rq==2.4.1
+django-rq==2.5.1
     # via -r requirements/test.txt
 easyprocess==0.3
     # via
@@ -77,7 +77,7 @@ idna==3.3
     # via
     #   -r requirements/test.txt
     #   requests
-importlib-metadata==4.8.1
+importlib-metadata==4.8.2
     # via
     #   -r requirements/test.txt
     #   click
@@ -85,9 +85,9 @@ ipython==7.16.1
     # via -r requirements/dev.in
 ipython-genutils==0.2.0
     # via traitlets
-isort==5.9.3
+isort==5.10.1
     # via -r requirements/dev.in
-jedi==0.18.0
+jedi==0.18.1
     # via ipython
 jeepney==0.7.1
     # via
@@ -95,7 +95,7 @@ jeepney==0.7.1
     #   pyscreenshot
 lazy-object-proxy==1.6.0
     # via astroid
-lxml==4.6.3
+lxml==4.6.4
     # via -r requirements/test.txt
 more-itertools==8.10.0
     # via -r requirements/test.txt
@@ -111,13 +111,13 @@ numpy==1.19.5
     #   pandas
 pandas==1.1.5
     # via -r requirements/test.txt
-parso==0.8.2
+parso==0.8.3
     # via jedi
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-prompt-toolkit==3.0.21
+prompt-toolkit==3.0.23
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
@@ -173,9 +173,9 @@ sqlparse==0.4.2
     #   django-debug-toolbar
 traitlets==4.3.3
     # via ipython
-typed-ast==1.4.3
+typed-ast==1.5.1
     # via astroid
-typing-extensions==3.10.0.2
+typing-extensions==4.0.1
     # via
     #   -r requirements/test.txt
     #   asgiref
