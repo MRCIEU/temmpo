@@ -21,16 +21,14 @@ mkdir -p var/results/testing/v4
 mkdir -p var/tmp
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
-pip3 install -U pip==21.2.4
-pip3 install setuptools==58.1.0
-pip3 install pip-tools==6.3.0
+pip3 install -U pip==21.3.1
+pip3 install setuptools==58.4.0
+pip3 install pip-tools==6.4.0
 pip3 freeze
 pip3 install -r requirements/requirements.txt
 pip-sync requirements/test.txt
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 coverage
-coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=slow
-coverage report --skip-empty --skip-covered -m
-coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --tag=slow
+coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
 coverage report --skip-empty --skip-covered -m
