@@ -618,3 +618,14 @@ def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
         caller('../../bin/pip-compile --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
         caller('../../bin/pip-compile --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
         caller('../../bin/pip-compile --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
+
+def remove_incompleted_registrations(env="demo", use_local_mode=False):
+    """env=demo,use_local_mode=False"""
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    # Allow function to be run locally or remotely
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+
+    with change_dir(src_dir):
+        caller('%sbin/python3 manage.py remove_incompleted_registrations --settings=temmpo.settings.%s' % (venv_dir, env))
