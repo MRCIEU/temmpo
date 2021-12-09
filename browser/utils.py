@@ -11,6 +11,15 @@ from django.template import loader, Context
 logger = logging.getLogger(__name__)
 
 
+def remove_incompleted_registrations():
+    # Delete incomplete users account, where user never triggered email activation of their account within the given ACCOUNT_ACTIVATION_DAYS currently 14 days as per registration email
+    past_date_delete = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
+    incomplete_users = User.objects.exclude(is_active=True).exclude(is_superuser=True).exclude(date_joined__gt=past_date_delete)
+    results = incomplete_users.delete()
+    logger.info("Status of registration and user deletions")
+    logger.info(results)
+
+
 def user_clean_up(no_deletion=False, warn_historic=False):
     """
     Automated clean up of users and associated searches
