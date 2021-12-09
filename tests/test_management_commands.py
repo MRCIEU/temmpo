@@ -1,13 +1,20 @@
 """Test for import MeshTerm and Gene management commands using sample file snippets."""
+from datetime import timedelta
 from io import StringIO
 import os
 
+from registration.models import RegistrationProfile
+
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import CommandError
 from django.core.management import call_command
 from django.test import TestCase
+from django.utils.timezone import now
 
 from browser.models import Gene, MeshTerm
+from tests.base_test_case import BaseTestCase
 
 MESH_TERM_CLASSIFICATIONS = ['Anatomy', 'Organisms', 'Diseases', 'Chemicals and Drugs',
                              'Analytical, Diagnostic and Therapeutic Techniques and Equipment',
@@ -135,3 +142,42 @@ class ImportMeshTermsManagementCommandTest(TestCase):
         self.assertEqual(removed_term_count, 1)
         removed_term_count = MeshTerm.objects.filter(term="Hemorrhagic Septicemia", year=2018).count()
         self.assertEqual(removed_term_count, 0)
+
+
+class RemoveIncompleteRegistrationsManagementCommandTest(BaseTestCase):
+    """Test running the import_mesh_terms management command."""
+
+    def test_remove_incompleted_registrations(self):
+        """Check command will only delete inactive users that have not registered in time."""
+        out = StringIO()
+
+        # Ensure expected users exist
+        self.assertEqual(User.objects.all().count(), 5)
+
+        # Set up user registration profiles
+        for user in User.objects.all():
+            RegistrationProfile.objects.create_profile(user)
+        
+        call_command('remove_incompleted_registrations', stdout=out)
+
+        # Ensure pending recent incomplete registrations are not deleted.
+        self.assertEqual(User.objects.all().count(), 5)
+
+        # Ensure one user will have joined ages ago
+        self.inactive_user.date_joined = now() - timedelta(settings.ACCOUNT_ACTIVATION_DAYS + 1)
+        self.inactive_user.save()
+        call_command('remove_incompleted_registrations', stdout=out)
+        self.assertEqual(User.objects.all().count(), 4)
+
+        # Ensure active users who haven't logged in recently are not deleted.
+        self.second_user.date_joined = now() - timedelta(settings.ACCOUNT_ACTIVATION_DAYS + 90)
+        self.second_user.save()
+        call_command('remove_incompleted_registrations', stdout=out)
+        self.assertEqual(User.objects.all().count(), 4)
+
+        # Ensure active users who haven't logged in a really long time ago are not deleted.
+        self.second_user.date_joined = now() - timedelta(settings.ACCOUNT_ACTIVATION_DAYS + 900)
+        self.second_user.save()
+        call_command('remove_incompleted_registrations', stdout=out)
+        self.assertEqual(User.objects.all().count(), 4)
+

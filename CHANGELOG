@@ -1,3 +1,5 @@
+6.1.0   TMMA-418 Enable general clean up of inactivated registrations
+
 6.0.2   TMMA-420 Apply Django security update
         Update third party python tools
 
