@@ -30,7 +30,5 @@ pip-sync requirements/test.txt
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 coverage
-coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=slow
-coverage report --skip-empty --skip-covered -m
-coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --tag=slow
+coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
 coverage report --skip-empty --skip-covered -m
