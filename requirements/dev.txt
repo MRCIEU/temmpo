@@ -48,7 +48,7 @@ django-autocomplete-light==3.8.2
     # via -r requirements/test.txt
 django-clamd==0.4.0
     # via -r requirements/test.txt
-django-debug-toolbar==3.2.2
+django-debug-toolbar==3.2.4
     # via -r requirements/dev.in
 django-js-asset==1.2.2
     # via
@@ -123,7 +123,7 @@ ptyprocess==0.7.0
     # via pexpect
 pygments==2.10.0
     # via ipython
-pympler==0.9
+pympler==1.0
     # via -r requirements/dev.in
 pyscreenshot==3.0
     # via -r requirements/test.txt
