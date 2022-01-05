@@ -8,7 +8,7 @@
 
 asgiref==3.4.1
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django
 certifi==2021.10.8
     # via requests
@@ -16,37 +16,37 @@ charset-normalizer==2.0.10
     # via requests
 clamd==1.0.2
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django-clamd
 click==8.0.3
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   rq
 coverage==6.2
-    # via -r requirements/test.in
+    # via -r test.in
 csvvalidator==1.2
-    # via -r requirements/test.in
+    # via -r test.in
 django==3.2.11
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django-clamd
     #   django-rq
 django-autocomplete-light==3.8.2
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 django-clamd==0.4.0
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 django-js-asset==1.2.2
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django-mptt
 django-mptt==0.13.4
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 django-redis-cache==3.0.0
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 django-registration-redux==2.9
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 django-rq==2.5.1
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 easyprocess==0.3
     # via
     #   pyscreenshot
@@ -54,87 +54,82 @@ easyprocess==0.3
 entrypoint2==0.2.4
     # via pyscreenshot
 hiredis==2.0.0
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 idna==3.3
     # via requests
 importlib-metadata==4.8.3
-    # via
-    #   -r requirements/requirements.txt
-    #   click
+    # via -r requirements.txt
 jeepney==0.7.1
     # via pyscreenshot
 lxml==4.7.1
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 more-itertools==8.12.0
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 mss==6.1.0
     # via pyscreenshot
 mysqlclient==2.1.0
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 numpy==1.19.5
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   pandas
 pandas==1.1.5
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 pyscreenshot==3.0
-    # via -r requirements/test.in
+    # via -r test.in
 python-dateutil==2.8.2
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   pandas
 python-magic==0.4.24
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   xtract
 pytz==2021.3
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django
     #   pandas
 pyvirtualdisplay==2.2
-    # via -r requirements/test.in
+    # via -r test.in
 redis==3.5.3
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django-redis-cache
     #   django-rq
     #   rq
-requests==2.26.0
+requests==2.27.0
     # via
-    #   -r requirements/test.in
+    #   -r test.in
     #   requires.io
 requires.io==0.2.6
-    # via -r requirements/test.in
+    # via -r test.in
 rq==1.10.1
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django-rq
 selenium==3.141.0
-    # via -r requirements/test.in
+    # via -r test.in
 six==1.16.0
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django-autocomplete-light
     #   python-dateutil
 sqlparse==0.4.2
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   django
 typing-extensions==4.0.1
-    # via
-    #   -r requirements/requirements.txt
-    #   asgiref
-    #   importlib-metadata
+    # via -r requirements.txt
 unicodecsv==0.14.1
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 urllib3==1.26.7
     # via
     #   requests
     #   selenium
 xtract==0.1a3
-    # via -r requirements/requirements.txt
+    # via -r requirements.txt
 zipp==3.6.0
     # via
-    #   -r requirements/requirements.txt
+    #   -r requirements.txt
     #   importlib-metadata
