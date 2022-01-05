@@ -1,6 +1,6 @@
 -r test.txt
 
-astroid==2.9.0
+astroid==2.9.2
 django-debug-toolbar==3.2.4
 ipython==7.16.1             # Pegged by Python 3.6.x support
 isort==5.10.1
