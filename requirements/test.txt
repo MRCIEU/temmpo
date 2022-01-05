@@ -57,8 +57,6 @@ hiredis==2.0.0
     # via -r requirements.txt
 idna==3.3
     # via requests
-importlib-metadata==4.8.3
-    # via -r requirements.txt
 jeepney==0.7.1
     # via pyscreenshot
 lxml==4.7.1
@@ -69,7 +67,7 @@ mss==6.1.0
     # via pyscreenshot
 mysqlclient==2.1.0
     # via -r requirements.txt
-numpy==1.19.5
+numpy==1.21.5
     # via
     #   -r requirements.txt
     #   pandas
@@ -119,8 +117,6 @@ sqlparse==0.4.2
     # via
     #   -r requirements.txt
     #   django
-typing-extensions==4.0.1
-    # via -r requirements.txt
 unicodecsv==0.14.1
     # via -r requirements.txt
 urllib3==1.26.7
@@ -129,7 +125,3 @@ urllib3==1.26.7
     #   selenium
 xtract==0.1a3
     # via -r requirements.txt
-zipp==3.6.0
-    # via
-    #   -r requirements.txt
-    #   importlib-metadata

@@ -77,8 +77,6 @@ idna==3.3
     # via
     #   -r test.txt
     #   requests
-importlib-metadata==4.8.3
-    # via -r test.txt
 ipython==7.16.1
     # via -r dev.in
 ipython-genutils==0.2.0
@@ -103,7 +101,7 @@ mss==6.1.0
     #   pyscreenshot
 mysqlclient==2.1.0
     # via -r test.txt
-numpy==1.19.5
+numpy==1.21.5
     # via
     #   -r test.txt
     #   pandas
@@ -171,8 +169,6 @@ sqlparse==0.4.2
     #   django-debug-toolbar
 traitlets==4.3.3
     # via ipython
-typing-extensions==4.0.1
-    # via -r test.txt
 unicodecsv==0.14.1
     # via -r test.txt
 urllib3==1.26.7
@@ -186,10 +182,6 @@ wrapt==1.13.3
     # via astroid
 xtract==0.1a3
     # via -r test.txt
-zipp==3.6.0
-    # via
-    #   -r test.txt
-    #   importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
