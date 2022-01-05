@@ -12,7 +12,7 @@ asgiref==3.4.1
     #   django
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.9
+charset-normalizer==2.0.10
     # via requests
 clamd==1.0.2
     # via
@@ -26,7 +26,7 @@ coverage==6.2
     # via -r requirements/test.in
 csvvalidator==1.2
     # via -r requirements/test.in
-django==3.2.10
+django==3.2.11
     # via
     #   -r requirements/requirements.txt
     #   django-clamd
