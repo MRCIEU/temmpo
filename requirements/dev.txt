@@ -10,7 +10,7 @@ asgiref==3.4.1
     # via
     #   -r test.txt
     #   django
-astroid==2.9.2
+astroid==2.9.3
     # via -r dev.in
 backcall==0.2.0
     # via ipython
