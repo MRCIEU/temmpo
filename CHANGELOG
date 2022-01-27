@@ -1,3 +1,7 @@
+7.0.0   TMMA-424 Upgrade Python from 3.6.x to 3.8.x
+
+6.3.1   Apply security updates
+
 6.3.0   TMMA-421 Apply Django security update
 
 6.2.0   Update third party python tools
