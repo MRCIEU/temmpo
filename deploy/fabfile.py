@@ -83,7 +83,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     with change_dir(PROJECT_ROOT + 'lib/'):
         # Added to work around issue found when using python -m venv command need to clear out old Python lib files for a clean virtualenv deployment.
-        caller('rm -rf lib/%s/bin/' % env)
+        caller('rm -rf %s/bin/' % venv_dir)
+        caller('ls -l %s' % venv_dir)
         caller('virtualenv-3.6 %s' % env)
 
         if clone_repo:
