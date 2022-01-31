@@ -82,7 +82,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('python3.8 -m venv --upgrade %s' % env)
+        caller('python3 -m venv --upgrade %s' % env)
 
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
         caller('find . -name *.exe | xargs rm -f')
@@ -264,7 +264,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
     # Set up SE Linux contexts
     caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
+    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.6/' % venv_dir)
     caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
     caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
