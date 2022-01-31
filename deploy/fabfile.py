@@ -82,7 +82,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('python3 -m venv --upgrade %s' % env)
+        caller('virtualenv-3.6 %s' % env)
 
         if clone_repo:
             caller('mkdir -p %s' % src_dir)
@@ -107,6 +107,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
+
+        # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
+        caller('find . -name *.exe | xargs rm -f')
 
         sym_link_private_settings(env, use_local_mode)
 
