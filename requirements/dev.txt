@@ -18,7 +18,7 @@ certifi==2021.10.8
     # via
     #   -r requirements/test.txt
     #   requests
-charset-normalizer==2.0.10
+charset-normalizer==2.0.11
     # via
     #   -r requirements/test.txt
     #   requests
@@ -34,7 +34,7 @@ coverage==6.2
     # via -r requirements/test.txt
 csvvalidator==1.2
     # via -r requirements/test.txt
-decorator==5.1.0
+decorator==5.1.1
     # via
     #   ipython
     #   traitlets
@@ -62,12 +62,12 @@ django-registration-redux==2.9
     # via -r requirements/test.txt
 django-rq==2.5.1
     # via -r requirements/test.txt
-easyprocess==0.3
+easyprocess==1.1
     # via
     #   -r requirements/test.txt
     #   pyscreenshot
     #   pyvirtualdisplay
-entrypoint2==0.2.4
+entrypoint2==1.0
     # via
     #   -r requirements/test.txt
     #   pyscreenshot
@@ -117,11 +117,11 @@ pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-prompt-toolkit==3.0.24
+prompt-toolkit==3.0.26
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
-pygments==2.11.1
+pygments==2.11.2
     # via ipython
 pympler==1.0.1
     # via -r requirements/dev.in
@@ -173,7 +173,7 @@ sqlparse==0.4.2
     #   django-debug-toolbar
 traitlets==4.3.3
     # via ipython
-typed-ast==1.5.1
+typed-ast==1.5.2
     # via astroid
 typing-extensions==4.0.1
     # via
@@ -183,7 +183,7 @@ typing-extensions==4.0.1
     #   importlib-metadata
 unicodecsv==0.14.1
     # via -r requirements/test.txt
-urllib3==1.26.7
+urllib3==1.26.8
     # via
     #   -r requirements/test.txt
     #   requests

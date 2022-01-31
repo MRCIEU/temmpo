@@ -12,7 +12,7 @@ asgiref==3.4.1
     #   django
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.10
+charset-normalizer==2.0.11
     # via requests
 clamd==1.0.2
     # via
@@ -24,13 +24,6 @@ click==8.0.3
     #   rq
 coverage==6.2
     # via -r requirements/test.in
-<<<<<<< HEAD
-cryptography==36.0.1
-    # via
-    #   pyopenssl
-    #   urllib3
-=======
->>>>>>> master
 csvvalidator==1.2
     # via -r requirements/test.in
 django==3.2.11
@@ -54,15 +47,11 @@ django-registration-redux==2.9
     # via -r requirements/requirements.txt
 django-rq==2.5.1
     # via -r requirements/requirements.txt
-<<<<<<< HEAD
 easyprocess==1.1
-=======
-easyprocess==0.3
->>>>>>> master
     # via
     #   pyscreenshot
     #   pyvirtualdisplay
-entrypoint2==0.2.4
+entrypoint2==1.0
     # via pyscreenshot
 hiredis==2.0.0
     # via -r requirements/requirements.txt
@@ -82,27 +71,12 @@ mss==6.1.0
     # via pyscreenshot
 mysqlclient==2.1.0
     # via -r requirements/requirements.txt
-<<<<<<< HEAD
-numpy==1.22.1
-    # via
-    #   -r requirements/requirements.txt
-    #   pandas
-outcome==1.1.0
-    # via trio
-pandas==1.4.0
-    # via -r requirements/requirements.txt
-pycparser==2.21
-    # via cffi
-pyopenssl==21.0.0
-    # via urllib3
-=======
 numpy==1.19.5
     # via
     #   -r requirements/requirements.txt
     #   pandas
 pandas==1.1.5
     # via -r requirements/requirements.txt
->>>>>>> master
 pyscreenshot==3.0
     # via -r requirements/test.in
 python-dateutil==2.8.2
@@ -136,11 +110,7 @@ rq==1.10.1
     # via
     #   -r requirements/requirements.txt
     #   django-rq
-<<<<<<< HEAD
-selenium==4.1.0
-=======
 selenium==3.141.0
->>>>>>> master
     # via -r requirements/test.in
 six==1.16.0
     # via
@@ -158,20 +128,13 @@ typing-extensions==4.0.1
     #   importlib-metadata
 unicodecsv==0.14.1
     # via -r requirements/requirements.txt
-<<<<<<< HEAD
-urllib3[secure]==1.26.8
-=======
-urllib3==1.26.7
->>>>>>> master
+urllib3==1.26.8
     # via
     #   requests
     #   selenium
 xtract==0.1a3
     # via -r requirements/requirements.txt
-<<<<<<< HEAD
-=======
 zipp==3.6.0
     # via
     #   -r requirements/requirements.txt
     #   importlib-metadata
->>>>>>> master
