@@ -84,6 +84,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     with change_dir(PROJECT_ROOT + 'lib/'):
         caller('python3 -m venv --upgrade %s' % env)
 
+        # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
+        caller('find . -name *.exe | xargs rm -f')
+
         if clone_repo:
             caller('mkdir -p %s' % src_dir)
             # TODO: (Low priority) Improve so the known_hosts file does not keep growing
