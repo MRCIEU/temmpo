@@ -1,4 +1,4 @@
-7.0.0   TMMA-424 Upgrade Python from 3.6.x to 3.8.x
+6.4.0   TMMA-426 Update deployment scripts to remove any .exe files from pip environment
 
 6.3.1   Apply security updates
 
