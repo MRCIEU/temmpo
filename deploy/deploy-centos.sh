@@ -22,19 +22,6 @@ yum -y install python-lxml
 pip2 install -U pip==20.3.4
 pip2 install Fabric==1.14.1
 
-echo "###   Install Python 3 and components"
-yum -y install python3
-yum -y install python3-setuptools
-yum -y install python3-devel
-yum -y install python3-mod_wsgi
-yum -y install python3-pip
-yum -y install python36-virtualenv
-yum -y install python3-wheel
-yum -y install python36-lxml
-
-echo "###   Install gcc"
-yum -y install gcc gcc-c++
-
 echo "###   Install dev tools"
 yum -y install git
 yum -y install nano
@@ -42,6 +29,35 @@ yum -y install wget
 yum -y install mariadb # Database client - adds mysql alias to command line
 yum -y install unzip
 yum -y install mariadb-devel
+
+echo "###   Install Python 3.8 and components"
+
+yum -y install gcc gcc-c++ openssl-devel bzip2-devel libffi-devel zlib-devel
+cd /opt
+wget https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz
+tar -xzf Python-3.8.12.tgz
+cd Python-3.8.12/
+./configure --enable-optimizations
+make altinstall
+# Create symlinks
+ln -sfn /usr/local/bin/python3.8 /usr/bin/python3.8
+ln -sfn /usr/local/bin/pip3.8 /usr/bin/pip3.8
+
+# yum -y install python3
+# yum -y install python3-setuptools
+# yum -y install python3-devel
+# yum -y install python3-mod_wsgi
+pip3.8 install mod_wsgi==4.5.24
+ls /usr/local/lib64/python3.8/site-packages/mod_wsgi/server/
+# yum -y install python3-pip
+# yum -y install python36-virtualenv
+pip3.8 install virtualenv
+
+yum -y install python3-wheel
+yum -y install python38-lxml
+
+# echo "###   Install gcc"
+# yum -y install gcc gcc-c++
 
 echo "###   Setup Web server components"
 yum -y install httpd
@@ -153,7 +169,7 @@ chromedriver -v
 echo "###   Confirm install list"
 yum list installed 
 pip freeze
-pip3 freeze
+pip3.8 freeze
 
 echo "###   Create directories normally managed by Puppet"
 mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d
@@ -222,9 +238,10 @@ if [ -d "/home/vagrant/.ssh/" ]; then
 
 fi
 
+## TODO: Fix path to mod_wsgi module
 echo "###   Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
-LoadModule wsgi_module "/usr/local/lib64/python3.6/site-packages/mod_wsgi/server/mod_wsgi-py36.cpython-36m-x86_64-linux-gnu.so"
+LoadModule wsgi_module "/usr/local/lib64/python3.8/site-packages/mod_wsgi/server/mod_wsgi-py38.cpython-36m-x86_64-linux-gnu.so"
 WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
 <VirtualHost *:*>
