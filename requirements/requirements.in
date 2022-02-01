@@ -6,7 +6,7 @@ django-redis-cache==3.0.0
 django-registration-redux==2.9
 django-rq==2.5.1
 django-autocomplete-light==3.8.2
-Django==3.2.11  # rq.filter: >=3.2,<3.3
+Django==3.2.12  # rq.filter: >=3.2,<3.3
 hiredis==2.0.0
 lxml==4.7.1
 more-itertools==8.12.0

@@ -12,7 +12,7 @@ clamd==1.0.2
     # via django-clamd
 click==8.0.3
     # via rq
-django==3.2.11
+django==3.2.12
     # via
     #   -r requirements/requirements.in
     #   django-clamd
