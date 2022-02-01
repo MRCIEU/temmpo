@@ -102,10 +102,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 caller('git pull')
 
         with change_dir(venv_dir):
-            caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
-            caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
-            caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
-            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip3 install --force-reinstall -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 install --force-reinstall -U setuptools==%s' % SETUPTOOLS_VERSION)
+            caller('./bin/pip3 install --force-reinstall pip-tools==%s' % PIP_TOOLS_VERSION)
+            caller('./bin/pip3 install --force-reinstall -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
 
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
