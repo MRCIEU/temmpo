@@ -82,9 +82,6 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        # Added to work around issue found when using python -m venv command need to clear out old Python lib files for a clean virtualenv deployment.
-        caller('rm -rf %s/bin/' % venv_dir)
-        caller('ls -l %s' % venv_dir)
         caller('virtualenv-3.6 %s' % env)
 
         if clone_repo:
@@ -105,10 +102,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 caller('git pull')
 
         with change_dir(venv_dir):
-            caller('./bin/pip3 install --force-reinstall -U pip==%s' % PIP_VERSION)
-            caller('./bin/pip3 install --force-reinstall -U setuptools==%s' % SETUPTOOLS_VERSION)
-            caller('./bin/pip3 install --force-reinstall pip-tools==%s' % PIP_TOOLS_VERSION)
-            caller('./bin/pip3 install --force-reinstall -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
+            caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
+            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
 
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
