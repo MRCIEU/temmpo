@@ -1,3 +1,5 @@
+6.4.0   TMMA-426 Update deployment scripts to remove any .exe files from pip environment
+
 6.3.1   Apply security updates
 
 6.3.0   TMMA-421 Apply Django security update

@@ -12,7 +12,7 @@ asgiref==3.4.1
     #   django
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.10
+charset-normalizer==2.0.11
     # via requests
 clamd==1.0.2
     # via
@@ -47,11 +47,11 @@ django-registration-redux==2.9
     # via -r requirements/requirements.txt
 django-rq==2.5.1
     # via -r requirements/requirements.txt
-easyprocess==0.3
+easyprocess==1.1
     # via
     #   pyscreenshot
     #   pyvirtualdisplay
-entrypoint2==0.2.4
+entrypoint2==1.0
     # via pyscreenshot
 hiredis==2.0.0
     # via -r requirements/requirements.txt
@@ -128,7 +128,7 @@ typing-extensions==4.0.1
     #   importlib-metadata
 unicodecsv==0.14.1
     # via -r requirements/requirements.txt
-urllib3==1.26.7
+urllib3==1.26.8
     # via
     #   requests
     #   selenium
