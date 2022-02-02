@@ -21,7 +21,7 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
 PIP_VERSION = '21.3.1'
-SETUPTOOLS_VERSION = '59.6.0'   # Pegged by Python 3.6.x support
+SETUPTOOLS_VERSION = '60.6.0'
 PIP_TOOLS_VERSION = '6.4.0'
 
 
@@ -82,7 +82,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('virtualenv-3.6 %s' % env)
+        caller('virtualenv %s' % env)
+        # Verify Python version in use
+        caller('%s/bin/python3 -V' % env)
 
         if clone_repo:
             caller('mkdir -p %s' % src_dir)
@@ -264,7 +266,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
     # Set up SE Linux contexts
     caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.6/' % venv_dir)
+    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
     caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
     caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
@@ -592,7 +594,7 @@ def apply_csv_misquoting_fix():
         with cd(results_directory):
             for affected_file in affected_files:
                 if files.exists(affected_file):
-                    print "About to replace text in %s/%s" % (results_directory, affected_file)
+                    print("About to replace text in %s/%s" % (results_directory, affected_file))
                     for find_str in replacement_pairs.keys():
                         run("sed -i -e 's/%s/%s/g\' %s" % (find_str, replacement_pairs[find_str], affected_file))
 
