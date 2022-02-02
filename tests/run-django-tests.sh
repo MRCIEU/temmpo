@@ -22,7 +22,7 @@ mkdir -p var/tmp
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 pip3 install -U pip==21.3.1
-pip3 install setuptools==59.6.0
+pip3 install setuptools==60.6.0
 pip3 install pip-tools==6.4.0
 pip3 freeze
 pip3 install -r requirements/requirements.txt
