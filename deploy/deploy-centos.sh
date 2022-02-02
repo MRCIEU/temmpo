@@ -158,7 +158,8 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 yum -y localinstall google-chrome-stable_current_x86_64.rpm
 google-chrome --version
 # As per test server
-wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
+wget https://chromedriver.storage.googleapis.com/98.0.4758.48/chromedriver_linux64.zip
+# wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
 # wget https://chromedriver.storage.googleapis.com/75.0.3770.8/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/bin/
