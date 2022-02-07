@@ -8,7 +8,7 @@
 
 asgiref==3.5.0
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django
 async-generator==1.10
     # via
@@ -28,41 +28,41 @@ charset-normalizer==2.0.11
     # via requests
 clamd==1.0.2
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django-clamd
 click==8.0.3
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   rq
 coverage==6.3.1
-    # via -r test.in
+    # via -r requirements/test.in
 cryptography==36.0.1
     # via
     #   pyopenssl
     #   urllib3
 csvvalidator==1.2
-    # via -r test.in
+    # via -r requirements/test.in
 django==3.2.12
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django-clamd
     #   django-rq
 django-autocomplete-light==3.9.1
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 django-clamd==0.4.0
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 django-js-asset==1.2.2
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django-mptt
 django-mptt==0.13.4
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 django-redis-cache==3.0.0
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 django-registration-redux==2.9
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 django-rq==2.5.1
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 easyprocess==1.1
     # via
     #   pyscreenshot
@@ -72,7 +72,7 @@ entrypoint2==1.0
 h11==0.13.0
     # via wsproto
 hiredis==2.0.0
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 idna==3.3
     # via
     #   requests
@@ -81,63 +81,63 @@ idna==3.3
 jeepney==0.7.1
     # via pyscreenshot
 lxml==4.7.1
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 more-itertools==8.12.0
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 mss==6.1.0
     # via pyscreenshot
 mysqlclient==2.1.0
-    # via -r requirements.txt
-numpy==1.22.1
+    # via -r requirements/requirements.txt
+numpy==1.22.2
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   pandas
 outcome==1.1.0
     # via trio
 pandas==1.4.0
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 pycparser==2.21
     # via cffi
 pyopenssl==22.0.0
     # via urllib3
 pyscreenshot==3.0
-    # via -r test.in
+    # via -r requirements/test.in
 python-dateutil==2.8.2
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   pandas
 python-magic==0.4.25
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   xtract
 pytz==2021.3
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django
     #   pandas
 pyvirtualdisplay==2.2
-    # via -r test.in
+    # via -r requirements/test.in
 redis==3.5.3
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django-redis-cache
     #   django-rq
     #   rq
 requests==2.27.1
     # via
-    #   -r test.in
+    #   -r requirements/test.in
     #   requires.io
-requires.io==0.2.6
-    # via -r test.in
+requires-io==0.2.6
+    # via -r requirements/test.in
 rq==1.10.1
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django-rq
 selenium==4.1.0
-    # via -r test.in
+    # via -r requirements/test.in
 six==1.16.0
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django-autocomplete-light
     #   python-dateutil
 sniffio==1.2.0
@@ -146,7 +146,7 @@ sortedcontainers==2.4.0
     # via trio
 sqlparse==0.4.2
     # via
-    #   -r requirements.txt
+    #   -r requirements/requirements.txt
     #   django
 trio==0.19.0
     # via
@@ -155,7 +155,7 @@ trio==0.19.0
 trio-websocket==0.9.2
     # via selenium
 unicodecsv==0.14.1
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
 urllib3[secure]==1.26.8
     # via
     #   requests
@@ -163,4 +163,4 @@ urllib3[secure]==1.26.8
 wsproto==1.0.0
     # via trio-websocket
 xtract==0.1a3
-    # via -r requirements.txt
+    # via -r requirements/requirements.txt
