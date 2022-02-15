@@ -104,7 +104,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 caller('git pull')
 
         with change_dir(venv_dir):
-            caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 -V')
+            caller('./bin/pip3 install --force-reinstall -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 cache purge')
             caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
