@@ -26,9 +26,22 @@ echo "###   Install dev tools"
 yum -y install git
 yum -y install nano
 yum -y install wget
-yum -y install mariadb # Database client - adds mysql alias to command line
 yum -y install unzip
-yum -y install mariadb-devel
+
+echo "MySQL stuff"
+
+# Refresh the MySQL GPG keys - important if we want the mysqll client to install properly.
+rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+# Clean up default mariadb installations
+yum -y remove mariadb-libs
+yum -y install mysql-devel
+yum -y install mysql-utilities
+wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+# Add MySQL package repository
+yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
+# localinstall
+yum -y install mysql-community-libs
+yum -y install mysql-community-client
 
 echo "###   Install Python 3.8 and components"
 
@@ -43,21 +56,12 @@ make altinstall
 ln -sfn /usr/local/bin/python3.8 /usr/bin/python3.8
 ln -sfn /usr/local/bin/pip3.8 /usr/bin/pip3.8
 
-# yum -y install python3
-# yum -y install python3-setuptools
-# yum -y install python3-devel
-# yum -y install python3-mod_wsgi
 pip3.8 install mod_wsgi==4.9.0
 ls /usr/local/lib64/python3.8/site-packages/mod_wsgi/server/
-# yum -y install python3-pip
-# yum -y install python36-virtualenv
 pip3.8 install virtualenv==20.13.0
 
 yum -y install python3-wheel
 yum -y install python38-lxml
-
-# echo "###   Install gcc"
-# yum -y install gcc gcc-c++
 
 echo "###   Setup Web server components"
 yum -y install httpd
