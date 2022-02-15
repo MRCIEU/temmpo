@@ -92,7 +92,7 @@ numpy==1.22.2
     #   pandas
 outcome==1.1.0
     # via trio
-pandas==1.4.0
+pandas==1.4.1
     # via -r requirements.txt
 pycparser==2.21
     # via cffi

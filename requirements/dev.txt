@@ -141,7 +141,7 @@ outcome==1.1.0
     # via
     #   -r test.txt
     #   trio
-pandas==1.4.0
+pandas==1.4.1
     # via -r test.txt
 parso==0.8.3
     # via jedi
