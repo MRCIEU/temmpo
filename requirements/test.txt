@@ -36,7 +36,7 @@ click==8.0.3
     # via
     #   -r requirements.txt
     #   rq
-coverage==6.3.1
+coverage==6.3.2
     # via -r test.in
 cryptography==36.0.1
     # via
