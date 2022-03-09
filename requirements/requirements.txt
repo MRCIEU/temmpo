@@ -30,7 +30,7 @@ django-mptt==0.13.4
     # via -r requirements.in
 django-redis-cache==3.0.0
     # via -r requirements.in
-django-registration-redux==2.9
+django-registration-redux==2.10
     # via -r requirements.in
 django-rq==2.5.1
     # via -r requirements.in
