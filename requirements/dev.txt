@@ -10,7 +10,7 @@ asgiref==3.5.0
     # via
     #   -r test.txt
     #   django
-astroid==2.9.3
+astroid==2.11.0
     # via -r dev.in
 asttokens==2.0.5
     # via stack-data
