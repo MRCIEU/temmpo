@@ -10,7 +10,7 @@ asgiref==3.5.0
     # via
     #   -r test.txt
     #   django
-astroid==2.9.3
+astroid==2.11.0
     # via -r dev.in
 asttokens==2.0.5
     # via stack-data
@@ -84,7 +84,7 @@ django-mptt==0.13.4
     # via -r test.txt
 django-redis-cache==3.0.0
     # via -r test.txt
-django-registration-redux==2.9
+django-registration-redux==2.10
     # via -r test.txt
 django-rq==2.5.1
     # via -r test.txt
