@@ -50,7 +50,7 @@ django==3.2.12
     #   django-clamd
     #   django-js-asset
     #   django-rq
-django-autocomplete-light==3.9.1
+django-autocomplete-light==3.9.4
     # via -r requirements.txt
 django-clamd==0.4.0
     # via -r requirements.txt
