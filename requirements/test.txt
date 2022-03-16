@@ -60,7 +60,7 @@ django-js-asset==2.0.0
     #   django-mptt
 django-mptt==0.13.4
     # via -r requirements.txt
-django-redis-cache==3.0.0
+django-redis-cache==3.0.1
     # via -r requirements.txt
 django-registration-redux==2.10
     # via -r requirements.txt
