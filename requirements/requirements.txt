@@ -20,7 +20,7 @@ django==3.2.12
     #   django-clamd
     #   django-js-asset
     #   django-rq
-django-autocomplete-light==3.9.1
+django-autocomplete-light==3.9.4
     # via -r requirements.in
 django-clamd==0.4.0
     # via -r requirements.in
@@ -28,9 +28,9 @@ django-js-asset==2.0.0
     # via django-mptt
 django-mptt==0.13.4
     # via -r requirements.in
-django-redis-cache==3.0.0
+django-redis-cache==3.0.1
     # via -r requirements.in
-django-registration-redux==2.9
+django-registration-redux==2.10
     # via -r requirements.in
 django-rq==2.5.1
     # via -r requirements.in

@@ -10,7 +10,7 @@ asgiref==3.5.0
     # via
     #   -r test.txt
     #   django
-astroid==2.9.3
+astroid==2.11.0
     # via -r dev.in
 asttokens==2.0.5
     # via stack-data
@@ -52,7 +52,7 @@ click==8.0.3
     #   -r test.txt
     #   black
     #   rq
-coverage==6.3.1
+coverage==6.3.2
     # via -r test.txt
 cryptography==36.0.1
     # via
@@ -70,7 +70,7 @@ django==3.2.12
     #   django-debug-toolbar
     #   django-js-asset
     #   django-rq
-django-autocomplete-light==3.9.1
+django-autocomplete-light==3.9.4
     # via -r test.txt
 django-clamd==0.4.0
     # via -r test.txt
@@ -82,9 +82,9 @@ django-js-asset==2.0.0
     #   django-mptt
 django-mptt==0.13.4
     # via -r test.txt
-django-redis-cache==3.0.0
+django-redis-cache==3.0.1
     # via -r test.txt
-django-registration-redux==2.9
+django-registration-redux==2.10
     # via -r test.txt
 django-rq==2.5.1
     # via -r test.txt
