@@ -272,6 +272,8 @@ def setup_apache(env="dev", use_local_mode=False):
     caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
     caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
+    if env == "test":
+        caller('chcon -R -t httpd_sys_rw_content_t %slog/sql.log' % var_dir)
 
     restart_apache(env, use_local_mode, run_checks=True)
 
