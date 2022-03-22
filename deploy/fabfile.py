@@ -20,9 +20,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
-PIP_VERSION = '22.0.3'
-SETUPTOOLS_VERSION = '60.8.1'
-PIP_TOOLS_VERSION = '6.5.0'
+PIP_VERSION = '22.0.4'
+SETUPTOOLS_VERSION = '60.10.0'
+PIP_TOOLS_VERSION = '6.5.1'
 
 
 def _add_file_local(path, contents, use_local_mode):
