@@ -1,3 +1,5 @@
+7.5.0   TMMA-429 Bug fix using correct version of virtualenv
+
 7.4.0   TMMA-205 Add monitoring probe page
         Update third party Python eggs and packaging tools
 
