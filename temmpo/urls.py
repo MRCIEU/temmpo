@@ -8,6 +8,7 @@ from django.urls import path
 from django.views.decorators.cache import cache_page
 from django.views.static import serve
 
+from browser.probe import ProbeView
 from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, ResultsSankeyView,
                            ResultsBubbleView, SearchExisting, ResultsListingView, FilterSelector,
                            ExposureSelector, MediatorSelector, OutcomeSelector,
@@ -67,6 +68,11 @@ urlpatterns = [
     url(r'^account-closed/$', AccountClosedConfirmation.as_view(), name='account_closed'),
     url(r'^manage-users/$', UsersListingView.as_view(), name='manage_users'),
     url(r'^delete-user/(?P<pk>\d+)/$', DeleteUser.as_view(), name='delete_user'),
+
+    # Probe page
+    url(r'^probe/$',
+        cache_page(15)(ProbeView.as_view()),
+        name='probe'),
 
     # Django admin
     path('admin/', admin.site.urls),
