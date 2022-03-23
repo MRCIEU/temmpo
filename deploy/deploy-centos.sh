@@ -60,6 +60,8 @@ pip3.8 install mod_wsgi==4.9.0
 ls /usr/local/lib64/python3.8/site-packages/mod_wsgi/server/
 pip3.8 install virtualenv==20.13.0
 
+ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv3.8
+
 yum -y install python3-wheel
 yum -y install python38-lxml
 
