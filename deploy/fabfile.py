@@ -82,7 +82,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('virtualenv --python python3.8 %s' % env)
+        caller('virtualenv-3.8 --python python3.8 %s' % env)
         # Verify Python version in use
         caller('%s/bin/python3 -V' % env)
 

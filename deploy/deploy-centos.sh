@@ -43,6 +43,13 @@ yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
 yum -y install mysql-community-libs
 yum -y install mysql-community-client
 
+echo "###   Setup Web server components"
+yum -y install httpd
+# Required to connect to DB successfully from web server and be able to send emails
+setsebool -P httpd_can_network_connect 1
+setsebool -P httpd_can_network_connect_db 1
+setsebool -P httpd_can_sendmail 1
+
 echo "###   Install Python 3.8 and components"
 
 yum -y install gcc gcc-c++ openssl-devel bzip2-devel libffi-devel zlib-devel
@@ -60,19 +67,14 @@ pip3.8 install mod_wsgi==4.9.0
 ls /usr/local/lib64/python3.8/site-packages/mod_wsgi/server/
 pip3.8 install virtualenv==20.13.0
 
-yum -y install python3-wheel
-yum -y install python38-lxml
+ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv-3.8
 
-echo "###   Setup Web server components"
-yum -y install httpd
+yum -y install python3-wheel
+yum -y install python3-lxml
 
 echo "###   Install DB connectivity tools"
 yum -y install mysql-connector-python
 yum -y install mysql-utilities
-# Required to connect to DB successfully from web server and be able to send emails
-setsebool -P httpd_can_network_connect 1
-setsebool -P httpd_can_network_connect_db 1
-setsebool -P httpd_can_sendmail 1
 
 echo "###   Install anti-virus tools used with Apache fronted instances"
 yum -y install clamav
@@ -114,14 +116,6 @@ systemctl enable clamd@scan
 
 # Update virus DB
 /bin/freshclam
-
-echo "###   Install fabric (for deployment scripts) and other production Python 2 eggs"
-if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt ]
-  then
-    pip install -r /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt
-  else
-    pip install -r /vagrant/deploy/pip-freeze-2020-11-23.txt
-fi
 
 echo "###   Install redis"
 yum -y install redis
