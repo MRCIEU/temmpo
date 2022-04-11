@@ -35,7 +35,7 @@ pipeline {
     }
     post {
         failure {
-            mail bcc: '', body: "Please go to ${BUILD_URL} and review the failure.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'tessa.alexander@bristol.ac.uk'
+            mail bcc: '', body: "Please go to ${BUILD_URL} and review the failure.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'tessa.alexander@bristol.ac.uk,michael.rodwell@bristol.ac.uk'
         }
     }
 }
