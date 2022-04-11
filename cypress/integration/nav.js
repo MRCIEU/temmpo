@@ -1,4 +1,4 @@
-describe('Checking side nav links and content', () => {
+describe('Checking the side nav links and content', () => {
 
     beforeEach(() => {
         cy.visit('/');
