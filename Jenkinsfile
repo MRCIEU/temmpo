@@ -7,6 +7,7 @@ pipeline {
     triggers { pollSCM('H/5 * * * 1-5') }
     environment {
         HOME = "./"
+        CYPRESS_CREDENTIALS = credentials('temmpo-cypress-test-account')
     }
     stages {
         stage('Demo: Cypress tests') {
@@ -17,8 +18,7 @@ pipeline {
                 }
             }
             steps {
-                sh "echo $HOME"
-                sh "echo $WORKSPACE"
+                sh "echo $CYPRESS_CREDENTIALS_USR"
                 sh 'cypress run --browser chrome'
             }
         }
