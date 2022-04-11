@@ -18,7 +18,6 @@ pipeline {
                 }
             }
             steps {
-                sh "echo $CYPRESS_CREDENTIALS_USR"
                 sh 'cypress run --browser chrome'
             }
         }
