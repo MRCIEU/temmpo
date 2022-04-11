@@ -5,6 +5,9 @@ pipeline {
         timestamps()
     }
     triggers { pollSCM('H/5 * * * 1-5') }
+    environment {
+        HOME = "./"
+    }
     stages {
         stage('Demo: Cypress tests') {
             agent {
@@ -14,6 +17,8 @@ pipeline {
                 }
             }
             steps {
+                sh "echo $HOME"
+                sh "echo $WORKSPACE"
                 sh 'cypress run --browser chrome'
             }
         }
