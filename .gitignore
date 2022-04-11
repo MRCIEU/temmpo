@@ -81,3 +81,7 @@ requirements.txt
 
 # Editor specific
 .idea/
+
+# Cypress
+cypress/screenshots
+cypress/videos
