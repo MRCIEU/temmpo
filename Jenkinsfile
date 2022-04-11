@@ -18,7 +18,9 @@ pipeline {
                 }
             }
             steps {
-                sh 'npx cypress run --browser chrome --config baseUrl=https://py-web-d0.epi.bris.ac.uk'
+                sh "echo $CYPRESS_CACHE_FOLDER"
+                sh "echo $HOME"
+                sh 'cypress run --browser chrome'
             }
         }
         stage('Production: Cypress tests') {
@@ -29,7 +31,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'npx cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
+                sh 'cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
             }
         }
     }
