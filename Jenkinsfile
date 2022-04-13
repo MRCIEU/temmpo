@@ -36,7 +36,8 @@ pipeline {
     }
     post {
         failure {
-            mail bcc: '', body: "Please go to ${BUILD_URL} and review the failure.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'tessa.alexander@bristol.ac.uk,michael.rodwell@bristol.ac.uk'
+            archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+            mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the failure.  Go to ${RUN_ARTIFACTS_DISPLAY_URL} to view any artifacts, such as Cypress screenshots or videos.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'tessa.alexander@bristol.ac.uk,michael.rodwell@bristol.ac.uk'
         }
     }
 }
