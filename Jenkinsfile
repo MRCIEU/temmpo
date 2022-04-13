@@ -8,6 +8,7 @@ pipeline {
     environment {
         HOME = "./"
         CYPRESS_CREDENTIALS = credentials('temmpo-cypress-test-account')
+        NO_COLOR = 1
     }
     stages {
         stage('Demo: Cypress tests') {
