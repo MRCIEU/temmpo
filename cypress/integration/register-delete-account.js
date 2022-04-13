@@ -12,6 +12,8 @@ describe('Register and delete an account', () => {
             .invoke('text')
             .should('equal', 'TeMMPo: Register')
 
+        // TODO rename credential environment variables for jenkins format
+
         cy.get('#id_username').type(Cypress.env('REGDELETE_USR'));
         cy.get('#id_email').type(Cypress.env('REGDELETE_EMAIL'));
         cy.get('#id_password1').type(Cypress.env('REGDELETE_PSW'));
