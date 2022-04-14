@@ -1,7 +1,11 @@
 pipeline {
     agent none
+    git branch: 'prod_stable', url: 'https://github.com/MRCIEU/temmpo.git'
+    triggers {
+        upstream '../Production/3-tag-prod-stable, '
+    }
     options {
-        timeout(time: 60, unit: 'MINUTES')
+        timeout(time: 30, unit: 'MINUTES')
         timestamps()
     }
     environment {
@@ -10,32 +14,15 @@ pipeline {
         NO_COLOR = 1
     }
     stages {
-        stage('Demo: Cypress tests') {
-            agent {
-                docker {
-                    image 'cypress/included:9.5.3'
-                    args '--add-host py-web-d0.epi.bris.ac.uk:172.25.2.76 --entrypoint=""'
-                }
-            }
-            steps {
-                sh 'cypress run --browser chrome'
-            }
-            when {
-                branch 'demo_stable'
-            }
-        }
         stage('Production: Cypress tests') {
             agent {
                 docker {
-                    image 'cypress/included:9.5.3'
+                    image 'cypress/included:9.5.4'
                     args '--add-host temmpo.org.uk:172.25.2.104 --entrypoint=""'
                 }
             }
             steps {
                 sh 'cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
-            }
-            when {
-                branch 'prod_stable'
             }
         }
     }

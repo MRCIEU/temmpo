@@ -1,0 +1,35 @@
+pipeline {
+    agent none
+    git branch: 'demo_stable', url: 'https://github.com/MRCIEU/temmpo.git'
+    triggers {
+        upstream '../Demo jobs/3-tag-demo-stable-project, '
+    }
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
+    }
+    environment {
+        HOME = "./"
+        CYPRESS_CREDENTIALS = credentials('temmpo-cypress-test-account')
+        NO_COLOR = 1
+    }
+    stages {
+        stage('Demo: Cypress tests') {
+            agent {
+                docker {
+                    image 'cypress/included:9.5.4'
+                    args '--add-host py-web-d0.epi.bris.ac.uk:172.25.2.76 --entrypoint=""'
+                }
+            }
+            steps {
+                sh 'cypress run --browser chrome'
+            }
+        }
+    }
+    post {
+        failure {
+            archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+            mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the failure.  Go to ${RUN_ARTIFACTS_DISPLAY_URL} to view any artifacts, such as Cypress screenshots or videos.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'tessa.alexander@bristol.ac.uk'
+        }
+    }
+}
