@@ -193,6 +193,10 @@ e.g. Skipping selenium and clamav tests
     cd /usr/local/projects/temmpo/lib/dev/src/temmpo
     /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=clamav
 
+### Running Cypress Tests
+    
+    npx cypress open
+
 ## Warnings
 
     IntegrityError at /search/ovidmedline/
