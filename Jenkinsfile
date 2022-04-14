@@ -4,9 +4,6 @@ pipeline {
         timeout(time: 60, unit: 'MINUTES')
         timestamps()
     }
-    triggers {
-        upstream '../Demo jobs/3-tag-demo-stable-project, ../Production/3-tag-prod-stable, '
-    }
     environment {
         HOME = "./"
         CYPRESS_CREDENTIALS = credentials('temmpo-cypress-test-account')
