@@ -24,7 +24,7 @@ pipeline {
                 sh 'cypress run --browser chrome'
             }
             when {
-                branch = 'demo_stable'
+                branch 'demo_stable'
             }
         }
         stage('Production: Cypress tests') {
@@ -38,7 +38,7 @@ pipeline {
                 sh 'cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
             }
             when {
-                branch = 'prod_stable'
+                branch 'prod_stable'
             }
         }
     }
