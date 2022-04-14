@@ -4,9 +4,6 @@ pipeline {
         timeout(time: 60, unit: 'MINUTES')
         timestamps()
     }
-    triggers {
-        upstream '../Demo jobs/3-tag-demo-stable-project, ../Production/3-tag-prod-stable, '
-    }
     environment {
         HOME = "./"
         CYPRESS_CREDENTIALS = credentials('temmpo-cypress-test-account')
@@ -24,7 +21,7 @@ pipeline {
                 sh 'cypress run --browser chrome'
             }
             when {
-                branch = 'demo_stable'
+                branch 'demo_stable'
             }
         }
         stage('Production: Cypress tests') {
@@ -38,7 +35,7 @@ pipeline {
                 sh 'cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
             }
             when {
-                branch = 'prod_stable'
+                branch 'prod_stable'
             }
         }
     }
