@@ -15,16 +15,3 @@ SITE_ID = 1
 USING_APACHE = True
 
 RQ_QUEUES['default']['ASYNC'] = False
-
-LOGGING['handlers']['sql_file'] = {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'formatter': 'verbose',
-            'filename': '%s/var/log/sql.log' % PROJECT_ROOT,
-            'maxBytes': 1024 * 1024 * 10,
-        }
-
-LOGGING['loggers']['django.db.backends'] = {
-            'handlers': ['sql_file'],
-            'level': 'DEBUG',
-        }
