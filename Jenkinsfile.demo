@@ -1,6 +1,5 @@
 pipeline {
     agent none
-    git branch: 'demo_stable', url: 'https://github.com/MRCIEU/temmpo.git'
     triggers {
         upstream '../Demo jobs/3-tag-demo-stable-project, '
     }
