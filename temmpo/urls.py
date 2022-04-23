@@ -4,7 +4,9 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import path
+from django.views.generic.base import RedirectView
 from django.views.decorators.cache import cache_page
 from django.views.static import serve
 
@@ -19,7 +21,7 @@ from browser.views import (HomeView, CreditsView, HelpView, SearchOvidMEDLINE, R
                            CloseAccount, AccountClosedConfirmation, UsersListingView, DeleteUser,
                            CountDataViewV1, AbstractDataViewV1, JSONDataViewV1,
                            CountDataViewV3, AbstractDataViewV3, JSONDataViewV3,
-                           MeSHTermAutocomplete)
+                           MeSHTermAutocomplete, PrivacyPolicyView)
 
 urlpatterns = [
 
@@ -27,6 +29,7 @@ urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^credits/$', CreditsView.as_view(), name='credits'),
     url(r'^help/$', HelpView.as_view(), name='help'),
+    url(r'^privacy/$', PrivacyPolicyView.as_view(), name="privacy"),
 
     url(r'^search/$', SelectSearchTypeView.as_view(), name='search'),
     url(r'^search/select/$', ReuseSearchView.as_view(), name='reuse_search'),
@@ -68,6 +71,12 @@ urlpatterns = [
     url(r'^account-closed/$', AccountClosedConfirmation.as_view(), name='account_closed'),
     url(r'^manage-users/$', UsersListingView.as_view(), name='manage_users'),
     url(r'^delete-user/(?P<pk>\d+)/$', DeleteUser.as_view(), name='delete_user'),
+
+    # Favicon
+    path(
+        "favicon.ico",
+        RedirectView.as_view(url=staticfiles_storage.url("favicon.ico")),
+    ),
 
     # Probe page
     url(r'^probe/$',

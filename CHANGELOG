@@ -1,3 +1,7 @@
+7.7.0   TMMA-272 Add cookie statement and privacy policy
+        TMMA-398 Resolve to a single domain
+        Add favicon
+
 7.6.0   Apply Django security update
         Update third party Python eggs
 
