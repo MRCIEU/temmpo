@@ -112,7 +112,6 @@ In development you will need to restart the worker whenever any changes to the m
 
 In a separate terminal window run the development server
 
-    vagrant ssh
     python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 #### View application in your local browser
