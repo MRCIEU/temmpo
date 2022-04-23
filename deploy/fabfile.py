@@ -214,7 +214,7 @@ def setup_apache(env="dev", use_local_mode=False):
     RewriteCond %%{REQUEST_URI} !/static/(.*)$
     RewriteRule ^(.+) /static/maintenance/maintenance.html [R=301,L]
 
-    RewriteCond %{HTTP_HOST} ^temmpo.org.uk$ [NC]
+    RewriteCond %%{HTTP_HOST} ^temmpo.org.uk$ [NC]
     RewriteRule ^(.+) https://www.temmpo.org.uk
 
     <Directory /usr/local/projects/temmpo/lib/%(env)s/src/temmpo>
