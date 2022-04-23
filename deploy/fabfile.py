@@ -212,7 +212,10 @@ def setup_apache(env="dev", use_local_mode=False):
     RewriteEngine On
     RewriteCond %%{DOCUMENT_ROOT}/_MAINTENANCE_ -f
     RewriteCond %%{REQUEST_URI} !/static/(.*)$
-    RewriteRule ^(.+) /static/maintenance/maintenance.html [R,L]
+    RewriteRule ^(.+) /static/maintenance/maintenance.html [R=301,L]
+
+    RewriteCond %%{HTTP_HOST} ^temmpo.org.uk$ [NC]
+    RewriteRule ^(.+) https://www.temmpo.org.uk
 
     <Directory /usr/local/projects/temmpo/lib/%(env)s/src/temmpo>
         Require all granted

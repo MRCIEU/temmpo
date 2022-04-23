@@ -1,3 +1,4 @@
+{% load static %}
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,6 +19,7 @@
 
 <!-- TeMMPo specific CSS -->
 <link href="{{ STATIC_URL }}css/temmpo.css?v=4.1.1" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
