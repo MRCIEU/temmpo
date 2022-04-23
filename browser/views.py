@@ -53,6 +53,15 @@ class HelpView(TemplateView):
         return context
 
 
+class PrivacyPolicyView(TemplateView):
+    template_name = "privacy.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(PrivacyPolicyView, self).get_context_data(**kwargs)
+        context['active'] = 'privacy'
+        return context
+
+
 class SelectSearchTypeView(TemplateView):
     template_name = "select_search_type.html"
 
