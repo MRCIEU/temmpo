@@ -74,7 +74,7 @@ django-autocomplete-light==3.9.4
     # via -r test.txt
 django-clamd==0.4.0
     # via -r test.txt
-django-debug-toolbar==3.2.4
+django-debug-toolbar==3.3.0
     # via -r dev.in
 django-js-asset==2.0.0
     # via
