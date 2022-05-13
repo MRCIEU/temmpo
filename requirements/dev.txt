@@ -52,7 +52,7 @@ click==8.1.2
     #   -r test.txt
     #   black
     #   rq
-coverage==6.3.2
+coverage==6.3.3
     # via -r test.txt
 cryptography==36.0.2
     # via
