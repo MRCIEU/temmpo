@@ -1,7 +1,7 @@
 -r test.txt
 
 astroid==2.11.3
-django-debug-toolbar==3.2.4
+django-debug-toolbar==3.4.0
 ipython==8.0.1
 isort==5.10.1
 pympler==1.0.1
