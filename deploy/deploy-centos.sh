@@ -155,8 +155,12 @@ cd /tmp
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 yum -y localinstall google-chrome-stable_current_x86_64.rpm
 google-chrome --version
-yum -y install chromedriver
-chromedriver -v
+yum -y update google-chrome
+google-chrome --version
+
+# Using local instation instead
+# yum -y install chromedriver
+# chromedriver -v
 
 echo "###   Confirm install list"
 yum list installed 
