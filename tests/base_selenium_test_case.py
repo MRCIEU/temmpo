@@ -9,6 +9,7 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
@@ -25,7 +26,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         super(SeleniumBaseTestCase, cls).setUpClass()
         cls.display = Display(visible=0, size=(1920, 1080))
         cls.display.start()
-        cls.driver = webdriver.Chrome()
+        cls.driver = webdriver.Chrome(settings.BASE_DIR + "/../../../bin/chromedriver")
         cls.driver.implicitly_wait(10)
 
     @classmethod

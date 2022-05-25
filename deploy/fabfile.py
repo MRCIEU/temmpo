@@ -4,6 +4,7 @@
 
 from datetime import datetime
 import os
+import urllib2
 
 from fabric.api import *
 from fabric.contrib import files
@@ -20,9 +21,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
-PIP_VERSION = '22.0.4'
-SETUPTOOLS_VERSION = '62.1.0'
-PIP_TOOLS_VERSION = '6.6.0'
+PIP_VERSION = '22.1.1'
+SETUPTOOLS_VERSION = '62.3.2'
+PIP_TOOLS_VERSION = '6.6.2'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -132,6 +133,19 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
+
+    # Install local copy of the chromedriver
+    if env in ("dev", "test",):
+        with change_dir(venv_dir + "/bin"):
+            # Ideally would check version of google-chrome currently installed instead.
+            version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').read()
+            caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
+            caller('ls -l')
+            caller('unzip -u chromedriver_linux64.zip')
+            caller('ls -l')
+            caller('rm chromedriver_linux64.zip')
+            caller('ls -l')
+
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"):
     """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"."""
@@ -611,9 +625,9 @@ def pip_sync_requirements_file(env="dev", use_local_mode=True):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --output-file requirements/requirements.txt requirements/requirements.in')
-        caller('../../bin/pip-compile --output-file requirements/test.txt requirements/test.in')
-        caller('../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in')
+        caller('../../bin/pip-compile --generate-hashes --output-file requirements/requirements.txt requirements/requirements.in')
+        caller('../../bin/pip-compile --generate-hashes --output-file requirements/test.txt requirements/test.in')
+        caller('../../bin/pip-compile --generate-hashes --output-file requirements/dev.txt requirements/dev.in')
 
 def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -625,9 +639,9 @@ def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
-        caller('../../bin/pip-compile --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
-        caller('../../bin/pip-compile --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
+        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
+        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
+        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
 
 def remove_incompleted_registrations(env="demo", use_local_mode=False):
     """env=demo,use_local_mode=False"""
