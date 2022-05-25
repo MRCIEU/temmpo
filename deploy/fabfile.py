@@ -140,8 +140,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             # Ideally would check version of google-chrome currently installed instead.
             version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').read()
             caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
-            caller('unzip -f chromedriver_linux64.zip')
+            caller('ls -l')
+            caller('unzip -f -v chromedriver_linux64.zip')
             caller('rm chromedriver_linux64.zip')
+            caller('ls -l')
 
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"):
