@@ -15,7 +15,7 @@ mysqlclient==2.1.0
 numexpr==2.8.1
 numpy==1.22.2
 pandas==1.4.2
-python-magic==0.4.25
+python-magic==0.4.27
 redis==3.5.3
 unicodecsv==0.14.1
 xtract==0.1a3
