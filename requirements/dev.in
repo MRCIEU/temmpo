@@ -1,6 +1,6 @@
 -r test.txt
 
-astroid==2.11.3
+astroid==2.11.6
 django-debug-toolbar==3.2.4
 ipython==8.0.1
 isort==5.10.1
