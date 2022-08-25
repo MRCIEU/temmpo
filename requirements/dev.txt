@@ -12,9 +12,9 @@ asgiref==3.5.2 \
     # via
     #   -r test.txt
     #   django
-astroid==2.11.3 \
-    --hash=sha256:4e5ba10571e197785e312966ea5efb2f5783176d4c1a73fa922d474ae2be59f7 \
-    --hash=sha256:f1af57483cd17e963b2eddce8361e00fc593d1520fe19948488e94ff6476bd71
+astroid==2.12.4 \
+    --hash=sha256:39fa822c82dc112f5072a208ddf01c58184043aa90e3e469786fa0520c71aaa7 \
+    --hash=sha256:af71cdc0775b6e4d88076746620e2c8cd1bf4533a9977cfdd00eeea97d95530c
     # via -r dev.in
 asttokens==2.0.5 \
     --hash=sha256:0844691e88552595a6f4a4281a9f7f79b8dd45ca4ccea82e5e05b4bbdb76705c \
