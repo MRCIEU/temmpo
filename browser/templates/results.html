@@ -2,7 +2,7 @@
 {% block title %}{{ results_page_title }}{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL}}js/jquery-ui-1.13.2/jquery-ui.min.css">
 {% endblock %}
 
 {% block body_class_style %}results-page{% endblock %}
@@ -89,7 +89,7 @@ Total {{ article_count }} papers.
 {% block scripts %}
     {# Chart related JS libraries #}
     <script src="{{ STATIC_URL}}js/d3.v5.min.js"></script>
-    <script src="{{ STATIC_URL}}js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL}}js/jquery-ui-1.13.2/jquery-ui.min.js"></script>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     {% if search_result.mediator_match_counts_v4 %}{% include chart_js %}{% endif %}
 {% endblock %}
