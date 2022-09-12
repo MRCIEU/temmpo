@@ -17,6 +17,11 @@ jobs:
           - 6379:6379
     steps:
     - uses: actions/checkout@v3
+    - name: Install Docker
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        brew cask install docker
+        docker --version
     - uses: actions/setup-python@v4
       with:
         python-version: '3.8'
