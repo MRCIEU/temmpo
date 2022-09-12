@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-18.04  # NB: There are issues in later versions of Ubutu where application/x-wine-extension-ini replacing the expected mime type for text files in archives.
     services:
       redis:
         image: redis
@@ -21,7 +21,7 @@ jobs:
       with:
         python-version: '3.8'
         architecture: 'x64'
-    - uses: shogo82148/actions-setup-mysql@v1
+    - uses: shogo82148/actions-setup-mysql@v1.10.2  # Pinned to this version as support Ubuuntu 18.04
       with:
         mysql-version: '8.0'
         root-password: 'ci-db-pswd'
