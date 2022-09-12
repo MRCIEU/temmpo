@@ -21,9 +21,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
-PIP_VERSION = '22.1.1'
-SETUPTOOLS_VERSION = '62.3.2'
-PIP_TOOLS_VERSION = '6.6.2'
+PIP_VERSION = '22.2.2'
+SETUPTOOLS_VERSION = '65.3.0'
+PIP_TOOLS_VERSION = '6.8.0'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -141,9 +141,10 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').read()
             caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
             caller('ls -l')
-            caller('unzip -u chromedriver_linux64.zip')
+            caller('rm -f chromedriver')
+            caller('unzip chromedriver_linux64.zip')
             caller('ls -l')
-            caller('rm chromedriver_linux64.zip')
+            caller('rm chromedriver_linux64.zip*')
             caller('ls -l')
 
 
