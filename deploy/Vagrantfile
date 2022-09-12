@@ -56,7 +56,7 @@ CONF
     django.vm.provision "shell", path: "deploy-centos.sh"
 
     django.vm.synced_folder "../", "/usr/local/projects/temmpo/lib/dev/src/temmpo", type: "sshfs", 
-       owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
+       owner: "vagrant", group: "vagrant"
 
     django.vm.network "forwarded_port", guest: 59099, host: 59099
     django.vm.network "private_network", ip: "10.0.1.21"
@@ -69,7 +69,7 @@ CONF
     apache.vm.provision "shell", path: "deploy-centos.sh"
 
     apache.vm.synced_folder "../", "/vagrant", type: "sshfs", 
-       owner: "vagrant", group: "vagrant", :mount_options => ['dmode=775', 'fmode=775', 'nonempty']
+       owner: "vagrant", group: "vagrant"
 
     apache.vm.network "forwarded_port", guest: 80, host: 8800
     apache.vm.network "private_network", ip: "10.0.1.19"
