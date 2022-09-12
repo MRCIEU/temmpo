@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     services:
       redis:
         image: redis
@@ -25,12 +25,5 @@ jobs:
       with:
         mysql-version: '8.0'
         root-password: 'ci-db-pswd'
-    - name: Attempt to clear odd wine mime type associations
-      run: |
-        rm -f ~/.local/share/mime/packages/x-wine*
-        rm -f ~/.local/share/applications/wine-extension*
-        rm -f ~/.local/share/icons/hicolor/*/*/application-x-wine-extension*
-        rm -f ~/.local/share/mime/application/x-wine-extension*
-        update-mime-database ~/.local/share/mime/
     - name: Run Python 3/Django tests
       run: bash tests/run-django-tests.sh
