@@ -487,9 +487,9 @@ python-dateutil==2.8.2 \
     # via
     #   -r requirements.txt
     #   pandas
-python-magic==0.4.25 \
-    --hash=sha256:1a2c81e8f395c744536369790bd75094665e9644110a6623bcc3bbea30f03973 \
-    --hash=sha256:21f5f542aa0330f5c8a64442528542f6215c8e18d2466b399b0d9d39356d83fc
+python-magic==0.4.27 \
+    --hash=sha256:c1ba14b08e4a5f5c31a302b7721239695b2f0f058d125bd5ce1ee36b9d9d3c3b \
+    --hash=sha256:c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3
     # via
     #   -r requirements.txt
     #   xtract
