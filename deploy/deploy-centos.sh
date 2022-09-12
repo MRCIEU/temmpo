@@ -22,37 +22,59 @@ yum -y install python-lxml
 pip2 install -U pip==20.3.4
 pip2 install Fabric==1.14.1
 
-echo "###   Install Python 3 and components"
-yum -y install python3
-yum -y install python3-setuptools
-yum -y install python3-devel
-yum -y install python3-mod_wsgi
-yum -y install python3-pip
-yum -y install python36-virtualenv
-yum -y install python3-wheel
-yum -y install python36-lxml
-
-echo "###   Install gcc"
-yum -y install gcc gcc-c++
-
 echo "###   Install dev tools"
 yum -y install git
 yum -y install nano
 yum -y install wget
-yum -y install mariadb # Database client - adds mysql alias to command line
 yum -y install unzip
-yum -y install mariadb-devel
+
+echo "MySQL stuff"
+
+# Refresh the MySQL GPG keys - important if we want the mysqll client to install properly.
+rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+# Clean up default mariadb installations
+yum -y remove mariadb-libs
+yum -y install mysql-devel
+yum -y install mysql-utilities
+wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+# Add MySQL package repository
+yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
+# localinstall
+yum -y install mysql-community-libs
+yum -y install mysql-community-client
 
 echo "###   Setup Web server components"
 yum -y install httpd
-
-echo "###   Install DB connectivity tools"
-yum -y install mysql-connector-python
-yum -y install mysql-utilities
 # Required to connect to DB successfully from web server and be able to send emails
 setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_can_network_connect_db 1
 setsebool -P httpd_can_sendmail 1
+
+echo "###   Install Python 3.8 and components"
+
+yum -y install gcc gcc-c++ openssl-devel bzip2-devel libffi-devel zlib-devel
+cd /opt
+wget https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz
+tar -xzf Python-3.8.12.tgz
+cd Python-3.8.12/
+./configure --enable-optimizations
+make altinstall
+# Create symlinks
+ln -sfn /usr/local/bin/python3.8 /usr/bin/python3.8
+ln -sfn /usr/local/bin/pip3.8 /usr/bin/pip3.8
+
+pip3.8 install mod_wsgi==4.9.0
+ls /usr/local/lib64/python3.8/site-packages/mod_wsgi/server/
+pip3.8 install virtualenv==20.13.0
+
+ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv-3.8
+
+yum -y install python3-wheel
+yum -y install python3-lxml
+
+echo "###   Install DB connectivity tools"
+yum -y install mysql-connector-python
+yum -y install mysql-utilities
 
 echo "###   Install anti-virus tools used with Apache fronted instances"
 yum -y install clamav
@@ -95,14 +117,6 @@ systemctl enable clamd@scan
 # Update virus DB
 /bin/freshclam
 
-echo "###   Install fabric (for deployment scripts) and other production Python 2 eggs"
-if [ -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt ]
-  then
-    pip install -r /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/pip-freeze-2020-11-23.txt
-  else
-    pip install -r /vagrant/deploy/pip-freeze-2020-11-23.txt
-fi
-
 echo "###   Install redis"
 yum -y install redis
 sed -i s'/appendonly no/appendonly yes/' /etc/redis.conf
@@ -141,19 +155,17 @@ cd /tmp
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 yum -y localinstall google-chrome-stable_current_x86_64.rpm
 google-chrome --version
-# As per test server
-wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
-# wget https://chromedriver.storage.googleapis.com/75.0.3770.8/chromedriver_linux64.zip
-unzip chromedriver_linux64.zip
-mv chromedriver /usr/bin/
-chmod g+rw /usr/bin/chromedriver
-chmod o+rw /usr/bin/chromedriver
-chromedriver -v
+yum -y update google-chrome
+google-chrome --version
+
+# Using local instation instead
+# yum -y install chromedriver
+# chromedriver -v
 
 echo "###   Confirm install list"
 yum list installed 
 pip freeze
-pip3 freeze
+pip3.8 freeze
 
 echo "###   Create directories normally managed by Puppet"
 mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d
@@ -222,9 +234,10 @@ if [ -d "/home/vagrant/.ssh/" ]; then
 
 fi
 
+## TODO: Fix path to mod_wsgi module
 echo "###   Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
-LoadModule wsgi_module "/usr/local/lib64/python3.6/site-packages/mod_wsgi/server/mod_wsgi-py36.cpython-36m-x86_64-linux-gnu.so"
+LoadModule wsgi_module "/usr/local/lib64/python3.8/site-packages/mod_wsgi/server/mod_wsgi-py38.cpython-36m-x86_64-linux-gnu.so"
 WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
 <VirtualHost *:*>
@@ -258,7 +271,7 @@ DATABASES = {
         'NAME': 'temmpo_d',
         'USER': 'temmpo',
         'PASSWORD': 'notsosecret',
-        'HOST': '192.168.56.20',
+        'HOST': '10.0.1.20',
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'STRICT_ALL_TABLES'
@@ -269,7 +282,7 @@ DATABASES = {
         'NAME': 'temmpo_d',
         'USER': 'temmpo_a',
         'PASSWORD': 'notsosecret_a',
-        'HOST': '192.168.56.20',
+        'HOST': '10.0.1.20',
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'STRICT_ALL_TABLES'

@@ -15,8 +15,8 @@ NB: The vagrant installation also requires an additional plugin to mount the dev
 
 Tested with these versions:
 
-* VirtualBox 6.1.22 r144080 (Qt5.6.3)
-* Vagrant 2.2.16
+* VirtualBox 6.1.32 r149290 (Qt5.6.3)
+* Vagrant 2.2.19
 * vagrant-sshfs 1.3.6
 
 NB: Additional development IDE support for Visual Code can be added by installing additional packages within your development environment
@@ -62,8 +62,7 @@ Various options exist.  For example set up with Apache proxying and that by defa
 
 #### Create a super user
 
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py createsuperuser --settings=temmpo.settings.dev
+    python manage.py createsuperuser --settings=temmpo.settings.dev
 
 #### Importing MeSH Terms
 
@@ -73,8 +72,7 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
 NB: this can take a few minutes.
 
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019_2020.json  --settings=temmpo.settings.dev
+    python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019_2020.json  --settings=temmpo.settings.dev
 
 1. Management command
 
@@ -82,15 +80,13 @@ NB: this can take a few minutes.
 
     NB: This command each take over 50 minutes to run depending on your environment.
 
-        cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-        /usr/local/projects/temmpo/lib/dev/bin/python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2021.bin 2021
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2021.bin 2021
 
 ##### Dumping MeSH terms to a fixture file
 
 After importing a new year of mesh terms, create a fixture file for testing and development purposes.  For example:
 
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020_2021.json
+    python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020_2021.json
 
 #### Importing Genes - optional
 
@@ -100,15 +96,13 @@ A database of existing gene terms can be imported into the Django application da
 
     NB: This can take a few minutes.
 
-        cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-        /usr/local/projects/temmpo/lib/dev/bin/python manage.py loaddata browser/fixtures/genes_snap_shot_2020_06_29.json --settings=temmpo.settings.dev
+        python manage.py loaddata browser/fixtures/genes_snap_shot_2020_06_29.json --settings=temmpo.settings.dev
 
 2. Management command
 
     A sample set is stored and loaded from this GENE_FILE_LOCATION setting location.
 
-        cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-        /usr/local/projects/temmpo/lib/dev/bin/python manage.py import_genes --settings=temmpo.settings.dev
+        python manage.py import_genes --settings=temmpo.settings.dev
 
 #### Run the development server and workers
 
@@ -118,9 +112,7 @@ In development you will need to restart the worker whenever any changes to the m
 
 In a separate terminal window run the development server
 
-    vagrant ssh
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
+    python manage.py runserver 0.0.0.0:59099 --settings=temmpo.settings.dev
 
 #### View application in your local browser
 
@@ -136,14 +128,15 @@ In a separate terminal window run the development server
 
 NB: If you want to manually run migrations you need to use the --database flag
 
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py migrate --database=admin --settings=temmpo.settings.dev
+    python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
 #### Updating the requirements file using pip-tools (via Vagrant VM)
+NB: This can take a while as we also generate hashes for additional security.
 
     fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 #### Upgrading the requirements file using pip-tools (via Vagrant VM)
+NB: This can take a while as we also generate hashes for additional security.
 
 Optionally pass in a package or update them all within any requirements.in file constraints
 
@@ -167,31 +160,29 @@ Optionally pass in a package or update them all within any requirements.in file 
 
 Entire test suite
 
-    vagrant ssh
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql
+    python manage.py test --settings=temmpo.settings.test_mysql
 
 Run the entire test suite using MySQL and generate a coverage report.
 
-    vagrant ssh
-    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo && coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql && coverage report --skip-empty --skip-covered -m
+    coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql && coverage report --skip-empty --skip-covered -m
 
 ### Running specific tests
 
 e.g. Just the searching related tests and fail at the first error
 
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test tests.test_searching --settings=temmpo.settings.test_mysql --failfast
+    python manage.py test tests.test_searching --settings=temmpo.settings.test_mysql --failfast
 
 e.g. Skipping slow tests
 
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
+    python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=slow
 
 e.g. Skipping selenium and clamav tests
 
-    cd /usr/local/projects/temmpo/lib/dev/src/temmpo
-    /usr/local/projects/temmpo/lib/dev/bin/python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=clamav
+    python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=clamav
+
+### Running Cypress Tests locally
+    
+    npx cypress open
 
 ## Warnings
 

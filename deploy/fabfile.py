@@ -4,6 +4,7 @@
 
 from datetime import datetime
 import os
+import urllib2
 
 from fabric.api import *
 from fabric.contrib import files
@@ -20,9 +21,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
-PIP_VERSION = '21.3.1'
-SETUPTOOLS_VERSION = '59.6.0'   # Pegged by Python 3.6.x support
-PIP_TOOLS_VERSION = '6.4.0'
+PIP_VERSION = '22.1.1'
+SETUPTOOLS_VERSION = '62.3.2'
+PIP_TOOLS_VERSION = '6.6.2'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -82,7 +83,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('python3 -m venv --upgrade %s' % env)
+        caller('virtualenv-3.8 --python python3.8 %s' % env)
+        # Verify Python version in use
+        caller('%s/bin/python3 -V' % env)
 
         if clone_repo:
             caller('mkdir -p %s' % src_dir)
@@ -102,11 +105,16 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 caller('git pull')
 
         with change_dir(venv_dir):
-            caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 -V')
+            caller('./bin/pip3 install --force-reinstall -U pip==%s' % PIP_VERSION)
+            caller('./bin/pip3 cache purge')
             caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
+
+        # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
+        caller('find . -name *.exe | xargs rm -f')
 
         sym_link_private_settings(env, use_local_mode)
 
@@ -125,6 +133,19 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
+
+    # Install local copy of the chromedriver
+    if env in ("dev", "test",):
+        with change_dir(venv_dir + "/bin"):
+            # Ideally would check version of google-chrome currently installed instead.
+            version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').read()
+            caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
+            caller('ls -l')
+            caller('unzip -u chromedriver_linux64.zip')
+            caller('ls -l')
+            caller('rm chromedriver_linux64.zip')
+            caller('ls -l')
+
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"):
     """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"."""
@@ -205,7 +226,10 @@ def setup_apache(env="dev", use_local_mode=False):
     RewriteEngine On
     RewriteCond %%{DOCUMENT_ROOT}/_MAINTENANCE_ -f
     RewriteCond %%{REQUEST_URI} !/static/(.*)$
-    RewriteRule ^(.+) /static/maintenance/maintenance.html [R,L]
+    RewriteRule ^(.+) /static/maintenance/maintenance.html [R=302,L]
+
+    RewriteCond %%{HTTP_HOST} ^temmpo.org.uk$ [NC]
+    RewriteRule ^(.+) https://www.temmpo.org.uk$1 [R=301,L]
 
     <Directory /usr/local/projects/temmpo/lib/%(env)s/src/temmpo>
         Require all granted
@@ -261,7 +285,7 @@ def setup_apache(env="dev", use_local_mode=False):
 
     # Set up SE Linux contexts
     caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.6/' % venv_dir)
+    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
     caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
     # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
     caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
@@ -589,7 +613,7 @@ def apply_csv_misquoting_fix():
         with cd(results_directory):
             for affected_file in affected_files:
                 if files.exists(affected_file):
-                    print "About to replace text in %s/%s" % (results_directory, affected_file)
+                    print("About to replace text in %s/%s" % (results_directory, affected_file))
                     for find_str in replacement_pairs.keys():
                         run("sed -i -e 's/%s/%s/g\' %s" % (find_str, replacement_pairs[find_str], affected_file))
 
@@ -601,9 +625,9 @@ def pip_sync_requirements_file(env="dev", use_local_mode=True):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --output-file requirements/requirements.txt requirements/requirements.in')
-        caller('../../bin/pip-compile --output-file requirements/test.txt requirements/test.in')
-        caller('../../bin/pip-compile --output-file requirements/dev.txt requirements/dev.in')
+        caller('../../bin/pip-compile --generate-hashes --output-file requirements/requirements.txt requirements/requirements.in')
+        caller('../../bin/pip-compile --generate-hashes --output-file requirements/test.txt requirements/test.in')
+        caller('../../bin/pip-compile --generate-hashes --output-file requirements/dev.txt requirements/dev.in')
 
 def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -615,9 +639,9 @@ def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
-        caller('../../bin/pip-compile --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
-        caller('../../bin/pip-compile --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
+        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
+        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
+        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
 
 def remove_incompleted_registrations(env="demo", use_local_mode=False):
     """env=demo,use_local_mode=False"""

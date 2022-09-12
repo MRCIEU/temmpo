@@ -1,3 +1,32 @@
+7.8.0   TMMA-433 Bug fix keep chromedriver insync with google-chrome.
+        Use pip with hash checking mode for additional security
+        Update third party Python eggs and packaging tools
+
+7.7.0   TMMA-272 Add cookie statement and privacy policy
+        TMMA-398 Resolve to a single domain
+        Add favicon
+
+7.6.0   Apply Django security update
+        Update third party Python eggs
+
+7.5.0   TMMA-429 Bug fix using correct version of virtualenv
+
+7.4.0   TMMA-205 Add monitoring probe page
+        Update third party Python eggs and packaging tools
+
+7.3.0   Update lxml package
+
+7.2.0   Update third party Python eggs and packaging tools
+
+7.1.0   Update third party Python eggs and packaging tools
+
+7.0.0   TMMA-424 Upgrade Python from 3.6.x to 3.8+
+        Update third party Python eggs and packaging tools
+
+6.4.0   TMMA-426 Update deployment scripts to remove any .exe files from pip environment
+
+6.3.1   Apply security updates
+
 6.3.0   TMMA-421 Apply Django security update
 
 6.2.0   Update third party python tools

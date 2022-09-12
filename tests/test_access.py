@@ -26,6 +26,11 @@ class AccessTestCase(BaseTestCase):
         self.client.logout()
         self._find_expected_content(path=reverse("help"), msg_list=["Help", "Genes and filter section", ])
 
+    def test_privacy_page(self):
+        """Test can view the privacy page without logging in."""
+        self.client.logout()
+        self._find_expected_content(path=reverse("privacy"), msg_list=["Privacy", "Google", "delete", ])
+
     def test_search_page(self):
         """Test can view the search page."""
         self._find_expected_content(path=reverse("search"), msg="login to use this tool")
@@ -85,6 +90,11 @@ class AccessTestCase(BaseTestCase):
 
         self._find_expected_content(path="/logout/",
                                     msg="Login")
+
+    def test_probe_page(self):
+        """Test can view the probe page without logging in."""
+        self.client.logout()
+        self._find_expected_content(path=reverse("probe"), msg="Monitoring")
 
     def test_anon_access_to_admin(self):
         """Test anonymous user does not have access to the Django admin."""

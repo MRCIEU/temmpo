@@ -16,10 +16,10 @@ jobs:
         ports:
           - 6379:6379
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
-        python-version: '3.6'
+        python-version: '3.8'
         architecture: 'x64'
     - uses: shogo82148/actions-setup-mysql@v1
       with:
