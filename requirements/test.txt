@@ -389,9 +389,9 @@ lxml==4.9.1 \
     --hash=sha256:fe17d10b97fdf58155f858606bddb4e037b805a60ae023c009f760d8361a4eb8 \
     --hash=sha256:fe749b052bb7233fe5d072fcb549221a8cb1a16725c47c37e42b0b9cb3ff2c3f
     # via -r requirements.txt
-more-itertools==8.13.0 \
-    --hash=sha256:a42901a0a5b169d925f6f217cd5a190e32ef54360905b9c39ee7db5313bfec0f \
-    --hash=sha256:c5122bffc5f104d37c1626b8615b511f3427aa5389b94d61e5ef8236bfbc3ddb
+more-itertools==8.14.0 \
+    --hash=sha256:1bc4f91ee5b1b31ac7ceacc17c09befe6a40a503907baf9c839c229b5095cfd2 \
+    --hash=sha256:c09443cd3d5438b8dafccd867a6bc1cb0894389e90cb53d227456b0b0bccb750
     # via -r requirements.txt
 mss==6.1.0 \
     --hash=sha256:2722c5c9211ce29b4f1497fc2c70faecf9cdcb7653fa7f0f88e2231a31949b93 \
