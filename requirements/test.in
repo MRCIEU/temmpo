@@ -4,6 +4,6 @@ coverage==6.4.4
 csvvalidator==1.2
 pyscreenshot==3.0
 pyvirtualdisplay==3.0
-requests==2.27.1
+requests==2.28.1
 requires.io==0.2.6
 selenium==4.1.0
