@@ -5,3 +5,4 @@ django-debug-toolbar==3.6.0
 ipython==8.5.0
 isort==5.10.1
 pympler==1.0.1
+typing-extensions==4.3.0 # Resolve issues with this egg not being pinned well in 
