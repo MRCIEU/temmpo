@@ -45,6 +45,7 @@ yum -y install mysql-community-client
 
 echo "###   Setup Web server components"
 yum -y install httpd
+yum -y install httpd-devel
 # Required to connect to DB successfully from web server and be able to send emails
 setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_can_network_connect_db 1
@@ -54,14 +55,18 @@ echo "###   Install Python 3.8 and components"
 
 yum -y install gcc gcc-c++ openssl-devel bzip2-devel libffi-devel zlib-devel
 cd /opt
-wget https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz
-tar -xzf Python-3.8.12.tgz
-cd Python-3.8.12/
-./configure --enable-optimizations
+wget https://www.python.org/ftp/python/3.8.13/Python-3.8.13.tgz
+tar -xzf Python-3.8.13.tgz
+cd Python-3.8.13/
+./configure --enable-optimizations --enable-shared
 make altinstall
 # Create symlinks
 ln -sfn /usr/local/bin/python3.8 /usr/bin/python3.8
 ln -sfn /usr/local/bin/pip3.8 /usr/bin/pip3.8
+
+echo "export LD_LIBRARY_PATH=/usr/local/lib/" > ld_library.sh
+mv ld_library.sh /etc/profile.d/ld_library.sh
+export set LD_LIBRARY_PATH=/usr/local/lib/
 
 pip3.8 install mod_wsgi==4.9.0
 ls /usr/local/lib64/python3.8/site-packages/mod_wsgi/server/

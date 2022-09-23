@@ -1,7 +1,8 @@
 -r test.txt
 
-astroid==2.11.3
-django-debug-toolbar==3.2.4
-ipython==8.0.1
+astroid==2.12.9
+django-debug-toolbar==3.6.0
+ipython==8.5.0
 isort==5.10.1
 pympler==1.0.1
+typing-extensions==4.3.0 # Resolve issues with this egg not being pinned well in 
