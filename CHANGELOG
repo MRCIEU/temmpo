@@ -1,3 +1,6 @@
+7.9.0   Update third party Python eggs and packaging tools
+        Update jQuery UI
+
 7.8.0   TMMA-433 Bug fix keep chromedriver insync with google-chrome.
         Use pip with hash checking mode for additional security
         Update third party Python eggs and packaging tools
