@@ -236,9 +236,9 @@ django-js-asset==2.0.0 \
     # via
     #   -r requirements.txt
     #   django-mptt
-django-mptt==0.13.4 \
-    --hash=sha256:75745b621ae31d97957ed924155a750dfa8cacd9543799ada2d713fd6bc3f5c7 \
-    --hash=sha256:80c9fb34df7796a4e5af0cb6b8ade3697555b1aa438bd07a01f32b3ab5202b63
+django-mptt==0.14.0 \
+    --hash=sha256:2c92a2b1614c53086278795ccf50580cf1f9b8564f3ff03055dd62bab5987711 \
+    --hash=sha256:d9a87433ab0e4f35247c6f6d5a93ace6990860a4ba8796f815d185f773b9acfc
     # via -r requirements.txt
 django-redis-cache==3.0.1 \
     --hash=sha256:a7fbef101a053d2e430bd3befe6a87e6e730f98e335b516f25f30b17d9fe66e3
