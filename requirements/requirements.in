@@ -5,7 +5,7 @@ django-clamd==0.4.0
 django-mptt==0.14.0
 django-redis-cache==3.0.1
 django-registration-redux==2.11
-django-rq==2.5.1
+django-rq==2.6.0
 django-autocomplete-light==3.9.4
 Django==3.2.16  # rq.filter: >=3.2,<3.3
 hiredis==2.0.0
@@ -14,7 +14,7 @@ more-itertools==8.14.0
 mysqlclient==2.1.1
 numexpr==2.8.3
 numpy==1.22.2
-pandas==1.5.0
+pandas==1.5.1
 python-magic==0.4.27
 redis==3.5.3
 unicodecsv==0.14.1
