@@ -21,9 +21,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
-PIP_VERSION = '22.2.2'
-SETUPTOOLS_VERSION = '65.3.0'
-PIP_TOOLS_VERSION = '6.8.0'
+PIP_VERSION = '22.3.1'
+SETUPTOOLS_VERSION = '65.6.3'
+PIP_TOOLS_VERSION = '6.12.1'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -510,26 +510,6 @@ def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="my
     with change_dir(src_dir):
         caller('%sbin/python3 manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
-def update_requires_io(requires_io_token, env="test", use_local_mode=False):
-    """requires_io_token=TOKENHERE,env=test,use_local_mode=False,branch=master"""
-    # Can only be run against test or dev instances
-    use_local_mode = (str(use_local_mode).lower() == 'true')
-    # Allow function to be run locally or remotely
-    caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
-    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
-    for branch in ("master", "demo_stable", "prod_stable"):
-        with change_dir(src_dir):
-            caller('git fetch --all')
-            caller('git fetch origin %s' % branch)
-            caller('git checkout %s' % branch)
-            caller('git pull')
-        with change_dir(venv_dir):
-            caller('./bin/requires.io update-branch -t %s -r temmpo -n %s %s/requirements' % (requires_io_token, branch, src_dir, ))
-    # Ensure test instance is left running on main branch
-    with change_dir(src_dir):
-        caller('git checkout master')
-
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
     if database_name in ('temmpo_p', ):
@@ -626,9 +606,9 @@ def pip_sync_requirements_file(env="dev", use_local_mode=True):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --generate-hashes --output-file requirements/requirements.txt requirements/requirements.in')
-        caller('../../bin/pip-compile --generate-hashes --output-file requirements/test.txt requirements/test.in')
-        caller('../../bin/pip-compile --generate-hashes --output-file requirements/dev.txt requirements/dev.in')
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/requirements.txt requirements/requirements.in')
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/test.txt requirements/test.in')
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/dev.txt requirements/dev.in')
 
 def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -640,9 +620,9 @@ def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
     venv_dir = PROJECT_ROOT + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
-        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
-        caller('../../bin/pip-compile --generate-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
 
 def remove_incompleted_registrations(env="demo", use_local_mode=False):
     """env=demo,use_local_mode=False"""
