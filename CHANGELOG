@@ -1,3 +1,6 @@
+8.0.0   TMMA-437: Update third party Python eggs and packaging tools
+        TMMA-443: Remove requires.io
+
 7.9.0   Apply Django security update
         Update third party Python eggs and packaging tools
         Update jQuery UI
