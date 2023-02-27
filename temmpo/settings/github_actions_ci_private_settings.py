@@ -4,7 +4,7 @@ DATABASES = {
         'NAME': 'ci',
         'USER': 'root',
         'PASSWORD': 'ci-db-pswd',
-        'HOST': 'db',
+        'HOST': '127.0.0.1',
         'PORT': '',
         'OPTIONS': {
             'sql_mode': 'STRICT_ALL_TABLES'
