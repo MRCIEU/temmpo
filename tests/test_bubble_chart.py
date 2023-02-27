@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 import os
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
 
 from django.conf import settings
 from django.core.files import File
@@ -67,7 +68,7 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
         logger.debug("Saved a screen shot here: %s" % screen_shot_name)
 
         try:
-            legend_item_1_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(2)")
+            legend_item_1_label = self.driver.find_element(By.CSS_SELECTOR, "#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(2)")
             self.assertEqual(legend_item_1_label.get_attribute("column-id"), "1. Serogroup")  # Appears last in the file of matches but has the higher score.
         except WebDriverException as e:
             print(e)
@@ -75,7 +76,7 @@ class BubbleChartJSTestCase(SeleniumBaseTestCase):
             self.fail("A selenium exception occurred trying to access a legend element in a bubble chart")
 
         try:
-            chart_header_label = self.driver.find_element_by_css_selector("#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(3) > text")
+            chart_header_label = self.driver.find_element(By.CSS_SELECTOR, "#bubble_chart > div > div:nth-child(1) > div > svg > g:nth-child(3) > text")
             self.assertTrue(search_result.mediator_match_counts_v4 < 20)
             self.assertEqual(chart_header_label.text, "Focused search results based on original score")
             self.assertFalse("(Top 20)" in chart_header_label.text)
