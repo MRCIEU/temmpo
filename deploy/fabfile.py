@@ -142,7 +142,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
             caller('ls -l')
             caller('rm -f chromedriver')
-            caller('unzip chromedriver_linux64.zip')
+            caller('unzip -o -f chromedriver_linux64.zip')
             caller('ls -l')
             caller('rm chromedriver_linux64.zip*')
             caller('ls -l')
