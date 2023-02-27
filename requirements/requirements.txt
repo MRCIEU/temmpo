@@ -47,7 +47,7 @@ bottleneck==1.3.6 \
     --hash=sha256:e234cdbf46f06308eb37b82537954be7130d859af9fc6e73e6f4c7cc1cd8fe6e \
     --hash=sha256:f236784459f7f07516bfc3522d0976b511529f865a78373029f6c59b41277ca1 \
     --hash=sha256:fd306632cf81a2fa91d1597157a0d708e956f17ea32a6c2a5e4250d1f2104294
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 clamd==1.0.2 \
     --hash=sha256:5c32546b7d1eb00fd6be00a889d79e00fbf980ed082826ccfa369bce3dcff5e7 \
     --hash=sha256:d82a2fd814684a35a1b31feadafb2e69c8ebde9403613f6bdaa5d877c0f29560
@@ -60,17 +60,17 @@ django==3.2.18 \
     --hash=sha256:08208dfe892eb64fff073ca743b3b952311104f939e7f6dae954fe72dcc533ba \
     --hash=sha256:4d492d9024c7b3dfababf49f94511ab6a58e2c9c3c7207786f1ba4eb77750706
     # via
-    #   -r requirements/requirements.in
+    #   -r requirements.in
     #   django-clamd
     #   django-js-asset
     #   django-rq
 django-autocomplete-light==3.9.4 \
     --hash=sha256:0f6da75c1c7186698b867a467a8cdb359f0513fdd8e09288a0c2fb018ae3d94e
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 django-clamd==0.4.0 \
     --hash=sha256:47adaf6f8156ee613dde9e0d88adc847aa3df021dabf1a4d1aec34b47de8da11 \
     --hash=sha256:5bde6c34b42e69972677fb4a7466b032377940c8727ee6ede41eb3b9807dcce4
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 django-js-asset==2.0.0 \
     --hash=sha256:86f9f300d682537ddaf0487dc2ab356581b8f50c069bdba91d334a46e449f923 \
     --hash=sha256:adc1ee1efa853fad42054b540c02205344bb406c9bddf87c9e5377a41b7db90f
@@ -78,18 +78,18 @@ django-js-asset==2.0.0 \
 django-mptt==0.14.0 \
     --hash=sha256:2c92a2b1614c53086278795ccf50580cf1f9b8564f3ff03055dd62bab5987711 \
     --hash=sha256:d9a87433ab0e4f35247c6f6d5a93ace6990860a4ba8796f815d185f773b9acfc
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 django-redis-cache==3.0.1 \
     --hash=sha256:a7fbef101a053d2e430bd3befe6a87e6e730f98e335b516f25f30b17d9fe66e3
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 django-registration-redux==2.12 \
     --hash=sha256:2213bbe8732be72724034f4146f0255a7bd666eb5a5e1b2d8d8aa633fe8af894 \
     --hash=sha256:56fbc7b01a7f0f48812fe4d4e0729d2dac916e16f8aaed36b3f10129f2df9d0f
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 django-rq==2.7.0 \
     --hash=sha256:50440be33c23427f3b34d206ff72025740b721b54b42976e7b18a0474174802b \
     --hash=sha256:5b09798a3d0b03d4c7b55dbba50409c16dcbb09d42c2839511b52c29744be8c8
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 hiredis==2.2.2 \
     --hash=sha256:01e2e588392b5fdcc3a6aa0eb62a2eb2a142f829082fa4c3354228029d3aa1ce \
     --hash=sha256:02b9f928dc6cd43ed0f0ffc1c75fb209fb180f004b7e2e19994805f998d247aa \
@@ -180,7 +180,7 @@ hiredis==2.2.2 \
     --hash=sha256:ed44b3c711cecde920f238ac35f70ac08744f2079b6369655856e43944464a72 \
     --hash=sha256:f1f1efbe9cc29a3af39cf7eed27225f951aed3f48a1149c7fb74529fb5ab86d4 \
     --hash=sha256:fd0ca35e2cf44866137cbb5ae7e439fab18a0b0e0e1cf51d45137622d59ec012
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 lxml==4.9.2 \
     --hash=sha256:01d36c05f4afb8f7c20fd9ed5badca32a2029b93b1750f571ccc0b142531caf7 \
     --hash=sha256:04876580c050a8c5341d706dd464ff04fd597095cc8c023252566a8826505726 \
@@ -259,11 +259,11 @@ lxml==4.9.2 \
     --hash=sha256:efa29c2fe6b4fdd32e8ef81c1528506895eca86e1d8c4657fda04c9b3786ddf9 \
     --hash=sha256:f1496ea22ca2c830cbcbd473de8f114a320da308438ae65abad6bab7867fe38f \
     --hash=sha256:f49e52d174375a7def9915c9f06ec4e569d235ad428f70751765f48d5926678c
-    # via -r requirements/requirements.in
-more-itertools==8.14.0 \
-    --hash=sha256:1bc4f91ee5b1b31ac7ceacc17c09befe6a40a503907baf9c839c229b5095cfd2 \
-    --hash=sha256:c09443cd3d5438b8dafccd867a6bc1cb0894389e90cb53d227456b0b0bccb750
-    # via -r requirements/requirements.in
+    # via -r requirements.in
+more-itertools==9.1.0 \
+    --hash=sha256:cabaa341ad0389ea83c17a94566a53ae4c9d07349861ecb14dc6d0345cf9ac5d \
+    --hash=sha256:d2bc7f02446e86a68911e58ded76d6561eea00cddfb2a91e7019bbb586c799f3
+    # via -r requirements.in
 mysqlclient==2.1.1 \
     --hash=sha256:0d1cd3a5a4d28c222fa199002810e8146cffd821410b67851af4cc80aeccd97c \
     --hash=sha256:828757e419fb11dd6c5ed2576ec92c3efaa93a0f7c39e263586d1ee779c3d782 \
@@ -272,7 +272,7 @@ mysqlclient==2.1.1 \
     --hash=sha256:c1ed71bd6244993b526113cca3df66428609f90e4652f37eb51c33496d478b37 \
     --hash=sha256:c812b67e90082a840efb82a8978369e6e69fc62ce1bda4ca8f3084a9d862308b \
     --hash=sha256:dea88c8d3f5a5d9293dfe7f087c16dd350ceb175f2f6631c9cf4caf3e19b7a96
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 numexpr==2.8.4 \
     --hash=sha256:059546e8f6283ccdb47c683101a890844f667fa6d56258d48ae2ecf1b3875957 \
     --hash=sha256:17ac9cfe6d0078c5fc06ba1c1bbd20b8783f28c6f475bbabd3cad53683075cab \
@@ -304,7 +304,7 @@ numexpr==2.8.4 \
     --hash=sha256:eaec59e9bf70ff05615c34a8b8d6c7bd042bd9f55465d7b495ea5436f45319d0 \
     --hash=sha256:f3a920bfac2645017110b87ddbe364c9c7a742870a4d2f6120b8786c25dc6db3 \
     --hash=sha256:ff5835e8af9a212e8480003d731aad1727aaea909926fd009e8ae6a1cba7f141
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 numpy==1.24.2 \
     --hash=sha256:003a9f530e880cb2cd177cba1af7220b9aa42def9c4afc2a2fc3ee6be7eb2b22 \
     --hash=sha256:150947adbdfeceec4e5926d956a06865c1c690f2fd902efede4ca6fe2e657c3f \
@@ -335,7 +335,7 @@ numpy==1.24.2 \
     --hash=sha256:f64bb98ac59b3ea3bf74b02f13836eb2e24e48e0ab0145bbda646295769bd780 \
     --hash=sha256:f9006288bcf4895917d02583cf3411f98631275bc67cce355a7f39f8c14338fa
     # via
-    #   -r requirements/requirements.in
+    #   -r requirements.in
     #   bottleneck
     #   numexpr
     #   pandas
@@ -367,7 +367,7 @@ pandas==1.5.3 \
     --hash=sha256:dfd681c5dc216037e0b0a2c821f5ed99ba9f03ebcf119c7dac0e9a7b960b9ec9 \
     --hash=sha256:e474390e60ed609cec869b0da796ad94f420bb057d86784191eefc62b65819ae \
     --hash=sha256:f76d097d12c82a535fda9dfe5e8dd4127952b45fea9b0276cb30cca5ea313fbc
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 python-dateutil==2.8.2 \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
     --hash=sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9
@@ -376,7 +376,7 @@ python-magic==0.4.27 \
     --hash=sha256:c1ba14b08e4a5f5c31a302b7721239695b2f0f058d125bd5ce1ee36b9d9d3c3b \
     --hash=sha256:c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3
     # via
-    #   -r requirements/requirements.in
+    #   -r requirements.in
     #   xtract
 pytz==2022.7 \
     --hash=sha256:7ccfae7b4b2c067464a6733c6261673fdb8fd1be905460396b97a073e9fa683a \
@@ -388,7 +388,7 @@ redis==3.5.3 \
     --hash=sha256:0e7e0cfca8660dea8b7d5cd8c4f6c5e29e11f31158c0b0ae91a397f00e5a05a2 \
     --hash=sha256:432b788c4530cfe16d8d943a09d40ca6c16149727e4afe8c2c9d5580c59d9f24
     # via
-    #   -r requirements/requirements.in
+    #   -r requirements.in
     #   django-redis-cache
     #   django-rq
     #   rq
@@ -408,12 +408,12 @@ sqlparse==0.4.3 \
     # via django
 unicodecsv==0.14.1 \
     --hash=sha256:018c08037d48649a0412063ff4eda26eaa81eff1546dbffa51fa5293276ff7fc
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 urllib3==1.26.14 \
     --hash=sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72 \
     --hash=sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1
-    # via -r requirements/requirements.in
+    # via -r requirements.in
 xtract==0.1a3 \
     --hash=sha256:1baac33be7494a106233e0db9de8d3ccc743635092a9b134641151c71bc322e3 \
     --hash=sha256:e085b268480f2123d1f7e25411a13721e987cfa064447afdbe895949cfe2899a
-    # via -r requirements/requirements.in
+    # via -r requirements.in
