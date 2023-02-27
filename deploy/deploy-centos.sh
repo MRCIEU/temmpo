@@ -27,6 +27,7 @@ yum -y install git
 yum -y install nano
 yum -y install wget
 yum -y install unzip
+yum -y install sqlite-devel
 
 echo "MySQL stuff"
 

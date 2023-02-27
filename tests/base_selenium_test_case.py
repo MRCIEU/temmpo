@@ -7,7 +7,9 @@ import time
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -41,10 +43,10 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         time.sleep(3)
 
     # def sel_find_by_css(self, css):
-    #     return self.driver.find_element_by_css_selector(css)
+    #     return self.driver.find_element(By.CSS_SELECTOR, css)
 
     # def sel_find_by_id(self, element_id):
-    #     return self.driver.find_element_by_id(element_id)
+    #     return self.driver.find_element(By.ID, element_id)
 
     # def sel_find_by_tag(self, element_tag):
     #     return self.driver.find_element_by_tag_name(element_tag)
@@ -52,13 +54,13 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
     def login_user(self, user, password):
         self.sel_open(reverse('login'))
 
-        self.driver.find_element_by_id("id_username").clear()
-        self.driver.find_element_by_id("id_username").send_keys(user)
+        self.driver.find_element(By.ID, "id_username").clear()
+        self.driver.find_element(By.ID, "id_username").send_keys(user)
 
-        self.driver.find_element_by_id("id_password").clear()
-        self.driver.find_element_by_id("id_password").send_keys(password)
+        self.driver.find_element(By.ID, "id_password").clear()
+        self.driver.find_element(By.ID, "id_password").send_keys(password)
 
-        self.driver.find_element_by_id("id_password").send_keys(Keys.RETURN)
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.RETURN)
         time.sleep(3)
 
     def setUp(self):

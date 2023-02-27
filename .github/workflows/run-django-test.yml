@@ -15,15 +15,17 @@ jobs:
         image: redis
         ports:
           - 6379:6379
+      db:
+        image: mysql:8
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: 'ci-db-pswd'
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
         python-version: '3.8'
         architecture: 'x64'
-    - uses: shogo82148/actions-setup-mysql@v1.10.2  # Pinned to this version as support Ubuuntu 18.04
-      with:
-        mysql-version: '8.0'
-        root-password: 'ci-db-pswd'
     - name: Run Python 3/Django tests
       run: bash tests/run-django-tests.sh
