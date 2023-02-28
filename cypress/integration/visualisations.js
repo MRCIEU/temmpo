@@ -1,10 +1,8 @@
 describe('Checking visualiations', () => {
 
-    beforeEach(() => {
-        cy.visit('/');
-    });
-
     it('Click login link, verify on the right page then try to login to admin', () => {
+        cy.visit('/logout');
+        cy.visit('/');
         cy.get('#side-menu')
             .contains('Login')
             .click()

@@ -6,6 +6,7 @@ import os
 import magic
 import requests
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 from django.conf import settings
@@ -31,8 +32,8 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
 
     def _upload_file(self, url, file_path):
         self.driver.get("%s%s" % (self.live_server_url, url))
-        self.driver.find_element_by_id("id_abstracts_upload").send_keys(file_path)
-        self.driver.find_element_by_id("upload_button").send_keys(Keys.RETURN)
+        self.driver.find_element(By.ID, "id_abstracts_upload").send_keys(file_path)
+        self.driver.find_element(By.ID, "upload_button").send_keys(Keys.RETURN)
 
     def _assert_file_upload(self, url, file_path):
         logger.debug('_assert_file_upload %s %s ' % (url, file_path))
@@ -50,9 +51,12 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
             f.write(response.content)
         previous_upload_count = Upload.objects.all().count()
         self._upload_file(upload_url, file_path)
-        self.assertTrue("File is infected with malware" in self.driver.page_source)
+
         # Verify no new Upload objects were created.
         self.assertEqual(Upload.objects.all().count(), previous_upload_count)
+        # Assert reason for lack of upload
+        self.assertTrue("File is infected with malware" in self.driver.page_source)
+
         #  delete virus file
         os.remove(file_path)
 

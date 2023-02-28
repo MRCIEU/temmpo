@@ -2,6 +2,7 @@
 
 # TODO: See: https://www.fabfile.org/upgrading.html#upgrading
 
+
 from datetime import datetime
 import os
 import urllib2
@@ -21,9 +22,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
-PIP_VERSION = '22.3.1'
-SETUPTOOLS_VERSION = '65.6.3'
-PIP_TOOLS_VERSION = '6.12.1'
+PIP_VERSION = '23.0.1'
+SETUPTOOLS_VERSION = '67.4.0'
+PIP_TOOLS_VERSION = '6.12.2'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -112,6 +113,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
+            
+            # Regenerate all pyc files
+            caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
 
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
         caller('find . -name *.exe | xargs rm -f')
@@ -142,7 +146,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
             caller('ls -l')
             caller('rm -f chromedriver')
-            caller('unzip chromedriver_linux64.zip')
+            caller('unzip -o -f chromedriver_linux64.zip')
             caller('ls -l')
             caller('rm chromedriver_linux64.zip*')
             caller('ls -l')
@@ -167,7 +171,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
     src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
 
     with cd(src_dir):
-        # Remove any Python 2 cached files
+        # Remove any cached python project files
         caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
         caller('git fetch --all')
         caller('git fetch origin %s' % branch)
@@ -176,7 +180,11 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     with change_dir(venv_dir):
 
+        # Remove any python dependency pyc files
+        caller('rm -f `find lib/python3.8/site-packages/ -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
+
         # Ensure pip3 and setup tools is up to expected version for existing environments.
+        caller('./bin/pip3 cache purge')
         caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
         caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
         caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
@@ -185,6 +193,9 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
             caller('./bin/pip-sync src/temmpo/requirements/%s.txt' % requirements)
         else:
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
+
+        # Regenerate all pyc files
+        caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
 
         if migrate_db:
             caller('./bin/python3 src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)

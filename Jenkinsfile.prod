@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
     triggers {
         upstream '../Production/3-tag-prod-stable, '
     }
@@ -16,19 +16,19 @@ pipeline {
         stage('Production: Cypress tests') {
             agent {
                 docker {
-                    image 'cypress/included:9.5.4'
+                    image 'cypress/included:9.7.0'
                     args '--add-host temmpo.org.uk:172.25.2.104 --entrypoint=""'
                 }
             }
             steps {
                 sh 'cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
             }
-        }
-    }
-    post {
-        failure {
-            archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
-            mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the failure.  Go to ${RUN_ARTIFACTS_DISPLAY_URL} to view any artifacts, such as Cypress screenshots or videos.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'it-temmpo-developers@bristol.ac.uk'
+            post {
+                failure {
+                    archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the failure.  Go to ${RUN_ARTIFACTS_DISPLAY_URL} to view any artifacts, such as Cypress screenshots or videos.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
+            }
         }
     }
 }
