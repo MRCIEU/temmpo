@@ -1,7 +1,7 @@
 describe('Checking visualiations', () => {
 
     beforeEach(() => {
-        cy.visit('/');
+        cy.visit('/logout');
     });
 
     it('Click login link, verify on the right page then try to login to admin', () => {
