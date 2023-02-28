@@ -16,7 +16,7 @@ pipeline {
         stage('Production: Cypress tests') {
             agent {
                 docker {
-                    image 'cypress/included:9.5.4'
+                    image 'cypress/included:9.7.0'
                     args '--add-host temmpo.org.uk:172.25.2.104 --entrypoint=""'
                 }
             }
