@@ -1,3 +1,10 @@
+8.0.1   Apply Django security updates
+        Update third party Python dependencies and packaging tools #141
+        Update Cypress
+        TMMA-446: Bug fix acceptance tests browser upgrades
+        Update GitHub actions usage of MySQL
+        TMMA-447: Clear and regenerate pyc files #142
+
 8.0.0   TMMA-437: Update third party Python eggs and packaging tools
         TMMA-443: Remove requires.io
 
