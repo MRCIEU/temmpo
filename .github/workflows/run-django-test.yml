@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04  # NB: There are issues in later versions of Ubutu where application/x-wine-extension-ini replacing the expected mime type for text files in archives.
+    runs-on: ubuntu-20.04  # NB: There are issues in later versions of Ubutu where application/x-wine-extension-ini replacing the expected mime type for text files in archives.
     services:
       redis:
         image: redis
