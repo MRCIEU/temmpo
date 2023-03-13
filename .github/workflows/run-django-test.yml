@@ -29,7 +29,6 @@ jobs:
         rm -f ~/.local/share/icons/hicolor/*/*/application-x-wine-extension*
         rm -f ~/.local/share/applications/mimeinfo.cache
         rm -f ~/.local/share/mime/application/x-wine-extension*
-        # update-mime-database ~/.local/share/mime/
     - uses: actions/setup-python@v4
       with:
         python-version: '3.8'
