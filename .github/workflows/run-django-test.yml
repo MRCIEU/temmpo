@@ -30,7 +30,6 @@ jobs:
         rm -f ~/.local/share/applications/mimeinfo.cache
         rm -f ~/.local/share/mime/packages/x-wine*
         rm -f ~/.local/share/mime/application/x-wine-extension*
-        update-desktop-database ~/.local/share/applications
         update-mime-database ~/.local/share/mime/
     - uses: actions/setup-python@v4
       with:
