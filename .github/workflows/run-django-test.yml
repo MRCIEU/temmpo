@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04  # NB: There are issues in later versions of Ubutu where application/x-wine-extension-ini replacing the expected mime type for text files in archives.
+    runs-on: ubuntu-22.04  # NB: There are issues in Ubuntu 20.04 & 22.04 where application/x-wine-extension-ini replacing the expected mime type for text files in archives.
     services:
       redis:
         image: redis
@@ -23,6 +23,15 @@ jobs:
           MYSQL_ROOT_PASSWORD: 'ci-db-pswd'
     steps:
     - uses: actions/checkout@v3
+    - name: "Clean up Ubuntu mime types"
+      run: |
+        rm -f ~/.local/share/applications/wine-extension*.desktop
+        rm -f ~/.local/share/icons/hicolor/*/*/application-x-wine-extension*
+        rm -f ~/.local/share/applications/mimeinfo.cache
+        rm -f ~/.local/share/mime/packages/x-wine*
+        rm -f ~/.local/share/mime/application/x-wine-extension*
+        update-desktop-database ~/.local/share/applications
+        update-mime-database ~/.local/share/mime/
     - uses: actions/setup-python@v4
       with:
         python-version: '3.8'
