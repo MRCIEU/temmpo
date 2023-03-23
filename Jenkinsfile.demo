@@ -1,7 +1,7 @@
 pipeline {
     agent any
     triggers {
-        upstream '../Demo jobs/3-tag-demo-stable-project, '
+        upstream(upstreamProjects: '../Demo jobs/3-tag-demo-stable-project', threshold: hudson.model.Result.SUCCESS)
     }
     options {
         timeout(time: 30, unit: 'MINUTES')
