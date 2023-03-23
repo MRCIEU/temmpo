@@ -24,6 +24,9 @@ pipeline {
                 sh 'cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
             }
             post {
+                success {
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the successful job.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline was successful", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
                 failure {
                     archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
                     mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the failure.  Go to ${RUN_ARTIFACTS_DISPLAY_URL} to view any artifacts, such as Cypress screenshots or videos.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'it-temmpo-developers@bristol.ac.uk'
