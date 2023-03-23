@@ -1,7 +1,7 @@
 pipeline {
     agent any
     triggers {
-        cron("5 6 * * WED")
+        cron("5 6 * * 3")
         upstream(upstreamProjects: '../Production/3-tag-prod-stable', threshold: hudson.model.Result.SUCCESS)
     }
     options {
