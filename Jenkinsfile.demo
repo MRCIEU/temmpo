@@ -1,7 +1,7 @@
 pipeline {
     agent any
     triggers {
-        upstream '../Demo jobs/3-tag-demo-stable-project, '
+        upstream(upstreamProjects: '../Demo jobs/3-tag-demo-stable-project', threshold: hudson.model.Result.SUCCESS)
     }
     options {
         timeout(time: 30, unit: 'MINUTES')
@@ -24,9 +24,20 @@ pipeline {
                 sh 'cypress run --browser chrome'
             }
             post {
+                success {
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the successful job.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline was successful", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
                 failure {
                     archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
                     mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the failure.  Go to ${RUN_ARTIFACTS_DISPLAY_URL} to view any artifacts, such as Cypress screenshots or videos.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
+                aborted {
+                    archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the aborted job.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline was aborted", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
+                unsuccessful {
+                    archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the unsuccesful job.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline was unsuccessful", to: 'it-temmpo-developers@bristol.ac.uk'
                 }
             }
         }
