@@ -238,7 +238,7 @@ CLAMD_SOCKET = '/var/run/clamd.scan/clamd.sock'
 CLAMD_USE_TCP = False
 CLAMD_TCP_SOCKET = 3310
 CLAMD_TCP_ADDR = '127.0.0.1'
-CLAMD_ENABLED = False
+CLAMD_ENABLED = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
