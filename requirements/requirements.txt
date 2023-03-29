@@ -385,9 +385,9 @@ python-magic==0.4.27 \
     # via
     #   -r requirements/requirements.in
     #   xtract
-pytz==2022.7.1 \
-    --hash=sha256:01a0681c4b9684a28304615eba55d1ab31ae00bf68ec157ec3708a8182dbbcd0 \
-    --hash=sha256:78f4f37d8198e0627c5f1143240bb0206b8691d8d7ac6d78fee88b78733f8c4a
+pytz==2023.3 \
+    --hash=sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588 \
+    --hash=sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb
     # via
     #   django
     #   pandas
