@@ -22,7 +22,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: 'ci-db-pswd'
     steps:
-    - uses: actions/setup-docker-on-macos
+    - uses: douglascamata/setup-docker-macos-action@v1-alpha
+    # - uses: docker-practice/actions-setup-docker@1.0.11
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
