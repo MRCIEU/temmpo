@@ -22,14 +22,14 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: 'ci-db-pswd'
     steps:
-    - name: Install Docker
-      uses: actions/setup-docker-on-macos
+    - name: Setup Docker on macOS
+      uses: douglascamata/setup-docker-macos-action@v1-alpha
     # - uses: actions/checkout@v3
     # - uses: actions/setup-python@v4
     #   with:
     #     python-version: '3.8'
     #     architecture: 'x64'
-    - name: docker version
+    - name: Check docker version
       run: docker -v
     # - name: Run Python 3/Django tests
     #   run: bash tests/run-django-tests.sh
