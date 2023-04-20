@@ -4,6 +4,7 @@ import os
 import magic
 
 from django.urls import reverse
+from django.test import tag
 
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
@@ -119,9 +120,11 @@ class ArchiveUploadTestCase(BaseTestCase):
     def test_gzip_pub_med_upload_is_allowable(self):
         self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_PUB_MED_ARCHIVE, reverse('search_pubmed'))
 
+    @tag('skip-on-ubuntu')
     def test_small_bz2_pub_med_upload_is_allowable(self):
         self._assert_archive_file_is_uploaded_and_extracted(TEST_BZ_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
 
+    @tag('skip-on-ubuntu')
     def test_small_gzip_pub_med_upload_is_allowable(self):
         self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
 
