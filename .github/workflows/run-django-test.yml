@@ -16,12 +16,17 @@ jobs:
         ports:
           - 6379:6379
       db:
-        image: mysql:8
+        image: mysql:5.7
         ports:
           - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: 'ci-db-pswd'
     steps:
+    # Install docker
+    - name: Install docker usign brew
+      run: brew cask install -y docker
+    - name: Check docker version
+      run: docker --version
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
