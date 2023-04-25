@@ -160,6 +160,8 @@ Optionally pass in a package or update them all within any requirements.in file 
 
 Entire test suite
 
+    cd /usr/local/projects/temmpo/lib/dev/bin && source activate && cd /usr/local/projects/temmpo/lib/dev/src/temmpo
+
     python manage.py test --settings=temmpo.settings.test_mysql
 
 Run the entire test suite using MySQL and generate a coverage report.
