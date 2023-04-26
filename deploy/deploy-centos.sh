@@ -19,8 +19,8 @@ yum -y install python-magic
 yum -y install python-pip
 yum -y install python-lxml
 
-pip2 install -U pip==20.3.4
-pip2 install Fabric==1.14.1
+pip2 install -U pip==19.3.1
+pip2 install Fabric==1.13.1 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
 echo "###   Install dev tools"
 yum -y install git
