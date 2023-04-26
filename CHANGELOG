@@ -1,7 +1,6 @@
 8.3.0   Change log file rotation to be time vs space based
         Fix badly pinned dev dependencies
         Apply Python updates
-        Change GitHub dependabot ecosystem for tracking python updates
 
 8.2.0   Apply Python updates
         Update GitHub actions
