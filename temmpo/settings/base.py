@@ -151,11 +151,9 @@ LOGGING = {
         },
         'local_file': {
             'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'formatter': 'verbose',
             'filename': '%s/var/log/django.log' % PROJECT_ROOT,
-            'when': 'D',
-            'backupCount': 60,
         },
         'mail_admins': {
             'level': 'ERROR',
