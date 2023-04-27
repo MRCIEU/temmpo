@@ -151,10 +151,9 @@ LOGGING = {
         },
         'local_file': {
             'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'formatter': 'verbose',
             'filename': '%s/var/log/django.log' % PROJECT_ROOT,
-            'maxBytes': 1024 * 1024 * 10,
         },
         'mail_admins': {
             'level': 'ERROR',
