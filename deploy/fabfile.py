@@ -80,6 +80,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     caller('mkdir -p %svar/results/v4' % PROJECT_ROOT)
     caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
 
+    if configure_apache:
+        disable_apache_site(use_local_mode)
     if restart_rqworker:
         stop_rqworker_service(use_local_mode)
 
@@ -134,6 +136,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     if configure_apache:
         collect_static(env, use_local_mode)
         setup_apache(env, use_local_mode)
+        enable_apache_site(use_local_mode)
 
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
