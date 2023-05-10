@@ -1,3 +1,5 @@
+8.3.1   Apply Python updates
+
 8.3.0   Change log file rotation to be time vs space based
         Fix badly pinned dev dependencies
         Apply Python updates
