@@ -133,5 +133,5 @@ class AccessTestCase(BaseTestCase):
         """Test super user have access to the Django RQ dashboard."""
         self.client.logout()
         self._login_super_user()
-        expected_dashboard = ["RQ Queues", "Queued Jobs", ]
+        expected_dashboard = ["Queues", "Queued Jobs", "Django RQ", ]
         self._find_expected_content('/django-rq', msg_list=expected_dashboard)
