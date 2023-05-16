@@ -237,6 +237,8 @@ For the versions available, see the [CHANGELOG](CHANGELOG) and the tags on this 
 * Tessa Alexander - Developer - Research IT, University of Bristol
 * Kieren Pitts - Developer cover - Research IT, University of Bristol
 * Jon Hallett - Systems Administrator - Research IT, University of Bristol
+* Mike Rodwell - Acceptance testing - Research IT, University of Bristol
+* Rick Henry - Systems Administrator - Research IT, University of Bristol
 
 ## License
 
