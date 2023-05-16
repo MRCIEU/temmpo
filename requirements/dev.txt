@@ -241,12 +241,13 @@ django==3.2.19 \
     --hash=sha256:21cc991466245d659ab79cb01204f9515690f8dae00e5eabde307f14d24d4d7d
     # via
     #   -r test.txt
+    #   django-autocomplete-light
     #   django-clamd
     #   django-debug-toolbar
     #   django-js-asset
     #   django-rq
-django-autocomplete-light==3.9.4 \
-    --hash=sha256:0f6da75c1c7186698b867a467a8cdb359f0513fdd8e09288a0c2fb018ae3d94e
+django-autocomplete-light==3.9.7 \
+    --hash=sha256:a34f192ac438c4df056dbfd399550799ddc631c4661960134ded924648770373
     # via -r test.txt
 django-clamd==0.4.0 \
     --hash=sha256:47adaf6f8156ee613dde9e0d88adc847aa3df021dabf1a4d1aec34b47de8da11 \
