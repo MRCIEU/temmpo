@@ -251,9 +251,9 @@ django-registration-redux==2.12 \
     --hash=sha256:2213bbe8732be72724034f4146f0255a7bd666eb5a5e1b2d8d8aa633fe8af894 \
     --hash=sha256:56fbc7b01a7f0f48812fe4d4e0729d2dac916e16f8aaed36b3f10129f2df9d0f
     # via -r requirements.txt
-django-rq==2.8.0 \
-    --hash=sha256:161fcd037aa837e047400db909d2efa2867294c5efe1c45bcaf8d888ad1839b4 \
-    --hash=sha256:2820ecefed024a7f14fe42ebc46b22f53bcd84639a79c0a379491c10d82bfaa3
+django-rq==2.8.1 \
+    --hash=sha256:f5d649dc57b5564011460b2b69c8a60a4f5f10ee8692b51d1dfc17035b1039b8 \
+    --hash=sha256:ff053aa4d1b1e1acc47c99b4a21b514de8745894c00d1e6f4abc8b37d35d66d6
     # via -r requirements.txt
 easyprocess==1.1 \
     --hash=sha256:82eed523a0a5eb12a81fa4eacd9f342caeb3f900eb4b798740e6696ad07e63f9 \
