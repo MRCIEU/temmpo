@@ -241,20 +241,21 @@ django==3.2.19 \
     --hash=sha256:21cc991466245d659ab79cb01204f9515690f8dae00e5eabde307f14d24d4d7d
     # via
     #   -r requirements/test.txt
+    #   django-autocomplete-light
     #   django-clamd
     #   django-debug-toolbar
     #   django-js-asset
     #   django-rq
-django-autocomplete-light==3.9.4 \
-    --hash=sha256:0f6da75c1c7186698b867a467a8cdb359f0513fdd8e09288a0c2fb018ae3d94e
+django-autocomplete-light==3.9.7 \
+    --hash=sha256:a34f192ac438c4df056dbfd399550799ddc631c4661960134ded924648770373
     # via -r requirements/test.txt
 django-clamd==0.4.0 \
     --hash=sha256:47adaf6f8156ee613dde9e0d88adc847aa3df021dabf1a4d1aec34b47de8da11 \
     --hash=sha256:5bde6c34b42e69972677fb4a7466b032377940c8727ee6ede41eb3b9807dcce4
     # via -r requirements/test.txt
-django-debug-toolbar==4.0.0 \
-    --hash=sha256:89619f6e0ea1057dca47bfc429ed99b237ef70074dabc065a7faa5f00e1459cf \
-    --hash=sha256:bad339d68520652ddc1580c76f136fcbc3e020fd5ed96510a89a02ec81bb3fb1
+django-debug-toolbar==4.1.0 \
+    --hash=sha256:a0b532ef5d52544fd745d1dcfc0557fa75f6f0d1962a8298bd568427ef2fa436 \
+    --hash=sha256:f57882e335593cb8e74c2bda9f1116bbb9ca8fc0d81b50a75ace0f83de5173c7
     # via -r requirements/dev.in
 django-js-asset==2.0.0 \
     --hash=sha256:86f9f300d682537ddaf0487dc2ab356581b8f50c069bdba91d334a46e449f923 \
@@ -273,9 +274,9 @@ django-registration-redux==2.12 \
     --hash=sha256:2213bbe8732be72724034f4146f0255a7bd666eb5a5e1b2d8d8aa633fe8af894 \
     --hash=sha256:56fbc7b01a7f0f48812fe4d4e0729d2dac916e16f8aaed36b3f10129f2df9d0f
     # via -r requirements/test.txt
-django-rq==2.8.0 \
-    --hash=sha256:161fcd037aa837e047400db909d2efa2867294c5efe1c45bcaf8d888ad1839b4 \
-    --hash=sha256:2820ecefed024a7f14fe42ebc46b22f53bcd84639a79c0a379491c10d82bfaa3
+django-rq==2.8.1 \
+    --hash=sha256:f5d649dc57b5564011460b2b69c8a60a4f5f10ee8692b51d1dfc17035b1039b8 \
+    --hash=sha256:ff053aa4d1b1e1acc47c99b4a21b514de8745894c00d1e6f4abc8b37d35d66d6
     # via -r requirements/test.txt
 easyprocess==1.1 \
     --hash=sha256:82eed523a0a5eb12a81fa4eacd9f342caeb3f900eb4b798740e6696ad07e63f9 \
