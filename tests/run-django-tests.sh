@@ -32,10 +32,13 @@ pip2 install Fabric==1.13.1 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 echo "Install virtualenv"
 pip3 install virtualenv==20.13.0
 
+echo "Install wheel"
+apt-get install -y python3-wheel-whl
+
 echo "Set up alias for python3.8"
 which python3
-which python3.8
-alias python3.8="python3"
+# which python3.8
+# alias python3.8="python3"
 which python3.8
 
 cd $GITHUB_WORKSPACE
@@ -45,12 +48,6 @@ echo "Create virtualenv as per VM based environments"
 fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False,virtualenv=virtualenv -f deploy/fabfile.py
 
 echo "Run coverage tests"
-# pip3 install -U pip==23.1.2
-# pip3 install setuptools==67.8.0
-# pip3 install pip-tools==6.13.0
-# pip3 freeze
-# pip3 install -r requirements/requirements.txt
-# pip-sync requirements/test.txt
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 ../../bin/coverage
