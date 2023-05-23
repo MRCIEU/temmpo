@@ -33,7 +33,7 @@ echo "Install virtualenv"
 pip3 install virtualenv==20.13.0
 
 echo "Install wheel"
-apt-get install -y python3-wheel-whl
+sudo apt-get install -y python3-wheel-whl
 
 echo "Set up alias for python3.8"
 which python3
