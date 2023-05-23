@@ -437,7 +437,7 @@ def sym_link_private_settings(env="dev", use_local_mode=False, project_dir=PROJE
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
-    private_settings_sym_link = '%slib/%s/src/temmpo/temmpo/settings/private_settings.py' % (PROJECT_ROOT, env)
+    private_settings_sym_link = '%slib/%s/src/temmpo/temmpo/settings/private_settings.py' % (project_dir, env)
     if not _is_link_local(private_settings_sym_link, use_local_mode):
         caller('ln -s %s.settings/private_settings.py %s' % (PROJECT_ROOT, private_settings_sym_link))
 
