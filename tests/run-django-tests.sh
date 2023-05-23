@@ -32,11 +32,6 @@ pip2 install Fabric==1.13.1 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 echo "Install virtualenv"
 pip3 install virtualenv==20.13.0
 
-echo "Set up alias for virtualenv-3.8"
-which virtualenv
-alias virtualenv-3.8='virtualenv'
-which virtualenv-3.8
-
 echo "Set up alias for python3.8"
 which python3
 which python3.8
@@ -47,7 +42,7 @@ cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 
 echo "Create virtualenv as per VM based environments"
-fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False -f deploy/fabfile.py
+fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False,virtualenv=virtualenv -f deploy/fabfile.py
 
 echo "Run coverage tests"
 # pip3 install -U pip==23.1.2
