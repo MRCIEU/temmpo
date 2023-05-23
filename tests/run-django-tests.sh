@@ -19,16 +19,30 @@ mkdir -p var/results/testing/v1
 mkdir -p var/results/testing/v3
 mkdir -p var/results/testing/v4
 mkdir -p var/tmp
+
+
+# Check both versions of pip are installed
+pip -V
+pip3 -V
+
+# Install Fabric
+pip install -U pip==19.3.1
+pip install Fabric==1.13.1 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
+
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
-pip3 install -U pip==23.1.2
-pip3 install setuptools==67.8.0
-pip3 install pip-tools==6.13.0
-pip3 freeze
-pip3 install -r requirements/requirements.txt
-pip-sync requirements/test.txt
-cd $GITHUB_WORKSPACE
-cd lib/test/src/temmpo
+
+# Create virtualenv as per VM based environments
+fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test -f deploy/fabfile.py
+
+# pip3 install -U pip==23.1.2
+# pip3 install setuptools==67.8.0
+# pip3 install pip-tools==6.13.0
+# pip3 freeze
+# pip3 install -r requirements/requirements.txt
+# pip-sync requirements/test.txt
+# cd $GITHUB_WORKSPACE
+# cd lib/test/src/temmpo
 coverage
 coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=skip-on-ubuntu
 coverage report --skip-empty --skip-covered -m
