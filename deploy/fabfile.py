@@ -10,8 +10,7 @@ import urllib2
 from fabric.api import *
 from fabric.contrib import files
 
-# Equivalent of /usr/local/projects/temmpo/ on Centos environments
-PROJECT_ROOT = '/'.join(os.path.dirname(__file__).split('/')[0:-5]) + "/"
+PROJECT_ROOT = "/usr/local/projects/temmpo/"
 
 GIT_URL = 'git@github.com:MRCIEU/temmpo.git'
 GIT_SSH_HOSTS = ('104.192.143.1',
@@ -60,7 +59,7 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.8"):
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.8", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
@@ -71,21 +70,21 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    src_dir = PROJECT_ROOT + "lib/" + env + "/src/"
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = project_dir + "lib/" + env + "/src/"
+    venv_dir = project_dir + "lib/" + env + "/"
 
     # Create application specific directories
-    caller('mkdir -p %svar/results/v1' % PROJECT_ROOT)
-    caller('mkdir -p %svar/results/v3' % PROJECT_ROOT)
-    caller('mkdir -p %svar/results/v4' % PROJECT_ROOT)
-    caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v1' % project_dir)
+    caller('mkdir -p %svar/results/v3' % project_dir)
+    caller('mkdir -p %svar/results/v4' % project_dir)
+    caller('mkdir -p %svar/abstracts' % project_dir)
 
     if configure_apache:
         disable_apache_site(use_local_mode)
     if restart_rqworker:
         stop_rqworker_service(use_local_mode)
 
-    with change_dir(PROJECT_ROOT + 'lib/'):
+    with change_dir(project_dir + 'lib/'):
         caller('%s --python python3.8 %s' % (virtualenv, env))
         # Verify Python version in use
         caller('%s/bin/python3 -V' % env)
@@ -126,12 +125,12 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         sym_link_private_settings(env, use_local_mode)
 
     # Set up logging
-    if not _exists_local(PROJECT_ROOT + 'var/log/django.log', use_local_mode):
-        caller('mkdir -p ' + PROJECT_ROOT + 'var/log/')
-        caller('touch %svar/log/django.log' % PROJECT_ROOT)
+    if not _exists_local(project_dir + 'var/log/django.log', use_local_mode):
+        caller('mkdir -p ' + project_dir + 'var/log/')
+        caller('touch %svar/log/django.log' % project_dir)
 
     if migrate_db:
-        with change_dir(PROJECT_ROOT + 'lib/' + env):
+        with change_dir(project_dir + 'lib/' + env):
             caller('./bin/python3 src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
 
     if configure_apache:

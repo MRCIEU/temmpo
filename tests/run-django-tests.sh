@@ -45,7 +45,7 @@ cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 
 echo "Create virtualenv as per VM based environments"
-fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=False,use_local_mode=True,requirements=test,restart_rqworker=False,virtualenv=virtualenv -f deploy/fabfile.py
+fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=False,use_local_mode=True,requirements=test,restart_rqworker=False,virtualenv=virtualenv,project_dir=$GITHUB_WORKSPACE -f deploy/fabfile.py
 
 echo "Run coverage tests"
 cd $GITHUB_WORKSPACE
