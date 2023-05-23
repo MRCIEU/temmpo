@@ -33,7 +33,7 @@ cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 
 # Create virtualenv as per VM based environments
-fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test -f deploy/fabfile.py
+fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False -f deploy/fabfile.py
 
 # pip3 install -U pip==23.1.2
 # pip3 install setuptools==67.8.0
