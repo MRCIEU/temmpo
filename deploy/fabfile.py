@@ -113,9 +113,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 cache purge')
             caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
-            # Fix TMMA-456 - issue on Debian systems where dependencies loosely pinned but orrectly pinned overall causes builds to fail
+            # Fix TMMA-456 - Resolve issue on Debian systems where dependencies loosely pinned upstream but correctly pinned overall in our requirements file causes builds to fail
             caller('./bin/pip3 install --no-deps -r src/temmpo/requirements/%s.txt' % requirements)
-            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
             
             # Regenerate all pyc files
