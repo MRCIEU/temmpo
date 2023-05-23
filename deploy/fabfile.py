@@ -12,7 +12,6 @@ from fabric.contrib import files
 
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
 
-GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@github.com:MRCIEU/temmpo.git'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
@@ -60,7 +59,7 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True):
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.8", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
@@ -71,22 +70,22 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    src_dir = PROJECT_ROOT + "lib/" + env + "/src/"
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    src_dir = project_dir + "lib/" + env + "/src/"
+    venv_dir = project_dir + "lib/" + env + "/"
 
     # Create application specific directories
-    caller('mkdir -p %svar/results/v1' % PROJECT_ROOT)
-    caller('mkdir -p %svar/results/v3' % PROJECT_ROOT)
-    caller('mkdir -p %svar/results/v4' % PROJECT_ROOT)
-    caller('mkdir -p %svar/abstracts' % PROJECT_ROOT)
+    caller('mkdir -p %svar/results/v1' % project_dir)
+    caller('mkdir -p %svar/results/v3' % project_dir)
+    caller('mkdir -p %svar/results/v4' % project_dir)
+    caller('mkdir -p %svar/abstracts' % project_dir)
 
     if configure_apache:
         disable_apache_site(use_local_mode)
     if restart_rqworker:
         stop_rqworker_service(use_local_mode)
 
-    with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('virtualenv-3.8 --python python3.8 %s' % env)
+    with change_dir(project_dir + 'lib/'):
+        caller('%s --python python3.8 %s' % (virtualenv, env))
         # Verify Python version in use
         caller('%s/bin/python3 -V' % env)
 
@@ -113,7 +112,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 cache purge')
             caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
-            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
+            # Fix TMMA-456 - Resolve issue on Debian systems where dependencies loosely pinned upstream but correctly pinned overall in our requirements file causes builds to fail
+            caller('./bin/pip3 install --no-deps -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
             
             # Regenerate all pyc files
@@ -122,15 +122,15 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
         caller('find . -name *.exe | xargs rm -f')
 
-        sym_link_private_settings(env, use_local_mode)
+        sym_link_private_settings(env, use_local_mode, project_dir)
 
     # Set up logging
-    if not _exists_local(PROJECT_ROOT + 'var/log/django.log', use_local_mode):
-        caller('mkdir -p ' + PROJECT_ROOT + 'var/log/')
-        caller('touch %svar/log/django.log' % PROJECT_ROOT)
+    if not _exists_local(project_dir + 'var/log/django.log', use_local_mode):
+        caller('mkdir -p ' + project_dir + 'var/log/')
+        caller('touch %svar/log/django.log' % project_dir)
 
     if migrate_db:
-        with change_dir(PROJECT_ROOT + 'lib/' + env):
+        with change_dir(project_dir + 'lib/' + env):
             caller('./bin/python3 src/temmpo/manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
 
     if configure_apache:
@@ -432,12 +432,12 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
         restart_apache(env, use_local_mode, run_checks=True)
 
 
-def sym_link_private_settings(env="dev", use_local_mode=False):
+def sym_link_private_settings(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env="dev", use_local_mode=False."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
-    private_settings_sym_link = '%slib/%s/src/temmpo/temmpo/settings/private_settings.py' % (PROJECT_ROOT, env)
+    private_settings_sym_link = '%slib/%s/src/temmpo/temmpo/settings/private_settings.py' % (project_dir, env)
     if not _is_link_local(private_settings_sym_link, use_local_mode):
         caller('ln -s %s.settings/private_settings.py %s' % (PROJECT_ROOT, private_settings_sym_link))
 
