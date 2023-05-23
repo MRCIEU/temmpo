@@ -30,7 +30,15 @@ pip2 install -U pip==19.3.1
 pip2 install Fabric==1.13.1 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
 # Install virtualenv
-pip3.8 install virtualenv==20.13.0
+which virtualenv
+pip3 install virtualenv==20.13.0
+alias virtualenv-3.8='virtualenv'
+which virtualenv-3.8
+
+which python3
+which python3.8
+alias python3.8="python3"
+which python3.8
 
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
