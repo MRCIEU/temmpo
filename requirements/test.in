@@ -6,4 +6,4 @@ pyscreenshot>=3.0
 pyvirtualdisplay>=3.0
 requests>=2.31.0
 selenium>=4.8.2
-urllib3==1.26.15 # https://github.com/urllib3/urllib3/issues/2168
+urllib3==2.0.2 # https://github.com/urllib3/urllib3/issues/2168
