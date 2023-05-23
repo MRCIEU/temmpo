@@ -398,9 +398,9 @@ redis==3.5.3 \
     #   django-redis-cache
     #   django-rq
     #   rq
-rq==1.14.0 \
-    --hash=sha256:caadcbd117d898e4fe3e97cf761e2d9c598a387195ee4da3e3d81000918abac3 \
-    --hash=sha256:dc2c54f4f56e637b056f0ff5859c0e4b4baec657a08c57cee86ebe84bbf984ce
+rq==1.14.1 \
+    --hash=sha256:37e003db1da205e08db6cc4653b7c6ccfd9292000954240308abfce2ebde43ba \
+    --hash=sha256:5fb86038922ddd76eb2d9aa0adeec6dcf64f159dbbe730b26358b1417120dd44
     # via django-rq
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
