@@ -122,7 +122,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
         caller('find . -name *.exe | xargs rm -f')
 
-        sym_link_private_settings(env, use_local_mode)
+        sym_link_private_settings(env, use_local_mode, project_dir)
 
     # Set up logging
     if not _exists_local(project_dir + 'var/log/django.log', use_local_mode):
@@ -432,7 +432,7 @@ def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=T
         restart_apache(env, use_local_mode, run_checks=True)
 
 
-def sym_link_private_settings(env="dev", use_local_mode=False):
+def sym_link_private_settings(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env="dev", use_local_mode=False."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
