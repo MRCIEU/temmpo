@@ -10,9 +10,9 @@ import urllib2
 from fabric.api import *
 from fabric.contrib import files
 
-PROJECT_ROOT = "/usr/local/projects/temmpo/"
+# Equivalent of /usr/local/projects/temmpo/ on Centos environments
+PROJECT_ROOT = '/'.join(os.path.dirname(__file__).split('/')[0:-5]) + "/"
 
-GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@github.com:MRCIEU/temmpo.git'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
@@ -60,7 +60,7 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True):
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.8"):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
@@ -86,7 +86,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(PROJECT_ROOT + 'lib/'):
-        caller('virtualenv-3.8 --python python3.8 %s' % env)
+        caller('%s --python python3.8 %s' % (virtualenv, env))
         # Verify Python version in use
         caller('%s/bin/python3 -V' % env)
 
@@ -113,7 +113,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 cache purge')
             caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
-            caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
+            # Fix TMMA-456 - Resolve issue on Debian systems where dependencies loosely pinned upstream but correctly pinned overall in our requirements file causes builds to fail
+            caller('./bin/pip3 install --no-deps -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
             
             # Regenerate all pyc files
