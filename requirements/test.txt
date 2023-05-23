@@ -67,9 +67,9 @@ bottleneck==1.3.7 \
     --hash=sha256:f5409cf6db5e60256626a7c110b2b4c80d9f6b0d1ec0b66565bbab978f96b7a6 \
     --hash=sha256:fa80c318b5164e39e4f2d5abf95f5ff42744e3d8535a4c85ede94ccc5fca8f9b
     # via -r requirements/requirements.txt
-certifi==2022.12.7 \
-    --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
-    --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
+certifi==2023.5.7 \
+    --hash=sha256:0f0d56dc5a6ad56fd4ba36484d6cc34451e1c6548c61daad8c320169f91eddc7 \
+    --hash=sha256:c6c2e98f5c7869efca1f8916fed228dd91539f9f1b444c314c06eef02980c716
     # via
     #   requests
     #   selenium
@@ -607,19 +607,19 @@ redis==3.5.3 \
     #   django-redis-cache
     #   django-rq
     #   rq
-requests==2.29.0 \
-    --hash=sha256:e8f3c9be120d3333921d213eef078af392fba3933ab7ed2d1cba3b56f2568c3b \
-    --hash=sha256:f2e34a75f4749019bb0e3effb66683630e4ffeaf75819fb51bebef1bf5aef059
+requests==2.31.0 \
+    --hash=sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f \
+    --hash=sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1
     # via -r requirements/test.in
-rq==1.14.0 \
-    --hash=sha256:caadcbd117d898e4fe3e97cf761e2d9c598a387195ee4da3e3d81000918abac3 \
-    --hash=sha256:dc2c54f4f56e637b056f0ff5859c0e4b4baec657a08c57cee86ebe84bbf984ce
+rq==1.14.1 \
+    --hash=sha256:37e003db1da205e08db6cc4653b7c6ccfd9292000954240308abfce2ebde43ba \
+    --hash=sha256:5fb86038922ddd76eb2d9aa0adeec6dcf64f159dbbe730b26358b1417120dd44
     # via
     #   -r requirements/requirements.txt
     #   django-rq
-selenium==4.9.0 \
-    --hash=sha256:478fae77cdfaec32adb1e68d59632c8c191f920535282abcaa2d1a3d98655624 \
-    --hash=sha256:4c19e6aac202719373108d53a5a8e9336ba8d2b25822ca32ae6ff37acbabbdbe
+selenium==4.9.1 \
+    --hash=sha256:3444f4376321530c36ce8355b6b357d8cf4a7d588ce5cf772183465930bbed0e \
+    --hash=sha256:82aedaa85d55bc861f4c89ff9609e82f6c958e2e1e3da3ffcc36703f21d3ee16
     # via -r requirements/test.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
@@ -665,6 +665,7 @@ urllib3[socks]==1.26.15 \
     --hash=sha256:8a388717b9476f934a21484e8c8e61875ab60644d29b9b39e11e4b9dc1c6b305 \
     --hash=sha256:aa751d169e23c7479ce47a0cb0da579e3ede798f994f5816a74e4f4500dcea42
     # via
+    #   -r requirements/test.in
     #   requests
     #   selenium
 wsproto==1.2.0 \
