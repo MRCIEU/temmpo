@@ -26,7 +26,7 @@ pip2 -V
 pip3 -V
 
 echo "Install Fabric"
-pip2 install -U pip==23.1.2
+pip2 install -U pip==20.3.4
 pip2 install Fabric==1.13.1 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
 echo "Install virtualenv"
@@ -56,8 +56,8 @@ echo "Run coverage tests"
 # pip3 freeze
 # pip3 install -r requirements/requirements.txt
 # pip-sync requirements/test.txt
-# cd $GITHUB_WORKSPACE
-# cd lib/test/src/temmpo
+cd $GITHUB_WORKSPACE
+cd lib/test/src/temmpo
 ../../bin/coverage
 ../../bin/coverage run --source='.' manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=skip-on-ubuntu
 ../../bin/coverage report --skip-empty --skip-covered -m
