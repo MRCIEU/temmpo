@@ -10,9 +10,9 @@ import urllib2
 from fabric.api import *
 from fabric.contrib import files
 
-PROJECT_ROOT = "/usr/local/projects/temmpo/"
+# Equivalent of /usr/local/projects/temmpo/ on Centos environments
+PROJECT_ROOT = '/'.join(os.path.dirname(__file__).split('/')[0:-5]) + "/"
 
-GIT_DIR = "/usr/local/projects/temmpo/lib/git/"
 GIT_URL = 'git@github.com:MRCIEU/temmpo.git'
 GIT_SSH_HOSTS = ('104.192.143.1',
                  '104.192.143.2',
