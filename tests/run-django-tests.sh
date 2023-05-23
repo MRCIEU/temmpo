@@ -47,6 +47,9 @@ cd lib/test/src/temmpo
 echo "Create virtualenv as per VM based environments"
 fab make_virtualenv:env=test,configure_apache=False,clone_repo=False,branch=None,migrate_db=True,use_local_mode=True,requirements=test,restart_rqworker=False,virtualenv=virtualenv -f deploy/fabfile.py
 
+# Manual fix TMMA-456
+../../bin/pip3 install urllib3==1.26.15
+
 echo "Run coverage tests"
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
