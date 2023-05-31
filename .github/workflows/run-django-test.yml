@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # NB: There are issues in later versions of Ubutu where application/x-wine-extension-ini replacing the expected mime type for text files in archives - these tests will need to be skipped and only run on VM based environment
+    runs-on: ubuntu-22.04 # NB: There are issues in later versions of Ubuntu where application/x-wine-extension-ini replacing the expected mime type for text files in archives - these tests will need to be skipped and only run on VM based environment
     services:
       redis:
         image: redis
@@ -23,6 +23,10 @@ jobs:
           MYSQL_ROOT_PASSWORD: 'ci-db-pswd'
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '2.7'
+        architecture: 'x64'
     - uses: actions/setup-python@v4
       with:
         python-version: '3.8'
