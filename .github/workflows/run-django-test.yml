@@ -36,5 +36,7 @@ jobs:
       with:
         python-version: '3.8'
         architecture: 'x64'
+    - name: Build Python 3/Django test environment
+      run: bash tests/build-test-env.sh
     - name: Run Python 3/Django tests
       run: bash tests/run-django-tests.sh
