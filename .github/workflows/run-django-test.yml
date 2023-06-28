@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # NB: There are issues in later versions of Ubuntu where application/x-wine-extension-ini replacing the expected mime type for text files in archives - these tests will need to be skipped and only run on VM based environment
+    runs-on: ubuntu-20.04 # NB: There are issues in later versions of Ubuntu where application/x-wine-extension-ini replacing the expected mime type for text files in archives - these tests will need to be skipped and only run on VM based environment
     services:
       redis:
         image: redis
