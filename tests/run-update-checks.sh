@@ -13,5 +13,5 @@ fab pip_sync_requirements_file:env=test,use_local_mode=True,project_dir=$GITHUB_
 # Move code back to expected location for pull request
 cd $GITHUB_WORKSPACE
 
-shopt -s extglob
-mv lib/test/src/temmpo/ !(lib)
+
+mv lib/test/src/temmpo/ ../../../..
