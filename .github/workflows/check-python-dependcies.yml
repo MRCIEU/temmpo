@@ -6,6 +6,8 @@ on:
       - 'master'
     paths:
       - '.github/workflows/check-python-dependcies.yml'
+      - 'tests/build-test-env.sh'
+      - 'tests/run-update-checks.sh'
   schedule:
       - cron: 30 8 * * WED
   workflow_dispatch:
@@ -33,11 +35,11 @@ jobs:
     - name: Debug output
       run: |
         pwd
-        ls
-        find . -name dev.txt
+        ls -l ./lib/test/src/temmpo/requirements/
     - name: git status output
       run: |
         git status
+      # 
     - name: Create Pull Request where required
       uses: peter-evans/create-pull-request@v5
       with:
