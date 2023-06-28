@@ -620,9 +620,9 @@ def pip_sync_requirements_file(env="dev", use_local_mode=True, project_dir=PROJE
     venv_dir = project_dir + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/requirements.txt requirements/requirements.in')
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/test.txt requirements/test.in')
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/dev.txt requirements/dev.in')
+        caller('./bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/requirements.txt requirements/requirements.in')
+        caller('./bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/test.txt requirements/test.in')
+        caller('./bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/dev.txt requirements/dev.in')
 
 def pip_tools_update_requirements(env="dev", use_local_mode=True, package="", project_dir=PROJECT_ROOT):
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -634,9 +634,9 @@ def pip_tools_update_requirements(env="dev", use_local_mode=True, package="", pr
     venv_dir = project_dir + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
+        caller('./bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
+        caller('./bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
+        caller('./bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
 
 def remove_incompleted_registrations(env="demo", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env=demo,use_local_mode=False"""
