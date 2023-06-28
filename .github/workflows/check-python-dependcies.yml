@@ -34,8 +34,7 @@ jobs:
       run: |
         pwd
         ls
-        ls -al */*
-        whoami
+        find . -name dev.txt
     - name: git status output
       run: |
         git status
