@@ -3,7 +3,7 @@ name: Check for Python egg updates
 on:
   push:
     branches:
-      - 'main'
+      - 'master'
     paths:
       - '.github/workflows/check-python-dependcies.yml'
   schedule:
