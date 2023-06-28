@@ -1,1 +1,0 @@
-from .pre_populate import (pre_populate_genes)
