@@ -30,6 +30,14 @@ jobs:
         architecture: 'x64'
     - name: Run checks for package updates
       run: bash tests/run-update-checks.sh
+    - name: Debug output
+      run: ls */*
+    - name: git status output
+      run: |
+        git status
+        git config user.name 'CI python package updater'
+        git config user.email 'it-temmpo-developers@bristol.ac.uk'
+        git commit -am "Automated pip-tools & GitHub Action generated python dependency updates"
     - name: Create Pull Request where required
       uses: peter-evans/create-pull-request@v5
       with:
