@@ -2,6 +2,8 @@
 
 set -e
 
+bash $GITHUB_WORKSPACE/tests/build-test-env.sh
+
 echo "Run coverage tests"
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo

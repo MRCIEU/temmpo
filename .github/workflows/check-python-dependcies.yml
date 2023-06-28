@@ -23,8 +23,6 @@ jobs:
       with:
         python-version: '3.8'
         architecture: 'x64'
-    - name: Build Python 3/Django test environment
-      run: bash tests/build-test-env.sh
     - name: Run checks for package updates
       run: bash tests/run-update-checks.sh
     - name: Create Pull Request where required

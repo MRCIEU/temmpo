@@ -2,6 +2,8 @@
 
 set -e
 
+bash $GITHUB_WORKSPACE/tests/build-test-env.sh
+
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
 
