@@ -1,9 +1,14 @@
 name: Check for Python egg updates
 
 on:
-    schedule:
-        - cron: 30 8 * * WED
-    workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/check-python-dependcies.yml'
+  schedule:
+      - cron: 30 8 * * WED
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,7 +34,7 @@ jobs:
       uses: peter-evans/create-pull-request@v5
       with:
         branch: python-package-updates
-        title: Pending python egg updates
-        add-paths: |
-            requirements/*.txt
-        commit-message: "Automated pip-tools & GitHub action generated python package updates"
+        title: Pending python dependency updates
+        path: lib/test/src/temmpo/
+        commit-message: "Automated pip-tools & GitHub Action generated python dependency updates"
+        body: "Automated python dependency updates by pip-tools and [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action"
