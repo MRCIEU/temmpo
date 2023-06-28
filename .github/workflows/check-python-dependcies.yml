@@ -30,12 +30,21 @@ jobs:
         architecture: 'x64'
     - name: Run checks for package updates
       run: bash tests/run-update-checks.sh
+    - name: Debug output
+      run: |
+        pwd
+        ls
+        ls -al */*
+        whoami
+    - name: git status output
+      run: |
+        git status
     - name: Create Pull Request where required
       uses: peter-evans/create-pull-request@v5
       with:
         branch: python-package-updates
         title: Pending python dependency updates
-        path: lib/test/src/temmpo/
+        # path: lib/test/src/temmpo/
         commit-message: "Automated pip-tools & GitHub Action generated python dependency updates"
         body: "Automated python dependency updates by pip-tools and [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action"
         reviewers: asset-web
