@@ -14,4 +14,4 @@ fab pip_sync_requirements_file:env=test,use_local_mode=True,project_dir=$GITHUB_
 cd $GITHUB_WORKSPACE
 
 
-mv lib/test/src/temmpo/ ../../../..
+mv lib/test/src/temmpo/* ../../../
