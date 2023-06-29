@@ -1,6 +1,6 @@
 describe('Checking visualiations', () => {
 
-    if (Cypress.env("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
+    if (Cypress.config("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
 
         it('Click login link, verify on the right page then try to login to admin', () => {
             cy.visit('/logout');
