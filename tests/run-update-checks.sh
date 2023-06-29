@@ -16,3 +16,4 @@ cd $GITHUB_WORKSPACE
 ls lib/test/src/temmpo
 mv lib/test/src/temmpo/* $GITHUB_WORKSPACE
 ls
+ls -l requirements
