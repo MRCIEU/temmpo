@@ -707,9 +707,9 @@ rq==1.14.1 \
     # via
     #   -r requirements/test.txt
     #   django-rq
-selenium==4.10.0 \
-    --hash=sha256:40241b9d872f58959e9b34e258488bf11844cd86142fd68182bd41db9991fc5c \
-    --hash=sha256:871bf800c4934f745b909c8dfc7d15c65cf45bd2e943abd54451c810ada395e3
+selenium==4.9.1 \
+    --hash=sha256:3444f4376321530c36ce8355b6b357d8cf4a7d588ce5cf772183465930bbed0e \
+    --hash=sha256:82aedaa85d55bc861f4c89ff9609e82f6c958e2e1e3da3ffcc36703f21d3ee16
     # via -r requirements/test.txt
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
