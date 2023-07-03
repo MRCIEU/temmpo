@@ -22,8 +22,8 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
 PIP_VERSION = '23.1.2'
-SETUPTOOLS_VERSION = '67.8.0'
-PIP_TOOLS_VERSION = '6.13.0'
+SETUPTOOLS_VERSION = '68.0.0'
+PIP_TOOLS_VERSION = '6.14.0'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -155,7 +155,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('ls -l')
 
 
-def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"):
+def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     using_apache = (str(using_apache).lower() == 'true')
@@ -165,13 +165,13 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    venv_dir = project_dir + "lib/" + env + "/"
 
     if using_apache:
         disable_apache_site(use_local_mode)
     stop_rqworker_service(use_local_mode)
 
-    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+    src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with cd(src_dir):
         # Remove any cached python project files
@@ -211,19 +211,19 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
 
     start_rqworker_service(use_local_mode)
 
-def setup_apache(env="dev", use_local_mode=False):
+def setup_apache(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env="dev", use_local_mode=False Convert any string command line arguments to boolean values, where required."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    venv_dir = project_dir + "lib/" + env + "/"
     src_dir = venv_dir + "src/"
-    var_dir = PROJECT_ROOT + 'var/'
-    static_dir = PROJECT_ROOT + 'var/www/static'
+    var_dir = project_dir + 'var/'
+    static_dir = project_dir + 'var/www/static'
 
-    apache_conf_file = PROJECT_ROOT + 'etc/apache/conf.d/temmpo.conf'
+    apache_conf_file = project_dir + 'etc/apache/conf.d/temmpo.conf'
 
     if _exists_local(apache_conf_file, use_local_mode):
         caller("rm %s" % apache_conf_file)
@@ -308,34 +308,34 @@ def setup_apache(env="dev", use_local_mode=False):
     restart_apache(env, use_local_mode, run_checks=True)
 
 
-def collect_static(env="dev", use_local_mode=False):
+def collect_static(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     """Gather static files to be served by Apache."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env
+    venv_dir = project_dir + "lib/" + env
 
     with change_dir(venv_dir):
         caller('./bin/python3 src/temmpo/manage.py collectstatic --noinput --settings=temmpo.settings.%s' % env)
 
 
-def restart_apache(env="dev", use_local_mode=False, run_checks=True):
+def restart_apache(env="dev", use_local_mode=False, run_checks=True, project_dir=PROJECT_ROOT):
     """env="dev", use_local_mode=False, run_checks=True."""
     # Convert any string command line arguments to boolean values, where required.
     use_local_mode = (str(use_local_mode).lower() == 'true')
     run_checks = (str(run_checks).lower() == 'true')
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    venv_dir = project_dir + "lib/" + env + "/"
 
     caller("sudo /sbin/apachectl configtest")
     caller("sudo /sbin/apachectl restart")
     caller("sudo /sbin/apachectl status")
     if run_checks:
         toggled_maintenance_mode = False
-        if _exists_local(PROJECT_ROOT + "var/www/_MAINTENANCE_", use_local_mode):
+        if _exists_local(project_dir + "var/www/_MAINTENANCE_", use_local_mode):
             toggled_maintenance_mode = True
             enable_apache_site(use_local_mode)
 
@@ -348,13 +348,13 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True):
             disable_apache_site(use_local_mode)
 
 
-def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=True, swap_db=True):
+def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=True, swap_db=True, project_dir=PROJECT_ROOT):
     """env="dev", use_local_mode=False, using_apache=True, swap_db=True - NB: Written to migrate the data once, not to drop any existing MySQL tables."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     using_apache = (str(using_apache).lower() == 'true')
     swap_db = (str(swap_db).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    venv_dir = project_dir + "lib/" + env + "/"
     now = datetime.now()
     date_string = "%s-%s-%s-%s-%s" % (now.year, now.month, now.day, now.hour, now.minute)
     sqlite_db = '/usr/local/projects/temmpo/var/data/db.sqlite3'
@@ -452,12 +452,12 @@ def enable_apache_site(use_local_mode=False):
     _toggle_maintenance_mode("_MAINTENANCE_", "_MAINTENANCE_OFF", use_local_mode=False)
 
 
-def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False):
+def _toggle_maintenance_mode(old_flag, new_flag, use_local_mode=False, project_dir=PROJECT_ROOT):
     """old_flag, new_flag, use_local_mode=False."""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     caller, change_dir = _toggle_local_remote(use_local_mode)
 
-    with change_dir(PROJECT_ROOT + 'var/www/'):
+    with change_dir(project_dir + 'var/www/'):
         caller("rm -f %s" % old_flag)
         caller("touch %s" % new_flag)
 
@@ -476,7 +476,7 @@ def stop_rqworker_service(use_local_mode):
 def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, project_dir=PROJECT_ROOT):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -494,13 +494,13 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
-    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+    venv_dir = project_dir + "lib/" + env + "/"
+    src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
         caller('%sbin/python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
-def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None):
+def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, project_dir=PROJECT_ROOT):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -518,32 +518,32 @@ def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="my
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
-    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+    venv_dir = project_dir + "lib/" + env + "/"
+    src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
         caller('%sbin/python3 manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
-def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False):
+def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""
     if database_name in ('temmpo_p', ):
         abort("Function should not be run against a production database.")
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    venv_dir = project_dir + "lib/" + env + "/"
 
     with change_dir(venv_dir):
         caller('echo "DROP DATABASE %s; CREATE DATABASE %s;" | %sbin/python3 src/temmpo/manage.py dbshell --database=admin --settings=temmpo.settings.%s' % (database_name, database_name, venv_dir, env), pty=True)
         caller('echo "TeMMPo database was recreated".')
 
 
-def add_missing_csv_headers_to_scores():
+def add_missing_csv_headers_to_scores(project_dir=PROJECT_ROOT):
     """TMMA-262 - CSV files generated in the past do not have headers.
 
     NB: Needs to be run remotely against the demo and production VMs to ensure Bubble charts can be rendered.
     """
-    results_directory = PROJECT_ROOT + "var/results/"
+    results_directory = project_dir + "var/results/"
     file_header_info = [{'headers': 'Abstract IDs,', 'file_extension': '_abstracts.csv'},
                         {'headers': 'Mediators,Exposure counts,Outcome counts,Scores', 'file_extension': '_edge.csv'}, ]
 
@@ -556,7 +556,7 @@ def add_missing_csv_headers_to_scores():
                     run('cat "headers%s" "%s" > tmp-csv-file.txt && mv tmp-csv-file.txt "%s"' % (info['file_extension'], csv_file, csv_file))
             run("rm headers%(file_extension)s" % info)
 
-def apply_csv_misquoting_fix():
+def apply_csv_misquoting_fix(project_dir=PROJECT_ROOT):
     """To be run remotely only: TMMA-324 Bug fix edge files CSV misquoting"""
     affected_files = [
         "results_95__topresults_edge.csv",
@@ -602,7 +602,7 @@ def apply_csv_misquoting_fix():
         'Estrogens, Conjugated (USP),':'"Estrogens, Conjugated (USP)",',
         }
     # Allow function to be run locally or remotely
-    results_directories = (PROJECT_ROOT + "var/results/v1", PROJECT_ROOT + "var/results")
+    results_directories = (project_dir + "var/results/v1", project_dir + "var/results")
 
     for results_directory in results_directories:
         with cd(results_directory):
@@ -612,39 +612,39 @@ def apply_csv_misquoting_fix():
                     for find_str in replacement_pairs.keys():
                         run("sed -i -e 's/%s/%s/g\' %s" % (find_str, replacement_pairs[find_str], affected_file))
 
-def pip_sync_requirements_file(env="dev", use_local_mode=True):
+def pip_sync_requirements_file(env="dev", use_local_mode=True, project_dir=PROJECT_ROOT):
     use_local_mode = (str(use_local_mode).lower() == 'true')
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    venv_dir = project_dir + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/requirements.txt requirements/requirements.in')
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/test.txt requirements/test.in')
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --output-file requirements/dev.txt requirements/dev.in')
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --output-file requirements/requirements.txt requirements/requirements.in')
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --output-file requirements/test.txt requirements/test.in')
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --output-file requirements/dev.txt requirements/dev.in')
 
-def pip_tools_update_requirements(env="dev", use_local_mode=True, package=""):
+def pip_tools_update_requirements(env="dev", use_local_mode=True, package="", project_dir=PROJECT_ROOT):
     use_local_mode = (str(use_local_mode).lower() == 'true')
     if package:
         package = "--upgrade-package %s" % package
 
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
+    venv_dir = project_dir + "lib/" + env + "/"
 
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
-        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade %s --output-file requirements/requirements.txt requirements/requirements.in' % package)
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade %s --output-file requirements/test.txt requirements/test.in' % package)
+        caller('../../bin/pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade %s --output-file requirements/dev.txt requirements/dev.in' % package)
 
-def remove_incompleted_registrations(env="demo", use_local_mode=False):
+def remove_incompleted_registrations(env="demo", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env=demo,use_local_mode=False"""
     use_local_mode = (str(use_local_mode).lower() == 'true')
     # Allow function to be run locally or remotely
     caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = PROJECT_ROOT + "lib/" + env + "/"
-    src_dir = PROJECT_ROOT + "lib/" + env + "/src/temmpo/"
+    venv_dir = project_dir + "lib/" + env + "/"
+    src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
         caller('%sbin/python3 manage.py remove_incompleted_registrations --settings=temmpo.settings.%s' % (venv_dir, env))

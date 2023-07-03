@@ -1,78 +1,86 @@
 describe('Checking visualiations', () => {
 
-    it('Click login link, verify on the right page then try to login to admin', () => {
-        cy.visit('/logout');
-        cy.visit('/');
-        cy.get('#side-menu')
-            .contains('Login')
-            .click()
-        cy.get('title')
-            .invoke('text')
-            .should('equal', 'TeMMPo: Login')
+    if (Cypress.config("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
 
-        cy.get('#id_username').type(Cypress.env('CREDENTIALS_USR'));
-        cy.get('#id_password').type(Cypress.env('CREDENTIALS_PSW'));
-        cy.get('button[type=submit]').click()
+        it('Click login link, verify on the right page then try to login to admin', () => {
+            cy.visit('/logout');
+            cy.visit('/');
+            cy.get('#side-menu')
+                .contains('Login')
+                .click()
+            cy.get('title')
+                .invoke('text')
+                .should('equal', 'TeMMPo: Login')
 
-        cy.get('title')
-            .invoke('text')
-            .should('equal', 'TeMMPo: My list')
+            cy.get('#id_username').type(Cypress.env('CREDENTIALS_USR'));
+            cy.get('#id_password').type(Cypress.env('CREDENTIALS_PSW'));
+            cy.get('button[type=submit]').click()
 
-    // goto resuts tab
+            cy.get('title')
+                .invoke('text')
+                .should('equal', 'TeMMPo: My list')
 
-        cy.get('#side-menu')
-            .contains('Results')
-            .click()
+        // goto resuts tab
 
-        cy.get('.page-header')
-            .should('have.text', 'Results')
+            cy.get('#side-menu')
+                .contains('Results')
+                .click()
 
-
-    // select sankey chart
-
-        cy.get('tbody')
-            .contains('View Sankey diagram')
-            .click()
+            cy.get('.page-header')
+                .should('have.text', 'Results')
 
 
-    // check sankey chart contains human....etc
+        // select sankey chart
 
-        cy.get('#sankey_multiple')
-            .should('include.text', 'Humans')
-            .and('include.text', 'Genetic Markers')
-            .and('include.text', 'Public Health Systems Research')
-
-
-    // go back to results tab
-
-        cy.get('#side-menu')
-            .contains('Results')
-            .click()
-
-        cy.get('.page-header')
-            .should('have.text', 'Results')
-
-    // select bubble chart
-
-        cy.get('tbody')
-            .contains('View bubble chart')
-            .click()
-
-    // should contain Genetic Markers on the page
-
-        cy.get('#bubble_chart')
-            .should('include.text', 'Genetic Markers')
-
-    // Let's logout now
-
-        cy.get('#side-menu')
-            .contains('Logout')
-            .click()
-        cy.get('title')
-            .invoke('text')
-            .should('equal', 'TeMMPo: Login')
+            cy.get('tbody')
+                .contains('View Sankey diagram')
+                .click()
 
 
-    })
+        // check sankey chart contains human....etc
 
+            cy.get('#sankey_multiple')
+                .should('include.text', 'Humans')
+                .and('include.text', 'Genetic Markers')
+                .and('include.text', 'Public Health Systems Research')
+
+
+        // go back to results tab
+
+            cy.get('#side-menu')
+                .contains('Results')
+                .click()
+
+            cy.get('.page-header')
+                .should('have.text', 'Results')
+
+        // select bubble chart
+
+            cy.get('tbody')
+                .contains('View bubble chart')
+                .click()
+
+        // should contain Genetic Markers on the page
+
+            cy.get('#bubble_chart')
+                .should('include.text', 'Genetic Markers')
+
+        // Let's logout now
+
+            cy.get('#side-menu')
+                .contains('Logout')
+                .click()
+            cy.get('title')
+                .invoke('text')
+                .should('equal', 'TeMMPo: Login')
+
+
+        })
+    }
+    else
+    {
+        it.skip('Click login link, verify on the right page then try to login to admin', () => {
+            // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
+        })
+    }
 });

@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    triggers {
+        upstream(upstreamProjects: '../Test jobs/2-update-last-known-good-branch', threshold: hudson.model.Result.SUCCESS)
+    }
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
+    }
+    environment {
+        HOME = "./"
+        CYPRESS_CREDENTIALS = credentials('temmpo-cypress-test-account')
+        NO_COLOR = 1
+    }
+    stages {
+        stage('Test: Cypress tests') {
+            agent {
+                docker {
+                    image 'cypress/included:9.7.0'
+                    args '--add-host py-web-t0.epi.bris.ac.uk:172.25.2.77 --entrypoint=""'
+                }
+            }
+            steps {
+                sh 'cypress run --browser chrome --config baseUrl=https://py-web-t0.epi.bris.ac.uk'
+            }
+            post {
+                success {
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the successful job.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline was successful", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
+                failure {
+                    archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the failure.  Go to ${RUN_ARTIFACTS_DISPLAY_URL} to view any artifacts, such as Cypress screenshots or videos.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline failed", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
+                aborted {
+                    archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the aborted job.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline was aborted", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
+                unsuccessful {
+                    archiveArtifacts artifacts: 'cypress/screenshots/*, cypress/videos/*', allowEmptyArchive: true, fingerprint: true
+                    mail bcc: '', body: "Please go to ${BUILD_URL} to review the output of the unsuccesful job.", cc: '', from: '', replyTo: '', subject: "${JOB_NAME} Jenkins pipeline was unsuccessful", to: 'it-temmpo-developers@bristol.ac.uk'
+                }
+            }
+        }
+    }
+}

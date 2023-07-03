@@ -6,15 +6,26 @@ on:
       - last_known_good
       - demo_stable
       - prod_stable
+  pull_request:
+    types:
+      - opened
+    branches:
+      - python-package-updates
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '2.7'
-        architecture: 'x64'
+    - name: Install Python 2 support
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          python2.7 python2.7-dev python2-pip-whl
+        sudo ln -sf python2.7 /usr/bin/python
+        export PYTHONPATH=`echo /usr/share/python-wheels/pip-*py2*.whl`
+        sudo --preserve-env=PYTHONPATH python -m pip install --upgrade pip setuptools wheel
+        sudo chown -R $USER /usr/local/lib/python2.7
     - name: Syntax check Python 2 Fabric deployment script
       run: bash tests/run-fabric-tests.sh

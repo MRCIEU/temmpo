@@ -1,0 +1,46 @@
+name: Check for Python egg updates
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/check-python-dependcies.yml'
+      - 'tests/build-test-env.sh'
+      - 'tests/run-update-checks.sh'
+  schedule:
+      - cron: 30 8 * * WED
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Python 2 support
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          python2.7 python2.7-dev python2-pip-whl
+        sudo ln -sf python2.7 /usr/bin/python
+        export PYTHONPATH=`echo /usr/share/python-wheels/pip-*py2*.whl`
+        sudo --preserve-env=PYTHONPATH python -m pip install --upgrade pip setuptools wheel
+        sudo chown -R $USER /usr/local/lib/python2.7
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+        architecture: 'x64'
+    - name: Run checks for package updates
+      run: bash tests/run-update-checks.sh
+    - name: git status output
+      run: |
+        git status
+    - name: Create Pull Request where required
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: python-package-updates
+        title: Pending python dependency updates
+        # path: lib/test/src/temmpo/
+        commit-message: "Automated pip-tools & GitHub Action generated python dependency updates"
+        body: "Automated python dependency updates by pip-tools and [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action"
+        reviewers: asset-web
