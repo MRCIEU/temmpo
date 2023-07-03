@@ -6,6 +6,8 @@ on:
       - last_known_good
       - demo_stable
       - prod_stable
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
