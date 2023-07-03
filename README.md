@@ -182,6 +182,10 @@ e.g. Skipping selenium and clamav tests
 
     python manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=clamav
 
+e.g. Run selenium tests only
+
+    python manage.py test --settings=temmpo.settings.test_mysql --tag=selenium-test
+
 ### Running Cypress Tests locally
     
     npx cypress open
