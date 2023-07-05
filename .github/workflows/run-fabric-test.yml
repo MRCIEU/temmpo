@@ -7,8 +7,6 @@ on:
       - demo_stable
       - prod_stable
   pull_request:
-    types:
-      - opened
     branches:
       - python-package-updates
   workflow_dispatch:
