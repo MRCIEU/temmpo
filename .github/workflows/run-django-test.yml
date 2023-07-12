@@ -6,11 +6,9 @@ on:
       - last_known_good
       - demo_stable
       - prod_stable
-    pull_request:
-      types:
-        - opened
-      branches:
-        - python-package-updates
+  pull_request:
+    branches:
+      - python-package-updates
   workflow_dispatch:
 
 jobs:
