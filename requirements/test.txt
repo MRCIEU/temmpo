@@ -152,9 +152,9 @@ clamd==1.0.2 \
     # via
     #   -r requirements/requirements.txt
     #   django-clamd
-click==8.1.4 \
-    --hash=sha256:2739815aaa5d2c986a88f1e9230c55e17f0caad3d958a5e13ad0797c166db9e3 \
-    --hash=sha256:b97d0c74955da062a7d4ef92fadb583806a585b2ea81958a81bd72726cbb8e37
+click==8.1.5 \
+    --hash=sha256:4be4b1af8d665c6d942909916d31a213a106800c47d0eeba73d34da3cbc11367 \
+    --hash=sha256:e576aa487d679441d7d30abb87e1b43d24fc53bffb8758443b1a9e1cee504548
     # via
     #   -r requirements/requirements.txt
     #   rq
@@ -230,6 +230,7 @@ django==3.2.20 \
     #   -r requirements/requirements.txt
     #   django-autocomplete-light
     #   django-clamd
+    #   django-hcaptcha-field
     #   django-js-asset
     #   django-rq
 django-autocomplete-light==3.9.7 \
@@ -238,6 +239,10 @@ django-autocomplete-light==3.9.7 \
 django-clamd==0.4.0 \
     --hash=sha256:47adaf6f8156ee613dde9e0d88adc847aa3df021dabf1a4d1aec34b47de8da11 \
     --hash=sha256:5bde6c34b42e69972677fb4a7466b032377940c8727ee6ede41eb3b9807dcce4
+    # via -r requirements/requirements.txt
+django-hcaptcha-field==1.4.0 \
+    --hash=sha256:36001030f53af709db3be01bf1d25023706b701bb7130f67f2aa58900b20df42 \
+    --hash=sha256:bcf2f698b1dc5f8ce411c11696df5785298df0cbd2fa564b09bd96609060bf34
     # via -r requirements/requirements.txt
 django-js-asset==2.1.0 \
     --hash=sha256:36a3a4dd6e9efc895fb127d13126020f6ec1ec9469ad42878d42143f22495d90 \
@@ -662,9 +667,9 @@ sqlparse==0.4.4 \
     # via
     #   -r requirements/requirements.txt
     #   django
-trio==0.22.1 \
-    --hash=sha256:1270da4a4a33caf33f85c6a255f2ef5f71629a3ec9aea31a052062b673ae58d3 \
-    --hash=sha256:eb5f641b313eb502a16de176d84cecd9ccf2394a7c8655d2297398376bb15eca
+trio==0.22.2 \
+    --hash=sha256:3887cf18c8bcc894433420305468388dac76932e9668afa1c49aa3806b6accb3 \
+    --hash=sha256:f43da357620e5872b3d940a2e3589aa251fd3f881b65a608d742e00809b1ec38
     # via
     #   selenium
     #   trio-websocket

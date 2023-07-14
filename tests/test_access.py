@@ -73,7 +73,8 @@ class AccessTestCase(BaseTestCase):
                                     {"username": "testuser1",
                                      "email": "bob@example.com",
                                      "password1": "THISISJUSTATEST",
-                                     "password2": "THISISJUSTATEST"},
+                                     "password2": "THISISJUSTATEST",
+                                     "h-captcha-response": self.hcaptcha_response},
                                     follow=True)
 
         self.assertContains(response, "Your registration is complete.", msg_prefix=str(response.content))

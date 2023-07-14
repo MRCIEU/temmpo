@@ -142,6 +142,12 @@ Optionally pass in a package or update them all within any requirements.in file 
 
     fab pip_tools_update_requirements:env=dev,use_local_mode=True,package="" -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
+
+Alternatively
+
+    docker build -f deploy/Dockerfile -t temmpo-web .
+    docker run --rm -it -v $PWD:/srv -w /srv temmpo-web bash /srv/entrypoints/update-requirements.sh
+
 #### Development deployment commands when working with the apache Vagrant VM
 
 ##### a. Deploy master branch to Vagrant Apache VM
