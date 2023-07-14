@@ -11,6 +11,7 @@ class BaseTestCase(TestCase):
         """Override set up to create test users of each Django default role type."""
         super(BaseTestCase, self).setUp()
         self.client = Client()
+        self.hcaptcha_response = "10000000-aaaa-bbbb-cccc-000000000001"
         self.user = User.objects.create_user(id=999,
                                              username='may',
                                              email='may@example.com',

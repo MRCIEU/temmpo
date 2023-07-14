@@ -14,8 +14,15 @@ from browser.widgets import GeneTextarea
 from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator
 
 from django_clamd.validators import validate_file_infection
+from hcaptcha_field import hCaptchaField
+from registration.forms import RegistrationFormUniqueEmail
 
 logger = logging.getLogger(__name__)
+
+
+class RegistrationCaptchaForm(RegistrationFormUniqueEmail):
+    """ TMMA-417: Reduce creation of spam users accounts."""
+    hcaptcha = hCaptchaField()
 
 
 class OvidMedLineFileUploadForm(forms.ModelForm):

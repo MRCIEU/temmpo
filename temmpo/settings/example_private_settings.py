@@ -32,3 +32,7 @@ DATABASES = {
 }
 
 DATABASES['default'] = DATABASES['mysql']
+
+#DEV ONLY ref https://docs.hcaptcha.com/#integration-testing-test-keys
+HCAPTCHA_SITEKEY = '10000000-ffff-ffff-ffff-000000000001'
+HCAPTCHA_SECRET = '0x0000000000000000000000000000000000000000'
