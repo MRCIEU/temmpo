@@ -44,3 +44,8 @@ RUN pip install virtualenv==$VE_VERSION
 WORKDIR /srv
 
 VOLUME [ "/srv" ]
+
+# TODO: Replace temp basic build test as image is developed further
+COPY requirements/requirements.txt /srv
+RUN pip install --no-deps -r /srv/requirements.txt
+CMD [ "pip", "check" ]
