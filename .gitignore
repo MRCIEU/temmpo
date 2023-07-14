@@ -71,11 +71,6 @@ browser/static/results/*
 temmpo/settings/secret.txt
 temmpo/settings/private_settings.py
 
-# Docker configuration
-docker-compose.yml
-Dockerfile
-requirements.txt
-
 # OS X
 .DS_Store
 

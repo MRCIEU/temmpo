@@ -1,4 +1,5 @@
-8.4.0   TMMA-457: Upgrade Cypress version to 12.x
+8.4.0   TMMA-440: Add support for regenerating requirements file in Docker environment
+        TMMA-457: Upgrade Cypress version to 12.x
 
 8.3.4   Apply Python updates
 
