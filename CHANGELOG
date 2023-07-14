@@ -1,3 +1,8 @@
+8.4.0   TMMA-417: Reduce creation of spam users accounts
+        Apply Python updates
+        TMMA-440: Add support for regenerating requirements file in Docker environment
+        TMMA-457: Upgrade Cypress version to 12.x
+
 8.3.4   Apply Python updates
 
 8.3.3   Apply Python security and maintenace updates

@@ -142,6 +142,12 @@ Optionally pass in a package or update them all within any requirements.in file 
 
     fab pip_tools_update_requirements:env=dev,use_local_mode=True,package="" -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
+
+Alternatively
+
+    docker build -f deploy/Dockerfile -t temmpo-web .
+    docker run --rm -it -v $PWD:/srv -w /srv temmpo-web bash /srv/entrypoints/update-requirements.sh
+
 #### Development deployment commands when working with the apache Vagrant VM
 
 ##### a. Deploy master branch to Vagrant Apache VM
@@ -187,8 +193,16 @@ e.g. Run selenium tests only
     python manage.py test --settings=temmpo.settings.test_mysql --tag=selenium-test
 
 ### Running Cypress Tests locally
-    
+
+Using a locally instally node environment
+
+NB: Some tests require these environment variables `CREDENTIALS_USR` and `CREDENTIALS_PSW` to be defined, to be able log into the site being tested.
+
     npx cypress open
+
+Using docker and electron browser
+
+    docker run -it -v $PWD:/e2e -w /e2e cypress/included:12.17.1
 
 ## Warnings
 
