@@ -5,7 +5,7 @@ ENV SETUPTOOLS_VERSION='68.0.0'
 ENV PIP_TOOLS_VERSION='6.14.0'
 ENV VE_VERSION='20.13.0'
 
-# Update system packages and install dependnecies, e.g Postgresl and Pillow support"
+# Update system packages and install dependencies
 RUN apt update -y && \
     apt-get install -y --no-install-recommends \
             bzip2 \
