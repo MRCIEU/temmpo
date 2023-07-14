@@ -62,7 +62,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'django_rq', 'django_clamd', ]
+THIRD_PARTY_APPS = ['registration', 'mptt', 'django_rq', 'django_clamd', 'hcaptcha_field']
 LOCAL_APPS = ['browser', 'dal', 'dal_select2',] # 'dal','dal_select2' are third party apps that need to be installed before 'django.contrib.admin'
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -240,6 +240,8 @@ CLAMD_TCP_ADDR = '127.0.0.1'
 CLAMD_ENABLED = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+REGISTRATION_FORM = 'browser.forms.RegistrationCaptchaForm'
 
 # Import private settings specific to this environment like Database connections and SECRET_KEY
 # from outside of public git repo.
