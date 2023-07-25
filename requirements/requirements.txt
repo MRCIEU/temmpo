@@ -288,9 +288,9 @@ lxml==4.9.3 \
     --hash=sha256:fcdd00edfd0a3001e0181eab3e63bd5c74ad3e67152c84f93f13769a40e073a7 \
     --hash=sha256:fe4bda6bd4340caa6e5cf95e73f8fea5c4bfc55763dd42f1b50a94c1b4a2fbd4
     # via -r requirements/requirements.in
-more-itertools==9.1.0 \
-    --hash=sha256:cabaa341ad0389ea83c17a94566a53ae4c9d07349861ecb14dc6d0345cf9ac5d \
-    --hash=sha256:d2bc7f02446e86a68911e58ded76d6561eea00cddfb2a91e7019bbb586c799f3
+more-itertools==10.0.0 \
+    --hash=sha256:928d514ffd22b5b0a8fce326d57f423a55d2ff783b093bab217eda71e732330f \
+    --hash=sha256:cd65437d7c4b615ab81c0640c0480bc29a550ea032891977681efd28344d51e1
     # via -r requirements/requirements.in
 mysqlclient==2.2.0 \
     --hash=sha256:004fe1d30d2c2ff8072f8ea513bcec235fd9b896f70dad369461d0ad7e570e98 \
