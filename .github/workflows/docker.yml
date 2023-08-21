@@ -1,0 +1,39 @@
+name: Docker build
+# TODO: Trigger a fresh build every Wednesday 
+# Triggered after changes to code or deployment config for model 1
+# Or can be triggered manualy
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      # TODO: Review scope of GitHub action grows
+      - '.github/workflows/docker.yml'
+      - 'deploy/Dockerfile'
+      - 'entrypoints/**'
+      - 'requirements/**'
+  # schedule:
+  #   - cron: 30 9 * * WED
+
+env:
+  IMAGE_NAME: uobristol/temmpo-web
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Record Docker version
+        run: docker -v
+      - uses: whoan/docker-build-with-cache-action@v6
+        with:
+          context: .
+          dockerfile: 'deploy/Dockerfile'
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: "${{ secrets.DOCKER_HUB_PASSWORD }}"
+          image_name: ${{ env.IMAGE_NAME }}
+          image_tag: ${{ github.sha }}
+          # Build from scratch if a scheduled job
+          pull_image_and_stages: ${{ github.event_name != 'schedule' }}
+          push_image_and_stages: docker run ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+# https://github.com/marketplace/actions/build-docker-images-using-cache#from-a-compose-file
