@@ -1,5 +1,7 @@
 FROM python:3.8.17-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV PIP_VERSION='23.2.1'
 ENV SETUPTOOLS_VERSION='68.0.0'
 ENV PIP_TOOLS_VERSION='7.2.0'
@@ -41,3 +43,8 @@ RUN pip install virtualenv==$VE_VERSION
 WORKDIR /srv
 
 VOLUME [ "/srv" ]
+
+# TODO: Replace temp basic build test as image is developed further
+COPY requirements/requirements.txt /srv
+RUN pip install --no-deps -r /srv/requirements.txt
+CMD [ "pip", "check" ]
