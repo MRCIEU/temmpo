@@ -1,3 +1,6 @@
+8.4.1   Apply Python updates
+        Update GitHub actions
+
 8.4.0   TMMA-417: Reduce creation of spam users accounts
         Apply Python updates
         TMMA-440: Add support for regenerating requirements file in Docker environment

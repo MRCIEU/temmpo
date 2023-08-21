@@ -7,8 +7,7 @@ on:
       - demo_stable
       - prod_stable
   pull_request:
-    branches:
-      - python-package-updates
+    types: [review_requested]
   workflow_dispatch:
 
 jobs:
