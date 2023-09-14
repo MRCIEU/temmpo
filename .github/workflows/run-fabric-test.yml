@@ -7,7 +7,6 @@ on:
       - demo_stable
       - prod_stable
   pull_request:
-    types: [review_requested]
   workflow_dispatch:
 
 jobs:
