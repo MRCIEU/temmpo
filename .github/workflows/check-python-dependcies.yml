@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install Python 2 support
       run: |
         sudo apt-get update
@@ -40,7 +40,7 @@ jobs:
       with:
         branch: python-package-updates
         title: Pending python dependency updates
-        # path: lib/test/src/temmpo/
         commit-message: "Automated pip-tools & GitHub Action generated python dependency updates"
         body: "Automated python dependency updates by pip-tools and [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action"
-        reviewers: asset-web
+        assignees: asset-web
+    # TMMA-465 Workaround bug triggering follow on workflows, ref: https://github.com/peter-evans/create-pull-request/blob/v5/docs/concepts-guidelines.md#triggering-further-workflow-runs

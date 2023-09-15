@@ -7,14 +7,13 @@ on:
       - demo_stable
       - prod_stable
   pull_request:
-    types: [review_requested]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install Python 2 support
       run: |
         sudo apt-get update

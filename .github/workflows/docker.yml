@@ -4,6 +4,7 @@ name: Docker build
 # Or can be triggered manualy
 on:
   workflow_dispatch:
+  pull_request:
   push:
     paths:
       # TODO: Review scope of GitHub action grows
@@ -21,7 +22,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Record Docker version
         run: docker -v
       - uses: whoan/docker-build-with-cache-action@v6
