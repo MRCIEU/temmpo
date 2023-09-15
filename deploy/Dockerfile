@@ -35,10 +35,10 @@ RUN apt update -y && \
     apt-get -y autoremove && \ 
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install -U pip==$PIP_VERSION
-RUN pip install -U setuptools==$SETUPTOOLS_VERSION
-RUN pip install pip-tools==$PIP_TOOLS_VERSION
-RUN pip install virtualenv==$VE_VERSION
+RUN pip install --no-cache-dir -U pip==$PIP_VERSION
+RUN pip install --no-cache-dir -U setuptools==$SETUPTOOLS_VERSION
+RUN pip install --no-cache-dir pip-tools==$PIP_TOOLS_VERSION
+RUN pip install --no-cache-dir virtualenv==$VE_VERSION
 
 WORKDIR /srv
 
@@ -46,5 +46,5 @@ VOLUME [ "/srv" ]
 
 # TODO: Replace temp basic build test as image is developed further
 COPY requirements/requirements.txt /srv
-RUN pip install --no-deps -r /srv/requirements.txt
+RUN pip install --no-cache-dir --no-deps -r /srv/requirements.txt
 CMD [ "pip", "check" ]
