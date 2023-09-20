@@ -73,10 +73,11 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
                 .invoke('text')
                 .should('equal', 'TeMMPo: Select exposure MeSH® terms')
 
-        // Lets tick some exposure terms in the checkbox tree then move on to mediators
+        // Lets add some exposure terms in the textarea, click add, then move on to mediators
 
-            cy.get('a')
-                .contains('Organisms', { matchCase: false })
+            cy.get('#term_names').type('Public Health Systems Research;Humans');
+
+            cy.contains('Add', { matchCase: false })
                 .click()
 
             cy.contains('Save and move on to select mediators', { matchCase: false })
@@ -88,10 +89,11 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
                 .invoke('text')
                 .should('equal', 'TeMMPo: Select mediator MeSH® terms')
 
-        // Lets tick mediator terms in the checkbox tree then move on to outcomes
+        // Lets add terms in the textarea, click add, then move on to outcomes
 
-            cy.get('a')
-                .contains('Diseases', { matchCase: false })
+            cy.get('#term_names').type('Genetic Markers; Penetrance');
+
+            cy.contains('Add', { matchCase: false })
                 .click()
 
             cy.contains('Save and move on to select outcomes', { matchCase: false })
@@ -103,10 +105,11 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
                 .invoke('text')
                 .should('equal', 'TeMMPo: Select outcome MeSH® terms')
 
-        // Lets tick an outcome term in the checkbox
+        // Lets add outcome term in the textarea, click add, move on to genes
 
-            cy.get('a')
-                .contains('Humanities', { matchCase: false })
+            cy.get('#term_names').type('Neoplasm Metastasis;Eryptosis');
+
+            cy.contains('Add', { matchCase: false })
                 .click()
 
             cy.contains('Save and move on to select Genes and Filters', { matchCase: false })
@@ -118,15 +121,7 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
                 .invoke('text')
                 .should('equal', 'TeMMPo: Select genes and filter')
 
-        // Lets click on the dropdown filter
-
-            cy.get('.selection')
-                .click()
-            cy.get('li')
-                .contains('Body Regions > Breast', { matchCase: false })
-                .click()
-
-        // Lets click on the search button...
+        // click the button to continue and get some results
 
             cy.get('button.btn.btn-primary')
                 .contains('Search', { matchCase: false })
@@ -146,7 +141,7 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
                 .eq(1)
                 .should('not.be.empty')
 
-        // now we are gonna wait a minute
+        // now we are gonna wait a minute...
 
             cy.wait(60000)
 
@@ -157,15 +152,45 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
         // this is where we will do the visualiations...
 
 
+        // select sankey chart
+
+            cy.get('tbody')
+                .contains('View Sankey diagram')
+                .click()
 
 
+        // check sankey chart contains human....etc
+
+            cy.get('#sankey_multiple')
+                .should('include.text', 'Humans')
+                .and('include.text', 'Genetic Markers')
+                .and('include.text', 'Public Health Systems Research')
 
 
+        // go back to results tab
+
+            cy.get('#side-menu')
+                .contains('Results')
+                .click()
+
+            cy.get('.page-header')
+                .should('have.text', 'Results')
+
+        // select bubble chart
+
+            cy.get('tbody')
+                .contains('View bubble chart')
+                .click()
+
+        // should contain Genetic Markers on the page
+
+            cy.get('#bubble_chart')
+                .should('include.text', 'Genetic Markers')
 
 
-        // now lets delete the file we uploaded
+        // thats the end of visualiations test, now lets delete the file we uploaded...
 
-        // goto results tab and check its empty
+        // goto results tab...
 
             cy.get('#side-menu')
                 .contains('Results')
@@ -179,8 +204,6 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
             cy.get('.controls')
                 .find('a.btn.btn-danger.btn-sm')
                 .contains('Delete', { matchCase: false })
-
-        // have to force because possible bug where delete button is sometimes hidden in the table?
                 .click({force:true})
 
         // now check we go the the delete search page
