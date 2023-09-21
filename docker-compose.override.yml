@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  web:
+    hostname: dev.temmpo.org.uk
+    links:
+      - mysql:mysql
+    ports:
+      - "8000:8000"
+    command: bash -c "/srv/temmpo/bin/python manage.py collectstatic --noinput && /srv/temmpo/bin/python manage.py migrate && /srv/temmpo/bin/python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./web:/srv/temmpo/src/temmpo/
+    depends_on:
+      - mysql
+
+  nginx:
+    volumes:
+      - ./nginx/certs:/etc/pki/tls/certs/:ro
+      - ./nginx/private:/etc/pki/tls/private/:ro
+      - web-static:/www/static
+
+  mysql:
+    restart: always
+    image: mysql:8
+    ports:
+      - "4406:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    env_file: .env
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-p$MYSQL_ROOT_PASSWORD"]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+
+  cypress:
+    image: cypress/included:13.2.0
+    depends_on:
+      - mysql
+      - web
+      - nginx
+    environment:
+      - CYPRESS_baseUrl=https://nginx
+    volumes:
+      - ./:/e2e
+
+volumes:
+  web-django:
+  web-static:
+  mysqldata:

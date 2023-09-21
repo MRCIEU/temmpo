@@ -1,0 +1,2 @@
+# Docker ignore for the TeMMPo Docker image used to run Python/Django
+.git

@@ -81,3 +81,6 @@ temmpo/settings/private_settings.py
 cypress/screenshots
 cypress/videos
 cypress.env.json
+
+# Project
+.env

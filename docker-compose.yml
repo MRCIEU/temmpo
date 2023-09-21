@@ -1,4 +1,44 @@
-# web
-# clamav Official - https://hub.docker.com/r/clamav/clamav/ ALT: port 3310 The container run as user clamav with uid=101 and gid=102. ref: https://hub.docker.com/r/mkodockx/docker-clamav/
-# nginx
-# mysql - in override yml
+version: '3'
+
+# Avoid Docker picking a subnet range that conflicts with UoB resources
+networks:
+    default:
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.0.44.0/24
+
+services:
+  web:
+    restart: always
+    build: ./web/
+    image: docker.io/uobristol/temmpo-web
+    expose:
+      - "8000"
+    volumes:
+      - web-django:/srv/temmpo/var/log
+      - web-static:/srv/temmpo/var/static
+    env_file: .env
+    environment:
+      DEBUG: "True"
+    command: bash -c "/srv/temmpo/bin/gunicorn ieu_gwas_db.wsgi:application -w 2 -b :8000"
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    image: docker.io/uobristol/temmpo-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - web-static:/www/static
+      - nginx-logs:/var/log/nginx
+    links:
+      - web:web
+
+# TODO: Add clamav Official - https://hub.docker.com/r/clamav/clamav/ ALT: port 3310 The container run as user clamav with uid=101 and gid=102. ref: https://hub.docker.com/r/mkodockx/docker-clamav/
+
+volumes:
+  web-django:
+  web-static:
+  nginx-logs:

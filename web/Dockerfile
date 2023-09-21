@@ -8,6 +8,9 @@ ENV PIP_TOOLS_VERSION='7.3.0'
 # As per Centos installation
 ENV VE_VERSION='20.13.0'
 
+WORKDIR /srv
+COPY requirements/requirements.txt /srv/temmpo/src/temmpo/
+
 # Update system packages and install dependencies
 RUN apt update -y && \
     apt-get install -y --no-install-recommends \
@@ -34,18 +37,17 @@ RUN apt update -y && \
             zlib1g-dev &&  \ 
     apt-get clean && \
     apt-get -y autoremove && \ 
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*  && \ 
+    pip install --no-cache-dir -U pip==$PIP_VERSION && \ 
+    pip install --no-cache-dir -U setuptools==$SETUPTOOLS_VERSION && \ 
+    pip install --no-cache-dir pip-tools==$PIP_TOOLS_VERSION && \ 
+    pip install --no-cache-dir virtualenv==$VE_VERSION && \ 
+    virtualenv temmpo && \ 
+    /srv/temmpo/bin/pip install --upgrade pip==$PIP_VERSION  && \ 
+    /srv/temmpo/bin/pip install --no-cache-dir --no-deps -r /srv/temmpo/src/temmpo/requirements.txt  && \ 
+    apt-get -y remove gcc && \
+    apt-get -y autoremove && \
+    apt-get clean
 
-RUN pip install --no-cache-dir -U pip==$PIP_VERSION
-RUN pip install --no-cache-dir -U setuptools==$SETUPTOOLS_VERSION
-RUN pip install --no-cache-dir pip-tools==$PIP_TOOLS_VERSION
-RUN pip install --no-cache-dir virtualenv==$VE_VERSION
-
-WORKDIR /srv
-
-VOLUME [ "/srv" ]
-
-# TODO: Replace temp basic build test as image is developed further
-COPY requirements/requirements.txt /srv
-RUN pip install --no-cache-dir --no-deps -r /srv/requirements.txt
-CMD [ "pip", "check" ]
+COPY . /srv/temmpo/src/temmpo/
+VOLUME [ "/srv/temmpo/src/temmpo/" ]

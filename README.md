@@ -148,6 +148,14 @@ Alternatively
     docker build -f deploy/Dockerfile -t temmpo-web .
     docker run --rm -it -v $PWD:/srv -w /srv temmpo-web bash /srv/entrypoints/update-requirements.sh
 
+
+
+*Docker compose*
+
+Initially create a .env file based on the supplied smaple file, `cp example.env .env`, and populate any empty variables.
+
+    docker compose up
+
 #### Development deployment commands when working with the apache Vagrant VM
 
 ##### a. Deploy master branch to Vagrant Apache VM
