@@ -1,4 +1,4 @@
-describe('User journey of login and upload abstracts, visualise then delete upload', () => {
+describe('User journey of login, upload abstracts, perform search, view, visualisation and then delete search.', () => {
 
     beforeEach(() => {
         cy.visit('/');
@@ -61,7 +61,7 @@ describe('User journey of login and upload abstracts, visualise then delete uplo
                 .should('equal', 'TeMMPo: Search Ovid MEDLINE®')
 
             cy.get('input[type=file]')
-                .selectFile('test-abstract-ovid-test-sample-5.txt')
+                .selectFile('tests/test-abstract-ovid-test-sample-5.txt')
 
             cy.get('#upload_button')
                 .contains('Upload', { matchCase: false })
