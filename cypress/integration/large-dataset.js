@@ -159,13 +159,14 @@ describe('Login, upload and do a search using large dataset including selecting 
                 .eq(1)
                 .should('not.be.empty')
 
-        // now we are gonna wait a minute...
+        // now we are gonna wait 10 seconds...
 
-            cy.wait(60000)
+            cy.wait(10000)
 
-        // reload the page
+        // reload the page by pressing the refresh button...
 
-            cy.reload()
+            cy.contains('Refresh', { matchCase: false })
+                .click()
 
         // this is where we will do the visualiations...
 

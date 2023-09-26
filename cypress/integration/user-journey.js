@@ -141,13 +141,14 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
                 .eq(1)
                 .should('not.be.empty')
 
-        // now we are gonna wait 30 seconds...
+        // now we are gonna wait 5 seconds...
 
-            cy.wait(30000)
+            cy.wait(5000)
 
-        // reload the page
+        // reload the page by pressing the refresh button...
 
-            cy.reload()
+            cy.contains('Refresh', { matchCase: false })
+                .click()
 
         // this is where we will do the visualiations...
 
