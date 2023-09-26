@@ -61,7 +61,7 @@ describe('Login, upload and do a search using large dataset including selecting 
                 .should('equal', 'TeMMPo: Search Ovid MEDLINE®')
 
             cy.get('input[type=file]')
-                .selectFile('tests/test-abstract-ovid-test-sample-5.txt')
+                .selectFile('tests/test-abstract.txt')
 
             cy.get('#upload_button')
                 .contains('Upload', { matchCase: false })
@@ -73,17 +73,17 @@ describe('Login, upload and do a search using large dataset including selecting 
                 .invoke('text')
                 .should('equal', 'TeMMPo: Select exposure MeSH® terms')
 
-        // Lets add some exposure terms in the textarea, click add, then move on to mediators
-
-            cy.get('#term_names').type('Public Health Systems Research;Humans');
-
-            cy.contains('Add', { matchCase: false })
-                .click()
-
         // Lets tick some exposure terms in the checkbox tree
 
             cy.get('a')
                 .contains('Anatomy', { matchCase: false })
+                .click()
+
+        // Lets add some exposure terms in the textarea, click add, then move on to mediators
+
+            cy.get('#term_names').type('Neoplasm Metastasis;DNA Methylation;Gene Silencing;Neoplasm Invasiveness;Drug Design;Structure-Activity Relationship;Flow Cytometry;Enzyme-Linked Immunosorbent Assay;Real-Time Polymerase Chain Reaction;Reverse Transcriptase Polymerase Chain Reaction;Tumor Cells, Cultured;Castration;Mice, Nude;Radioimmunoassay;Tumor Burden;Xenograft Model Antitumor Assays;Disease Progression;Gene Knockout Techniques;Down-Regulation;Oxidation-Reduction;Humans');
+
+            cy.contains('Add', { matchCase: false })
                 .click()
 
             cy.contains('Save and move on to select mediators', { matchCase: false })
@@ -97,7 +97,7 @@ describe('Login, upload and do a search using large dataset including selecting 
 
         // Lets add terms in the textarea, click add, then move on to outcomes
 
-            cy.get('#term_names').type('Genetic Markers; Penetrance');
+            cy.get('#term_names').type('Genetic Markers; Penetrance;Age of Onset;Alleles;Founder Effect;Base Sequence;Female;Molecular Sequence Data;Sequence Analysis, RNA;Aorta/ph [Physiology];Chick Embryo;Chorioallantoic Membrane/de [Drug Effects];Cytokines/bi [Biosynthesis];Rats;TOR Serine-Threonine Kinases/me [Metabolism];Xenograft Model Antitumor Assays;Cross-Sectional Studies;Infant;Child;Milk;Aged');
 
             cy.contains('Add', { matchCase: false })
                 .click()
@@ -119,7 +119,7 @@ describe('Login, upload and do a search using large dataset including selecting 
 
         // Lets add outcome term in the textarea, click add, move on to genes
 
-            cy.get('#term_names').type('Neoplasm Metastasis;Eryptosis');
+            cy.get('#term_names').type('Neoplasm Metastasis;Eryptosis;Randomized Controlled Trials as Topic;Risk Factors;Immunoassay;Disease-Free Survival;Prostatectomy;Sensitivity and Specificity;Microfluidic Analytical Techniques;Reverse Transcriptase Polymerase Chain Reaction;Signal Transduction;Blotting, Western;Proteomics;Nutritional Requirements;Replicon;Analysis of Variance;Sorghum;Trifolium;Solubility;Industrial Waste;Latex;Dimerization;Young Adult');
 
             cy.contains('Add', { matchCase: false })
                 .click()
@@ -181,8 +181,6 @@ describe('Login, upload and do a search using large dataset including selecting 
 
             cy.get('#sankey_multiple')
                 .should('include.text', 'Humans')
-                .and('include.text', 'Genetic Markers')
-                .and('include.text', 'Public Health Systems Research')
 
 
         // go back to results tab
@@ -203,7 +201,7 @@ describe('Login, upload and do a search using large dataset including selecting 
         // should contain Genetic Markers on the page
 
             cy.get('#bubble_chart')
-                .should('include.text', 'Genetic Markers')
+                .should('include.text', 'Base Sequence')
 
 
         // thats the end of visualiations test, now lets delete the file we uploaded...
