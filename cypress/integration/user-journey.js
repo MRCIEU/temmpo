@@ -1,5 +1,7 @@
 describe('User journey of login, upload abstracts, perform search, view, visualisation and then delete search.', () => {
 
+    if (Cypress.config("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
+
     beforeEach(() => {
         cy.visit('/');
         cy.viewport(1920, 1080)
@@ -231,4 +233,11 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
 
     })
 
+    }
+    else
+    {
+        it.skip('Click login link, verify on the right page then try to login to admin', () => {
+            // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
+        })
+    }
 });
