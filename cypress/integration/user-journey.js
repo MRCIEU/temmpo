@@ -141,9 +141,9 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
                 .eq(1)
                 .should('not.be.empty')
 
-        // now we are gonna wait a minute...
+        // now we are gonna wait 30 seconds...
 
-            cy.wait(60000)
+            cy.wait(30000)
 
         // reload the page
 
