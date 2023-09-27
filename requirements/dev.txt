@@ -754,9 +754,9 @@ stack-data==0.6.2 \
     --hash=sha256:32d2dd0376772d01b6cb9fc996f3c8b57a357089dec328ed4b6553d037eaf815 \
     --hash=sha256:cbb2a53eb64e5785878201a97ed7c7b94883f48b87bfb0bbe8b623c74679e4a8
     # via ipython
-traitlets==5.10.0 \
-    --hash=sha256:417745a96681fbb358e723d5346a547521f36e9bd0d50ba7ab368fff5d67aa54 \
-    --hash=sha256:f584ea209240466e66e91f3c81aa7d004ba4cf794990b0c775938a1544217cd1
+traitlets==5.10.1 \
+    --hash=sha256:07ab9c5bf8a0499fd7b088ba51be899c90ffc936ffc797d7b6907fc516bcd116 \
+    --hash=sha256:db9c4aa58139c3ba850101913915c042bdba86f7c8a0dda1c6f7f92c5da8e542
     # via
     #   ipython
     #   matplotlib-inline
@@ -767,9 +767,9 @@ trio==0.22.2 \
     #   -r requirements/test.txt
     #   selenium
     #   trio-websocket
-trio-websocket==0.10.4 \
-    --hash=sha256:c7a620c4013c34b7e4477d89fe76695da1e455e4510a8d7ae13f81c632bdce1d \
-    --hash=sha256:e66b3db3e2453017431dfbd352081006654e1241c2a6800dc2f43d7df54d55c5
+trio-websocket==0.11.1 \
+    --hash=sha256:18c11793647703c158b1f6e62de638acada927344d534e3c7628eedcb746839f \
+    --hash=sha256:520d046b0d030cf970b8b2b2e00c4c2245b3807853ecd44214acd33d74581638
     # via
     #   -r requirements/test.txt
     #   selenium
