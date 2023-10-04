@@ -1,11 +1,13 @@
 describe('User journey of login, upload abstracts, perform search, view, visualisation and then delete search.', () => {
-
     beforeEach(() => {
         cy.visit('/');
         cy.viewport(1920, 1080)
     });
 
-    it('Lets login, go to results page, check its empty then try to upload an abstract file', () => {
+    if (Cypress.config("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
+
+        // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
+        it('Lets login, go to results page, check its empty then try to upload an abstract file', () => {
             cy.visit('/logout');
             cy.visit('/');
             cy.get('#side-menu')
@@ -141,13 +143,14 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
                 .eq(1)
                 .should('not.be.empty')
 
-        // now we are gonna wait a minute...
+        // now we are gonna wait 5 seconds...
 
-            cy.wait(60000)
+            cy.wait(5000)
 
-        // reload the page
+        // reload the page by pressing the refresh button...
 
-            cy.reload()
+            cy.contains('Refresh', { matchCase: false })
+                .click()
 
         // this is where we will do the visualiations...
 
@@ -227,7 +230,6 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
             cy.get('.info')
                 .contains('Search results deleted', { matchCase: false })
 
-
-    })
-
+        })
+    }
 });
