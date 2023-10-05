@@ -1,3 +1,4 @@
+{% with STATIC_URL=STATIC_URL|default:"/static/" %}
 <!DOCTYPE HTML>
 <html lang="en">
 
@@ -57,3 +58,4 @@
     </body>
 
 </html>
+{% endwith %}
