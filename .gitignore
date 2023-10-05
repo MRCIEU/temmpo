@@ -67,9 +67,9 @@ org.eclipse.core.resources.prefs
 .vagrant
 
 # TeMMPo specific
-browser/static/results/*
-temmpo/settings/secret.txt
-temmpo/settings/private_settings.py
+web/browser/static/results/*
+web/temmpo/settings/secret.txt
+web/temmpo/settings/private_settings.py
 
 # OS X
 .DS_Store
