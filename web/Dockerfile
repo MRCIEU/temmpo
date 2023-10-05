@@ -11,7 +11,7 @@ ENV VE_VERSION='20.13.0'
 ARG REQUIREMENTS_FILE=requirements.txt
 
 WORKDIR /srv
-COPY requirements/requirements.txt /srv/temmpo/src/temmpo/
+COPY requirements/${REQUIREMENTS_FILE} /srv/temmpo/src/temmpo/
 
 # Update system packages and install dependencies
 RUN apt update -y && \
@@ -27,7 +27,8 @@ RUN apt update -y && \
             default-libmysqlclient-dev \
             gcc \
             g++ \
-            libffi-dev  \
+            libffi-dev \
+            libmagic-dev \
             libpq-dev \
             libssl-dev \
             pkg-config \
