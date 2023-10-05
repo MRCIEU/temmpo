@@ -3,12 +3,15 @@ version: '3'
 services:
   web:
     hostname: dev.temmpo.org.uk
-    args:
-      REQUIREMENTS_FILE: dev.txt
+    build:
+      context: ./web/
+      args:
+        REQUIREMENTS_FILE: dev.txt
     links:
       - mysql:mysql
     ports:
       - "8000:8000"
+      # TODO review usage of passing in correct ---settings file for the env.
     command: bash -c "/srv/temmpo/bin/python manage.py collectstatic --noinput && /srv/temmpo/bin/python manage.py migrate && /srv/temmpo/bin/python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./web:/srv/temmpo/src/temmpo/
