@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  web:
+    env_file: .prod_env
+    args:
+      REQUIREMENTS_FILE: prod.txt
+    hostname: www.temmpo.org.uk

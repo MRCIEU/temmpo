@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  web:
+    env_file: .demo_env
+    args:
+      REQUIREMENTS_FILE: demo.txt
+    hostname: demo.temmpo.org.uk

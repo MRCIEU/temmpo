@@ -8,6 +8,8 @@ ENV PIP_TOOLS_VERSION='7.3.0'
 # As per Centos installation
 ENV VE_VERSION='20.13.0'
 
+ARG REQUIREMENTS_FILE=requirements.txt
+
 WORKDIR /srv
 COPY requirements/requirements.txt /srv/temmpo/src/temmpo/
 
@@ -38,16 +40,18 @@ RUN apt update -y && \
     apt-get clean && \
     apt-get -y autoremove && \ 
     rm -rf /var/lib/apt/lists/*  && \ 
-    pip install --no-cache-dir -U pip==$PIP_VERSION && \ 
-    pip install --no-cache-dir -U setuptools==$SETUPTOOLS_VERSION && \ 
-    pip install --no-cache-dir pip-tools==$PIP_TOOLS_VERSION && \ 
-    pip install --no-cache-dir virtualenv==$VE_VERSION && \ 
+    pip install --no-cache-dir -U pip==${PIP_VERSION} && \ 
+    pip install --no-cache-dir -U setuptools==${SETUPTOOLS_VERSION} && \ 
+    pip install --no-cache-dir pip-tools==${PIP_TOOLS_VERSION} && \ 
+    pip install --no-cache-dir virtualenv==${VE_VERSION} && \ 
     virtualenv temmpo && \ 
-    /srv/temmpo/bin/pip install --upgrade pip==$PIP_VERSION  && \ 
-    /srv/temmpo/bin/pip install --no-cache-dir --no-deps -r /srv/temmpo/src/temmpo/requirements.txt  && \ 
+    /srv/temmpo/bin/pip install --upgrade pip==${PIP_VERSION}  && \ 
+    /srv/temmpo/bin/pip install --no-cache-dir --no-deps -r /srv/temmpo/src/temmpo/${REQUIREMENTS_FILE}  && \ 
     apt-get -y remove gcc && \
     apt-get -y autoremove && \
     apt-get clean
 
 COPY . /srv/temmpo/src/temmpo/
 VOLUME [ "/srv/temmpo/src/temmpo/" ]
+
+WORKDIR /srv/temmpo/src/temmpo/

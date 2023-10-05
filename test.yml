@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  web:
+    env_file: .test_env
+    args:
+      REQUIREMENTS_FILE: test.txt
+    hostname: test.temmpo.org.uk

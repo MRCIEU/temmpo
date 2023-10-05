@@ -3,6 +3,8 @@ version: '3'
 services:
   web:
     hostname: dev.temmpo.org.uk
+    args:
+      REQUIREMENTS_FILE: dev.txt
     links:
       - mysql:mysql
     ports:
@@ -17,7 +19,6 @@ services:
     volumes:
       - ./nginx/certs:/etc/pki/tls/certs/:ro
       - ./nginx/private:/etc/pki/tls/private/:ro
-      - web-static:/www/static
 
   mysql:
     restart: always
@@ -25,7 +26,7 @@ services:
     ports:
       - "4406:3306"
     volumes:
-      - mysqldata:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     env_file: .env
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-p$MYSQL_ROOT_PASSWORD"]
@@ -45,6 +46,9 @@ services:
       - ./:/e2e
 
 volumes:
-  web-django:
+  mysql-data:
+  nginx-logs:
+  web-log:
+  web-media-abstracts:
+  web-media-results:
   web-static:
-  mysqldata:

@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  web:
+    volumes:
+      - /usr/local/projects/temmpo/var/log:/srv/temmpo/var/log
+      - /usr/local/projects/temmpo/var/abstracts:/srv/temmpo/var/abstracts
+      - /usr/local/projects/temmpo/var/results:/srv/temmpo/var/results
+      - /usr/local/projects/temmpo/var/www/static:/srv/temmpo/var/static
+    environment:
+      DEBUG: "False"

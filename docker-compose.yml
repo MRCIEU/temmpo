@@ -16,7 +16,9 @@ services:
     expose:
       - "8000"
     volumes:
-      - web-django:/srv/temmpo/var/log
+      - web-log:/srv/temmpo/var/log
+      - web-media-abstracts:/srv/temmpo/var/abstracts
+      - web-media-results:/srv/temmpo/var/results
       - web-static:/srv/temmpo/var/static
     env_file: .env
     environment:
@@ -31,14 +33,18 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - web-static:/www/static
       - nginx-logs:/var/log/nginx
+      - web-media-abstracts:/www/abstracts
+      - web-media-results:/www/results
+      - web-static:/www/static
     links:
       - web:web
 
 # TODO: Add clamav Official - https://hub.docker.com/r/clamav/clamav/ ALT: port 3310 The container run as user clamav with uid=101 and gid=102. ref: https://hub.docker.com/r/mkodockx/docker-clamav/
 
 volumes:
-  web-django:
+  web-log:
+  web-media-abstracts:
+  web-media-results:
   web-static:
   nginx-logs:
