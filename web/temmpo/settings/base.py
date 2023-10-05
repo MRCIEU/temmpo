@@ -46,7 +46,7 @@ ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
                  '.bris.ac.uk',
                  '.bristol.ac.uk',
-                 'temmpo.org.uk',
+                 '.temmpo.org.uk',
                  'www.temmpo.org.uk', ]
 
 # Application definition
