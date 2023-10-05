@@ -243,9 +243,35 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 REGISTRATION_FORM = 'browser.forms.RegistrationCaptchaForm'
 
-# Import private settings specific to this environment like Database connections and SECRET_KEY
-# from outside of public git repo.
-try:
-    from temmpo.settings.private_settings import *
-except ImportError:
-    print("No private settings where found in the expected location /usr/local/projects/temmpo/.settings/private_settings.py or symlinked into the temmpo/temmpo/settings/ directory")
+DATABASES = {
+
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['MYSQL_DATABASE'],
+        'USER': os.environ.get('MYSQL_USER', 'root'), # Development environment uses root - to ease creation of test DB in docker, env variable is set elsewhere for real DB username name
+        'PASSWORD': os.environ['MYSQL_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
+        'OPTIONS': {
+            'sql_mode': 'STRICT_ALL_TABLES'
+        },
+        'TEST': {
+            'NAME': os.environ['TEST_DB_NAME'],
+        },
+    },
+    'admin': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['MYSQL_DATABASE'],
+        'USER': os.environ['MYSQL_ADMIN_USER'],
+        'PASSWORD': os.environ['MYSQL_ADMIN_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
+        'OPTIONS': {
+            'sql_mode': 'STRICT_ALL_TABLES'
+        }
+    },
+}
+
+#DEV ONLY ref https://docs.hcaptcha.com/#integration-testing-test-keys
+HCAPTCHA_SITEKEY = os.environ.get('HCAPTCHA_SITEKEY', '')
+HCAPTCHA_SECRET = os.environ.get('HCAPTCHA_SECRET', '')
