@@ -734,9 +734,9 @@ rq==1.14.1 \
     # via
     #   -r requirements/test.txt
     #   django-rq
-selenium==4.9.1 \
-    --hash=sha256:3444f4376321530c36ce8355b6b357d8cf4a7d588ce5cf772183465930bbed0e \
-    --hash=sha256:82aedaa85d55bc861f4c89ff9609e82f6c958e2e1e3da3ffcc36703f21d3ee16
+selenium==4.14.0 \
+    --hash=sha256:0d14b0d9842366f38fb5f8f842cf7c042bcfa062affc6a0a86e4d634bdd0fe54 \
+    --hash=sha256:be9824a9354a7fe288e3fad9ceb6a9c65ddc7c44545d23ad0ebf4ce202b19893
     # via -r requirements/test.txt
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
@@ -811,6 +811,7 @@ urllib3[socks]==1.26.18 \
     #   -r requirements/test.txt
     #   requests
     #   selenium
+    #   urllib3
 wcwidth==0.2.8 \
     --hash=sha256:77f719e01648ed600dfa5402c347481c0992263b81a027344f3e1ba25493a704 \
     --hash=sha256:8705c569999ffbb4f6a87c6d1b80f324bd6db952f5eb0b95bc07517f4c1813d4
