@@ -37,9 +37,13 @@ sudo apt-get install -y python3-wheel-whl
 
 echo "Set up alias for python3.8"
 which python3
-# which python3.8
-# alias python3.8="python3"
 which python3.8
+
+# Install Chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
+which google-chrome
+google-chrome --version
 
 cd $GITHUB_WORKSPACE
 cd lib/test/src/temmpo
