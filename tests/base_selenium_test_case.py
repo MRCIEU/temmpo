@@ -30,7 +30,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         cls.display = Display(visible=0, size=(1920, 1080))
         cls.display.start()
         # ref: https://github.com/SeleniumHQ/selenium/issues/12746
-        service = webdriver.ChromeService(executable_path="/bin/chromedriver")
+        service = webdriver.ChromeService(executable_path="../../../bin/chromedriver")
         cls.driver = webdriver.Chrome(service=service)
         cls.driver.implicitly_wait(10)
 

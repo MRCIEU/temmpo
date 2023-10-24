@@ -141,6 +141,23 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
 
+    # Install local copy of the chromedriver
+    if env in ("dev", "test",):
+        with change_dir(venv_dir + "/bin"):
+            # Download the correct chrome driver version for the version of google chrome that is currently installed,
+            # ref: https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection#:~:text=Each%20version%20of%20ChromeDriver%20supports,3683.
+            google_chrome_version = caller('google-chrome --version', capture=True).strip("Google Chrome ")
+            chrome_driver_version = google_chrome_version[:google_chrome_version.rindex(".")]
+            version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_'+chrome_driver_version).read()
+            caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
+            caller('ls -l')
+            caller('rm -f chromedriver')
+            caller('unzip -o chromedriver_linux64.zip')
+            caller('ls -l')
+            caller('rm chromedriver_linux64.zip*')
+            caller('ls -l')
+
+
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
@@ -484,10 +501,6 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('whoami')
-        caller('which chromedriver')
-        caller('ls -l /bin/chromedriver')
-        caller('/bin/chromedriver --version')
         caller('%sbin/python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, project_dir=PROJECT_ROOT):
