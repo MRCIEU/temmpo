@@ -146,7 +146,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         with change_dir(venv_dir + "/bin"):
             # Download the correct chrome driver version for the version of google chrome that is currently installed,
             # ref: https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection#:~:text=Each%20version%20of%20ChromeDriver%20supports,3683.
-            google_chrome_version = caller('google-chrome --version', capture=True).strip("Google Chrome ")
+            google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
             chrome_driver_version = google_chrome_version[:google_chrome_version.rindex(".")]
             version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_'+chrome_driver_version).read()
             caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
