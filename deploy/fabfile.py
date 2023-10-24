@@ -503,7 +503,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
         caller('source %sbin/activate' % venv_dir)
         caller('which chromedriver')
         caller('chromedriver -v')
-        caller('python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (cmd_suffix, db_type))
         caller('%sbin/deactivate' % venv_dir)
 
 def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, project_dir=PROJECT_ROOT):
