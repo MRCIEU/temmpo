@@ -141,20 +141,6 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
 
-    # Install local copy of the chromedriver
-    if env in ("dev", "test",):
-        with change_dir(venv_dir + "/bin"):
-            # Ideally would check version of google-chrome currently installed instead.
-            version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').read()
-            caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
-            caller('ls -l')
-            caller('rm -f chromedriver')
-            caller('unzip -o chromedriver_linux64.zip')
-            caller('ls -l')
-            caller('rm chromedriver_linux64.zip*')
-            caller('ls -l')
-
-
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod.  Optionally tag and merge the release env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
@@ -498,13 +484,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        # Activate virtualenv to make local download of chromedriver first in path
-        caller('which chromedriver')
-        caller('source %sbin/activate' % venv_dir)
-        caller('which chromedriver')
-        caller('chromedriver -v')
-        caller('python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (cmd_suffix, db_type))
-        caller('%sbin/deactivate' % venv_dir)
+        caller('%sbin/python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, project_dir=PROJECT_ROOT):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
