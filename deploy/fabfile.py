@@ -21,8 +21,8 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/run-django-tests.sh
-PIP_VERSION = '23.2.1'
-SETUPTOOLS_VERSION = '68.1.2'
+PIP_VERSION = '23.3'
+SETUPTOOLS_VERSION = '68.2.2'
 PIP_TOOLS_VERSION = '7.3.0'
 
 
@@ -143,16 +143,21 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     # Install local copy of the chromedriver
     if env in ("dev", "test",):
-        with change_dir(venv_dir + "/bin"):
-            # Ideally would check version of google-chrome currently installed instead.
-            version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').read()
-            caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
-            caller('ls -l')
-            caller('rm -f chromedriver')
-            caller('unzip -o -f chromedriver_linux64.zip')
-            caller('ls -l')
-            caller('rm chromedriver_linux64.zip*')
-            caller('ls -l')
+        with change_dir(venv_dir + "/bin"):            
+            # Only install the chrome driver if google chrome is installed.
+            if caller('which google-chrome'):
+                # Download the correct chrome driver version for the version of google chrome that is currently installed,
+                # ref: https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection#:~:text=Each%20version%20of%20ChromeDriver%20supports,3683.
+                google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
+                chrome_driver_version = google_chrome_version[:google_chrome_version.rindex(".")]
+                version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_'+chrome_driver_version).read()
+                caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
+                caller('ls -l')
+                caller('rm -f chromedriver')
+                caller('unzip -o chromedriver_linux64.zip')
+                caller('ls -l')
+                caller('rm chromedriver_linux64.zip*')
+                caller('ls -l')
 
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements", project_dir=PROJECT_ROOT):

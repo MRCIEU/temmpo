@@ -84,3 +84,4 @@ cypress.env.json
 
 # Project
 .env
+google-chrome-stable_current_amd64.deb

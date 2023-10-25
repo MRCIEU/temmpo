@@ -20,15 +20,18 @@ from browser.utils import delete_user_content
 
 logger = logging.getLogger(__name__)
 
+
 class SeleniumBaseTestCase(StaticLiveServerTestCase):
-    """A base test case for Selenium, providing helper methods."""
+    """A base test case for Selenium, providing helper methods - NB specifically to be run on the test server"""
 
     @classmethod
     def setUpClass(cls):
         super(SeleniumBaseTestCase, cls).setUpClass()
         cls.display = Display(visible=0, size=(1920, 1080))
         cls.display.start()
-        cls.driver = webdriver.Chrome(settings.BASE_DIR + "/../../../bin/chromedriver")
+        # ref: https://github.com/SeleniumHQ/selenium/issues/12746
+        service = webdriver.ChromeService(executable_path=settings.BASE_DIR + "/../../../bin/chromedriver")
+        cls.driver = webdriver.Chrome(service=service)
         cls.driver.implicitly_wait(10)
 
     @classmethod

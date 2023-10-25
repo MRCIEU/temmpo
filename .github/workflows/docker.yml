@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Record Docker version
         run: docker -v
-      - uses: whoan/docker-build-with-cache-action@v6
+      - uses: whoan/docker-build-with-cache-action@v8
         with:
           context: .
           dockerfile: 'deploy/Dockerfile'
