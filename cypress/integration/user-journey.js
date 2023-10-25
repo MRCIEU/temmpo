@@ -153,7 +153,7 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
                 .eq(1)
                 .should('not.be.empty')
 
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 100; i++) {
                 cy.checkForResults()
             }
 

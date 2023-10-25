@@ -1,22 +1,18 @@
 Cypress.Commands.add('checkForResults', () => {
     // Check if results have finsihed being generated, for up to 50 seconds
     cy.get('body').then(($body) => {
-
-        // for (let i = 0; i < 50; i++) {
-            // If still awaiting results
-            if ($body.find('#un-processed-results').length > 0) {
-                cy.log("Found pending results");
-                // now we are gonna wait 1 second...
-                cy.wait(1000);
-                // reload the page by pressing the refresh button...
-                cy.contains('Refresh', { matchCase: false })
-                    .click();
-            }
-            else
-            {
-                cy.log("No pending results");
-            }
-        // }
+        if ($body.find('#un-processed-results').length > 0) {
+            cy.log("Found pending results");
+            // now we are gonna wait 1 second...
+            cy.wait(1000);
+            // reload the page by pressing the refresh button...
+            cy.contains('Refresh', { matchCase: false })
+                .click();
+        }
+        else
+        {
+            cy.log("No pending results");
+        }
     })
 })
 
@@ -24,11 +20,8 @@ Cypress.Commands.add('deleteAnyExistingResults', () => {
     // Check if results have finsihed being generated, for up to 50 seconds
     cy.get('body').then(($body) => {
         if ($body.find('a[data-test="delete-button"]').length > 0) {
-            // cy.log("Found results to delete");
             cy.get('a[data-test="delete-button"]').click()
-            // cy.log("Attempt deletion");
             cy.get('input[type="submit"]').click()
-            // cy.log("Confirmed deletion");
         }
         else
         {
