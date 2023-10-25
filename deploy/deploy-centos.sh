@@ -164,9 +164,9 @@ google-chrome --version
 yum -y update google-chrome
 google-chrome --version
 
-# Using local instation instead
-# yum -y install chromedriver
-# chromedriver -v
+# Using system package.  NB: This needs to keep in sync with selenium requirements
+yum -y install chromedriver
+chromedriver -v
 
 echo "###   Confirm install list"
 yum list installed 

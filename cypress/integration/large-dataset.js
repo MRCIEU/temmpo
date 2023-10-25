@@ -164,7 +164,7 @@ describe('Login, upload and do a search using large dataset including selecting 
                     .eq(1)
                     .should('not.be.empty')
 
-                for (let i = 0; i < 50; i++) {
+                for (let i = 0; i < 100; i++) {
                     cy.checkForResults()
                 }
                 
