@@ -95,9 +95,9 @@ django-mptt==0.14.0 \
 django-redis-cache==3.0.1 \
     --hash=sha256:a7fbef101a053d2e430bd3befe6a87e6e730f98e335b516f25f30b17d9fe66e3
     # via -r requirements/requirements.in
-django-registration-redux==2.12 \
-    --hash=sha256:2213bbe8732be72724034f4146f0255a7bd666eb5a5e1b2d8d8aa633fe8af894 \
-    --hash=sha256:56fbc7b01a7f0f48812fe4d4e0729d2dac916e16f8aaed36b3f10129f2df9d0f
+django-registration-redux==2.13 \
+    --hash=sha256:547c86ad9b951cf743075b5486f304e51e450b45d04e5ef04392838a9cff3da8 \
+    --hash=sha256:9793a05b32b1d7342c6ef3e0140b2951b7dbde058b3ba6e8a232b534928279f9
     # via -r requirements/requirements.in
 django-rq==2.8.1 \
     --hash=sha256:f5d649dc57b5564011460b2b69c8a60a4f5f10ee8692b51d1dfc17035b1039b8 \
