@@ -2,11 +2,11 @@ FROM python:3.8.18-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PIP_VERSION='23.3'
+ENV PIP_VERSION='23.3.1'
 ENV SETUPTOOLS_VERSION='68.2.2'
 ENV PIP_TOOLS_VERSION='7.3.0'
 # As per Centos installation
-ENV VE_VERSION='20.13.0'
+ENV VE_VERSION='20.13.1'
 
 # Update system packages and install dependencies
 RUN apt update -y && \

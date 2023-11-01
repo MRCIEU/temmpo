@@ -9,7 +9,7 @@ on:
       - 'tests/build-test-env.sh'
       - 'tests/run-update-checks.sh'
   schedule:
-      - cron: 30 8 * * WED
+      - cron: 5 7 * * WED
   workflow_dispatch:
 
 jobs:
