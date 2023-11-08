@@ -734,9 +734,9 @@ rq==1.14.1 \
     # via
     #   -r requirements/test.txt
     #   django-rq
-selenium==4.14.0 \
-    --hash=sha256:0d14b0d9842366f38fb5f8f842cf7c042bcfa062affc6a0a86e4d634bdd0fe54 \
-    --hash=sha256:be9824a9354a7fe288e3fad9ceb6a9c65ddc7c44545d23ad0ebf4ce202b19893
+selenium==4.15.2 \
+    --hash=sha256:22eab5a1724c73d51b240a69ca702997b717eee4ba1f6065bf5d6b44dba01d48 \
+    --hash=sha256:9e82cd1ac647fb73cf0d4a6e280284102aaa3c9d94f0fa6e6cc4b5db6a30afbf
     # via -r requirements/test.txt
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
@@ -775,9 +775,9 @@ traitlets==5.13.0 \
     # via
     #   ipython
     #   matplotlib-inline
-trio==0.22.2 \
-    --hash=sha256:3887cf18c8bcc894433420305468388dac76932e9668afa1c49aa3806b6accb3 \
-    --hash=sha256:f43da357620e5872b3d940a2e3589aa251fd3f881b65a608d742e00809b1ec38
+trio==0.23.1 \
+    --hash=sha256:16f89f7dcc8f7b9dcdec1fcd863e0c039af6d0f9a22f8dfd56f75d75ec73fd48 \
+    --hash=sha256:bb4abb3f4af23f96679e7c8cdabb8b234520f2498550d2cf63ebfd95f2ce27fe
     # via
     #   -r requirements/test.txt
     #   selenium
