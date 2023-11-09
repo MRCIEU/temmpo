@@ -4,10 +4,9 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
         cy.viewport(1920, 1080);
     });
 
-    if (Cypress.config("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
-
-        // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
-        it('Lets login, go to results page, check its empty then try to upload an abstract file', () => {
+    // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
+    it('Lets login, go to results page, check its empty then try to upload an abstract file', () => {
+        if (cy.notUsingTestServer()) {
             cy.visit('/logout');
             cy.visit('/');
             cy.get('#side-menu')
@@ -232,7 +231,6 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
 
             cy.get('.info')
                 .contains('Search results deleted', { matchCase: false })
-
-        })
-    }
+        }
+    })
 });

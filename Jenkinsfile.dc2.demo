@@ -17,11 +17,11 @@ pipeline {
             agent {
                 docker {
                     image 'cypress/included:13.3.1'
-                    args '--add-host py-web-d0.epi.bris.ac.uk:172.25.2.76 --entrypoint=""'
+                    args '--add-host app-dc2-tmpo-d0.epi.bris.ac.uk:172.26.10.141 --entrypoint=""'
                 }
             }
             steps {
-                sh 'cypress run --browser chrome --config baseUrl=https://py-web-d0.epi.bris.ac.uk'
+                sh 'cypress run --browser chrome --config baseUrl=https://app-dc2-tmpo-d0.epi.bris.ac.uk'
             }
             post {
                 success {
