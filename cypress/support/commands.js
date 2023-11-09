@@ -29,8 +29,3 @@ Cypress.Commands.add('deleteAnyExistingResults', () => {
         }
     })
 })
-
-Cypress.Commands.add('notUsingTestServer', () => {
-    // Used to exclude running certain tests
-    return ! ["https://py-web-t0.epi.bris.ac.uk", "https://app-dc2-tmpo-t0.epi.bris.ac.uk"].includes(Cypress.config("baseUrl"))
-})
