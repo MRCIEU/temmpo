@@ -8,7 +8,7 @@ describe('Login, upload and do a search using large dataset including selecting 
     it('Lets login, go to results page, check its empty then try to upload an abstract file', () => {
         
         // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
-        if (Cypress.config("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
+        if (cy.notUsingTestServer()) {
 
             cy.visit('/logout');
                 cy.visit('/');
