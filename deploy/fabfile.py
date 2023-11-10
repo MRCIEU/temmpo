@@ -157,7 +157,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                     
                 else:
                     zip_name = 'chromedriver-linux64.zip'
-                    caller('wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/' + version + '/' + zip_name)
+                    caller('wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/' + version + '/linux64/' + zip_name)
                 caller('ls -l')
                 caller('rm -f chromedriver')
                 caller('unzip -o -j' + zip_name)
