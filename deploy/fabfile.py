@@ -151,12 +151,12 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
                 chrome_driver_version = google_chrome_version[:google_chrome_version.rindex(".")]
                 version = urllib2.urlopen('https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_'+chrome_driver_version).read()
-                caller('wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/' + version + '/linux64/chrome-linux64.zip')
+                caller('wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/' + version + '/linux64/chromedriver-linux64.zip')
                 caller('ls -l')
                 caller('rm -f chromedriver')
-                caller('unzip -o -j chrome-linux64.zip')
+                caller('unzip -o chromedriver_linux64.zip')
                 caller('ls -l')
-                caller('rm chrome-linux64.zip*')
+                caller('rm chromedriver_linux64.zip*')
                 caller('ls -l')
 
 
