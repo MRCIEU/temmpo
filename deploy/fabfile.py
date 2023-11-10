@@ -154,9 +154,9 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 caller('wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/' + version + '/linux64/chrome-linux64.zip')
                 caller('ls -l')
                 caller('rm -f chromedriver')
-                caller('unzip -o chromedriver_linux64.zip')
+                caller('unzip -o chrome-linux64.zip')
                 caller('ls -l')
-                caller('rm chromedriver_linux64.zip*')
+                caller('rm chrome-linux64.zip*')
                 caller('ls -l')
 
 
