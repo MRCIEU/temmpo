@@ -28,7 +28,7 @@ pip3 install -U pip==22.0.2
 pip3 -V
 
 echo "Install Fabric"
-pip3 install Fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
+pip3 install fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
 echo "Install virtualenv"
 pip3 install virtualenv==15.1.0
