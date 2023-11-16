@@ -5,7 +5,7 @@
 
 from datetime import datetime
 import os
-import urllib2
+from urllib.request import urlopen
 
 from fabric.api import *
 from fabric.contrib import files
@@ -150,7 +150,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 # ref: https://chromedriver.chromium.org/downloads/version-selection
                 google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
                 chrome_driver_version = google_chrome_version[:google_chrome_version.rindex(".")]
-                version = urllib2.urlopen('https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_'+chrome_driver_version).read()
+                version = urlopen('https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_'+chrome_driver_version).read()
                 if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
                     zip_name = 'chromedriver_linux64.zip'
                     caller('wget https://chromedriver.storage.googleapis.com/' + version + '/' + zip_name)
