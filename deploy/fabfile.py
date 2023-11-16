@@ -5,7 +5,7 @@
 
 from datetime import datetime
 import os
-import urllib2
+from urllib.request import urlopen
 
 from fabric.api import *
 from fabric.contrib import files
@@ -116,8 +116,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 install --no-deps -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
             
-            # Regenerate all pyc files
-            caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
+            # # Regenerate all pyc files
+            # caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
 
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
         caller('find . -name *.exe | xargs rm -f')
@@ -147,16 +147,22 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             # Only install the chrome driver if google chrome is installed.
             if caller('which google-chrome'):
                 # Download the correct chrome driver version for the version of google chrome that is currently installed,
-                # ref: https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection#:~:text=Each%20version%20of%20ChromeDriver%20supports,3683.
+                # ref: https://chromedriver.chromium.org/downloads/version-selection
                 google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
-                chrome_driver_version = google_chrome_version[:google_chrome_version.rindex(".")]
-                version = urllib2.urlopen('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_'+chrome_driver_version).read()
-                caller('wget https://chromedriver.storage.googleapis.com/' + version + '/chromedriver_linux64.zip')
+                google_chrome_version = google_chrome_version[:google_chrome_version.rindex(".")]
+                version = urlopen(f'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{google_chrome_version}').read().decode()
+                if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
+                    zip_name = 'chromedriver_linux64.zip'
+                    caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')
+                    
+                else:
+                    zip_name = 'chromedriver-linux64.zip'
+                    caller(f'wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}/linux64/{zip_name}')
                 caller('ls -l')
                 caller('rm -f chromedriver')
-                caller('unzip -o chromedriver_linux64.zip')
+                caller(f'unzip -o -j {zip_name}')
                 caller('ls -l')
-                caller('rm chromedriver_linux64.zip*')
+                caller(f'rm {zip_name}*')
                 caller('ls -l')
 
 
@@ -202,8 +208,8 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         else:
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
 
-        # Regenerate all pyc files
-        caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
+        # # Regenerate all pyc files
+        # caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
 
         if migrate_db:
             caller('./bin/python3 src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)

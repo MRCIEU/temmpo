@@ -4,9 +4,8 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
         cy.viewport(1920, 1080);
     });
 
-    if (Cypress.config("baseUrl") != "https://py-web-t0.epi.bris.ac.uk") {
-
-        // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
+    // NB: Disabled for the test instance, as fixtures were only manually added to demo and prod vs part of a data migration.
+    if (! ["https://py-web-t0.epi.bris.ac.uk", "https://app-dc2-tmpo-t0.epi.bris.ac.uk"].includes(Cypress.config("baseUrl"))) {
         it('Lets login, go to results page, check its empty then try to upload an abstract file', () => {
             cy.visit('/logout');
             cy.visit('/');
@@ -232,7 +231,6 @@ describe('User journey of login, upload abstracts, perform search, view, visuali
 
             cy.get('.info')
                 .contains('Search results deleted', { matchCase: false })
-
         })
     }
 });

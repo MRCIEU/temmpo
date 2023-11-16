@@ -3,5 +3,5 @@
 set -e
 
 cd $GITHUB_WORKSPACE
-pip install fabric==1.13.1
+pip3 install fabric==1.15.0
 fab -l -f deploy/fabfile.py

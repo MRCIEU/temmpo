@@ -1,7 +1,7 @@
 name: Docker build
 # TODO: Trigger a fresh build every Wednesday 
-# Triggered after changes to code or deployment config for model 1
-# Or can be triggered manualy
+# Triggered after changes to docker build related code
+# Or can be triggered manually
 on:
   workflow_dispatch:
   pull_request:
