@@ -3,7 +3,7 @@
 set -e
 
 cd $GITHUB_WORKSPACE
-# Move source code to a directory structure the application expects.
+echo "Move source code to a directory structure the application expects"
 mkdir -p lib/test/src/temmpo
 shopt -s extglob
 mv !(lib) lib/test/src/temmpo/
@@ -23,11 +23,11 @@ mkdir -p var/tmp
 
 echo "Check the version of pip that is installed"
 pip3 -V
-echo "Ensure using a consistent version of pip as per on premise CI server"
+echo "Ensure using a consistent version of pip as per on premises CI server"
 pip3 install -U pip==22.0.2
 pip3 -V
 
-# Install Fabric
+echo "Install Fabric"
 pip3 install Fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
 echo "Install virtualenv"
@@ -40,7 +40,7 @@ echo "Check aliases for python3.8"
 which python3
 which python3.8
 
-# Install Chrome
+echo "Install Chrome"
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
 rm -f google-chrome-stable_current_amd64.deb
