@@ -1,3 +1,6 @@
+8.6.0   TMMA-338: Remove Python 2 dependency
+        Apply python packaging and dependency updates
+
 8.5.3   Apply Django security update
         Apply python packaging and dependency updates
 
