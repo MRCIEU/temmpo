@@ -116,8 +116,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 install --no-deps -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
             
-            # # Regenerate all pyc files
-            # caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
+            # Regenerate all pyc files
+            caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
 
         # TMMA-426: Update deployment scripts to remove any .exe files from pip environment
         caller('find . -name *.exe | xargs rm -f')
@@ -208,8 +208,8 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         else:
             caller('./bin/pip3 install -r src/temmpo/requirements/%s.txt' % requirements)
 
-        # # Regenerate all pyc files
-        # caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
+        # Regenerate all pyc files
+        caller('./bin/python3 src/temmpo/manage.py regenerate_pyc --settings=temmpo.settings.%s' % env)
 
         if migrate_db:
             caller('./bin/python3 src/temmpo/manage.py migrate --noinput --database=admin --settings=temmpo.settings.%s' % env)
