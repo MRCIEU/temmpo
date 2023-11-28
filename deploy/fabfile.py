@@ -309,12 +309,13 @@ def setup_apache(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     # Set up static directory
     caller("mkdir -p %s" % static_dir)
 
-    # Set up SE Linux contexts
-    caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
-    caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
-    # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
-    caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
+    if env == "dev":
+        # Set up SE Linux contexts for dev environments, puppet configured for VMs
+        caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
+        caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
+        caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
+        # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
+        caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
 
     restart_apache(env, use_local_mode, run_checks=True)
 
