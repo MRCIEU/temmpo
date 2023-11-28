@@ -102,7 +102,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
                 # Alternatively Remove all cache file -  find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
                 # Ensure file mode changes do not trigger changes that can block a git pull command
-                caller('git config core.fileMode flag')
+                caller('git config core.fileMode false')
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
@@ -190,7 +190,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         # Remove any cached python project files
         caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
         # Ensure file mode changes do not trigger changes that can block a git pull command
-        caller('git config core.fileMode flag')
+        caller('git config core.fileMode false')
         caller('git fetch --all')
         caller('git fetch origin %s' % branch)
         caller('git checkout %s' % branch)
