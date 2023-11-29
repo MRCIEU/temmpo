@@ -101,6 +101,8 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 # Remove any Python 2 cached files
                 caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
                 # Alternatively Remove all cache file -  find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
+                # Ensure file mode changes do not trigger changes that can block a git pull command
+                caller('git config core.fileMode false')
                 caller('git fetch --all')
                 caller('git fetch origin %s' % branch)
                 caller('git checkout %s' % branch)
@@ -187,6 +189,8 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
     with cd(src_dir):
         # Remove any cached python project files
         caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
+        # Ensure file mode changes do not trigger changes that can block a git pull command
+        caller('git config core.fileMode false')
         caller('git fetch --all')
         caller('git fetch origin %s' % branch)
         caller('git checkout %s' % branch)
@@ -309,12 +313,13 @@ def setup_apache(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     # Set up static directory
     caller("mkdir -p %s" % static_dir)
 
-    # Set up SE Linux contexts
-    caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-    caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
-    caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
-    # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
-    caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
+    if env == "dev":
+        # Set up SE Linux contexts for dev environments, puppet configured for VMs
+        caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
+        caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
+        caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
+        # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
+        caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
 
     restart_apache(env, use_local_mode, run_checks=True)
 
