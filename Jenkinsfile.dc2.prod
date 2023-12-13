@@ -17,12 +17,12 @@ pipeline {
         stage('Production: Cypress tests') {
             agent {
                 docker {
-                    image 'cypress/included:13.3.1'
-                    args '--add-host temmpo.org.uk:172.26.10.142 --entrypoint=""'
+                    image 'cypress/included:13.6.1'
+                    args '--add-host www.temmpo.org.uk:172.26.10.142 --entrypoint=""'
                 }
             }
             steps {
-                sh 'cypress run --browser chrome --config baseUrl=https://temmpo.org.uk'
+                sh 'cypress run --browser chrome --config baseUrl=https://www.temmpo.org.uk'
             }
             post {
                 success {
