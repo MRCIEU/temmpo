@@ -293,10 +293,10 @@ class SearchingTestCase(BaseTestCase):
         self.assertNotContains(response, "Gene: TRPC1", msg_prefix=str(response.content))
         search_criteria.delete()
 
-    def _set_up_test_search_criteria(self, year=None, test_file=TEST_FILE):
+    def _set_up_test_search_criteria(self, year=None, test_file_path=TEST_FILE):
         if not year:
             year = TEST_YEAR
-        test_file = open(test_file, 'r')
+        test_file = open(test_file_path, 'r')
         upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
         upload.save()
         test_file.close()
@@ -956,13 +956,17 @@ class SearchingTestCase(BaseTestCase):
         expected_text = ["Download version 1 scores (CSV)", "Download version 1 mechanism abstract IDs (CSV)", "Revised results", "Download version 3 mechanism abstract IDs (CSV)"]
         self._find_expected_content(path=path, msg_list=expected_text)
 
+    @tag('TMMA-496')
     def test_pubmed_search_without_intial_header_line(self):
         """Test workaround for bug #TMMA-496"""
-        search_criteria = self._set_up_test_search_criteria(test_file=TEST_PUBMED_WITHOUT_BLANK_LINE)
+        previous_result_count = SearchResult.objects.all().count()
+        search_criteria = self._set_up_test_search_criteria(test_file_path=TEST_PUBMED_WITHOUT_BLANK_LINE)
         # Run the search, by posting filter and gene selection form
         self._login_user()
         path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
         response = self.client.post(path, follow=True)
         search_result = SearchResult.objects.get(criteria=search_criteria)
+        post_result_count = SearchResult.objects.all().count()
         # Test for expected output on results page
-        self._find_expected_content(reverse("results_listing"), msg_list=["test_pubmed_wihout_leading_blank_line.txt", ])
+        self._find_expected_content(reverse("results_listing"), msg_list=["test-abstract.txt", ])
+        self.assertTrue(post_result_count, previous_result_count + 1)
