@@ -104,10 +104,10 @@ def has_ovid_medline_file_header(first_line, second_line):
 
 
 def has_pubmed_file_header(first_line, second_line):
-    # First line is blank
+    # First line can be blank
     # Second line should be PMID- {number}
-    return (not first_line.strip() and
-            PUBMED_IDENTIFIER_PATTERN.match(second_line))
+    return (PUBMED_IDENTIFIER_PATTERN.match(first_line) or (not first_line.strip() and
+            PUBMED_IDENTIFIER_PATTERN.match(second_line)))
 
 
 def has_ovid_medline_mesh_headings(value):

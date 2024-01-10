@@ -1,0 +1,209 @@
+PMID- 26010633
+OWN - NLM
+STAT- MEDLINE
+DA  - 20150527
+DCOM- 20150529
+LR  - 20150708
+IS  - 1538-3598 (Electronic)
+IS  - 0098-7484 (Linking)
+VI  - 313
+IP  - 20
+DP  - 2015 May 26
+TI  - Copy number variations and cognitive phenotypes in unselected populations.
+PG  - 2044-54
+LID - 10.1001/jama.2015.4845 [doi]
+AB  - IMPORTANCE: The association of copy number variations (CNVs), differing numbers
+      of copies of genetic sequence at locations in the genome, with phenotypes such as
+      intellectual disability has been almost exclusively evaluated using clinically
+      ascertained cohorts. The contribution of these genetic variants to cognitive
+      phenotypes in the general population remains unclear. OBJECTIVE: To investigate
+      the clinical features conferred by CNVs associated with known syndromes in adult 
+      carriers without clinical preselection and to assess the genome-wide consequences
+      of rare CNVs (frequency </=0.05%; size >/=250 kilobase pairs [kb]) on carriers'
+      educational attainment and intellectual disability prevalence in the general
+      population. DESIGN, SETTING, AND PARTICIPANTS: The population biobank of Estonia 
+      contains 52,000 participants enrolled from 2002 through 2010. General
+      practitioners examined participants and filled out a questionnaire of health- and
+      lifestyle-related questions, as well as reported diagnoses. Copy number variant
+      analysis was conducted on a random sample of 7877 individuals and
+      genotype-phenotype associations with education and disease traits were evaluated.
+      Our results were replicated on a high-functioning group of 993 Estonians and 3
+      geographically distinct populations in the United Kingdom, the United States, and
+      Italy. MAIN OUTCOMES AND MEASURES: Phenotypes of genomic disorders in the general
+      population, prevalence of autosomal CNVs, and association of these variants with 
+      educational attainment (from less than primary school through scientific degree) 
+      and prevalence of intellectual disability. RESULTS: Of the 7877 in the Estonian
+      cohort, we identified 56 carriers of CNVs associated with known syndromes. Their 
+      phenotypes, including cognitive and psychiatric problems, epilepsy, neuropathies,
+      obesity, and congenital malformations are similar to those described for carriers
+      of identical rearrangements ascertained in clinical cohorts. A genome-wide
+      evaluation of rare autosomal CNVs (frequency, </=0.05%; >/=250 kb) identified 831
+      carriers (10.5%) of the screened general population. Eleven of 216 (5.1%)
+      carriers of a deletion of at least 250 kb (odds ratio [OR], 3.16; 95% CI,
+      1.51-5.98; P = 1.5e-03) and 6 of 102 (5.9%) carriers of a duplication of at least
+      1 Mb (OR, 3.67; 95% CI, 1.29-8.54; P = .008) had an intellectual disability
+      compared with 114 of 6819 (1.7%) in the Estonian cohort. The mean education
+      attainment was 3.81 (P = 1.06e-04) among 248 (>/=250 kb) deletion carriers and
+      3.69 (P = 5.024e-05) among 115 duplication carriers (>/=1 Mb). Of the deletion
+      carriers, 33.5% did not graduate from high school (OR, 1.48; 95% CI, 1.12-1.95; P
+      = .005) and 39.1% of duplication carriers did not graduate high school (OR, 1.89;
+      95% CI, 1.27-2.8; P = 1.6e-03). Evidence for an association between rare CNVs and
+      lower educational attainment was supported by analyses of cohorts of adults from 
+      Italy and the United States and adolescents from the United Kingdom. CONCLUSIONS 
+      AND RELEVANCE: Known pathogenic CNVs in unselected, but assumed to be healthy,
+      adult populations may be associated with unrecognized clinical sequelae.
+      Additionally, individually rare but collectively common intermediate-size CNVs
+      may be negatively associated with educational attainment. Replication of these
+      findings in additional population groups is warranted given the potential
+      implications of this observation for genomics research, clinical care, and public
+      health.
+FAU - Mannik, Katrin
+AU  - Mannik K
+AD  - Center for Integrative Genomics, University of Lausanne, Lausanne,
+      Switzerland2Estonian Genome Center, University of Tartu, Tartu.
+FAU - Magi, Reedik
+AU  - Magi R
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Mace, Aurelien
+AU  - Mace A
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne,
+      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland.
+FAU - Cole, Ben
+AU  - Cole B
+AD  - Department of Laboratory Medicine and Pathology, University of Minnesota Medical 
+      School, Minneapolis.
+FAU - Guyatt, Anna L
+AU  - Guyatt AL
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom.
+FAU - Shihab, Hashem A
+AU  - Shihab HA
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
+      Epidemiology Unit, School of Social and Community Medicine, University of
+      Bristol, Bristol, United Kingdom.
+FAU - Maillard, Anne M
+AU  - Maillard AM
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne, Switzerland.
+FAU - Alavere, Helene
+AU  - Alavere H
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Kolk, Anneli
+AU  - Kolk A
+AD  - Estonian Genome Center, University of Tartu, Tartu8Department of Neurology and
+      Neurorehabilitation, Children's Clinic, Tartu University Hospital, Tartu,
+      Estonia.
+FAU - Reigo, Anu
+AU  - Reigo A
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Mihailov, Evelin
+AU  - Mihailov E
+AD  - Estonian Genome Center, University of Tartu, Tartu.
+FAU - Leitsalu, Liis
+AU  - Leitsalu L
+AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
+      Cell Biology, University of Tartu, Tartu, Estonia.
+FAU - Ferreira, Anne-Maud
+AU  - Ferreira AM
+AD  - Center for Integrative Genomics, University of Lausanne, Lausanne,
+      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland.
+FAU - Noukas, Margit
+AU  - Noukas M
+AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
+      Cell Biology, University of Tartu, Tartu, Estonia.
+FAU - Teumer, Alexander
+AU  - Teumer A
+AD  - Institute for Community Medicine, University Medicine Greifswald, Greifswald,
+      Germany.
+FAU - Salvi, Erika
+AU  - Salvi E
+AD  - Deparment of Health Sciences, University of Milan, Milan, Italy.
+FAU - Cusi, Daniele
+AU  - Cusi D
+AD  - Deparment of Health Sciences, University of Milan, Milan, Italy12Institute of
+      Biomedical Technologies, Italian National Research Council, Milan, Italy.
+FAU - McGue, Matt
+AU  - McGue M
+AD  - Department of Psychology, University of Minnesota, Minneapolis.
+FAU - Iacono, William G
+AU  - Iacono WG
+AD  - Department of Psychology, University of Minnesota, Minneapolis.
+FAU - Gaunt, Tom R
+AU  - Gaunt TR
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
+      Epidemiology Unit, School of Social and Community Medicine, University of
+      Bristol, Bristol, United Kingdom.
+FAU - Beckmann, Jacques S
+AU  - Beckmann JS
+AD  - Swiss Institute of Bioinformatics, Lausanne, Switzerland.
+FAU - Jacquemont, Sebastien
+AU  - Jacquemont S
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne, Switzerland.
+FAU - Kutalik, Zoltan
+AU  - Kutalik Z
+AD  - Department of Medical Genetics, University of Lausanne, Lausanne,
+      Switzerland4Swiss Institute of Bioinformatics, Lausanne, Switzerland14Institute
+      of Social and Preventive Medicine, Lausanne University Hospital (CHUV), Lausanne,
+      Switzerland.
+FAU - Pankratz, Nathan
+AU  - Pankratz N
+AD  - Department of Laboratory Medicine and Pathology, University of Minnesota Medical 
+      School, Minneapolis.
+FAU - Timpson, Nicholas
+AU  - Timpson N
+AD  - Bristol Genetic Epidemiology Laboratories, School of Social and Community
+      Medicine, University of Bristol, Bristol, United Kingdom7MRC Integrative
+      Epidemiology Unit, School of Social and Community Medicine, University of
+      Bristol, Bristol, United Kingdom.
+FAU - Metspalu, Andres
+AU  - Metspalu A
+AD  - Estonian Genome Center, University of Tartu, Tartu9Institute of Molecular and
+      Cell Biology, University of Tartu, Tartu, Estonia.
+FAU - Reymond, Alexandre
+AU  - Reymond A
+AD  - Center for Integrative Genomics, University of Lausanne, Lausanne, Switzerland.
+LA  - eng
+GR  - 102433/Z/13/Z/Wellcome Trust/United Kingdom
+GR  - AA09367/AA/NIAAA NIH HHS/United States
+GR  - AA11886/AA/NIAAA NIH HHS/United States
+GR  - DA024417/DA/NIDA NIH HHS/United States
+GR  - DA05147/DA/NIDA NIH HHS/United States
+GR  - DA13240/DA/NIDA NIH HHS/United States
+GR  - MH066140/MH/NIMH NIH HHS/United States
+PT  - Journal Article
+PT  - Research Support, N.I.H., Extramural
+PT  - Research Support, Non-U.S. Gov't
+PL  - United States
+TA  - JAMA
+JT  - JAMA
+JID - 7501160
+SB  - AIM
+SB  - IM
+CIN - JAMA. 2015 May 26;313(20):2029-30. PMID: 26010630
+MH  - Adolescent
+MH  - Adult
+MH  - Cognition
+MH  - *DNA Copy Number Variations
+MH  - Educational Status
+MH  - Epilepsy/genetics
+MH  - Estonia
+MH  - Female
+MH  - Genome-Wide Association Study
+MH  - Great Britain
+MH  - *Heterozygote
+MH  - Humans
+MH  - Intellectual Disability/*genetics
+MH  - Italy
+MH  - Male
+MH  - Mental Disorders/*genetics
+MH  - Obesity/genetics
+MH  - Phenotype
+MH  - United States
+EDAT- 2015/05/27 06:00
+MHDA- 2015/05/30 06:00
+CRDT- 2015/05/27 06:00
+AID - 2297168 [pii]
+AID - 10.1001/jama.2015.4845 [doi]
+PST - ppublish
+SO  - JAMA. 2015 May 26;313(20):2044-54. doi: 10.1001/jama.2015.4845.
