@@ -21,6 +21,7 @@ TEST_GZIP_PUB_MED_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'pubmed_result_100.txt.
 TEST_BZ_OVID_ARCHIVE = os.path.join(BASE_DIR, 'ovid_result_100.txt.bz2')
 TEST_GZIP_OVID_ARCHIVE = os.path.join(BASE_DIR, 'ovid_result_100.txt.gz')
 
+TEST_PUBMED_WITHOUT_BLANK_LINE = os.path.join(BASE_DIR, 'test_pubmed_wihout_leading_blank_line.txt')
 
 #Invalid file uploads
 TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt')
@@ -35,7 +36,7 @@ TEST_ZIP_DOC_ARCHIVE = os.path.join(BASE_DIR, 'test.docx.zip')
 TEST_ZIP_PUB_MED_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'pubmed_result_100.txt.zip')
 TEST_ZIP_OVID_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'ovid_result_100.txt.zip')
 
-class ArchiveUploadTestCase(BaseTestCase):
+class UploadTestCase(BaseTestCase):
     """Run tests for browsing the TeMMPo application."""
 
     fixtures = ['test_searching_mesh_terms.json', 'test_genes.json', ]
@@ -103,7 +104,7 @@ class ArchiveUploadTestCase(BaseTestCase):
                                         format='multipart')
         return response
 
-    def _assert_archive_file_is_uploaded_and_extracted(self, test_archive_file, search_path):
+    def _assert_file_is_uploaded_and_extracted_where_required(self, test_archive_file, search_path):
         """Is this test file an archive we can process?"""
         previous_upload_count = Upload.objects.all().count()
         response = self._setup_file_upload_response(test_archive_file, search_path)
@@ -115,24 +116,24 @@ class ArchiveUploadTestCase(BaseTestCase):
         self.assertEqual(mime_type, "text/plain")
 
     def test_bz2_pub_med_upload_is_allowable(self):
-        self._assert_archive_file_is_uploaded_and_extracted(TEST_BZ_PUB_MED_ARCHIVE, reverse('search_pubmed'))
+        self._assert_file_is_uploaded_and_extracted_where_required(TEST_BZ_PUB_MED_ARCHIVE, reverse('search_pubmed'))
 
     def test_gzip_pub_med_upload_is_allowable(self):
-        self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_PUB_MED_ARCHIVE, reverse('search_pubmed'))
+        self._assert_file_is_uploaded_and_extracted_where_required(TEST_GZIP_PUB_MED_ARCHIVE, reverse('search_pubmed'))
 
     @tag('skip-on-ubuntu')
     def test_small_bz2_pub_med_upload_is_allowable(self):
-        self._assert_archive_file_is_uploaded_and_extracted(TEST_BZ_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
+        self._assert_file_is_uploaded_and_extracted_where_required(TEST_BZ_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
 
     @tag('skip-on-ubuntu')
     def test_small_gzip_pub_med_upload_is_allowable(self):
-        self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
+        self._assert_file_is_uploaded_and_extracted_where_required(TEST_GZIP_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
 
     def test_bz2_ovid_upload_is_allowable(self):
-        self._assert_archive_file_is_uploaded_and_extracted(TEST_BZ_OVID_ARCHIVE, reverse('search_ovid_medline'))
+        self._assert_file_is_uploaded_and_extracted_where_required(TEST_BZ_OVID_ARCHIVE, reverse('search_ovid_medline'))
 
     def test_gzip_ovid_upload_is_allowable(self):
-        self._assert_archive_file_is_uploaded_and_extracted(TEST_GZIP_OVID_ARCHIVE, reverse('search_ovid_medline'))
+        self._assert_file_is_uploaded_and_extracted_where_required(TEST_GZIP_OVID_ARCHIVE, reverse('search_ovid_medline'))
 
     def _assert_invalid_pub_med_archive_fail(self, test_archive_file):
         previous_upload_count = Upload.objects.all().count()
@@ -147,3 +148,7 @@ class ArchiveUploadTestCase(BaseTestCase):
 
     def test_bz_with_invalid_pub_med_file(self):
         self._assert_invalid_pub_med_archive_fail(TEST_BZ_ARCHIVE_BADLY_FORMATTED_FILE)
+
+    def test_can_upload_pubmed_file_with_missing_initial_blank_line(self):
+        """#TMMA-496: Investigate issue parsing PubMed abstract uploads"""
+        self._assert_file_is_uploaded_and_extracted_where_required(TEST_PUBMED_WITHOUT_BLANK_LINE, reverse('search_pubmed'))
