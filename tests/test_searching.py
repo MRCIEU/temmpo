@@ -55,7 +55,6 @@ import json
 import os
 from datetime import datetime, timedelta
 import glob
-import magic
 
 from django.conf import settings
 from django.core.files import File
@@ -294,10 +293,10 @@ class SearchingTestCase(BaseTestCase):
         self.assertNotContains(response, "Gene: TRPC1", msg_prefix=str(response.content))
         search_criteria.delete()
 
-    def _set_up_test_search_criteria(self, year=None):
+    def _set_up_test_search_criteria(self, year=None, test_file=TEST_FILE):
         if not year:
             year = TEST_YEAR
-        test_file = open(TEST_FILE, 'r')
+        test_file = open(test_file, 'r')
         upload = Upload(user=self.user, abstracts_upload=File(test_file, u'test-abstract.txt'), file_format=OVID)
         upload.save()
         test_file.close()
@@ -959,12 +958,11 @@ class SearchingTestCase(BaseTestCase):
 
     def test_pubmed_search_without_intial_header_line(self):
         """Test workaround for bug #TMMA-496"""
+        search_criteria = self._set_up_test_search_criteria(test_file=TEST_PUBMED_WITHOUT_BLANK_LINE)
+        # Run the search, by posting filter and gene selection form
         self._login_user()
-        self._find_expected_content(path=reverse('search'),
-                                    msg="Upload abstracts to search")
-        self._find_expected_content(path=reverse("search_pubmed"),
-                                    msg=u"Search PubMed MEDLINE® formatted abstracts")
-        # Search PubMed formatted abstracts
-        self._test_search_bulk_term_edit(abstract_file_path=TEST_PUBMED_WITHOUT_BLANK_LINE,
-                                         file_format=PUBMED,
-                                         search_url=reverse('search_pubmed'))
+        path = reverse('filter_selector', kwargs={'pk': search_criteria.id})
+        response = self.client.post(path, follow=True)
+        search_result = SearchResult.objects.get(criteria=search_criteria)
+        # Test for expected output on results page
+        self._find_expected_content(reverse("results_listing"), msg_list=["test_pubmed_wihout_leading_blank_line.txt", ])
