@@ -21,7 +21,7 @@ TEST_GZIP_PUB_MED_SMALL_ARCHIVE = os.path.join(BASE_DIR, 'pubmed_result_100.txt.
 TEST_BZ_OVID_ARCHIVE = os.path.join(BASE_DIR, 'ovid_result_100.txt.bz2')
 TEST_GZIP_OVID_ARCHIVE = os.path.join(BASE_DIR, 'ovid_result_100.txt.gz')
 
-TEST_PUBMED_WITHOUT_BLANK_LINE = os.path.join(BASE_DIR, 'test_pubmed_temmpo.txt')
+TEST_PUBMED_WITHOUT_BLANK_LINE = os.path.join(BASE_DIR, 'test_pubmed_wihout_leading_blank_line.txt')
 
 #Invalid file uploads
 TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt')

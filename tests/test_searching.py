@@ -67,6 +67,7 @@ from browser.matching import read_citations, Citation
 from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
 
 from tests.base_test_case import BaseTestCase
+from tests.test_uploads import TEST_PUBMED_WITHOUT_BLANK_LINE
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__)
@@ -75,6 +76,7 @@ BASE_DIR = os.path.dirname(__file__)
 TEST_FILE = os.path.join(BASE_DIR, 'test-abstract.txt')
 TEST_PUBMED_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'pubmed_result_100.txt')
 TEST_OVID_MEDLINE_ABSTRACTS = os.path.join(BASE_DIR, 'ovid_result_100.txt')
+TEST_PUBMED_WITHOUT_BLANK_LINE = os.path.join(BASE_DIR, 'test_pubmed_wihout_leading_blank_line.txt')
 
 #Invalid file uploads
 TEST_NO_MESH_SUBJECT_HEADINGS_FILE = os.path.join(BASE_DIR, 'no-mesh-terms-abstract.txt')
@@ -954,3 +956,15 @@ class SearchingTestCase(BaseTestCase):
         path = reverse('results', kwargs={'pk': search_result.id})
         expected_text = ["Download version 1 scores (CSV)", "Download version 1 mechanism abstract IDs (CSV)", "Revised results", "Download version 3 mechanism abstract IDs (CSV)"]
         self._find_expected_content(path=path, msg_list=expected_text)
+
+    def test_pubmed_search_without_intial_header_line(self):
+        """Test workaround for bug #TMMA-496"""
+        self._login_user()
+        self._find_expected_content(path=reverse('search'),
+                                    msg="Upload abstracts to search")
+        self._find_expected_content(path=reverse("search_pubmed"),
+                                    msg=u"Search PubMed MEDLINE® formatted abstracts")
+        # Search PubMed formatted abstracts
+        self._test_search_bulk_term_edit(abstract_file_path=TEST_PUBMED_WITHOUT_BLANK_LINE,
+                                         file_format=PUBMED,
+                                         search_url=reverse('search_pubmed'))
