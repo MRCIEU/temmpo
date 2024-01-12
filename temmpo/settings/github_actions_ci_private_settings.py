@@ -12,6 +12,8 @@ DATABASES = {
     }
 }
 
+DATABASES['admin'] = DATABASES['mysql']
+
 # redis available over localhost, may need to redefine if any issues
 
 # clamd testing is enabled specifically for selenium tests or Apache fronted VMs.
