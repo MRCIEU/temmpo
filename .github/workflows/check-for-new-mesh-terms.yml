@@ -30,7 +30,7 @@ jobs:
     - name: Create pull request where required
       uses: peter-evans/create-pull-request@v5
       with:
-        branch: MeSH-term-updates
+        branch: mesh-term-updates
         title: Pending MeSH term updates
         commit-message: "Automated GitHub Action generated MeSH term updates fixtures"
         body: "Automated MeSH term updates using [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action"
