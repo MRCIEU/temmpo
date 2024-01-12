@@ -27,6 +27,7 @@ jobs:
             - 3306:3306
           env:
             MYSQL_ROOT_PASSWORD: 'ci-db-pswd'
+            MYSQL_DATABASE: 'ci'
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5

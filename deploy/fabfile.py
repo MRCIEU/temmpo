@@ -707,6 +707,7 @@ def create_mesh_term_fixtures(env="dev", use_local_mode=False, project_dir=PROJE
         else:
             caller(f'wget -O {mesh_term_file_path} https://nlmpubs.nlm.nih.gov/projects/mesh/{year}/meshtrees/mtrees{year}.bin')
             if _exists_local(mesh_term_file_path, use_local_mode):
+                caller(f'{venv_dir}bin/python3 manage.py migrate --database=admin --noinput --settings=temmpo.settings.%s' % env)
                 caller(f'{venv_dir}bin/python3 manage.py loaddata {previous_fixture_file} --settings=temmpo.settings.{env}')
                 caller(f'{venv_dir}bin/python3 manage.py import_mesh_terms {mesh_term_file_path} {year} --settings=temmpo.settings.{env}')
                 caller(f'{venv_dir}bin/python3 manage.py dumpdata browser.MeshTerm --indent 4 --output {new_fixture_file_path} --settings=temmpo.settings.{env}')
