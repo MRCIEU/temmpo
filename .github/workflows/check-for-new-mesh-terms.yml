@@ -6,7 +6,7 @@ on:
       - 'master'
       - 'TMMA-273'
     paths:
-      - '.github/workflows/check-for-new-mesh-terms'
+      - '.github/workflows/check-for-new-mesh-terms.yml'
       - 'tests/build-test-env.sh'
       - 'tests/check-for-new-mesh-terms.sh'
   schedule:
