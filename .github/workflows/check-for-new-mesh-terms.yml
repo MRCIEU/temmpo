@@ -9,6 +9,7 @@ on:
       - '.github/workflows/check-for-new-mesh-terms.yml'
       - 'tests/build-test-env.sh'
       - 'tests/check-for-new-mesh-terms.sh'
+      - 'temmpo/settings/github_actions_ci_private_settings.py'
   schedule:
       - cron: 5 2 * * WED
   workflow_dispatch:
