@@ -12,7 +12,7 @@ DATABASES = {
     }
 }
 
-DATABASES['admin'] = DATABASES['mysql']
+DATABASES['admin'] = DATABASES['default']
 
 # redis available over localhost, may need to redefine if any issues
 
