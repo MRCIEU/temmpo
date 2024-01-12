@@ -1,3 +1,6 @@
+9.0.0   TMMA-273: Automate importing new MeshTerm terms
+        Import 2023 MeSH Terms
+
 8.7.0   TMMA-494: Add support PubMed formatted files without a leading blank line
         Apply python dependency updates
 
