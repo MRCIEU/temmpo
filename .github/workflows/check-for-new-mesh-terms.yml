@@ -1,0 +1,38 @@
+name: Check for MeSH term updates
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'TMMA-273'
+    paths:
+      - '.github/workflows/check-for-new-mesh-terms'
+      - 'tests/build-test-env.sh'
+      - 'tests/check-for-new-mesh-terms.sh'
+  schedule:
+      - cron: 5 2 * * WED
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.8'
+        architecture: 'x64'
+    - name: Run checks for new MeSH terms and download if available
+      run: bash tests/check-for-new-mesh-terms.sh
+    - name: git status output
+      run: |
+        git status
+    - name: Create pull request where required
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: MeSH-term-updates
+        title: Pending MeSH term updates
+        commit-message: "Automated GitHub Action generated MeSH term updates fixtures"
+        body: "Automated MeSH term updates using [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action"
+        assignees: asset-web
+    # TMMA-465 Workaround bug triggering follow on workflows, ref: https://github.com/peter-evans/create-pull-request/blob/v5/docs/concepts-guidelines.md#triggering-further-workflow-runs

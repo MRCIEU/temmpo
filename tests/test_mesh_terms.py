@@ -3,6 +3,7 @@
 """
 from collections import OrderedDict
 
+from django.core import management
 from django.test import TestCase
 
 from browser.models import MeshTerm
@@ -76,3 +77,16 @@ class TestMeshTermsReleaseYearsTestCase(TestCase):
         terms_only_in_2015 = MeshTerm.objects.filter(term__in=['AA'])
         result = MeshTerm.convert_terms_to_current_year(terms_only_in_2015, 2015, 2018)
         self.assertEqual(len(result), 0)
+
+
+class TestMeshTermsFixtures(TestCase):
+
+    def test_contents_of_mesh_terms_json(self):
+        MeshTerm.objects.all().delete()
+        self.assertEqual(MeshTerm.objects.all().count(), 0)
+        management.call_command('loaddata', 'mesh_terms.json', verbosity=0)
+        self.assertNotEqual(MeshTerm.objects.all().count(), 0)
+        self.assertGreaterEqual(MeshTerm.objects.all().count(), 235565)
+        # Following should only work after 2023 fixtures are created.
+        self.assertTrue(MeshTerm.objects.filter(year=2023, term="Antiracism").exists()) 
+        self.assertGreater(MeshTerm.objects.all().count(), 235565)

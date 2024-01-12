@@ -681,13 +681,13 @@ def import_mesh_terms(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT,
         caller(f'{venv_dir}bin/python3 manage.py import_mesh_terms {mesh_term_file_path} {year} --settings=temmpo.settings.{env}')
         caller('echo "END: Import mesh terms for year: {year} with file: {mesh_term_file_path}."')
 
-def create_mesh_term_fixtures(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT, previous_fixture_file="", new_fixture_file="mesh_terms.json", mesh_term_file_path="", year=None):
+def create_mesh_term_fixtures(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT, previous_fixture_file="mesh_terms.json", new_fixture_file="mesh_terms.json", year=None):
     """
     Download bin file
     Import previous mesh term file fixture
     Import mesh term into test (dev) instance
     Dump mesh term fixtures
-    TODO: Wire to a GitHub action to create a pull request/save archive files
+    Use a CI pipeline, e.g. GitHub action, to create a pull request to record new fixture files
         add *.bin file
         add `mesh_terms.json` fixture file
     """
@@ -698,14 +698,17 @@ def create_mesh_term_fixtures(env="dev", use_local_mode=False, project_dir=PROJE
     src_dir = project_dir + "lib/" + env + "/src/temmpo/"
     if not year:
         year = str(datetime.now().year)
-    mesh_term_file_path = f'./temmpo/prepopulate/mtrees{year}.bin'
-    new_fixture_file_path = f'./browser/fixtures/{new_fixture_file}'
+    mesh_term_file_path = f'{src_dir}/temmpo/prepopulate/mtrees{year}.bin'
+    new_fixture_file_path = f'{src_dir}/browser/fixtures/{new_fixture_file}'
 
     with change_dir(src_dir):
-        caller(f'wget -O {mesh_term_file_path} https://nlmpubs.nlm.nih.gov/projects/mesh/{year}/meshtrees/mtrees{year}.bin')
         if _exists_local(mesh_term_file_path, use_local_mode):
-            caller(f'{venv_dir}bin/python3 manage.py loaddata {previous_fixture_file} --settings=temmpo.settings.{env}')
-            caller(f'{venv_dir}bin/python3 manage.py import_mesh_terms {mesh_term_file_path} {year} --settings=temmpo.settings.{env}')
-            caller(f'{venv_dir}bin/python3 manage.py dumpdata dumpdata browser.MeshTerm --indent 4 --output {new_fixture_file_path} --settings=temmpo.settings.{env}')
+            caller(f'echo "WARNING: MeSH term fixtures for year: {year} already exists."')
         else:
-            caller(f'echo "ERROR: Could not download mesh terms for year: {year}".')
+            caller(f'wget -O {mesh_term_file_path} https://nlmpubs.nlm.nih.gov/projects/mesh/{year}/meshtrees/mtrees{year}.bin')
+            if _exists_local(mesh_term_file_path, use_local_mode):
+                caller(f'{venv_dir}bin/python3 manage.py loaddata {previous_fixture_file} --settings=temmpo.settings.{env}')
+                caller(f'{venv_dir}bin/python3 manage.py import_mesh_terms {mesh_term_file_path} {year} --settings=temmpo.settings.{env}')
+                caller(f'{venv_dir}bin/python3 manage.py dumpdata browser.MeshTerm --indent 4 --output {new_fixture_file_path} --settings=temmpo.settings.{env}')
+            else:
+                caller(f'echo "ERROR: Could not download mesh terms for year: {year}."')

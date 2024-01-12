@@ -72,21 +72,29 @@ To be able to run the applications browsing and searching functionality Mesh Ter
 
 NB: this can take a few minutes.
 
-    python manage.py loaddata browser/fixtures/mesh_terms_2015_2018_2019_2020.json  --settings=temmpo.settings.dev
+    python manage.py loaddata browser/fixtures/mesh_terms.json  --settings=temmpo.settings.dev
 
 1. Management command
 
-    Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/ or see newer location: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/mtrees2021.bin
+    Annually MeSH terms are released.  This can be as early as November for the following year.  There is a management command that can be run annually once the new terms have been sourced.  Reference: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/ or see newer location: ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/meshtrees/mtrees2021.bin or https://nlmpubs.nlm.nih.gov/projects/mesh/2023/meshtrees/mtrees2023.bin
 
     NB: This command each take over 50 minutes to run depending on your environment.
 
-        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2021.bin 2021
+        python manage.py import_mesh_terms ./temmpo/prepopulate/mtrees2023.bin 2023
+
+1. CI script
+
+NB: A very long running script, but run in Jenkins CI.
+
+Helper commands:
+
+    fab create_mesh_term_fixtures:env="dev",use_local_mode=True,previous_fixture_file="mesh_terms.json",year=2023 -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
 ##### Dumping MeSH terms to a fixture file
 
-After importing a new year of mesh terms, create a fixture file for testing and development purposes.  For example:
+After importing a new year of mesh terms, create/update a fixture file for testing and development purposes.  For example:
 
-    python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms_2015_2018_2019_2020_2021.json
+    python manage.py dumpdata browser.MeshTerm --indent 4 --output browser/fixtures/mesh_terms.json
 
 #### Importing Genes - optional
 

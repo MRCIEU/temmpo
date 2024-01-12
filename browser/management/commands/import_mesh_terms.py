@@ -49,6 +49,8 @@ YEAR, e.g. 2015
             ...
 """
 
+# ref: https://nlmpubs.nlm.nih.gov/projects/mesh/2023/meshtrees/mtrees2023.bin
+
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.management.base import BaseCommand, CommandError
