@@ -1,3 +1,7 @@
+8.8.0   TMMA-499: Update jQuery & disable TRACK/TRACE methods
+        TMMA-498: Upgrade mysql-connector-python
+        Apply python dependency updates
+
 8.7.0   TMMA-494: Add support PubMed formatted files without a leading blank line
         Apply python dependency updates
 
