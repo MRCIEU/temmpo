@@ -74,7 +74,6 @@ yum -y install python3-wheel
 yum -y install python3-lxml
 
 echo "###   Install DB connectivity tools"
-yum -y install mysql-connector-python
 yum -y install mysql-utilities
 
 echo "###   Install anti-virus tools used with Apache fronted instances"
