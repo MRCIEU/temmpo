@@ -12,6 +12,7 @@ django-hcaptcha-field>=1.4.0
 hiredis>=2.2.2
 lxml>=4.9.2
 more-itertools>=9.1.0
+mysql-connector-python>=8.0.32
 mysqlclient>=2.1.1
 numexpr>=2.8.4
 numpy>=1.24.2

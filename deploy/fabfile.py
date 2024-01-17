@@ -245,6 +245,7 @@ def setup_apache(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
 
     apache_conf = """
     Header set X-Frame-Options "DENY"
+    TraceEnable off
 
     WSGIScriptAlias / /usr/local/projects/temmpo/lib/%(env)s/src/temmpo/temmpo/wsgi.py
     # WSGIPythonHome /usr/local/projects/temmpo/bin/python3
