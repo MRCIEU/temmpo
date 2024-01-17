@@ -27,7 +27,6 @@ rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 # Clean up default mariadb installations
 yum -y remove mariadb-libs
 yum -y install mysql-devel
-yum -y install mysql-utilities
 wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
 # Add MySQL package repository
 yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
@@ -72,9 +71,6 @@ ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv-3.8
 
 yum -y install python3-wheel
 yum -y install python3-lxml
-
-echo "###   Install DB connectivity tools"
-yum -y install mysql-utilities
 
 echo "###   Install anti-virus tools used with Apache fronted instances"
 yum -y install clamav
