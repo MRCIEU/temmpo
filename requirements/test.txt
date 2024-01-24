@@ -685,9 +685,9 @@ rq==1.14.1 \
     # via
     #   -r requirements/requirements.txt
     #   django-rq
-selenium==4.16.0 \
-    --hash=sha256:aec71f4e6ed6cb3ec25c9c1b5ed56ae31b6da0a7f17474c7566d303f84e6219f \
-    --hash=sha256:b2e987a445306151f7be0e6dfe2aa72a479c2ac6a91b9d5ef2d6dd4e49ad0435
+selenium==4.17.2 \
+    --hash=sha256:5aee79026c07985dc1b0c909f34084aa996dfe5b307602de9016d7a621a473f2 \
+    --hash=sha256:d43d6972e516855fb242ef9ce4ce759057b115070e702e7b1c1032fe7b38d87b
     # via -r requirements/test.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
@@ -726,6 +726,7 @@ typing-extensions==4.9.0 \
     # via
     #   -r requirements/requirements.txt
     #   asgiref
+    #   selenium
 tzdata==2023.4 \
     --hash=sha256:aa3ace4329eeacda5b7beb7ea08ece826c28d761cda36e747cfbf97996d39bf3 \
     --hash=sha256:dd54c94f294765522c77399649b4fefd95522479a664a0cec87f41bebc6148c9
