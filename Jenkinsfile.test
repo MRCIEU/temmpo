@@ -16,7 +16,7 @@ pipeline {
         stage('Test: Cypress tests') {
             agent {
                 docker {
-                    image 'cypress/included:13.6.1'
+                    image 'cypress/included:13.6.4'
                     args '--add-host py-web-t0.epi.bris.ac.uk:172.25.2.77 --entrypoint=""'
                 }
             }

@@ -4,7 +4,7 @@
 
 {% block styles %}
 <!-- jsTree -->
-<link rel="stylesheet" href="{{STATIC_URL}}css/jstree/themes/default/style.min.css" />
+<link rel="stylesheet" href="{{STATIC_URL}}css/jstree/themes/default/style.min.css">
 {% endblock %}
 
 {% block page_heading %}
@@ -89,7 +89,7 @@
               </div>
 
               <button type="submit" name="btn_submit" value="replace" class="btn btn-default btn-block">{% if pre_selected_term_names %}Replace{% else %}Add{% endif %}</button>
-              <input type="hidden" name="include_child_nodes" value="down" />
+              <input type="hidden" name="include_child_nodes" value="down">
           </form>
         </div>
     </div>
@@ -110,7 +110,7 @@
           <form action="." method="post" id="search_form">
               <!-- Search -->
               <div class="form-group input-group">
-                <input id="search_term" class="form-control" name="search_term" type="text" value="" />
+                <input id="search_term" class="form-control" name="search_term" type="text" value="">
                 <span class="input-group-btn">
                 	<button type="submit" id="search_button" value="search" class="btn btn-default"><i class="fa fa-search" title="search"></i></button>
                 </span>
@@ -132,8 +132,8 @@
 
               </div>
 
-              <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}" />
-              <input type="hidden" name="include_child_nodes" value="down" />
+              <input type="hidden" name="term_tree_ids" id="term_tree_ids" value="{{ pre_selected }}">
+              <input type="hidden" name="include_child_nodes" value="down">
           </form>
         </div>
     </div>
