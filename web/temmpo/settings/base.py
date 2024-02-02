@@ -44,6 +44,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
+                 'nginx',
                  '.bris.ac.uk',
                  '.bristol.ac.uk',
                  '.temmpo.org.uk',
