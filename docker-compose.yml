@@ -22,7 +22,7 @@ services:
     env_file: .env
     environment:
       DEBUG: "True"
-    command: bash -c "/srv/temmpo/bin/gunicorn ieu_gwas_db.wsgi:application -w 2 -b :8000"
+    command: bash -c "/srv/temmpo/bin/gunicorn temmpo.wsgi:application -w 2 -b :8000"
 
   nginx:
     restart: always
