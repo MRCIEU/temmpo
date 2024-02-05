@@ -18,11 +18,11 @@ pipeline {
             agent {
                 docker {
                     image 'cypress/included:13.6.4'
-                    args '--add-host temmpo-dc2-vip.epi.bris.ac.uk:172.26.10.142 --entrypoint=""'
+                    args '--add-host www.temmpo.org.uk:172.26.10.142 --entrypoint=""'
                 }
             }
             steps {
-                sh 'cypress run --browser chrome --config baseUrl=https://temmpo-dc2-vip.epi.bris.ac.uk'
+                sh 'cypress run --browser chrome --config baseUrl=https://www.temmpo.org.uk'
             }
             post {
                 success {
