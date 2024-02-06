@@ -1,3 +1,7 @@
+8.9.0   Apply Django security update
+        Apply Python updates
+        Update to use DC2 hosts
+
 8.8.0   TMMA-499: Update jQuery & disable TRACK/TRACE methods
         TMMA-498: Upgrade mysql-connector-python
         Apply python dependency updates
