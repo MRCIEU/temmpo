@@ -186,7 +186,7 @@ clamd==1.0.2 \
     --hash=sha256:d82a2fd814684a35a1b31feadafb2e69c8ebde9403613f6bdaa5d877c0f29560
     # via
     #   -r requirements/requirements.txt
-    #   django-clamd
+    #   django-safe-filefield
 click==8.1.7 \
     --hash=sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28 \
     --hash=sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de
@@ -256,16 +256,12 @@ django==4.2.10 \
     # via
     #   -r requirements/requirements.txt
     #   django-autocomplete-light
-    #   django-clamd
     #   django-hcaptcha-field
     #   django-js-asset
     #   django-rq
+    #   django-safe-filefield
 django-autocomplete-light==3.9.7 \
     --hash=sha256:a34f192ac438c4df056dbfd399550799ddc631c4661960134ded924648770373
-    # via -r requirements/requirements.txt
-django-clamd==0.4.0 \
-    --hash=sha256:47adaf6f8156ee613dde9e0d88adc847aa3df021dabf1a4d1aec34b47de8da11 \
-    --hash=sha256:5bde6c34b42e69972677fb4a7466b032377940c8727ee6ede41eb3b9807dcce4
     # via -r requirements/requirements.txt
 django-hcaptcha-field==1.4.0 \
     --hash=sha256:36001030f53af709db3be01bf1d25023706b701bb7130f67f2aa58900b20df42 \
@@ -291,6 +287,10 @@ django-registration-redux==2.13 \
 django-rq==2.10.1 \
     --hash=sha256:c69af7b2b7d5745847cdaa80c58b70e564ea81c90712a11362d0bd8c71f5ce94 \
     --hash=sha256:cf588efe248e275ef176190a7db49a33281049ff3857153577c2c49320bfd4bb
+    # via -r requirements/requirements.txt
+django-safe-filefield==1.0.0 \
+    --hash=sha256:d08b0034e845ba78d2ab6e144b305bb5d7ee4a999c14861de22f8dc905a1ffe2 \
+    --hash=sha256:f27b7770693b28716a5db8bd81f83b9bd501067284f6b69bf67a9ca4f21e415d
     # via -r requirements/requirements.txt
 easyprocess==1.1 \
     --hash=sha256:82eed523a0a5eb12a81fa4eacd9f342caeb3f900eb4b798740e6696ad07e63f9 \
@@ -675,6 +675,7 @@ python-magic==0.4.27 \
     --hash=sha256:c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3
     # via
     #   -r requirements/requirements.txt
+    #   django-safe-filefield
     #   xtract
 pytz==2024.1 \
     --hash=sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812 \

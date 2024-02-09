@@ -79,6 +79,9 @@ yum -y install clamd
 # Installed on prod
 yum -y install clamav-data
 yum -y install clamav-devel
+# ref: https://github.com/mixkorshun/django-safe-filefield requires libmagic
+# yum -y install file-devel  # TODO: Review if also required
+yum -y install file-libs
 
 setsebool -P antivirus_can_scan_system 1
 setsebool -P daemons_enable_cluster_mode 1

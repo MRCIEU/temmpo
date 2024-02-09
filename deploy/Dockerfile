@@ -23,6 +23,8 @@ RUN apt update -y && \
             gcc \
             g++ \
             libffi-dev  \
+            # ref: https://github.com/mixkorshun/django-safe-filefield requires libmagic
+            libmagic1 \
             libpq-dev \
             libssl-dev \
             pkg-config \

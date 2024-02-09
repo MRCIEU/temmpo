@@ -62,7 +62,7 @@ DEFAULT_APPS = [
     'django.contrib.humanize',
 ]
 
-THIRD_PARTY_APPS = ['registration', 'mptt', 'django_rq', 'django_clamd', 'hcaptcha_field']
+THIRD_PARTY_APPS = ['registration', 'mptt', 'django_rq', 'safe_filefield', 'hcaptcha_field']
 LOCAL_APPS = ['browser', 'dal', 'dal_select2',] # 'dal','dal_select2' are third party apps that need to be installed before 'django.contrib.admin'
 
 INSTALLED_APPS = LOCAL_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
@@ -232,11 +232,11 @@ CACHES = {
         },
     },
 }
-
-CLAMD_SOCKET = '/var/run/clamd.scan/clamd.sock'
-CLAMD_USE_TCP = False
-CLAMD_TCP_SOCKET = 3310
-CLAMD_TCP_ADDR = '127.0.0.1'
+# ref: https://github.com/mixkorshun/django-safe-filefield
+CLAMAV_SOCKET = '/var/run/clamd.scan/clamd.sock'
+# CLAMAV_TIMEOUT 
+# Use to disable scanning of files in environments where it is not supported, 
+# e.g. a bare bones GitHub action environment for example
 CLAMD_ENABLED = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
