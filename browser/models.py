@@ -292,7 +292,7 @@ class SearchResult(models.Model):
         else:
             # Still processing?
             # Assume all processing longer than 12hrs is broken?
-            now = datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
+            now = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
             timediff = now - self.started_processing
             if timediff.total_seconds() > (12 * 60 * 60):
                 return True
