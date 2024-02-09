@@ -13,7 +13,6 @@ from browser.models import SearchCriteria, Upload, MeshTerm, Gene, OVID, PUBMED
 from browser.widgets import GeneTextarea
 from browser.validators import MimetypeValidator, SizeValidator, OvidMedLineFormatValidator, PubMedFormatValidator
 
-from django_clamd.validators import validate_file_infection
 from hcaptcha_field import hCaptchaField
 from registration.forms import RegistrationFormUniqueEmail
 
@@ -28,8 +27,7 @@ class RegistrationCaptchaForm(RegistrationFormUniqueEmail):
 class OvidMedLineFileUploadForm(forms.ModelForm):
     file_format = forms.CharField(widget=forms.HiddenInput, initial=OVID)
     abstracts_upload = ExtractorFileField(
-        validators=[validate_file_infection,
-                    MimetypeValidator(mimetypes=('text/plain', )),
+        validators=[MimetypeValidator(mimetypes=('text/plain', )),
                     SizeValidator(max_size=2000),
                     OvidMedLineFormatValidator(), ],
         help_text="<br />Ovid MEDLINE® formatted plain text or archive file (*.txt, *.bz, *.gz) which includes MeSH Subject Headings. \
@@ -44,8 +42,7 @@ class OvidMedLineFileUploadForm(forms.ModelForm):
 class PubMedFileUploadForm(forms.ModelForm):
     file_format = forms.CharField(widget=forms.HiddenInput, initial=PUBMED)
     abstracts_upload = ExtractorFileField(
-        validators=[validate_file_infection,
-                    MimetypeValidator(mimetypes=('text/plain', )),
+        validators=[MimetypeValidator(mimetypes=('text/plain', )),
                     SizeValidator(max_size=2000),
                     PubMedFormatValidator(), ],
         help_text="<br />PubMed® formatted plain text or archive file (*.txt, *.bz, *.gz) which includes MH (Mesh Headers). \
