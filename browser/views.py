@@ -911,7 +911,7 @@ class DeleteUser(DeleteView):
     def form_valid(self, *args, **kwargs):
         """ When deleting a user we also need to delete all their uploads and searches """
         # Find all searches and uploads
-        user_to_delete = User.objects.get(id=int(kwargs['pk']))
+        user_to_delete = self.get_object()
         all_user_searches = SearchResult.objects.filter(criteria__upload__user=user_to_delete)
         total_searches = len(all_user_searches)
 
