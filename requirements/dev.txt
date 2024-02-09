@@ -313,6 +313,10 @@ django-safe-filefield==1.0.0 \
     --hash=sha256:d08b0034e845ba78d2ab6e144b305bb5d7ee4a999c14861de22f8dc905a1ffe2 \
     --hash=sha256:f27b7770693b28716a5db8bd81f83b9bd501067284f6b69bf67a9ca4f21e415d
     # via -r requirements/test.txt
+django-upgrade==1.15.0 \
+    --hash=sha256:b62cc4f5c86ba687196e894c2795264c0f399bbbff69f30d381374b3d0407dbc \
+    --hash=sha256:ced9f859729a116cf6edb2951767c7d5140c7c11f61fed00cf30ebe9d382477a
+    # via -r requirements/dev.in
 easyprocess==1.1 \
     --hash=sha256:82eed523a0a5eb12a81fa4eacd9f342caeb3f900eb4b798740e6696ad07e63f9 \
     --hash=sha256:885898302a57aab948973e8b5d32a4229392b9fb2d986ab1d4ffd590e5ba90ec
@@ -825,6 +829,10 @@ stack-data==0.6.3 \
     --hash=sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9 \
     --hash=sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695
     # via ipython
+tokenize-rt==5.2.0 \
+    --hash=sha256:9fe80f8a5c1edad2d3ede0f37481cc0cc1538a2f442c9c2f9e4feacd2792d054 \
+    --hash=sha256:b79d41a65cfec71285433511b50271b05da3584a1da144a0752e9c621a285289
+    # via django-upgrade
 traitlets==5.14.1 \
     --hash=sha256:2e5a030e6eff91737c643231bfcf04a65b0132078dad75e4936700b213652e74 \
     --hash=sha256:8585105b371a04b8316a43d5ce29c098575c2e477850b62b848b964f1444527e
