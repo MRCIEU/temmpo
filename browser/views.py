@@ -759,10 +759,10 @@ class DeleteSearch(DeleteView):
 
         return context
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, *args, **kwargs):
         messages.add_message(self.request, messages.INFO, "Search results deleted")
-        logger.info('User: %s deleted search: %s' % (request.user.id, kwargs['pk']))
-        return super(DeleteSearch, self).delete(request, *args, **kwargs)
+        logger.info('User: %s deleted search: %s' % (self.request.user.id, kwargs['pk']))
+        return super(DeleteSearch, self).form_valid(*args, **kwargs)
 
 
 class UserAccountView(TemplateView):
@@ -818,18 +818,18 @@ class CloseAccount(DeleteView):
 
         return context
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, *args, **kwargs):
         """ When deleting a user we also need to delete all their uploads and searches """
         # Find all searches and uploads
-        all_user_searches = SearchResult.objects.filter(criteria__upload__user=request.user)
+        all_user_searches = SearchResult.objects.filter(criteria__upload__user=self.request.user)
         total_searches = len(all_user_searches)
 
-        delete_user_content(user_id=request.user.id)
+        delete_user_content(user_id=self.request.user.id)
 
-        logger.info('User: %s closed their account and deleted %s searches' % (request.user.id, total_searches))
+        logger.info('User: %s closed their account and deleted %s searches' % (self.request.user.id, total_searches))
         # Force logout
-        logout(request)
-        return super(CloseAccount, self).delete(request, *args, **kwargs)
+        logout(self.request)
+        return super(CloseAccount, self).form_valid(*args, **kwargs)
 
 
 class AccountClosedConfirmation(TemplateView):
@@ -908,7 +908,7 @@ class DeleteUser(DeleteView):
 
         return context
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, *args, **kwargs):
         """ When deleting a user we also need to delete all their uploads and searches """
         # Find all searches and uploads
         user_to_delete = User.objects.get(id=int(kwargs['pk']))
@@ -917,10 +917,10 @@ class DeleteUser(DeleteView):
 
         delete_user_content(user_id=user_to_delete.id)
 
-        logger.info('User: %s deleted user %s and their %s searches' % (request.user.id, user_to_delete.id, total_searches))
+        logger.info('User: %s deleted user %s and their %s searches' % (self.request.user.id, user_to_delete.id, total_searches))
         messages.add_message(self.request, messages.INFO, "User '%s' deleted" % user_to_delete.username)
 
-        return super(DeleteUser, self).delete(request, *args, **kwargs)
+        return super(DeleteUser, self).form_valid(*args, **kwargs)
 
 
 class MeSHTermAutocomplete(autocomplete.Select2QuerySetView):
