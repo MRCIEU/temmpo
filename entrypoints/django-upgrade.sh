@@ -1,3 +1,4 @@
 #!/bin/sh
 
-django-upgrade --target-version 4.2 /srv/temmpo/settings/base.py /srv/browser/models.py /srv/browser/views.py
+cd /srv
+find /srv -name "*.py" | xargs django-upgrade --target-version 4.2
