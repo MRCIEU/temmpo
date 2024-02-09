@@ -761,7 +761,7 @@ class DeleteSearch(DeleteView):
 
     def form_valid(self, *args, **kwargs):
         messages.add_message(self.request, messages.INFO, "Search results deleted")
-        logger.info('User: %s deleted search: %s' % (self.request.user.id, kwargs['pk']))
+        logger.info('User: %s deleted search: %s' % (self.request.user.id, self.get_object().id))
         return super(DeleteSearch, self).form_valid(*args, **kwargs)
 
 
