@@ -1,3 +1,7 @@
+8.9.1   Apply Python dependency updates
+        Update python packaging tools
+        Update version of MySQL used in GitHub actions to match deployment environment
+
 8.9.0   Apply Django security update
         Apply Python updates
         Update to use DC2 hosts
