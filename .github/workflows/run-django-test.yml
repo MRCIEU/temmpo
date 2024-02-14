@@ -18,7 +18,7 @@ jobs:
         ports:
           - 6379:6379
       db:
-        image: mysql:5.7
+        image: mysql:8.0.36
         ports:
           - 3306:3306
         env:
