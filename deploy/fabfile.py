@@ -21,8 +21,8 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/build-test-env.sh
-PIP_VERSION = '23.3.2'
-SETUPTOOLS_VERSION = '69.0.3'
+PIP_VERSION = '24.0'
+SETUPTOOLS_VERSION = '69.1.0'
 PIP_TOOLS_VERSION = '7.3.0'
 
 
