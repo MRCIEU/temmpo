@@ -153,19 +153,22 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
                 google_chrome_version = google_chrome_version[:google_chrome_version.rindex(".")]
                 version = urlopen(f'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{google_chrome_version}').read().decode()
-                if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
-                    zip_name = 'chromedriver_linux64.zip'
-                    caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')
-                    
-                else:
-                    zip_name = 'chromedriver-linux64.zip'
-                    caller(f'wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}/linux64/{zip_name}')
-                caller('ls -l')
-                caller('rm -f chromedriver')
-                caller(f'unzip -o -j {zip_name}')
-                caller('ls -l')
-                caller(f'rm {zip_name}*')
-                caller('ls -l')
+                try:
+                    if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
+                        zip_name = 'chromedriver_linux64.zip'
+                        caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')
+                        
+                    else:
+                        zip_name = 'chromedriver-linux64.zip'
+                        caller(f'wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}/linux64/{zip_name}')
+                    caller('ls -l')
+                    caller('rm -f chromedriver')
+                    caller(f'unzip -o -j {zip_name}')
+                    caller('ls -l')
+                    caller(f'rm {zip_name}*')
+                    caller('ls -l')
+                except:
+                    print("Errors when trying to install the latest Chrome Driver")
 
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements", project_dir=PROJECT_ROOT):
