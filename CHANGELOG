@@ -1,3 +1,7 @@
+8.9.2   Apply python dependency and packaging tools updates
+        TMMA-502: Remove unsed CI jobs DC1 hostnames references
+        Update Cypress
+
 8.9.1   Apply Python dependency updates
         Update python packaging tools
         Update version of MySQL used in GitHub actions to match deployment environment
