@@ -18,7 +18,7 @@ numexpr>=2.8.4
 numpy>=1.24.2
 pandas>=1.5.3
 python-magic>=0.4.27
-redis>=3.5.3
+redis>=3.5.3<4
+rq<2.0  # Drops support for Redis server < 4
 unicodecsv>=0.14.1
-# urllib3>=1.26.14        # Pinned to resolve build issue as not pinned well in egg that requires it.
 xtract>=0.1a3
