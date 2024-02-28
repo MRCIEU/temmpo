@@ -457,7 +457,9 @@ redis==3.5.3 \
 rq==1.16.0 \
     --hash=sha256:aab9e0fc90d7ffd100241b0f8dd7458c1ee4039edc2bfea9f7e2cfc0567f5710 \
     --hash=sha256:d71859da6f3af597bd79675b240e138587878ce9b693d1bcf681443e2a8193ce
-    # via django-rq
+    # via
+    #   -r requirements/requirements.in
+    #   django-rq
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
