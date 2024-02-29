@@ -152,15 +152,17 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                     # Download the correct chrome driver version for the version of google chrome that is currently installed,
                     # ref: https://chromedriver.chromium.org/downloads/version-selection
                     google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
+                    print(f'Stripped chrome driver version: {google_chrome_version}.')
                     google_chrome_version = google_chrome_version[:google_chrome_version.rindex(".")]
+                    print(f'Truncated chrome driver version: {google_chrome_version}.')
                     version = urlopen(f'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{google_chrome_version}').read().decode()
+                    print(f'Look up version of chrome driver that should be compatible with this version of chrome {version}.')
                     if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
                         zip_name = 'chromedriver_linux64.zip'
-                        caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')
-                        
+                        caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')    
                     else:
                         zip_name = 'chromedriver-linux64.zip'
-                        caller(f'wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}/linux64/{zip_name}')
+                        caller(f'wget https://storage.googleapis.com/chrome-for-testing-public/{version}/linux64/{zip_name}')
                     caller('ls -l')
                     caller('rm -f chromedriver')
                     caller(f'unzip -o -j {zip_name}')
