@@ -1,3 +1,5 @@
+8.9.3   Apply Django security update
+
 8.9.2   Apply python dependency and packaging tools updates
         TMMA-502: Remove unsed CI jobs DC1 hostnames references
         Update Cypress
