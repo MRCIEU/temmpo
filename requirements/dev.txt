@@ -6,9 +6,9 @@
 #
 --index-url https://pypi.python.org/simple/
 
-asgiref==3.7.2 \
-    --hash=sha256:89b2ef2247e3b562a16eef663bc0e2e703ec6468e2fa8a5cd61cd449786d4f6e \
-    --hash=sha256:9e0ce3aa93a819ba5b45120216b23878cf6e8525eb3848653452b4192b92afed
+asgiref==3.8.1 \
+    --hash=sha256:3e1e3ecc849832fe52ccf2cb6686b7a55f82bb1d6aee72a58826471390335e47 \
+    --hash=sha256:c343bd80a0bec947a9860adb4c432ffa7db769836c64238fc34bdc3fec84d590
     # via
     #   -r requirements/test.txt
     #   django
@@ -289,9 +289,9 @@ django-registration-redux==2.13 \
     --hash=sha256:547c86ad9b951cf743075b5486f304e51e450b45d04e5ef04392838a9cff3da8 \
     --hash=sha256:9793a05b32b1d7342c6ef3e0140b2951b7dbde058b3ba6e8a232b534928279f9
     # via -r requirements/test.txt
-django-rq==2.10.1 \
-    --hash=sha256:c69af7b2b7d5745847cdaa80c58b70e564ea81c90712a11362d0bd8c71f5ce94 \
-    --hash=sha256:cf588efe248e275ef176190a7db49a33281049ff3857153577c2c49320bfd4bb
+django-rq==2.10.2 \
+    --hash=sha256:5fe340e071c141a23ea0859df73c48b0a3df33a851835b2a8f8c4fca7a8b1849 \
+    --hash=sha256:d1690b6a409934a0ea23c208ccb00d69477899f8edc61106ce5395c19dcdfb1e
     # via -r requirements/test.txt
 easyprocess==1.1 \
     --hash=sha256:82eed523a0a5eb12a81fa4eacd9f342caeb3f900eb4b798740e6696ad07e63f9 \
