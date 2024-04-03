@@ -148,6 +148,16 @@ Alternatively
     docker build -f deploy/Dockerfile -t temmpo-web .
     docker run --rm -it -v $PWD:/srv -w /srv temmpo-web bash /srv/entrypoints/update-requirements.sh
 
+#### Create Docker images for different environments
+
+    docker build -f deploy/Dockerfile -t temmpo-web-dev . --build-arg REQUIREMENTS_FILE=dev.txt
+
+    docker build -f deploy/Dockerfile -t temmpo-web-test . --build-arg REQUIREMENTS_FILE=test.txt
+
+example dev command
+
+    docker run --rm -it -v $PWD:/srv -w /srv temmpo-web-dev bash /srv/entrypoints/django-upgrade.sh
+
 #### Development deployment commands when working with the apache Vagrant VM
 
 ##### a. Deploy master branch to Vagrant Apache VM
