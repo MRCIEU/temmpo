@@ -14,7 +14,7 @@ if DATABASES:
 
 RQ_QUEUES['default']['ASYNC'] = False
 
-LOGGING['handlers']['console']['level'] = 'INFO'
+LOGGING['handlers']['console']['level'] = 'ERROR'
 
 RESULTS_PATH_V4 = os.path.join(MEDIA_ROOT, 'results', 'testing', 'v4', '')
 RESULTS_PATH_V3 = os.path.join(MEDIA_ROOT, 'results', 'testing', 'v3', '')
