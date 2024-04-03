@@ -16,7 +16,6 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
 from django.conf import settings
 
-from safe_filefield.models import SafeFileField
 from mptt.models import MPTTModel, TreeForeignKey
 
 logger = logging.getLogger(__name__)
@@ -141,10 +140,7 @@ class Upload(models.Model):
 
     user = models.ForeignKey(User, null=False, blank=False,
                              related_name="uploads", on_delete=models.CASCADE)
-    abstracts_upload = SafeFileField(upload_to=get_user_upload_location,
-                                     allowed_extensions=('txt', 'zip', 'bz'),
-                                     check_content_type=True,
-                                     scan_viruses=settings.CLAMD_ENABLED)
+    abstracts_upload = models.FileField(upload_to=get_user_upload_location)
     file_format = models.CharField(choices=ABSTRACT_FORMATS, max_length=6, default=OVID)
 
     def __str__(self):
