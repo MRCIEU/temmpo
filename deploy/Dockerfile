@@ -1,13 +1,13 @@
-FROM python:3.8.18-slim
+FROM python:3.8.19-slim
 
 ARG REQUIREMENTS_FILE='requirements.txt'
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_VERSION='24.0'
-ENV SETUPTOOLS_VERSION='69.0.3'
-ENV PIP_TOOLS_VERSION='7.3.0'
-# As per CentOS installation
+ENV SETUPTOOLS_VERSION='69.2.0'
+ENV PIP_TOOLS_VERSION='7.4.1'
+# As per Centos installation
 ENV VE_VERSION='20.24.5'
 
 # Update system packages and install dependencies

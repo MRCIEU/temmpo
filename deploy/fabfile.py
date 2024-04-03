@@ -22,8 +22,8 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update tests/build-test-env.sh
 PIP_VERSION = '24.0'
-SETUPTOOLS_VERSION = '69.0.3'
-PIP_TOOLS_VERSION = '7.3.0'
+SETUPTOOLS_VERSION = '69.2.0'
+PIP_TOOLS_VERSION = '7.4.1'
 
 
 def _add_file_local(path, contents, use_local_mode):
@@ -148,24 +148,29 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         with change_dir(venv_dir + "/bin"):            
             # Only install the chrome driver if google chrome is installed.
             if caller('which google-chrome'):
-                # Download the correct chrome driver version for the version of google chrome that is currently installed,
-                # ref: https://chromedriver.chromium.org/downloads/version-selection
-                google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
-                google_chrome_version = google_chrome_version[:google_chrome_version.rindex(".")]
-                version = urlopen(f'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{google_chrome_version}').read().decode()
-                if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
-                    zip_name = 'chromedriver_linux64.zip'
-                    caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')
-                    
-                else:
-                    zip_name = 'chromedriver-linux64.zip'
-                    caller(f'wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}/linux64/{zip_name}')
-                caller('ls -l')
-                caller('rm -f chromedriver')
-                caller(f'unzip -o -j {zip_name}')
-                caller('ls -l')
-                caller(f'rm {zip_name}*')
-                caller('ls -l')
+                try:
+                    # Download the correct chrome driver version for the version of google chrome that is currently installed,
+                    # ref: https://chromedriver.chromium.org/downloads/version-selection
+                    google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
+                    print(f'Stripped chrome driver version: {google_chrome_version}.')
+                    google_chrome_version = google_chrome_version[:google_chrome_version.rindex(".")]
+                    print(f'Truncated chrome driver version: {google_chrome_version}.')
+                    version = urlopen(f'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{google_chrome_version}').read().decode()
+                    print(f'Look up version of chrome driver that should be compatible with this version of chrome {version}.')
+                    if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
+                        zip_name = 'chromedriver_linux64.zip'
+                        caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')    
+                    else:
+                        zip_name = 'chromedriver-linux64.zip'
+                        caller(f'wget https://storage.googleapis.com/chrome-for-testing-public/{version}/linux64/{zip_name}')
+                    caller('ls -l')
+                    caller('rm -f chromedriver')
+                    caller(f'unzip -o -j {zip_name}')
+                    caller('ls -l')
+                    caller(f'rm {zip_name}*')
+                    caller('ls -l')
+                except Exception as e:
+                    print("Errors when trying to install the latest Chrome Driver: {e}")
 
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements", project_dir=PROJECT_ROOT):

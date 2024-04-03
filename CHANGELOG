@@ -1,20 +1,38 @@
+9.0.0   TMMA-436: Upgrade Django to next LTS version
+
+8.9.5   Apply Python dependency updates
+        Update Python and related packaging tools
+        Update Cypress
+
+8.9.4   Apply Python dependency updates
+
+8.9.3   Apply Django security update
+
+8.9.2   Apply Python dependency and packaging tools updates
+        TMMA-502: Remove unsed CI jobs DC1 hostnames references
+        Update Cypress
+
+8.9.1   Apply Python dependency updates
+        Update Python packaging tools
+        Update version of MySQL used in GitHub actions to match deployment environment
+
 8.9.0   Apply Django security update
         Apply Python updates
         Update to use DC2 hosts
 
 8.8.0   TMMA-499: Update jQuery & disable TRACK/TRACE methods
         TMMA-498: Upgrade mysql-connector-python
-        Apply python dependency updates
+        Apply Python dependency updates
         Upgrade datatables
 
 8.7.0   TMMA-494: Add support PubMed formatted files without a leading blank line
-        Apply python dependency updates
+        Apply Python dependency updates
 
 8.6.0   TMMA-338: Remove Python 2 dependency
-        Apply python packaging and dependency updates
+        Apply Python packaging and dependency updates
 
 8.5.3   Apply Django security update
-        Apply python packaging and dependency updates
+        Apply Python packaging and dependency updates
 
 8.5.2   Upgrade Cypress
 
@@ -96,14 +114,14 @@
 
 6.3.0   TMMA-421 Apply Django security update
 
-6.2.0   Update third party python tools
+6.2.0   Update third party Python tools
 
 6.1.0   TMMA-418 Enable general clean up of inactivated registrations
 
 6.0.2   TMMA-420 Apply Django security update
-        Update third party python tools
+        Update third party Python tools
 
-6.0.1   TMMA-352 Update third party python tools
+6.0.1   TMMA-352 Update third party Python tools
 
 6.0.0   TMMA-356 Upgrade to Django to latest long term supported version
 
