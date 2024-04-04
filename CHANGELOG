@@ -1,5 +1,7 @@
+9.0.0   TMMA-436: Upgrade Django to next LTS version
+
 8.9.5   Apply Python dependency updates
-        Update Python and relatedpackaging tools
+        Update Python and related packaging tools
         Update Cypress
 
 8.9.4   Apply Python dependency updates
