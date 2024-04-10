@@ -49,6 +49,15 @@ ALLOWED_HOSTS = ['127.0.0.1',
                  '.temmpo.org.uk',
                  'www.temmpo.org.uk', ]
 
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1',
+                 'http://localhost',
+                 'https://127.0.0.1',
+                 'https://localhost',
+                 'https://*.bris.ac.uk',
+                 'https://*.bristol.ac.uk',
+                 'https://*.temmpo.org.uk',
+                 'https://www.temmpo.org.uk', ]
+
 # Application definition
 
 DEFAULT_APPS = [
