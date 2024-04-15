@@ -1,3 +1,8 @@
+9.0.4   Update Python packaging tool
+        Apply Python dependency updates
+
+9.0.3   Apply security update
+
 9.0.2   Apply Python dependency updates
 
 9.0.1   TMMA-436: Apply missing setting
