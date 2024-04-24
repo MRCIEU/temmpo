@@ -20,9 +20,9 @@ GIT_SSH_HOSTS = ('104.192.143.1',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
-# Also update tests/build-test-env.sh
+# Also update pip version in tests/build-test-env.sh and Dockerfile
 PIP_VERSION = '24.0'
-SETUPTOOLS_VERSION = '69.2.0'
+SETUPTOOLS_VERSION = '69.5.1'
 PIP_TOOLS_VERSION = '7.4.1'
 
 
