@@ -1,3 +1,7 @@
+9.1.0   Apply Python dependency updates
+        Update Python packaging tool - setuptools
+        Update Cypress
+
 9.0.9   Apply Python dependency updates
 
 9.0.8   Apply Python dependency updates
