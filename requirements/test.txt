@@ -262,8 +262,9 @@ django==4.2.13 \
 django-autocomplete-light==3.11.0 \
     --hash=sha256:212576a17e3308ef7ca77e280b86684167916d2091d4b73640f38845d9516328
     # via -r requirements/requirements.txt
-django-clamd @ https://github.com/vstoykov/django-clamd/releases/download/1.0.0/django_clamd-1.0.0-py3-none-any.whl \
-    --hash=sha256:9a5c2a4215da20772fd37e617d75b57e253779dccd49d149b911cfd9be1e1748
+django-clamd==1.0.0 \
+    --hash=sha256:106429a71db571b570c88493115891a5472623263d25ebe7f92bead6c2f04e81 \
+    --hash=sha256:ee2d46ed535355aa0840f93dd8468bf9e2236e2a54ea2affa956e5c9326e328a
     # via -r requirements/requirements.txt
 django-hcaptcha-field==1.4.0 \
     --hash=sha256:36001030f53af709db3be01bf1d25023706b701bb7130f67f2aa58900b20df42 \
