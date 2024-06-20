@@ -351,7 +351,7 @@ class MatchingTestCase(BaseTestCase):
         self.assertFalse(search_result.has_changed)
         self.assertFalse(search_result.has_match_counts_changed)
         self.assertFalse(search_result.has_edge_file_changed)
-
+ 
     def test_record_differences_between_match_runs_when_new_meditors(self):
         """Test TMMA-343 Compare various combinations of changes to previous version files
         v4 results:
@@ -1696,7 +1696,10 @@ class MatchingTestCase(BaseTestCase):
     def test_parsing_abstracts_with_html_tags_at_start_of_line(self):
         """TMMA-506"""
         citations = read_citations(file_path=BASE_DIR + "/abstract-with-html-tags-16-18-16-citation-2.txt", file_format=OVID)
-        self.assertEqual(len(citations), 2082)
+        citation_count = 0
+        for citation in citations:
+            citation_count +=1
+        self.assertEqual(citation_count, 2082)
 
     # def test_verify_all_other_missing_were_partial_matches(self):
     #     # v4 found 'AMP-Activated Protein Kinases', 'Blood Glucose', 'C-Reactive Protein', 'Carrier Proteins', 'Cell Adhesion Molecules', 'Estradiol', 'Fluorodeoxyglucose F18', 'Glucose', 'Glutamates', 'Glutamic Acid', 'Hemoglobins', 'HSP90 Heat-Shock Proteins', 'Inflammation Mediators', 'Insulin-Like Growth Factor I', 'Melatonin', 'Plant Extracts', 'RNA, Messenger', 'Serotonin', 'Tumor Necrosis Factor-alpha', 'Ubiquitin-Protein Ligases'
