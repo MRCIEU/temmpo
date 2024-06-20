@@ -200,7 +200,7 @@ def _ovid_medline_read_citations(abstract_file_path):
         line = line.strip(b"\r\n")
         if len(line) == 0:
             pass
-        elif line[0:1] == b"<":
+        elif line[0:1] == b"<" and line[-1:] == b">" and (line.strip(b"<").strip(b">")).decode("utf-8").isdecimal():
             # Starting a new citation, yield if one has already been set up
             if citation:
                 yield citation

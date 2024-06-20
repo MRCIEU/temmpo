@@ -212,7 +212,7 @@ NB: Some tests require these environment variables `CREDENTIALS_USR` and `CREDEN
 
 Using docker and electron browser
 
-    docker run --rm -it -v $PWD:/e2e -w /e2e cypress/included:13.10.0
+    docker run --rm -it -v $PWD:/e2e -w /e2e cypress/included:13.12.0
 
 ## Warnings
 
