@@ -670,3 +670,10 @@ def remove_incompleted_registrations(env="demo", use_local_mode=False, project_d
 
     with change_dir(src_dir):
         caller('%sbin/python3 manage.py remove_incompleted_registrations --settings=temmpo.settings.%s' % (venv_dir, env))
+
+def force_reinstall_django_clamd_from_pypi(env="demo", use_local_mode=False, project_dir=PROJECT_ROOT):
+    use_local_mode = (str(use_local_mode).lower() == 'true')
+    caller, change_dir = _toggle_local_remote(use_local_mode)
+    venv_dir = project_dir + "lib/" + env + "/"
+    with change_dir(venv_dir+"src/temmpo/"):
+        caller('../../bin/pip install --no-deps --force-reinstall django-clamd==1.0.0')
