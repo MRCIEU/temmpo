@@ -83,3 +83,6 @@ cypress/videos
 cypress.env.json
 
 google-chrome-stable_current_amd64.deb
+
+.env
+secret.txt
