@@ -676,4 +676,4 @@ def force_reinstall_django_clamd_from_pypi(env="demo", use_local_mode=False, pro
     caller, change_dir = _toggle_local_remote(use_local_mode)
     venv_dir = project_dir + "lib/" + env + "/"
     with change_dir(venv_dir+"src/temmpo/"):
-        caller('../../bin/pip install --force-reinstall django-clamd==1.0.0')
+        caller('../../bin/pip install --no-deps --force-reinstall django-clamd==1.0.0')
