@@ -1693,6 +1693,11 @@ class MatchingTestCase(BaseTestCase):
             mediators = list(edge_csv_reader.Mediators)
             self.assertFalse("Adenosine" in mediators)
 
+    def test_parsing_abstracts_with_html_tags_at_start_of_line(self):
+        """TMMA-506"""
+        citations = read_citations(file_path=BASE_DIR + "/abstract-with-html-tags-16-18-16-citation-2.txt", file_format=OVID)
+        self.assertEqual(len(citations), 2082)
+
     # def test_verify_all_other_missing_were_partial_matches(self):
     #     # v4 found 'AMP-Activated Protein Kinases', 'Blood Glucose', 'C-Reactive Protein', 'Carrier Proteins', 'Cell Adhesion Molecules', 'Estradiol', 'Fluorodeoxyglucose F18', 'Glucose', 'Glutamates', 'Glutamic Acid', 'Hemoglobins', 'HSP90 Heat-Shock Proteins', 'Inflammation Mediators', 'Insulin-Like Growth Factor I', 'Melatonin', 'Plant Extracts', 'RNA, Messenger', 'Serotonin', 'Tumor Necrosis Factor-alpha', 'Ubiquitin-Protein Ligases'
     #     # v1 found 'Adenosine', 'Amino Acids', 'AMP-Activated Protein Kinases', 'Angiotensin I', 'Angiotensin II', 'Antigens', 'Arginine', 'Blood Glucose', 'C-Reactive Protein', 'Carrier Proteins', 'Cell Adhesion Molecules', 'Estradiol', 'Fluorodeoxyglucose F18', 'Glucose', 'Glutamates', 'Glutamic Acid', 'Heat-Shock Proteins', 'Hemoglobins', 'HSP90 Heat-Shock Proteins', 'Inflammation Mediators', 'Insulin', 'Insulin-Like Growth Factor I', 'Interleukin-1', 'Ligases', 'Melatonin', 'Nitric Oxide Synthase', 'Nitric Oxide Synthase Type I', 'Nitric Oxide Synthase Type II', 'Oncogene Proteins', 'Peptides', 'Plant Extracts', 'Protein Kinases', 'Proteins', 'Proto-Oncogene Proteins', 'RNA', 'RNA, Messenger', 'Serotonin', 'Sucrose', 'Tea', 'Tumor Necrosis Factor-alpha', 'Tyrosine', 'Ubiquitin', 'Ubiquitin-Protein Ligases'
