@@ -1,5 +1,6 @@
 9.3.0   Make use of pypi index for django-clamd
-        Update cypress
+        Update Cypress
+        TMMA-506: Bug fix parsing OVID abstracts that include HTML tags at the start of a line. 
 
 9.2.0   Apply Python dependencies security related updates
 
