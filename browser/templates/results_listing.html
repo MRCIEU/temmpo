@@ -58,7 +58,7 @@ $(document).ready(function() {
         {% for result_stub in unprocessed %}
         <tr>
             <th scope="row" class="dt-left">{{ result_stub.criteria.upload }}</th>
-            <td>{{ result_stub.criteria.created|date:"d M Y H:i" }}</td>
+            <td data-order="{{ result_stub.criteria.created | date:'U' }}">{{ result_stub.criteria.created|date:"d M Y H:i" }}</td>
             <td>{{ result_stub.status }}</td>
             <th scope="row" class="dt-left"><a href="{% url 'criteria' pk=result_stub.criteria.pk %}" title="Search criteria for search '{{ result_stub.pk }}'">Search criteria</a></th>
             <td><div class="controls">
