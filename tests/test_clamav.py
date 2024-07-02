@@ -2,6 +2,7 @@
 from datetime import datetime
 import logging
 import os
+from unittest import skip
 
 import magic
 import requests
@@ -21,8 +22,9 @@ logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(__file__)
 VIRUS_TXT_FILE_URL = "https://secure.eicar.org/eicar.com.txt"
-VIRUS_ZIP_FILE_URL = "https://secure.eicar.org/eicar_com.zip"
-VIRUS_DEEP_ZIP_FILE_URL = "https://secure.eicar.org/eicarcom2.zip"
+# Below zip files are currently unavailable and tests are being disabled.  NB: .zip uploads are not allowable.
+# VIRUS_ZIP_FILE_URL = "https://secure.eicar.org/eicar_com.zip"
+# VIRUS_DEEP_ZIP_FILE_URL = "https://secure.eicar.org/eicarcom2.zip"
 
 
 @tag('clamav', 'selenium-test')
@@ -55,7 +57,7 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
         # Verify no new Upload objects were created.
         self.assertEqual(Upload.objects.all().count(), previous_upload_count)
         # Assert reason for lack of upload
-        self.assertTrue("File is infected with malware" in self.driver.page_source)
+        self.assertTrue("File is infected with malware" in self.driver.page_source, msg=self.driver.page_source)
 
         #  delete virus file
         os.remove(file_path)
@@ -90,25 +92,25 @@ class ScanOnArchiveUploadTestCase(ScanOnUploadInterface):
         abstract_file_path = os.path.join(BASE_DIR, "07-32-54-exercise-inflamm-breast-cancer-may-3-2019-expanded-terms.txt.gz")
         self._assert_file_upload(url=reverse("search_ovid_medline"), file_path=abstract_file_path)
 
-    @tag('scanning')
-    def test_scanning_ovid_zip_files(self):
-        "Trigger virus scanner file uploads with EICAR zip with OVID upload form."
-        self._assert_virus_scanning(reverse("search_ovid_medline"), VIRUS_ZIP_FILE_URL)
+    # @tag('scanning')
+    # def test_scanning_ovid_zip_files(self):
+    #     "Trigger virus scanner file uploads with EICAR zip with OVID upload form."
+    #     self._assert_virus_scanning(reverse("search_ovid_medline"), VIRUS_ZIP_FILE_URL)
 
-    @tag('scanning')
-    def test_scanning_ovid_deep_zip_files(self):
-        "Trigger virus scanner file uploads with EICAR deep zip with OVID upload form."
-        self._assert_virus_scanning(reverse("search_ovid_medline"), VIRUS_DEEP_ZIP_FILE_URL)
+    # @tag('scanning')
+    # def test_scanning_ovid_deep_zip_files(self):
+    #     "Trigger virus scanner file uploads with EICAR deep zip with OVID upload form."
+    #     self._assert_virus_scanning(reverse("search_ovid_medline"), VIRUS_DEEP_ZIP_FILE_URL)
 
-    @tag('scanning')
-    def test_scanning_pubmed_zip_files(self):
-        "Trigger virus scanner file uploads with EICAR zip with PubMed upload form."
-        self._assert_virus_scanning(reverse("search_pubmed"), VIRUS_ZIP_FILE_URL)
+    # @tag('scanning')
+    # def test_scanning_pubmed_zip_files(self):
+    #     "Trigger virus scanner file uploads with EICAR zip with PubMed upload form."
+    #     self._assert_virus_scanning(reverse("search_pubmed"), VIRUS_ZIP_FILE_URL)
 
-    @tag('scanning')
-    def test_scanning_oubmed_deep_zip_files(self):
-        "Trigger virus scanner file uploads with EICAR deep zip with PubMed upload form."
-        self._assert_virus_scanning(reverse("search_pubmed"), VIRUS_DEEP_ZIP_FILE_URL)
+    # @tag('scanning')
+    # def test_scanning_oubmed_deep_zip_files(self):
+    #     "Trigger virus scanner file uploads with EICAR deep zip with PubMed upload form."
+    #     self._assert_virus_scanning(reverse("search_pubmed"), VIRUS_DEEP_ZIP_FILE_URL)
 
 
 class ScanOnUploadTestCase(ScanOnUploadInterface):
