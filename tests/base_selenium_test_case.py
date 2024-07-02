@@ -29,9 +29,7 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         super(SeleniumBaseTestCase, cls).setUpClass()
         cls.display = Display(visible=0, size=(1920, 1080))
         cls.display.start()
-        # ref: https://github.com/SeleniumHQ/selenium/issues/12746
-        service = webdriver.ChromeService(executable_path=settings.BASE_DIR + "/../../../bin/chromedriver")
-        cls.driver = webdriver.Chrome(service=service)
+        cls.driver = webdriver.Firefox()
         cls.driver.implicitly_wait(10)
 
     @classmethod
@@ -82,11 +80,3 @@ class SeleniumBaseTestCase(StaticLiveServerTestCase):
         # self.create_debug_logs()
         delete_user_content(self.user)
         super(SeleniumBaseTestCase, self).tearDown()
-
-    # def create_debug_logs(self, also_print=False):
-    #     """Chrome console logs"""
-    #     for entry in self.driver.get_log('browser'):
-    #         logger.info(entry)
-    #         if also_print:
-    #             print(entry)
-
