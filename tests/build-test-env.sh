@@ -24,7 +24,7 @@ mkdir -p var/tmp
 echo "Check the version of pip that is installed"
 pip3 -V
 echo "Ensure using a consistent version of pip as per on premises CI server"
-pip3 install -U pip==24.1.1
+pip3 install -U pip==24.0
 pip3 -V
 
 echo "Install Fabric"
