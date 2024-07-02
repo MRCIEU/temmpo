@@ -22,7 +22,7 @@ RUN apt update -y && \
             curl \
             default-mysql-client \
             default-libmysqlclient-dev \
-            firefox \
+            firefox-esr \
             gcc \
             g++ \
             libffi-dev  \
@@ -33,6 +33,7 @@ RUN apt update -y && \
             python3-lxml \
             python3-setuptools \
             python3-wheel \
+            # xvfb xauth
             wait-for-it \
             zlib1g-dev &&  \ 
     apt-get clean && \
