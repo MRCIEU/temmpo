@@ -4,11 +4,11 @@ ARG REQUIREMENTS_FILE='requirements.txt'
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PIP_VERSION='24.0'
-ENV SETUPTOOLS_VERSION='70.0.0'
+ENV PIP_VERSION='24.1.1'
+ENV SETUPTOOLS_VERSION='70.2.0'
 ENV PIP_TOOLS_VERSION='7.4.1'
-# As per Centos installation
-ENV VE_VERSION='20.24.5'
+# As per RHEL installation
+ENV VE_VERSION='15.1.0'
 
 # Update system packages and install dependencies
 RUN apt update -y && \
@@ -22,6 +22,7 @@ RUN apt update -y && \
             curl \
             default-mysql-client \
             default-libmysqlclient-dev \
+            firefox \
             gcc \
             g++ \
             libffi-dev  \

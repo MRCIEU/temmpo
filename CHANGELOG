@@ -1,3 +1,7 @@
+9.4.0   Update Python packaging tools
+        Update Python dependencies
+        Prepare for RHEL migration - convert selenium tests to use Firefox
+
 9.3.0   Make use of pypi index for django-clamd
         Update Cypress
         TMMA-506: Bug fix parsing OVID abstracts that include HTML tags at the start of a line.
