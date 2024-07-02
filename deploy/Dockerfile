@@ -4,11 +4,11 @@ ARG REQUIREMENTS_FILE='requirements.txt'
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PIP_VERSION='24.0'
+ENV PIP_VERSION='24.1.1'
 ENV SETUPTOOLS_VERSION='70.2.0'
 ENV PIP_TOOLS_VERSION='7.4.1'
-# As per RHEL installation
-ENV VE_VERSION='15.1.0'
+# NB: Version 15.1.0 is installed on RHEL
+ENV VE_VERSION='20.26.3' 
 
 # Update system packages and install dependencies
 RUN apt update -y && \
