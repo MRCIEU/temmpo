@@ -2,6 +2,7 @@
 from datetime import datetime
 import logging
 import os
+from time import sleep
 from unittest import skip
 
 import magic
@@ -9,6 +10,7 @@ import requests
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
 from django.urls import reverse
@@ -34,7 +36,8 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
     def _upload_file(self, url, file_path):
         self.driver.get("%s%s" % (self.live_server_url, url))
         self.driver.find_element(By.ID, "id_abstracts_upload").send_keys(file_path)
-        self.driver.find_element(By.ID, "upload_button").send_keys(Keys.RETURN)
+        self.driver.find_element(By.ID, "upload_button").click()
+        WebDriverWait(self.driver, timeout=30, poll_frequency=0.5).until(lambda x: x.find_element_by_id('id_include_child_nodes_1'))
 
     def _assert_file_upload(self, url, file_path):
         logger.debug('_assert_file_upload %s %s ' % (url, file_path))
