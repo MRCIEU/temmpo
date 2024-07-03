@@ -312,9 +312,9 @@ django-rq==2.10.2 \
     --hash=sha256:5fe340e071c141a23ea0859df73c48b0a3df33a851835b2a8f8c4fca7a8b1849 \
     --hash=sha256:d1690b6a409934a0ea23c208ccb00d69477899f8edc61106ce5395c19dcdfb1e
     # via -r requirements/test.txt
-django-upgrade==1.18.0 \
-    --hash=sha256:ae2a2de13e7804773201aef6af2245fa5d503b0a7c88b85b12cf1fdb84197065 \
-    --hash=sha256:bae6a466bb9dd63dd7e23b665499b84499b2661348f06b371b88d2e609aa0df9
+django-upgrade==1.19.0 \
+    --hash=sha256:14430709d3036a472dc6bff36664a2090dbfc7c7c52682aee90f46b71311931e \
+    --hash=sha256:4e94ff5c1129b26e618c09f5980b162170d6547989f8668d92c3c139c59be7fa
     # via -r requirements/dev.in
 easyprocess==1.1 \
     --hash=sha256:82eed523a0a5eb12a81fa4eacd9f342caeb3f900eb4b798740e6696ad07e63f9 \
@@ -801,9 +801,9 @@ pygments==2.18.0 \
     --hash=sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199 \
     --hash=sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a
     # via ipython
-pympler==1.0.1 \
-    --hash=sha256:993f1a3599ca3f4fcd7160c7545ad06310c9e12f70174ae7ae8d4e25f6c5d3fa \
-    --hash=sha256:d260dda9ae781e1eab6ea15bacb84015849833ba5555f141d2d9b7b7473b307d
+pympler==1.1 \
+    --hash=sha256:1eaa867cb8992c218430f1708fdaccda53df064144d1c5656b1e6f1ee6000424 \
+    --hash=sha256:5b223d6027d0619584116a0cbc28e8d2e378f7a79c1e5e024f9ff3b673c58506
     # via -r requirements/dev.in
 pyscreenshot==3.1 \
     --hash=sha256:73d406d41a0977125bdfd2f6488f0caf1394e84d1d4c1065d5e8b1400b307096 \

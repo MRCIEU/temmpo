@@ -6,25 +6,25 @@
 <meta name="keywords" content="{{ keywords }}">
 
 <!-- Bootstrap Core CSS -->
-<link href="{{ STATIC_URL }}sb-admin-2/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="{{ STATIC_URL|default:'/static/' }}sb-admin-2/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- MetisMenu CSS -->
-<link href="{{ STATIC_URL }}sb-admin-2/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+<link href="{{ STATIC_URL|default:'/static/' }}sb-admin-2/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
 <!-- Custom CSS -->
-<link href="{{ STATIC_URL }}sb-admin-2/dist/css/sb-admin-2.min.css" rel="stylesheet">
+<link href="{{ STATIC_URL|default:'/static/' }}sb-admin-2/dist/css/sb-admin-2.min.css" rel="stylesheet">
 
 <!-- Custom Fonts -->
-<link href="{{ STATIC_URL }}sb-admin-2/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="{{ STATIC_URL|default:'/static/' }}sb-admin-2/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 <!-- TeMMPo specific CSS -->
-<link href="{{ STATIC_URL }}css/temmpo.css?v=4.1.1" rel="stylesheet" type="text/css">
+<link href="{{ STATIC_URL|default:'/static/' }}css/temmpo.css?v=4.1.1" rel="stylesheet" type="text/css">
 <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
-    <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
-    <script src="{{ STATIC_URL }}js/respond.min.js"></script>
+    <script src="{{ STATIC_URL|default:'/static/' }}js/html5shiv.js"></script>
+    <script src="{{ STATIC_URL|default:'/static/' }}js/respond.min.js"></script>
 <![endif]-->
 
 <!-- Global site tag (gtag.js) - Google Analytics -->

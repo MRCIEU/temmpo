@@ -21,8 +21,8 @@ GIT_SSH_HOSTS = ('104.192.143.1',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update pip version in tests/build-test-env.sh and Dockerfile
-PIP_VERSION = '24.0'
-SETUPTOOLS_VERSION = '70.0.0'
+PIP_VERSION = '24.1.1'
+SETUPTOOLS_VERSION = '70.2.0'
 PIP_TOOLS_VERSION = '7.4.1'
 
 
@@ -142,35 +142,6 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
 
     if restart_rqworker:
         start_rqworker_service(use_local_mode)
-
-    # Install local copy of the chromedriver
-    if env in ("dev", "test",):
-        with change_dir(venv_dir + "/bin"):            
-            # Only install the chrome driver if google chrome is installed.
-            if caller('which google-chrome'):
-                try:
-                    # Download the correct chrome driver version for the version of google chrome that is currently installed,
-                    # ref: https://chromedriver.chromium.org/downloads/version-selection
-                    google_chrome_version = caller('google-chrome --version').strip("Google Chrome ")
-                    print(f'Stripped chrome driver version: {google_chrome_version}.')
-                    google_chrome_version = google_chrome_version[:google_chrome_version.rindex(".")]
-                    print(f'Truncated chrome driver version: {google_chrome_version}.')
-                    version = urlopen(f'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{google_chrome_version}').read().decode()
-                    print(f'Look up version of chrome driver that should be compatible with this version of chrome {version}.')
-                    if int(google_chrome_version[:google_chrome_version.index(".")]) < 115:
-                        zip_name = 'chromedriver_linux64.zip'
-                        caller(f'wget https://chromedriver.storage.googleapis.com/{version}/{zip_name}')    
-                    else:
-                        zip_name = 'chromedriver-linux64.zip'
-                        caller(f'wget https://storage.googleapis.com/chrome-for-testing-public/{version}/linux64/{zip_name}')
-                    caller('ls -l')
-                    caller('rm -f chromedriver')
-                    caller(f'unzip -o -j {zip_name}')
-                    caller('ls -l')
-                    caller(f'rm {zip_name}*')
-                    caller('ls -l')
-                except Exception as e:
-                    print("Errors when trying to install the latest Chrome Driver: {e}")
 
 
 def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_local_mode=False, use_pip_sync=False, requirements="requirements", project_dir=PROJECT_ROOT):
@@ -498,7 +469,7 @@ def stop_rqworker_service(use_local_mode):
 def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, project_dir=PROJECT_ROOT):
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, exclude_tag=None, project_dir=PROJECT_ROOT):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
@@ -507,6 +478,8 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     cmd_suffix = ''
     if reuse_db:
         cmd_suffix = " --keepdb"
+    if exclude_tag and exclude_tag != "None":
+        cmd_suffix += " --exclude-tag=%s" % exclude_tag
     if tag and tag != "None":
         cmd_suffix += " --tag=%s" % tag
     if not run_selenium_tests:
