@@ -249,9 +249,9 @@ coverage==7.5.4 \
 csvvalidator==1.2 \
     --hash=sha256:f1f222993589f9d8f8d83088d0bf80475462e5fa848baf920d0c03c03690c37e
     # via -r requirements/test.in
-django==4.2.13 \
-    --hash=sha256:837e3cf1f6c31347a1396a3f6b65688f2b4bb4a11c580dcb628b5afe527b68a5 \
-    --hash=sha256:a17fcba2aad3fc7d46fdb23215095dbbd64e6174bf4589171e732b18b07e426a
+django==4.2.14 \
+    --hash=sha256:3ec32bc2c616ab02834b9cac93143a7dc1cdcd5b822d78ac95fc20a38c534240 \
+    --hash=sha256:fc6919875a6226c7ffcae1a7d51e0f2ceaf6f160393180818f6c95f51b1e7b96
     # via
     #   -r requirements/requirements.txt
     #   django-autocomplete-light
@@ -791,9 +791,9 @@ sqlparse==0.5.0 \
     # via
     #   -r requirements/requirements.txt
     #   django
-trio==0.25.1 \
-    --hash=sha256:9f5314f014ea3af489e77b001861c535005c3858d38ec46b6b071ebfa339d7fb \
-    --hash=sha256:e42617ba091e7b2e50c899052e83a3c403101841de925187f61e7b7eaebdf3fb
+trio==0.26.0 \
+    --hash=sha256:67c5ec3265dd4abc7b1d1ab9ca4fe4c25b896f9c93dac73713778adab487f9c4 \
+    --hash=sha256:bb9c1b259591af941fccfbabbdc65bc7ed764bd2db76428454c894cd5e3d2032
     # via
     #   selenium
     #   trio-websocket
