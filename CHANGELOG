@@ -1,3 +1,6 @@
+9.5.0   Apply Django security update
+        Update Python dependencies
+
 9.4.0   Update Python packaging tools
         Update Python dependencies
         Prepare for RHEL migration - convert selenium tests to use Firefox
