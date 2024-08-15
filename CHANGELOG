@@ -1,3 +1,7 @@
+9.7.0   Update Python packaging tools
+        Update Cypress
+        Update version of MySQL used in GitHub actions
+
 9.6.1   Update Python dependencies
 
 9.6.0   Apply Django security update
