@@ -13,10 +13,7 @@ from fabric.contrib import files
 PROJECT_ROOT = "/usr/local/projects/temmpo/"
 
 GIT_URL = 'git@github.com:MRCIEU/temmpo.git'
-GIT_SSH_HOSTS = ('104.192.143.1',
-                 '104.192.143.2',
-                 '104.192.143.3',
-                 'bitbucket.org',
+GIT_SSH_HOSTS = ('bitbucket.org',
                  'github.com',)
 
 # Tools not handled by pip-tools and/or requirements installs using pip
@@ -325,7 +322,15 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True, project_dir
 
     caller("sudo /sbin/apachectl configtest")
     caller("sudo /sbin/apachectl restart")
-    caller("sudo /sbin/apachectl status")
+    # Commented to disable.
+    # Unfortunately, on RHEL 8, this pipes into `less` and that then waits for
+    # user input to continue (as `less` is paging the long-line output of
+    # apachectl status). As there's no practical way to pass `--no-pager` to
+    # the systemctl status call that underlies the apachectl call, skip it for
+    # the time being.
+    # TODO: Either stop this being paged or switch to `systemctl` calls
+    # directly to allow for passing `--no-pager`.
+    # caller("sudo /sbin/apachectl status")
     if run_checks:
         toggled_maintenance_mode = False
         if _exists_local(project_dir + "var/www/_MAINTENANCE_", use_local_mode):
