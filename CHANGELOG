@@ -1,3 +1,6 @@
+9.8.1   TMMA-509: Improve security of Python packaging tool
+        Update Python packaging tool
+
 9.8.0   Updated Django to 4.2.16 and updated other libraries
         Removed old Bitbucket IPs
         Update deployments for RHEL8 and apachectl compatibility

@@ -1,12 +1,12 @@
-FROM python:3.8.19-slim
+FROM python:3.8.20-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_VERSION='24.2'
-ENV SETUPTOOLS_VERSION='72.2.0'
+ENV SETUPTOOLS_VERSION='74.1.2'
 ENV PIP_TOOLS_VERSION='7.4.1'
 # NB: Version 15.1.0 is installed on RHEL
-ENV VE_VERSION='20.26.3'
+ENV VE_VERSION='20.26.4'
 
 # Update system packages and install dependencies
 RUN apt update -y && \
@@ -49,6 +49,6 @@ VOLUME [ "/srv" ]
 
 ARG REQUIREMENTS_FILE='requirements.txt'
 COPY requirements/$REQUIREMENTS_FILE /srv
-RUN pip install --no-deps -r /srv/$REQUIREMENTS_FILE
+RUN pip install --no-deps --require-hashes -r /srv/$REQUIREMENTS_FILE
 
 CMD [ "pip", "check" ]

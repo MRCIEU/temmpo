@@ -19,7 +19,7 @@ GIT_SSH_HOSTS = ('bitbucket.org',
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update pip version in tests/build-test-env.sh and Dockerfile
 PIP_VERSION = '24.2'
-SETUPTOOLS_VERSION = '72.2.0'
+SETUPTOOLS_VERSION = '74.1.2'
 PIP_TOOLS_VERSION = '7.4.1'
 
 
@@ -112,7 +112,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
             caller('./bin/pip3 install -U setuptools==%s' % SETUPTOOLS_VERSION)
             caller('./bin/pip3 install pip-tools==%s' % PIP_TOOLS_VERSION)
             # Fix TMMA-456 - Resolve issue on Debian systems where dependencies loosely pinned upstream but correctly pinned overall in our requirements file causes builds to fail
-            caller('./bin/pip3 install --no-deps -r src/temmpo/requirements/%s.txt' % requirements)
+            caller('./bin/pip3 install --no-deps --require-hashes -r src/temmpo/requirements/%s.txt' % requirements)
             caller('./bin/pip3 freeze')
             
             # # Regenerate all pyc files
