@@ -111,8 +111,8 @@ class UploadTestCase(BaseTestCase):
         self.assertNotContains(response, "is not an acceptable file type")
         self.assertNotContains(response, "is not a plain text file")
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
-        uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
-        mime_type = mimetypes.guess_type(uploaded_file)
+        uploaded_file_path = Upload.objects.all().order_by("id").last().abstracts_upload.path
+        mime_type = mimetypes.guess_type(uploaded_file_path)
         self.assertEqual(mime_type[0], "text/plain")
 
     def test_bz2_pub_med_upload_is_allowable(self):
