@@ -25,6 +25,8 @@ class MimetypeValidator(object):
     def __call__(self, value):
         try:
             mime = mimetypes.guess_type(value.temporary_file_path())
+            logger.error("DEBUG: temp file path %s" % value.temporary_file_path())
+            logger.error("DEBUG: mime %s" % mime)
             if mime[0] not in self.mimetypes:
                 raise ValidationError('%s is not an acceptable file type. Please use a %s formatted file instead.' % (value, ' or '.join(self.mimetypes)))
         except AttributeError as e:
