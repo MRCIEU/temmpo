@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-import magic
+import mimetypes
 import re
 
 from django.core.exceptions import ValidationError
@@ -24,8 +24,8 @@ class MimetypeValidator(object):
 
     def __call__(self, value):
         try:
-            mime = magic.from_buffer(value.read(1024), mime=True)
-            if mime not in self.mimetypes:
+            mime = mimetypes.guess_type(value)
+            if mime[0] not in self.mimetypes:
                 raise ValidationError('%s is not an acceptable file type. Please use a %s formatted file instead.' % (value, ' or '.join(self.mimetypes)))
         except AttributeError as e:
             logger.debug("AttributeError")

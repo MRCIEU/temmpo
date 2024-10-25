@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
-import magic
+import mimetypes
 
 from django.urls import reverse
 from django.test import tag
@@ -112,8 +112,8 @@ class UploadTestCase(BaseTestCase):
         self.assertNotContains(response, "is not a plain text file")
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
         uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
-        mime_type = magic.from_buffer(uploaded_file.read(2048), mime=True)
-        self.assertEqual(mime_type, "text/plain")
+        mime_type = mimetypes.guess_type(uploaded_file)
+        self.assertEqual(mime_type[0], "text/plain")
 
     def test_bz2_pub_med_upload_is_allowable(self):
         self._assert_file_is_uploaded_and_extracted_where_required(TEST_BZ_PUB_MED_ARCHIVE, reverse('search_pubmed'))
@@ -121,11 +121,11 @@ class UploadTestCase(BaseTestCase):
     def test_gzip_pub_med_upload_is_allowable(self):
         self._assert_file_is_uploaded_and_extracted_where_required(TEST_GZIP_PUB_MED_ARCHIVE, reverse('search_pubmed'))
 
-    @tag('skip-on-ubuntu')
+    @tag('mimetype')
     def test_small_bz2_pub_med_upload_is_allowable(self):
         self._assert_file_is_uploaded_and_extracted_where_required(TEST_BZ_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
 
-    @tag('skip-on-ubuntu')
+    @tag('mimetype')
     def test_small_gzip_pub_med_upload_is_allowable(self):
         self._assert_file_is_uploaded_and_extracted_where_required(TEST_GZIP_PUB_MED_SMALL_ARCHIVE, reverse('search_pubmed'))
 

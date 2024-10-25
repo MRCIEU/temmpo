@@ -1,9 +1,6 @@
-import bz2
-import gzip
 import logging
-import magic
+import mimetypes
 import os
-import tempfile
 from xtract import xtract
 
 from django import forms
@@ -27,8 +24,8 @@ class ExtractorFileField(forms.FileField):
 
     def to_python(self, value):
         value = super(ExtractorFileField, self).to_python(value)
-        mime_type = magic.from_buffer(value.read(1024), mime=True)
-        if mime_type in ('application/gzip', 'application/x-gzip', 'application/bzip', 'application/bzip2', 'application/x-bzip', 'application/x-bzip2'):
+        mime_type = mimetypes.guess_type(value)
+        if mime_type[0] in ('application/gzip', 'application/x-gzip', 'application/bzip', 'application/bzip2', 'application/x-bzip', 'application/x-bzip2'):
             try:
                 extracted_file_path = xtract(value.temporary_file_path())
                 return self._create_upload_file_from_path(extracted_file_path)
