@@ -1,4 +1,4 @@
-9.9.0   TMMA-508: Refactor detecting mime types of files
+9.9.0   TMMA-508: Refactor detecting mime types of file uploads
         Update Python dependencies
 
 9.8.1   TMMA-509: Improve security of Python packaging tool
