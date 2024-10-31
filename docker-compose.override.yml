@@ -1,0 +1,53 @@
+---
+# Avoid Docker picking a subnet range that conflicts with HyperV VMs & F5 VPN
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.44.0/24
+
+services:
+  db:
+    container_name: db
+    restart: always
+    image: mysql:8.0.40
+    ports:
+      - "4406:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    env_file: .env
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-p$MYSQL_ROOT_PASSWORD"]
+      timeout: 180s
+      interval: 10s
+      retries: 10
+
+  web:
+    links:
+      - db:db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/srv/
+      - ./entrypoints:/srv/entrypoints/
+    # command: ['/bin/bash', '/srv/entrypoints/dev.sh']
+    platform: linux/amd64
+
+  e2e:
+    image: cypress/included:13.15.0
+    working_dir: /e2e/
+    links:
+      # - nginx:nginx
+      - web:web
+    depends_on:
+      - db
+      - web
+      # - nginx
+    env_file: .env
+    volumes:
+      - ./:/e2e
+
+volumes:
+  mysqldata:

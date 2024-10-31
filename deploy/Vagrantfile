@@ -5,8 +5,7 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "centos/7"
-  config.vm.box_version = "2004.01"
+  config.vm.box = "generic/rhel8"
 
   # Used to allow pass phrase free SSH access to allow
   # remote testing of Fabric scripts against Vagrant VMs
@@ -14,26 +13,35 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "db" do |db|
 
+    db.vm.synced_folder ".", "/vagrant", # type: "sshfs",
+       owner: "vagrant", group: "vagrant"
+
     db.vm.provision "shell", inline: <<-SHELL
 
       sudo timedatectl set-timezone Europe/London
       sudo yum update
 
-      echo "Install dev utils"
-      sudo yum install -y unzip
-      sudo yum install -y nano
-
-      echo "Install essential tools & repos"
+      echo "Install essential tools & EPEL 8 repo"
       sudo yum install -y wget
-      wget -N https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-      sudo rpm -ivh --replacepkgs epel-release-latest-7.noarch.rpm
+      wget -N https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+      sudo rpm -ivh --replacepkgs epel-release-latest-8.noarch.rpm
 
-      # Install database server and client
-      sudo yum -y install mariadb-server mariadb
+      # Install database server
+      sudo yum install libaio libsepol lsof
+      wget https://repo.mysql.com/mysql84-community-release-el8-1.noarch.rpm
+      sudo yum localinstall -y mysql84-community-release-el8-1.noarch.rpm
 
-      echo "Run services"
-      sudo systemctl start mariadb
-      sudo systemctl enable mariadb
+      # sudo yum repolist enabled | grep mysql.*-community
+      # sudo yum repolist enabled | grep mysql
+      # sudo yum --disablerepo=\* --enablerepo='mysql*-community*' list available
+
+      sudo yum-config-manager --disable mysql-8.4-lts-community
+      sudo yum-config-manager --enable  mysql80-community
+
+      sudo yum update
+
+      sudo yum install -y mysql-community-libs
+      sudo yum install -y --nobest mysql-community-server
 
       echo "Allow external connections from mysql"
       cat > allow-external-connections.cnf << CONF
@@ -41,42 +49,68 @@ Vagrant.configure("2") do |config|
 bind-address=0.0.0.0
 CONF
       sudo mv allow-external-connections.cnf /etc/my.cnf.d/
-      sudo systemctl restart mariadb
-      mysql -u root < /vagrant/db-setup.sql
-    SHELL
+    
+      echo "Run services"
+      sudo systemctl status mysqld
+      sudo systemctl restart mysqld
+      sudo systemctl enable mysqld
+      sudo systemctl status mysqld
+      
+      # echo "Insecure installation"
+      # mysqld --initialize-insecure=ON --user=mysql -y
+      # echo "Run setup scripts"
+      # mysql -u root --skip-password < /vagrant/db-setup.sql
+      echo "Secure installation"
+      mysql_secure_installation -u mysql --password=tmp-dev-environment-12345 --use-default=true
+      echo "Run setup scripts"
+      mysql -u root --password=tmp-dev-environment-12345 < /vagrant/db-setup.sql
+
+      SHELL
 
       db.vm.network "forwarded_port", guest: 3306, host: 3306
-      db.vm.network "private_network", ip: "10.0.1.20"
+      db.vm.network "private_network", ip: "192.168.56.0"
   end
 
   # Django box
   config.vm.define "django", primary: true do |django|
 
     # Run the Django setup
-    django.vm.provision "shell", path: "deploy-centos.sh"
+    django.vm.provision "shell", path: "deploy-rhel.sh"
 
-    django.vm.synced_folder "../", "/usr/local/projects/temmpo/lib/dev/src/temmpo", type: "sshfs", 
+    django.vm.synced_folder "../", "/usr/local/projects/temmpo/lib/dev/src/temmpo", # type: "sshfs",  
        owner: "vagrant", group: "vagrant"
 
     django.vm.network "forwarded_port", guest: 59099, host: 59099
-    django.vm.network "private_network", ip: "10.0.1.21"
+    django.vm.network "private_network", ip: "192.168.56.11"
   end
 
   # Apache/Django box
   config.vm.define "apache", autostart: false do |apache|
 
     # Run the Django setup
-    apache.vm.provision "shell", path: "deploy-centos.sh"
+    apache.vm.provision "shell", path: "deploy-rhel.sh"
 
-    apache.vm.synced_folder "../", "/vagrant", type: "sshfs", 
+    apache.vm.synced_folder "../", "/vagrant", # type: "sshfs",  
        owner: "vagrant", group: "vagrant"
 
     apache.vm.network "forwarded_port", guest: 80, host: 8800
-    apache.vm.network "private_network", ip: "10.0.1.19"
+    apache.vm.network "private_network", ip: "192.168.56.19"
   end
 
   config.vm.provider "virtualbox" do |v|
     v.memory = 4096
     v.cpus = 2
   end
+
+  # config.vbguest.iso_path = "VBoxGuestAdditions_7.0.22.iso"
+  # config.vbguest.auto_update = true
+  # config.vbguest.no_remote = false
+  # no_install
+
+  # config.vm.provider "docker" do |d|
+  #   d.image = "redhat/ubi8"
+  #   # d.vagrant_vagrantfile
+  #   # v.memory = 4096
+  #   # v.cpus = 2
+  # end 
 end

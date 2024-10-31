@@ -148,6 +148,12 @@ Alternatively
     docker build -f deploy/Dockerfile -t temmpo-web .
     docker run --rm -it -v $PWD:/srv -w /srv temmpo-web bash /srv/entrypoints/update-requirements.sh
 
+Alternatively
+
+    docker compose build web
+    docker compose run --no-deps web bash /srv/entrypoints/update-requirements.sh
+
+
 #### Create Docker images for different environments
 
     docker build -f deploy/Dockerfile -t temmpo-web-dev . --build-arg REQUIREMENTS_FILE=dev.txt
