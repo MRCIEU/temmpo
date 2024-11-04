@@ -234,7 +234,7 @@ FILE_UPLOAD_TEMP_DIR = "%s/tmp" % MEDIA_ROOT
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': '127.0.0.1:6379',
+        'LOCATION': 'redis://127.0.0.1:6379',
         'OPTIONS': {
             'DB': 1,
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
