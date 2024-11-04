@@ -57,7 +57,7 @@ class ProbeView(TemplateView):
             success = function()
             end = time.time()
             if end - start > max_duration:
-                logger.warn(
+                logger.warning(
                     "Check timestamp exceeded for '%s' (%s took longer than %s)" % (label, end - start, max_duration))
         except Exception as e:
             end = time.time()
