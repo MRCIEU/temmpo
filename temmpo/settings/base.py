@@ -233,13 +233,11 @@ FILE_UPLOAD_TEMP_DIR = "%s/tmp" % MEDIA_ROOT
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379',
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
         'OPTIONS': {
-            'DB': 1,
-            # 'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PARSER_CLASS': 'redis.connection._HiredisParser',
-            # NB: if using version 5 of redis-py, use "redis.connection._HiredisParser" for the PARSER_CLASS due to an internal rename of classes within that package.
         },
     },
 }
