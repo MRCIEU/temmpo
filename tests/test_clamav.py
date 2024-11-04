@@ -45,7 +45,7 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
         self._upload_file(url, file_path)
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
         uploaded_file_path = Upload.objects.all().order_by("id").last().abstracts_upload.path
-        mime_type = mimetypes.guess_type(uploaded_file_path)
+        mime_type = mimetypes.guess_type(uploaded_file_path, strict=False)
         self.assertEqual(mime_type[0], "text/plain")
 
     def _assert_virus_scanning(self, upload_url, virus_file_url):

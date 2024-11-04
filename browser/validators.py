@@ -24,7 +24,7 @@ class MimetypeValidator(object):
 
     def __call__(self, value):
         try:
-            mime = mimetypes.guess_type(value.temporary_file_path())
+            mime = mimetypes.guess_type(value.temporary_file_path(), strict=False)
             logger.error("DEBUG: temp file path %s" % value.temporary_file_path())
             logger.error("DEBUG: mime %s" % mime[0])
             if mime[0] not in self.mimetypes:
