@@ -1,0 +1,66 @@
+---
+services:
+
+  web:
+    image: uobristol/temmpo-django
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile-rhel
+      args:
+        - "RHEL_ORG_ID=${RHEL_ORG_ID}"
+        - "RHEL_ACTIVATION_KEY=${RHEL_ACTIVATION_KEY}"
+    env_file: .env
+    ports:
+      - "59099:59099"
+    # command: ['/bin/bash', '/srv/entrypoints/serve.sh']
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:59099"]
+    #   interval: 30s
+    #   timeout: 45s
+    #   retries: 100
+    links:
+      - redis:redis
+    depends_on:
+      - redis
+    volumes:
+      - web-logs:/srv/log/
+      - web-media:/srv/media/
+      - web-static:/srv/static/
+
+  # https://hub.docker.com/_/redis
+  redis:
+    restart: always
+    image: redis:5.0.3 # Installed on RHEL 8 on site infrastructure 
+    ports:
+      - "6379:6379"
+    env_file: .env
+
+  # apache:
+  #   container_name: nginx
+  #   restart: always
+  #   build: ./nginx/
+  #   image: uobristol/temmpo-nginx
+  #   ports:
+  #     - "8080:8080"
+  #   links:
+  #     - web:web
+  #   depends_on:
+  #     web:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8080/static/css/temmpo.css"]
+  #     interval: 5s
+  #     timeout: 45s
+  #     retries: 200
+  #   env_file: .env
+  #   volumes:
+  #     - nginx-logs:/mnt/temmpo_nginx/log/
+  #     - web-media:/mnt/temmpo_web/media/:ro
+  #     - web-static:/mnt/temmpo_web/static/:ro
+
+volumes:
+  # nginx-logs:
+  web-logs:
+  web-media:
+  web-static:

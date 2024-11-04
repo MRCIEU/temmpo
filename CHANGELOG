@@ -1,4 +1,11 @@
-9.9.0   TMMA-508: Refactor detecting mime types of file uploads
+# Changelog
+
+9.9.1   TMMA-508: Refactor detecting mime types of file uploads
+        Update packages used to connect to redis
+
+9.9.0   TMMA-511: Upgrade Python from 3.8.x to 3.9+
+        TMMA-347: Set up RHEL8 development docker environment
+        Update version of MySQL used in GitHub actions
         Update Python dependencies
 
 9.8.1   TMMA-509: Improve security of Python packaging tool

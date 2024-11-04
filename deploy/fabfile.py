@@ -18,8 +18,8 @@ GIT_SSH_HOSTS = ('bitbucket.org',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update pip version in tests/build-test-env.sh and Dockerfile
-PIP_VERSION = '24.2'
-SETUPTOOLS_VERSION = '74.1.2'
+PIP_VERSION = '24.3.1'
+SETUPTOOLS_VERSION = '75.2.0'
 PIP_TOOLS_VERSION = '7.4.1'
 
 
@@ -56,7 +56,7 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.8", project_dir=PROJECT_ROOT):
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.9", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
@@ -82,7 +82,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(project_dir + 'lib/'):
-        caller('%s --python python3.8 %s' % (virtualenv, env))
+        caller('%s --python python3.9 %s' % (virtualenv, env))
         # Verify Python version in use
         caller('%s/bin/python3 -V' % env)
 
@@ -172,7 +172,7 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
     with change_dir(venv_dir):
 
         # Remove any python dependency pyc files
-        caller('rm -f `find lib/python3.8/site-packages/ -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
+        caller('rm -f `find lib/python3.9/site-packages/ -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
 
         # Ensure pip3 and setup tools is up to expected version for existing environments.
         caller('./bin/pip3 cache purge')
@@ -290,7 +290,7 @@ def setup_apache(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     if env == "dev":
         # Set up SE Linux contexts for dev environments, puppet configured for VMs
         caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-        caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
+        caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.9/' % venv_dir)
         caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
         # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
         caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)

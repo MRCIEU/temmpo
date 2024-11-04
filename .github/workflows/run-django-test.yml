@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-22.04 # NB: There are issues in later versions of Ubuntu where application/x-wine-extension-ini replacing the expected mime type for text files in archives - these tests will need to be skipped and only run on VM based environment
     services:
       redis:
-        image: redis
+        image: redis:5.0.3
         ports:
           - 6379:6379
       db:
-        image: mysql:8.0.39
+        image: mysql:8.0.40
         ports:
           - 3306:3306
         env:
@@ -27,7 +27,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
-        python-version: '3.8'
+        python-version: '3.9'
         architecture: 'x64'
     - name: Run Python 3/Django tests
       run: bash tests/run-django-tests.sh

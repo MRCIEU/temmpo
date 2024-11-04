@@ -1,12 +1,33 @@
 #!/bin/sh
 
-# TODO test Apache builds in Travis CI/CD build pipelines as well
+python3 --version
+yum repolist enabled
 
-echo "###   Build script for a development TeMMPo environment on Centos"
+# yum-config-manager --add-repo
+
+echo "###   Build script for a development TeMMPo environment on RHEL"
 timedatectl set-timezone Europe/London
 
-echo "###   Install EPEL repo and run package updates"
-yum -y install epel-release
+subscription-manager repos --enable rhel-8-server-optional-rpms
+subscription-manager repos --enable rhel-8-server-extras-rpms
+subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+subscription-manager repos --enable docker
+subscription-manager repos --enable epel
+subscription-manager repos --enable mysql-connectors-community
+subscription-manager repos --enable mysql-tools-community
+subscription-manager repos --enable mysql57-community
+subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
+subscription-manager repos --enable rhel-8-for-x86_64-baseos-rpms
+
+yum repolist enabled
+
+# rhel-8-for-x86_64-appstream-rpms
+
+yum install -y wget
+# 8-21.el8
+wget -N https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+rpm -ivh --replacepkgs epel-release-latest-8.noarch.rpm
+
 yum -y update
 
 echo "Install Centos dev tools, like audit2allow"
@@ -14,35 +35,33 @@ yum -y install policycoreutils-python
 yum -y install mlocate
 
 echo "###   Install dev tools"
-yum -y install git
+yum -y install rh-git227
 yum -y install nano
-yum -y install wget
 yum -y install unzip
 yum -y install sqlite-devel
 
-echo "MySQL stuff"
+echo "MySQL client stuff"
 
 # Refresh the MySQL GPG keys - important if we want the mysqll client to install properly.
 rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 # Clean up default mariadb installations
 yum -y remove mariadb-libs
 yum -y install mysql-devel
-wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
-# Add MySQL package repository
-yum -y localinstall mysql57-community-release-el7-11.noarch.rpm
-# localinstall
+wget https://repo.mysql.com/mysql84-community-release-el8-1.noarch.rpm
+yum localinstall -y mysql84-community-release-el8-1.noarch.rpm
 yum -y install mysql-community-libs
 yum -y install mysql-community-client
 
 echo "###   Setup Web server components"
 yum -y install httpd
 yum -y install httpd-devel
+# yum -y install httpd-manual
 # Required to connect to DB successfully from web server and be able to send emails
 setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_can_network_connect_db 1
 setsebool -P httpd_can_sendmail 1
 
-echo "###   Install Python 3.8 and components"
+echo "###   Install Python 3.9 and components"
 
 yum -y install gcc gcc-c++ openssl-devel bzip2-devel libffi-devel zlib-devel
 cd /opt
@@ -52,24 +71,24 @@ cd Python-3.9.20/
 ./configure --enable-optimizations --enable-shared
 make altinstall
 # Create symlinks
-ln -sfn /usr/local/bin/python3.8 /usr/bin/python3.8
-ln -sfn /usr/local/bin/pip3.8 /usr/bin/pip3.8
+ln -sfn /usr/local/bin/python3.9 /usr/bin/python3.9
+ln -sfn /usr/local/bin/pip3.9 /usr/bin/pip3.9
 
 echo "export LD_LIBRARY_PATH=/usr/local/lib/" > ld_library.sh
 mv ld_library.sh /etc/profile.d/ld_library.sh
 export set LD_LIBRARY_PATH=/usr/local/lib/
 
 # Install symtem wide python requirements
-pip3.8 install -U pip==19.3.1 # As per app servers
-pip3.8 install Fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
+pip3.9 install -U pip==19.3.1 # As per app servers
+pip3.9 install Fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
-pip3.8 install mod_wsgi==4.9.4 # As per app servers
-ls /usr/local/lib64/python3.8/site-packages/mod_wsgi/server/
-pip3.8 install virtualenv==20.24.5 # As per app servers
+pip3.9 install mod_wsgi==4.9.4 # As per app servers
+ls /usr/local/lib64/python3.9/site-packages/mod_wsgi/server/
+pip3.9 install virtualenv==20.24.5 # As per app servers
 
-ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv-3.8
+ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv-3.9
 
-yum -y install python3-wheel
+yum -y install python3-pip-wheel-9.0.3-24.el8
 yum -y install python3-lxml
 
 echo "###   Install anti-virus tools used with Apache fronted instances"
@@ -159,9 +178,9 @@ yum -y install chromedriver
 chromedriver -v
 
 echo "###   Confirm install list"
-yum list installed 
+yum list installed
 pip freeze
-pip3.8 freeze
+pip3.9 freeze
 
 echo "###   Create directories normally managed by Puppet"
 mkdir -p /usr/local/projects/temmpo/etc/apache/conf.d
@@ -233,7 +252,7 @@ fi
 ## TODO: Fix path to mod_wsgi module
 echo "###   Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
-LoadModule wsgi_module "/usr/local/lib64/python3.8/site-packages/mod_wsgi/server/mod_wsgi-py38.cpython-36m-x86_64-linux-gnu.so"
+LoadModule wsgi_module "/usr/local/lib64/python3.9/site-packages/mod_wsgi/server/mod_wsgi-py38.cpython-36m-x86_64-linux-gnu.so"
 WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
 <VirtualHost *:*>
