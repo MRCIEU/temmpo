@@ -1,21 +1,14 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import logging
-import mimetypes
 import os
-from time import sleep
-from unittest import skip
 
-import filetype
+import magic
 import requests
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
-from django.conf import settings
 from django.urls import reverse
-from django.test import override_settings, tag
+from django.test import tag
 
 from browser.models import Upload
 from tests.base_selenium_test_case import SeleniumBaseTestCase
@@ -46,11 +39,7 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
         self._upload_file(url, file_path)
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
         uploaded_file_path = Upload.objects.all().order_by("id").last().abstracts_upload.path
-        mime_type = filetype.guess(uploaded_file_path)
-        if mime_type == None:
-            mime_type, encoding = mimetypes.guess_type(uploaded_file_path)
-        else:
-            mime_type = mime_type.mime
+        mime_type = magic.from_buffer(uploaded_file_path.read(2048), mime=True)
         self.assertEqual(mime_type, "text/plain")
 
     def _assert_virus_scanning(self, upload_url, virus_file_url):

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
-import filetype
-import mimetypes
+
+import magic
 
 from django.urls import reverse
 from django.test import tag
 
-from browser.models import SearchCriteria, SearchResult, MeshTerm, Upload, OVID, PUBMED, Gene
+from browser.models import Upload, OVID, PUBMED
 
 from tests.base_test_case import BaseTestCase
 
@@ -113,11 +113,7 @@ class UploadTestCase(BaseTestCase):
         self.assertNotContains(response, "is not a plain text file")
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
         uploaded_file_path = Upload.objects.all().order_by("id").last().abstracts_upload.path
-        mime_type = filetype.guess(uploaded_file_path)
-        if mime_type == None:
-            mime_type, encoding = mimetypes.guess_type(uploaded_file_path)
-        else:
-            mime_type = mime_type.mime
+        mime_type = magic.from_buffer(uploaded_file_path.read(2048), mime=True)
         self.assertEqual(mime_type, "text/plain")
 
     def test_bz2_pub_med_upload_is_allowable(self):

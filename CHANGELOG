@@ -1,10 +1,9 @@
 # Changelog
 
-9.9.1   TMMA-508: Refactor detecting mime types of file uploads
-        Update packages used to connect to redis
-
-9.9.0   TMMA-511: Upgrade Python from 3.8.x to 3.9+
+9.9.0   TMMA-511: Upgrade Python from 3.8.x to 3.12.x
+        Apply MySQL Connector/Python connector security update
         TMMA-347: Set up RHEL8 development docker environment
+        Update packages used to connect to redis
         Update version of MySQL used in GitHub actions
         Update Python dependencies
 

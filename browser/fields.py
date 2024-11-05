@@ -1,8 +1,6 @@
 import logging
-import mimetypes
 import os
 
-import filetype
 import magic
 from xtract import xtract
 
@@ -28,16 +26,6 @@ class ExtractorFileField(forms.FileField):
     def to_python(self, value):
         value = super(ExtractorFileField, self).to_python(value)
         mime_type = magic.from_buffer(value.read(1024), mime=True)
-        if mime_type == None:
-            mime_type = filetype.guess(value.temporary_file_path())
-            if mime_type == None:
-                mime_type, encoding = mimetypes.guess_type(value.temporary_file_path())
-                logger.error("DEBUG: Using mimetypes package")
-            else:
-                mime_type = mime_type.mime
-                logger.error("DEBUG: Using filetype package")
-        else:
-            logger.error("DEBUG: Using magic package")
 
         logger.error("DEBUG: temp file path %s" % value.temporary_file_path())
         logger.error("DEBUG: mime %s" % mime_type)
