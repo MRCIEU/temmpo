@@ -56,7 +56,7 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.9", project_dir=PROJECT_ROOT):
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.12", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')

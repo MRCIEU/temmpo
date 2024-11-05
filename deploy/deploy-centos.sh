@@ -46,9 +46,9 @@ echo "###   Install Python 3.8 and components"
 
 yum -y install gcc gcc-c++ openssl-devel bzip2-devel libffi-devel zlib-devel
 cd /opt
-wget https://www.python.org/ftp/python/3.9.20/Python-3.9.20.tgz
-tar -xzf Python-3.9.20.tgz
-cd Python-3.9.20/
+wget https://www.python.org/ftp/python/3.12.7/Python-3.12.7.tgz
+tar -xzf Python-3.12.7.tgz
+cd Python-3.12.7/
 ./configure --enable-optimizations --enable-shared
 make altinstall
 # Create symlinks
