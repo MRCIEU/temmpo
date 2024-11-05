@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import logging
+import mimetypes
 import os
 from time import sleep
 from unittest import skip
@@ -45,7 +46,11 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
         self._upload_file(url, file_path)
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
         uploaded_file_path = Upload.objects.all().order_by("id").last().abstracts_upload.path
-        mime_type = filetype.guess(uploaded_file_path).mime
+        mime_type = filetype.guess(uploaded_file_path)
+        if mime_type == None:
+            mime_type, encoding = mimetypes.guess_type(uploaded_file_path)
+        else:
+            mime_type = mime_type.mime
         self.assertEqual(mime_type, "text/plain")
 
     def _assert_virus_scanning(self, upload_url, virus_file_url):

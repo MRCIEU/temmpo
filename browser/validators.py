@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import filetype
+import mimetypes
 import re
 
 from django.core.exceptions import ValidationError
@@ -24,7 +25,11 @@ class MimetypeValidator(object):
 
     def __call__(self, value):
         try:
-            mime = filetype.guess(value.temporary_file_path()).mime
+            mime = filetype.guess(value.temporary_file_path())
+            if mime == None:
+                mime, encoding = mimetypes.guess_type(value.temporary_file_path())
+            else:
+                mime = mime.mime
             logger.error("DEBUG: temp file path %s" % value.temporary_file_path())
             logger.error("DEBUG: mime %s" % mime)
             if mime not in self.mimetypes:

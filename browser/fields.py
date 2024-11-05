@@ -1,5 +1,6 @@
 import logging
 import filetype
+import mimetypes
 import os
 from xtract import xtract
 
@@ -24,7 +25,11 @@ class ExtractorFileField(forms.FileField):
 
     def to_python(self, value):
         value = super(ExtractorFileField, self).to_python(value)
-        mime_type = filetype.guess(value.temporary_file_path()).mime
+        mime_type = filetype.guess(value.temporary_file_path())
+        if mime_type == None:
+            mime_type, encoding = mimetypes.guess_type(value.temporary_file_path())
+        else:
+            mime_type = mime_type.mime
         if mime_type in ('application/gzip', 'application/x-gzip', 'application/bzip', 'application/bzip2', 'application/x-bzip', 'application/x-bzip2'):
             try:
                 extracted_file_path = xtract(value.temporary_file_path())
