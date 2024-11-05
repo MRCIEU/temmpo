@@ -27,8 +27,8 @@ class ExtractorFileField(forms.FileField):
         value = super(ExtractorFileField, self).to_python(value)
         mime_type = magic.from_buffer(value.read(1024), mime=True)
 
-        logger.error("DEBUG: temp file path %s" % value.temporary_file_path())
-        logger.error("DEBUG: mime %s" % mime_type)
+        logger.debug("DEBUG: temp file path %s" % value.temporary_file_path())
+        logger.debug("DEBUG: mime %s" % mime_type)
 
         if mime_type in ('application/gzip', 'application/x-gzip', 'application/bzip', 'application/bzip2', 'application/x-bzip', 'application/x-bzip2'):
             try:

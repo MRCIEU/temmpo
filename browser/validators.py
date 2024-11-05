@@ -26,8 +26,8 @@ class MimetypeValidator(object):
     def __call__(self, value):
         try:
             mime = magic.from_buffer(value.read(1024), mime=True)
-            logger.error("DEBUG: temp file path %s" % value.temporary_file_path())
-            logger.error("DEBUG: mime %s" % mime)
+            logger.debug("DEBUG: temp file path %s" % value.temporary_file_path())
+            logger.debug("DEBUG: mime %s" % mime)
             if mime not in self.mimetypes:
                 raise ValidationError('%s is not an acceptable file type. Please use a %s formatted file instead.' % (value, ' or '.join(self.mimetypes)))
         except AttributeError as e:
