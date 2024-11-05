@@ -8,12 +8,12 @@ from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
-OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile(b"^<\d+>")
-OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile(b"^Unique Identifier")
-OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile(b"^MeSH Subject Headings")
+OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile(r"^<\d+>")
+OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile(r"^Unique Identifier")
+OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile(r"^MeSH Subject Headings")
 
-PUBMED_IDENTIFIER_PATTERN = re.compile(b"^PMID- \d+")
-PUBMED_IDENTIFIER_MH_PATTERN = re.compile(b"^MH  -")
+PUBMED_IDENTIFIER_PATTERN = re.compile(r"^PMID- \d+")
+PUBMED_IDENTIFIER_MH_PATTERN = re.compile(r"^MH  -")
 
 
 class MimetypeValidator(object):
