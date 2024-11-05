@@ -165,10 +165,6 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         caller('git pull origin %s' % branch)
 
     with change_dir(venv_dir):
-
-        # Remove any python dependency pyc files
-        caller('rm -f `find lib/python3.12/site-packages/ -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
-
         # Ensure pip3 and setup tools is up to expected version for existing environments.
         caller('./bin/pip3 cache purge')
         caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
