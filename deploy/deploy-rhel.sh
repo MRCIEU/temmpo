@@ -61,7 +61,7 @@ setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_can_network_connect_db 1
 setsebool -P httpd_can_sendmail 1
 
-echo "###   Install Python 3.9 and components"
+echo "###   Install Python 3.12 and components"
 
 yum -y install gcc gcc-c++ openssl-devel bzip2-devel libffi-devel zlib-devel
 cd /opt
@@ -71,7 +71,7 @@ cd Python-3.9.20/
 ./configure --enable-optimizations --enable-shared
 make altinstall
 # Create symlinks
-ln -sfn /usr/local/bin/python3.9 /usr/bin/python3.9
+ln -sfn /usr/local/bin/python3.12 /usr/bin/python3.12
 ln -sfn /usr/local/bin/pip3.9 /usr/bin/pip3.9
 
 echo "export LD_LIBRARY_PATH=/usr/local/lib/" > ld_library.sh
@@ -83,7 +83,7 @@ pip3.9 install -U pip==19.3.1 # As per app servers
 pip3.9 install Fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
 pip3.9 install mod_wsgi==4.9.4 # As per app servers
-ls /usr/local/lib64/python3.9/site-packages/mod_wsgi/server/
+ls /usr/local/lib64/python3.12/site-packages/mod_wsgi/server/
 pip3.9 install virtualenv==20.24.5 # As per app servers
 
 ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv-3.9
@@ -252,7 +252,7 @@ fi
 ## TODO: Fix path to mod_wsgi module
 echo "###   Add basic catch all Apache config normally managed by Puppet"
 cat > /etc/httpd/conf.d/temmpo.conf <<APACHE_CONF
-LoadModule wsgi_module "/usr/local/lib64/python3.9/site-packages/mod_wsgi/server/mod_wsgi-py38.cpython-36m-x86_64-linux-gnu.so"
+LoadModule wsgi_module "/usr/local/lib64/python3.12/site-packages/mod_wsgi/server/mod_wsgi-py312.cpython-36m-x86_64-linux-gnu.so"
 WSGIPythonHome "/usr/local/projects/temmpo/lib/dev"
 
 <VirtualHost *:*>

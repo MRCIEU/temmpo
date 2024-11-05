@@ -36,9 +36,9 @@ pip3 install virtualenv==20.26.3 # NB: Version 15.1.0 is installed on RHEL
 echo "Install wheel"
 sudo apt-get install -y python3-wheel-whl
 
-echo "Check aliases for python3.9"
+echo "Check aliases for python3.12"
 which python3
-which python3.9
+which python3.12
 
 echo "Ensure Firefox is installed"
 which firefox

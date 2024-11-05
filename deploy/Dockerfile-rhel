@@ -38,11 +38,11 @@ RUN yum update -y && \
             pkg-config \
             mariadb-connector-c-devel \
             perl-DBD-MySQL \
-            python39 \
-            python39-devel \
-            python39-lxml \
-            python39-setuptools \
-            python39-wheel \
+            python312 \
+            python312-devel \
+            python312-lxml \
+            python312-setuptools \
+            python312-wheel \
             zip
 
 ENV PIP_VERSION='24.3.1'
