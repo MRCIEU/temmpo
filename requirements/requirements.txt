@@ -102,6 +102,10 @@ django-rq==3.0.0 \
     --hash=sha256:7bdadb85d9909c118cf1ee1b9bdd1a74ebf141bf8f3c2de2409fcac6080f67ac \
     --hash=sha256:bd2ef287a28301f64c4282293648e4f8c6076dd895a545c9c6b98bde4a82a4ce
     # via -r requirements/requirements.in
+filetype==1.2.0 \
+    --hash=sha256:66b56cd6474bf41d8c54660347d37afcc3f7d1970648de365c102ef77548aadb \
+    --hash=sha256:7ce71b6880181241cf7ac8697a2f1eb6a8bd9b429f7ad6d27b8db9ba5f1c2d25
+    # via -r requirements/requirements.in
 hiredis==3.0.0 \
     --hash=sha256:00018f22f38530768b73ea86c11f47e8d4df65facd4e562bd78773bd1baef35e \
     --hash=sha256:034925b5fb514f7b11aac38cd55b3fd7e9d3af23bd6497f3f20aa5b8ba58e232 \
