@@ -115,7 +115,7 @@ class UploadTestCase(BaseTestCase):
         uploaded_file_path = Upload.objects.all().order_by("id").last().abstracts_upload.path
         mime_type = filetype.guess(uploaded_file_path)
         if mime_type == None:
-            mime_type, encoding = mimetypes.guess_type(self.path)
+            mime_type, encoding = mimetypes.guess_type(uploaded_file_path)
         else:
             mime_type = mime_type.mime
         self.assertEqual(mime_type, "text/plain")
