@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-import filetype
 import mimetypes
 import re
+
+import filetype
+import magic
 
 from django.core.exceptions import ValidationError
 
@@ -25,11 +27,17 @@ class MimetypeValidator(object):
 
     def __call__(self, value):
         try:
-            mime = filetype.guess(value.temporary_file_path())
+            mime = magic.from_buffer(value.read(1024), mime=True)
             if mime == None:
-                mime, encoding = mimetypes.guess_type(value.temporary_file_path())
+                mime = filetype.guess(value.temporary_file_path())
+                if mime == None:
+                    logger.error("DEBUG: Using mimetypes package")
+                    mime, encoding = mimetypes.guess_type(value.temporary_file_path())
+                else:
+                    logger.error("DEBUG: Using filetype package")
+                    mime = mime.mime
             else:
-                mime = mime.mime
+                logger.error("DEBUG: Using magic package")
             logger.error("DEBUG: temp file path %s" % value.temporary_file_path())
             logger.error("DEBUG: mime %s" % mime)
             if mime not in self.mimetypes:
