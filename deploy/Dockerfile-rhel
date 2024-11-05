@@ -39,10 +39,11 @@ RUN yum update -y && \
             mariadb-connector-c-devel \
             perl-DBD-MySQL \
             python312 \
-            python312-devel \
-            python312-lxml \
-            python312-setuptools \
-            python312-wheel \
+            python3.12-pip \
+            python3.12-devel \
+            python3.12-lxml \
+            python3.12-setuptools \
+            python3.12-wheel \
             zip
 
 ENV PIP_VERSION='24.3.1'
@@ -51,13 +52,16 @@ ENV PIP_TOOLS_VERSION='7.4.1'
 ENV VE_VERSION='20.26.3'
 ENV FABRIC_VERSION='1.15.0'
 
-RUN pip3 install -U pip==${PIP_VERSION}
-RUN pip3 install -U setuptools==${SETUPTOOLS_VERSION}
-RUN pip3 install pip-tools==${PIP_TOOLS_VERSION}
-RUN pip3 install virtualenv==${VE_VERSION}
-RUN pip3 install fabric==${FABRIC_VERSION}
+RUN pip3 -V
+RUN pip3.12 -V
 
-RUN pip3 freeze
+RUN pip3.12 install -U pip==${PIP_VERSION}
+RUN pip3.12 install -U setuptools==${SETUPTOOLS_VERSION}
+RUN pip3.12 install pip-tools==${PIP_TOOLS_VERSION}
+RUN pip3.12 install virtualenv==${VE_VERSION}
+RUN pip3.12 install fabric==${FABRIC_VERSION}
+
+RUN pip3.12 freeze
 RUN virtualenv --version
 
 ENV ENVIRON="test"
@@ -86,6 +90,6 @@ VOLUME [ ${CODE_PATH} ]
 
 RUN ls -l /usr/local/projects/temmpo/.settings/private_settings.py
 
-CMD [ "pip3", "check" ]  # TODO replace with command to run tests
+CMD [ "pip3.12", "check" ]  # TODO replace with command to run tests
 
 # CMD ../../bin/python3 manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=skip-on-ubuntu
