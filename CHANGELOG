@@ -1,7 +1,11 @@
+# Changelog
+
 9.9.0   TMMA-511: Upgrade Python from 3.8.x to 3.9+
         TMMA-347: Set up RHEL8 development docker environment
         Update version of MySQL used in GitHub actions
         Update Python dependencies
+
+9.8.2   TMMA-508: Resolve issue in tests after RHEL migration
 
 9.8.1   TMMA-509: Improve security of Python packaging tool
         Update Python packaging tool
