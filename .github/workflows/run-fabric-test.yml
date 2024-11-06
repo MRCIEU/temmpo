@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
-        python-version: '3.8'
+        python-version: '3.9'
         architecture: 'x64'
     - name: Syntax check Python 3 Fabric deployment script
       run: bash tests/run-fabric-tests.sh
