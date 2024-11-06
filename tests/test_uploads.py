@@ -116,7 +116,7 @@ class UploadTestCase(BaseTestCase):
         mime_type = magic.from_file(uploaded_file_path, mime=True)
         if mime_type != 'text/plain':
             logger.error(f"uploaded_file_path {uploaded_file_path}")
-            logger.error(response.page_source)
+            logger.error(response)
             uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
             mime_type = magic.from_buffer(uploaded_file.read(1024), mime=True)
         self.assertEqual(mime_type, "text/plain")
