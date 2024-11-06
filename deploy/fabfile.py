@@ -18,8 +18,8 @@ GIT_SSH_HOSTS = ('bitbucket.org',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update pip version in tests/build-test-env.sh and Dockerfile
-PIP_VERSION = '24.2'
-SETUPTOOLS_VERSION = '74.1.2'
+PIP_VERSION = '24.3.1'
+SETUPTOOLS_VERSION = '75.2.0'
 PIP_TOOLS_VERSION = '7.4.1'
 
 
@@ -56,7 +56,7 @@ def _toggle_local_remote(use_local_mode):
     return (caller, change_dir)
 
 
-def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv-3.8", project_dir=PROJECT_ROOT):
+def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements", restart_rqworker=True, virtualenv="virtualenv", project_dir=PROJECT_ROOT):
     """NB: env = dev|prod, configure_apache=False, clone_repo=False, branch=None, migrate_db=True, use_local_mode=False, requirements="requirements"."""
     # Convert any string command line arguments to boolean values, where required.
     configure_apache = (str(configure_apache).lower() == 'true')
@@ -82,7 +82,7 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
         stop_rqworker_service(use_local_mode)
 
     with change_dir(project_dir + 'lib/'):
-        caller('%s --python python3.8 %s' % (virtualenv, env))
+        caller('%s --python python3.12 %s' % (virtualenv, env))
         # Verify Python version in use
         caller('%s/bin/python3 -V' % env)
 
@@ -95,9 +95,6 @@ def make_virtualenv(env="dev", configure_apache=False, clone_repo=False, branch=
                 with change_dir(src_dir):
                     caller('git clone %s temmpo' % GIT_URL)
             with change_dir(src_dir + "temmpo"):
-                # Remove any Python 2 cached files
-                caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
-                # Alternatively Remove all cache file -  find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
                 # Ensure file mode changes do not trigger changes that can block a git pull command
                 caller('git config core.fileMode false')
                 caller('git fetch --all')
@@ -160,8 +157,6 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
     src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with cd(src_dir):
-        # Remove any cached python project files
-        caller('rm -f `find . -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
         # Ensure file mode changes do not trigger changes that can block a git pull command
         caller('git config core.fileMode false')
         caller('git fetch --all')
@@ -170,10 +165,6 @@ def deploy(env="dev", branch="master", using_apache=True, migrate_db=True, use_l
         caller('git pull origin %s' % branch)
 
     with change_dir(venv_dir):
-
-        # Remove any python dependency pyc files
-        caller('rm -f `find lib/python3.8/site-packages/ -type d \( -name __pycache__ -o -path name \) -prune -false -o -name *.pyc`')
-
         # Ensure pip3 and setup tools is up to expected version for existing environments.
         caller('./bin/pip3 cache purge')
         caller('./bin/pip3 install -U pip==%s' % PIP_VERSION)
@@ -290,7 +281,7 @@ def setup_apache(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     if env == "dev":
         # Set up SE Linux contexts for dev environments, puppet configured for VMs
         caller('chcon -R -t httpd_sys_content_t %s' % static_dir)   # Only needs to be readable
-        caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.8/' % venv_dir)
+        caller('chcon -R -t httpd_sys_script_exec_t %slib/python3.12/' % venv_dir)
         caller('chcon -R -t httpd_sys_script_exec_t %s' % src_dir)
         # caller('chcon -R -t httpd_sys_script_exec_t %s.settings' % PROJECT_ROOT)
         caller('chcon -R -t httpd_sys_rw_content_t %slog/django.log' % var_dir)
@@ -344,91 +335,6 @@ def restart_apache(env="dev", use_local_mode=False, run_checks=True, project_dir
 
         if toggled_maintenance_mode:
             disable_apache_site(use_local_mode)
-
-
-def migrate_sqlite_data_to_mysql(env="dev", use_local_mode=False, using_apache=True, swap_db=True, project_dir=PROJECT_ROOT):
-    """env="dev", use_local_mode=False, using_apache=True, swap_db=True - NB: Written to migrate the data once, not to drop any existing MySQL tables."""
-    use_local_mode = (str(use_local_mode).lower() == 'true')
-    using_apache = (str(using_apache).lower() == 'true')
-    swap_db = (str(swap_db).lower() == 'true')
-    caller, change_dir = _toggle_local_remote(use_local_mode)
-    venv_dir = project_dir + "lib/" + env + "/"
-    now = datetime.now()
-    date_string = "%s-%s-%s-%s-%s" % (now.year, now.month, now.day, now.hour, now.minute)
-    sqlite_db = '/usr/local/projects/temmpo/var/data/db.sqlite3'
-    output_file = "/usr/local/projects/temmpo/var/data/export-db-%s.sql" % date_string
-    sqlite_table_counts_file = "/usr/local/projects/temmpo/var/data/sqlite-counts-%s.txt" % date_string
-    mysql_table_counts_file = "/usr/local/projects/temmpo/var/data/mysql-counts-%s.txt" % date_string
-    sqlite_status_file = "/usr/local/projects/temmpo/var/data/sqlite-status-%s.txt" % date_string
-    mysql_status_file = "/usr/local/projects/temmpo/var/data/mysql-status-%s.txt" % date_string
-    tables = ('auth_group',
-              'browser_searchcriteria_genes',
-              'auth_group_permissions',
-              'browser_searchcriteria_mediator_terms',
-              'auth_permission',
-              'browser_searchcriteria_outcome_terms',
-              'auth_user',
-              'browser_searchresult',
-              'auth_user_groups',
-              'browser_upload',
-              'auth_user_user_permissions',
-              'django_admin_log',
-              'browser_abstract',
-              'django_content_type',
-              'browser_gene',
-              'django_migrations',
-              'browser_meshterm',
-              'django_session',
-              'browser_searchcriteria',
-              'registration_registrationprofile',)
-    compare_data = ''
-    for table in tables:
-        compare_data += "SELECT count(*) FROM %s; " % table
-
-    compare_sqlite = ".tables"
-    compare_mysql = "SHOW TABLES"
-
-    if using_apache:
-        disable_apache_site(use_local_mode)
-
-    with change_dir(venv_dir):
-        # Export data - NB: No drop table commands are included in this dump
-        caller("sqlite3 %s .dump > %s" % (sqlite_db, output_file))
-        # Export comparison from SQLite
-        caller("sqlite3 %s '%s' > %s" % (sqlite_db, compare_data, sqlite_table_counts_file))
-        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=sqlite > %s" % (compare_sqlite, env, sqlite_status_file))
-        # Convert certain commands from SQLite to the MySQL equivalents
-        caller("sed -i -e 's/PRAGMA.*/SET SESSION sql_mode = ANSI_QUOTES;/' -e 's/BEGIN/START/' -e 's/AUTOINCREMENT/AUTO_INCREMENT/g' -e 's/^.*sqlite_sequence.*$//g' %s" % output_file)
-        # Import data
-        caller("cat %s | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=admin" % (output_file, env))
-        # Export comparison data from MySQL
-        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_mysql, env, mysql_status_file))
-        caller("echo '%s' | ./bin/python3 src/temmpo/manage.py dbshell --settings=temmpo.settings.%s --database=mysql  > %s" % (compare_data, env, mysql_table_counts_file))
-        # Trim header of MySQL output file
-        caller("sed -i 1,1d %s " % mysql_status_file)
-        # Trim output headers from MySQL table counts
-        caller("sed -i 1,1d %s " % mysql_table_counts_file)
-        caller("sed -i -e 's/count(\*)//g' %s" % mysql_table_counts_file)
-        caller("tr --squeeze-repeats '\\n' < %s > tmp.txt && mv tmp.txt %s" % (mysql_table_counts_file, mysql_table_counts_file))
-        # Trim trailing white space
-        caller("sed -i -e 's/ \{1,\}$//g' %s" % sqlite_status_file)
-        # Split into one column
-        caller("sed -i -e 's/ \{1,\}/\\n/g' %s" % sqlite_status_file)
-        caller("sort %s -o %s" % (sqlite_status_file, sqlite_status_file))
-        caller("diff %s %s" % (sqlite_status_file, mysql_status_file))
-        caller("diff %s %s" % (sqlite_table_counts_file, mysql_table_counts_file))
-
-    if swap_db:
-        with change_dir(PROJECT_ROOT):
-            # Update database default
-            caller("echo -e '\nDATABASES[\"default\"] = DATABASES[\"mysql\"]' >> .settings/private_settings.py")
-            # Move SQLite DB to one side
-            caller("mv %s %s-old" % (sqlite_db, sqlite_db))
-
-    if using_apache:
-        enable_apache_site(use_local_mode)
-        restart_apache(env, use_local_mode, run_checks=True)
-
 
 def sym_link_private_settings(env="dev", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env="dev", use_local_mode=False."""

@@ -9,8 +9,8 @@
 
 ### Prerequisites
 
-* Vagrant https://www.vagrantup.com/
-* VirtualBox https://www.virtualbox.org/ or another provider, see https://www.vagrantup.com/docs/providers/
+* Vagrant [https://www.vagrantup.com/]
+* VirtualBox [https://www.virtualbox.org/] or another provider, see [https://www.vagrantup.com/docs/providers/]
 NB: The vagrant installation also requires an additional plugin to mount the development source code cloned on your local machine.
 
 Tested with these versions:
@@ -131,22 +131,24 @@ NB: If you want to manually run migrations you need to use the --database flag
     python manage.py migrate --database=admin --settings=temmpo.settings.dev
 
 #### Updating the requirements file using pip-tools (via Vagrant VM)
+
 NB: This can take a while as we also generate hashes for additional security.
 
     fab pip_sync_requirements_file:env=dev,use_local_mode=True -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
-
-#### Upgrading the requirements file using pip-tools (via Vagrant VM)
-NB: This can take a while as we also generate hashes for additional security.
 
 Optionally pass in a package or update them all within any requirements.in file constraints
 
     fab pip_tools_update_requirements:env=dev,use_local_mode=True,package="" -f /usr/local/projects/temmpo/lib/dev/src/temmpo/deploy/fabfile.py
 
-
-Alternatively
+Alternatively a Python (Debian) base docker image to update requirements
 
     docker build -f deploy/Dockerfile -t temmpo-web .
     docker run --rm -it -v $PWD:/srv -w /srv temmpo-web bash /srv/entrypoints/update-requirements.sh
+
+Alternatively build a RHEL base docker image to update requirements
+
+    docker compose build web
+    docker compose run --rm --no-deps web bash ./entrypoints/update-requirements.sh
 
 #### Create Docker images for different environments
 

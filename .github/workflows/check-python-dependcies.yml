@@ -19,10 +19,13 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
-        python-version: '3.8'
+        python-version: '3.12'
         architecture: 'x64'
-    - name: Run checks for package updates
-      run: bash tests/run-update-checks.sh
+    - name: Check for package updates
+      run: |
+        docker -v
+        docker login -u ${{ secrets.DOCKER_HUB_USER }} -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+        docker run --rm -v $PWD:/srv -w /srv uobristol/temmpo-web bash /srv/entrypoints/update-requirements.sh
     - name: git status output
       run: |
         git status
