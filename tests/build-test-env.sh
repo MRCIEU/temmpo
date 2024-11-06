@@ -39,6 +39,7 @@ sudo apt-get install -y python3-wheel-whl
 echo "Check aliases for python3.12"
 which python3
 which python3.12
+which virtualenv
 
 echo "Ensure Firefox is installed"
 which firefox
