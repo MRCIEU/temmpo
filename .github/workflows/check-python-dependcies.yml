@@ -21,8 +21,15 @@ jobs:
       with:
         python-version: '3.12'
         architecture: 'x64'
-    - name: Run checks for package updates
-      run: bash tests/run-update-checks.sh
+    - name: Check for package updates
+      run: |
+        pip3 install -U pip
+        pip3 -V
+        sudo apt-get install -y python3-wheel-whl
+        pip3 install pip-tools
+        pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade --output-file requirements/requirements.txt requirements/requirements.in
+        pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade --output-file requirements/test.txt requirements/test.in
+        pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade --output-file requirements/dev.txt requirements/dev.in
     - name: git status output
       run: |
         git status
