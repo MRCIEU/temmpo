@@ -24,7 +24,7 @@ mkdir -p var/tmp
 echo "Check the version of pip that is installed"
 pip3 -V
 echo "Ensure using a consistent version of pip as per on premises CI server"
-pip3 install -U pip==24.2
+pip3 install -U pip==24.3.1
 pip3 -V
 
 echo "Install Fabric"
@@ -36,9 +36,10 @@ pip3 install virtualenv==20.26.3 # NB: Version 15.1.0 is installed on RHEL
 echo "Install wheel"
 sudo apt-get install -y python3-wheel-whl
 
-echo "Check aliases for python3.8"
+echo "Check aliases for python3.12"
 which python3
-which python3.8
+which python3.12
+which virtualenv
 
 echo "Ensure Firefox is installed"
 which firefox

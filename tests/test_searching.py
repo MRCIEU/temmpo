@@ -337,7 +337,7 @@ class SearchingTestCase(BaseTestCase):
         self._find_expected_content(path, msg='Select exposures')
         recent_search_criteria = SearchCriteria.objects.latest('id')
         # Ensure a search criteria new object has been created.
-        self.assertNotEquals(original_criteria.id, recent_search_criteria.id)
+        self.assertNotEqual(original_criteria.id, recent_search_criteria.id)
         # Ensure no terms settings were carried over
         self.assertEqual(recent_search_criteria.exposure_terms.all().count(), 0)
         self.assertEqual(recent_search_criteria.mediator_terms.all().count(), 0)
@@ -356,7 +356,7 @@ class SearchingTestCase(BaseTestCase):
         recent_search_criteria = SearchCriteria.objects.latest('id')
 
         # Ensure a search criteria new object has been created.
-        self.assertNotEquals(original_criteria.id, recent_search_criteria.id)
+        self.assertNotEqual(original_criteria.id, recent_search_criteria.id)
 
         # Ensure exact terms settings were carried over
         self.assertEqual(list(original_criteria.exposure_terms.values_list("id", flat=True)), list(recent_search_criteria.exposure_terms.values_list("id", flat=True)))
@@ -385,7 +385,7 @@ class SearchingTestCase(BaseTestCase):
         recent_search_criteria = SearchCriteria.objects.latest('id')
 
         # Ensure a search criteria new object has been created.
-        self.assertNotEquals(original_criteria.id, recent_search_criteria.id)
+        self.assertNotEqual(original_criteria.id, recent_search_criteria.id)
 
         # Ensure expected terms settings were carried over
         self.assertEqual(list(original_criteria.exposure_terms.values_list("term", flat=True)), list(recent_search_criteria.exposure_terms.values_list("term", flat=True)))

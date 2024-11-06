@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
-import magic
 import re
+
+import magic
 
 from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
-OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile(b"^<\d+>")
-OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile(b"^Unique Identifier")
-OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile(b"^MeSH Subject Headings")
+OVID_MEDLINE_IDENTIFIER_PATTERN = re.compile(rb"^<\d+>")
+OVID_MEDLINE_IDENTIFIER_LABEL_PATTERN = re.compile(rb"^Unique Identifier")
+OVID_MEDLINE_IDENTIFIER_MESH_PATTERN = re.compile(rb"^MeSH Subject Headings")
 
-PUBMED_IDENTIFIER_PATTERN = re.compile(b"^PMID- \d+")
-PUBMED_IDENTIFIER_MH_PATTERN = re.compile(b"^MH  -")
+PUBMED_IDENTIFIER_PATTERN = re.compile(rb"^PMID- \d+")
+PUBMED_IDENTIFIER_MH_PATTERN = re.compile(rb"^MH  -")
 
 
 class MimetypeValidator(object):
@@ -25,6 +26,8 @@ class MimetypeValidator(object):
     def __call__(self, value):
         try:
             mime = magic.from_buffer(value.read(1024), mime=True)
+            logger.debug("DEBUG: temp file path %s" % value.temporary_file_path())
+            logger.debug("DEBUG: mime %s" % mime)
             if mime not in self.mimetypes:
                 raise ValidationError('%s is not an acceptable file type. Please use a %s formatted file instead.' % (value, ' or '.join(self.mimetypes)))
         except AttributeError as e:

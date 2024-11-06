@@ -10,7 +10,7 @@ on:
       # TODO: Review scope of GitHub action grows
       - '.github/workflows/docker.yml'
       - 'deploy/Dockerfile'
-      - 'entrypoints/**'
+      # - 'entrypoints/**'
       - 'requirements/**'
   # schedule:
   #   - cron: 30 9 * * WED
