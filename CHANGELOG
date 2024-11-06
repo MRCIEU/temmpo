@@ -1,3 +1,7 @@
+# Changelog
+
+9.8.2   TMMA-508: Resolve issue in tests after RHEL migration
+
 9.8.1   TMMA-509: Improve security of Python packaging tool
         Update Python packaging tool
 
