@@ -32,7 +32,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: "${{ secrets.DOCKER_HUB_PASSWORD }}"
           image_name: ${{ env.IMAGE_NAME }}
-          image_tag: ${{ github.sha }}
+          image_tag: ${{ github.sha }},latest
           # Build from scratch if a scheduled job
           pull_image_and_stages: ${{ github.event_name != 'schedule' }}
           push_image_and_stages: docker run ${{ env.IMAGE_NAME }}:${{ github.sha }}

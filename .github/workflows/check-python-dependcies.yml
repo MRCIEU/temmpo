@@ -23,13 +23,9 @@ jobs:
         architecture: 'x64'
     - name: Check for package updates
       run: |
-        pip3 install -U pip
-        pip3 -V
-        sudo apt-get install -y python3-wheel-whl
-        pip3 install pip-tools
-        pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade --output-file requirements/requirements.txt requirements/requirements.in
-        pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade --output-file requirements/test.txt requirements/test.in
-        pip-compile --resolver=backtracking --generate-hashes --reuse-hashes --upgrade --output-file requirements/dev.txt requirements/dev.in
+        docker -v
+        docker login -u ${{ secrets.DOCKER_HUB_USER }} -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+        docker run --rm -v $PWD:/srv -w /srv uobristol/temmpo-web bash /srv/entrypoints/update-requirements.sh
     - name: git status output
       run: |
         git status
