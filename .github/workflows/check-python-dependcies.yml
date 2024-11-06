@@ -25,7 +25,7 @@ jobs:
       run: |
         docker -v
         docker login -u ${{ secrets.DOCKER_HUB_USER }} -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
-        docker run --rm -it -v $PWD:/srv -w /srv uobristol/temmpo-web bash /srv/entrypoints/update-requirements.sh
+        docker run --rm -v $PWD:/srv -w /srv uobristol/temmpo-web bash /srv/entrypoints/update-requirements.sh
     - name: git status output
       run: |
         git status
