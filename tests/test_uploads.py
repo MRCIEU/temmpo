@@ -114,7 +114,7 @@ class UploadTestCase(BaseTestCase):
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
         uploaded_file_path = Upload.objects.all().order_by("id").last().abstracts_upload.path
         mime_type = magic.from_file(uploaded_file_path, mime=True)
-        if mime_type == None:
+        if mime_type != 'text/plain':
             logger.error(f"uploaded_file_path {uploaded_file_path}")
             logger.error(self.driver.page_source)
             uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
