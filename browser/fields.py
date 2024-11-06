@@ -1,9 +1,7 @@
-import bz2
-import gzip
 import logging
-import magic
 import os
-import tempfile
+
+import magic
 from xtract import xtract
 
 from django import forms
