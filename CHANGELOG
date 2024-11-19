@@ -1,3 +1,20 @@
+# Changelog
+
+9.9.0   TMMA-511: Upgrade Python from 3.8.x to 3.12.x
+        TMMA-508: Resolve issue in tests after RHEL migration
+        Apply MySQL Connector/Python connector security update
+        TMMA-347: Set up RHEL8 development docker environment
+        Update packages used to connect to redis
+        Update Python dependencies
+        Update version of MySQL used in GitHub actions
+
+9.8.1   TMMA-509: Improve security of Python packaging tool
+        Update Python packaging tool
+
+9.8.0   Updated Django to 4.2.16 and updated other libraries
+        Removed old Bitbucket IPs
+        Update deployments for RHEL8 and apachectl compatibility
+
 9.7.0   Update Python packaging tools
         Update Cypress
         Update version of MySQL used in GitHub actions

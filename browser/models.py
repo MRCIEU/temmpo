@@ -22,9 +22,8 @@ logger = logging.getLogger(__name__)
 
 def get_user_upload_location(instance, filename):
     """Based on slugify code - from django.utils.text import slugify."""
-    # TODO Test changes explictly
-    filename = re.sub('[^\.\w\s-]', '', filename).strip().lower()
-    filename = re.sub('[-\s]+', '-', filename)
+    filename = re.sub(r'[^\.\w\s-]', '', filename).strip().lower()
+    filename = re.sub(r'[-\s]+', '-', filename)
 
     return timezone.now().strftime('/'.join(['abstracts', str(instance.user.id), '%Y-%m-%d', '%H-%M-%S-' + filename]))
 

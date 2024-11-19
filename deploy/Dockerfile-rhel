@@ -1,0 +1,95 @@
+FROM redhat/ubi8:8.10
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+RUN yum -C repolist
+
+ARG RHEL_ORG_ID
+ARG RHEL_ACTIVATION_KEY
+RUN subscription-manager register --org ${RHEL_ORG_ID} --activationkey ${RHEL_ACTIVATION_KEY}
+
+RUN subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-debug-rpms
+RUN subscription-manager repos --enable rhel-8-for-x86_64-supplementary-source-rpms
+RUN subscription-manager repos --enable rhel-8-for-x86_64-baseos-e4s-source-rpms
+
+RUN yum -C repolist
+RUN subscription-manager repos --list
+
+# Install EPEL
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+# Update system packages and install dependencies
+RUN yum update -y && \
+    yum -y install \
+            bzip2 \
+            clamav \
+            clamav-data \
+            clamav-devel \
+            clamav-filesystem \
+            clamav-freshclam \
+            clamav-lib \
+            clamd \
+            curl \
+    #         firefox-esr \
+            gcc \
+            libffi \
+            libxml2 \
+            pkg-config \
+            mariadb-connector-c-devel \
+            perl-DBD-MySQL \
+            python312 \
+            python3.12-pip \
+            python3.12-devel \
+            python3.12-lxml \
+            python3.12-setuptools \
+            python3.12-wheel \
+            zip
+
+ENV PIP_VERSION='24.3.1'
+ENV SETUPTOOLS_VERSION='75.2.0'
+ENV PIP_TOOLS_VERSION='7.4.1'
+ENV VE_VERSION='20.26.3'
+ENV FABRIC_VERSION='1.15.0'
+
+RUN pip3 -V
+RUN pip3.12 -V
+
+RUN pip3.12 install -U pip==${PIP_VERSION}
+RUN pip3.12 install -U setuptools==${SETUPTOOLS_VERSION}
+RUN pip3.12 install pip-tools==${PIP_TOOLS_VERSION}
+RUN pip3.12 install virtualenv==${VE_VERSION}
+RUN pip3.12 install fabric==${FABRIC_VERSION}
+
+RUN pip3.12 freeze
+RUN virtualenv --version
+
+ENV ENVIRON="test"
+ENV REQUIREMENTS="test"
+
+ENV PROJECT_PATH=/usr/local/projects/temmpo
+ENV CODE_PATH=${PROJECT_PATH}/lib/${ENVIRON}/src/temmpo
+
+WORKDIR ${CODE_PATH}
+
+COPY deploy/setup-rhel-env.sh deploy/
+RUN bash deploy/setup-rhel-env.sh
+
+COPY deploy/fabfile.py deploy/
+COPY requirements/test.txt requirements/test.txt
+COPY temmpo/settings/github_actions_ci_private_settings.py temmpo/settings/
+
+RUN ln -s temmpo/settings/github_actions_ci_private_settings.py ${PROJECT_PATH}/.settings/private_settings.py
+
+RUN fab -l -f deploy/fabfile.py
+RUN fab make_virtualenv:env=${ENVIRON},configure_apache=False,clone_repo=False,branch=None,migrate_db=False,use_local_mode=True,requirements=${REQUIREMENTS},restart_rqworker=False,virtualenv=virtualenv,project_dir=${PROJECT_PATH}/ -f deploy/fabfile.py
+
+COPY . ${CODE_PATH}
+
+VOLUME [ ${CODE_PATH} ]
+
+RUN ls -l /usr/local/projects/temmpo/.settings/private_settings.py
+
+CMD [ "pip3.12", "check" ]  # TODO replace with command to run tests
+
+# CMD ../../bin/python3 manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=skip-on-ubuntu

@@ -1,20 +1,14 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import logging
 import os
-from time import sleep
-from unittest import skip
 
 import magic
 import requests
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
-from django.conf import settings
 from django.urls import reverse
-from django.test import override_settings, tag
+from django.test import tag
 
 from browser.models import Upload
 from tests.base_selenium_test_case import SeleniumBaseTestCase
@@ -33,19 +27,22 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
 
     fixtures = ['test_searching_mesh_terms.json']
 
-    def _upload_file(self, url, file_path):
+    def _upload_file(self, url, file_path, success_expected=True):
         self.driver.get("%s%s" % (self.live_server_url, url))
         self.driver.find_element(By.ID, "id_abstracts_upload").send_keys(file_path)
         self.driver.find_element(By.ID, "upload_button").click()
-        WebDriverWait(self.driver, timeout=30, poll_frequency=0.5).until(lambda x: x.find_element(By.ID, "id_include_child_nodes_1"))
+        if success_expected:
+            WebDriverWait(self.driver, timeout=30, poll_frequency=0.5).until(lambda x: x.find_element(By.ID, "id_include_child_nodes_1"))
+        else:
+            WebDriverWait(self.driver, timeout=30, poll_frequency=0.5).until(lambda x: x.find_element(By.CLASS_NAME, "errorlist"))
 
     def _assert_file_upload(self, url, file_path):
         logger.debug('_assert_file_upload %s %s ' % (url, file_path))
         previous_upload_count = Upload.objects.all().count()
         self._upload_file(url, file_path)
         self.assertEqual(Upload.objects.all().count(), previous_upload_count + 1)
-        uploaded_file = Upload.objects.all().order_by("id").last().abstracts_upload.file
-        mime_type = magic.from_buffer(uploaded_file.read(2048), mime=True)
+        upload = Upload.objects.all().order_by("id").last().abstracts_upload
+        mime_type = magic.from_buffer(upload.file.read(1024), mime=True)
         self.assertEqual(mime_type, "text/plain")
 
     def _assert_virus_scanning(self, upload_url, virus_file_url):
@@ -54,7 +51,7 @@ class ScanOnUploadInterface(SeleniumBaseTestCase):
         with open(file_path, 'wb') as f:
             f.write(response.content)
         previous_upload_count = Upload.objects.all().count()
-        self._upload_file(upload_url, file_path)
+        self._upload_file(upload_url, file_path, success_expected=False)
 
         # Verify no new Upload objects were created.
         self.assertEqual(Upload.objects.all().count(), previous_upload_count)
