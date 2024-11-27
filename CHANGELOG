@@ -1,5 +1,9 @@
 # Changelog
 
+9.9.2   Apply Django security update
+        Update Python packaging tools
+        Update Python dependencies
+
 9.9.1   TMMA-505: Update email sending
         Update Python dependencies
         Update Cypress
