@@ -3,10 +3,10 @@ FROM python:3.12.7-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_VERSION='24.3.1'
-ENV SETUPTOOLS_VERSION='75.2.0'
+ENV SETUPTOOLS_VERSION='75.6.0'
 ENV PIP_TOOLS_VERSION='7.4.1'
 # NB: Version 15.1.0 is installed on RHEL
-ENV VE_VERSION='20.26.4'
+ENV VE_VERSION='20.28.0'
 
 # Update system packages and install dependencies
 RUN apt update -y && \
