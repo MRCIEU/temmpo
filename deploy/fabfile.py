@@ -404,7 +404,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python3 manage.py test --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python3 manage.py test --parallel --noinput --exclude-tag=slow %s --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, project_dir=PROJECT_ROOT):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
@@ -428,7 +428,7 @@ def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="my
     src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python3 manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python3 manage.py test --parallel --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""

@@ -6,7 +6,7 @@ ENV PIP_VERSION='24.3.1'
 ENV SETUPTOOLS_VERSION='75.6.0'
 ENV PIP_TOOLS_VERSION='7.4.1'
 # NB: Version 15.1.0 is installed on RHEL
-ENV VE_VERSION='20.28.0'
+ENV VE_VERSION='20.24.5'
 
 # Update system packages and install dependencies
 RUN apt update -y && \
