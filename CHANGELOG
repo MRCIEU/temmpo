@@ -1,5 +1,9 @@
 # Changelog
 
+9.6.2   Bug fix admin manage user table sorting
+        Update Python dependencies and packaging tools
+        Upgrade datatables
+
 9.6.2   Apply Django security update
         Update Python dependencies and packaging tools
 
