@@ -380,13 +380,16 @@ def stop_rqworker_service(use_local_mode):
 def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, exclude_tag=None, project_dir=PROJECT_ROOT):
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, exclude_tag=None, project_dir=PROJECT_ROOT, run_in_parallel=False):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
+    run_in_parallel = (str(reuse_db).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
     run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
     cmd_suffix = ''
+    if run_in_parallel:
+        cmd_suffix = " --parallel"
     if reuse_db:
         cmd_suffix = " --keepdb"
     if exclude_tag and exclude_tag != "None":
