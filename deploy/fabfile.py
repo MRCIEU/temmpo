@@ -380,15 +380,18 @@ def stop_rqworker_service(use_local_mode):
 def start_rqworker_service(use_local_mode):
     _change_rqworker_service(use_local_mode, action="start")
 
-def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, exclude_tag=None, project_dir=PROJECT_ROOT):
+def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql", run_selenium_tests=False, tag=None, exclude_tag=None, project_dir=PROJECT_ROOT, run_in_parallel=False):
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
+    run_in_parallel = (str(run_in_parallel).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
     run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
     cmd_suffix = ''
+    if run_in_parallel:
+        cmd_suffix += " --parallel"
     if reuse_db:
-        cmd_suffix = " --keepdb"
+        cmd_suffix += " --keepdb"
     if exclude_tag and exclude_tag != "None":
         cmd_suffix += " --exclude-tag=%s" % exclude_tag
     if tag and tag != "None":
@@ -428,7 +431,7 @@ def run_slow_tests(env="test", use_local_mode=False, reuse_db=False, db_type="my
     src_dir = project_dir + "lib/" + env + "/src/temmpo/"
 
     with change_dir(src_dir):
-        caller('%sbin/python3 manage.py test --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
+        caller('%sbin/python3 manage.py test --parallel --noinput %s --tag=slow --settings=temmpo.settings.test_%s' % (venv_dir, cmd_suffix, db_type))
 
 def recreate_db(env="test", database_name="temmpo_test", use_local_mode=False, project_dir=PROJECT_ROOT):
     """env="test",database_name="temmpo_test" # This method can only be used on an existing database based upon the way the credentials are looked up."""

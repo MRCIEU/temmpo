@@ -49,7 +49,7 @@ RUN yum update -y && \
 ENV PIP_VERSION='24.3.1'
 ENV SETUPTOOLS_VERSION='75.6.0'
 ENV PIP_TOOLS_VERSION='7.4.1'
-ENV VE_VERSION='20.28.0'
+ENV VE_VERSION='20.24.5'
 ENV FABRIC_VERSION='1.15.0'
 
 RUN pip3 -V
@@ -92,4 +92,4 @@ RUN ls -l /usr/local/projects/temmpo/.settings/private_settings.py
 
 CMD [ "pip3.12", "check" ]  # TODO replace with command to run tests
 
-# CMD ../../bin/python3 manage.py test --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test --exclude-tag=skip-on-ubuntu
+# CMD ../../bin/python3 manage.py test --parallel --settings=temmpo.settings.test_mysql --exclude-tag=selenium-test
