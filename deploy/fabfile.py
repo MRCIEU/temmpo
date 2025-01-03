@@ -384,7 +384,7 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     """env=test,use_local_mode=False,reuse_db=False,db_type=mysql,run_selenium_tests=False,tag=None"""
     # Convert any command line arguments from strings to boolean values where necessary.
     use_local_mode = (str(use_local_mode).lower() == 'true')
-    run_in_parallel = (str(reuse_db).lower() == 'true')
+    run_in_parallel = (str(run_in_parallel).lower() == 'true')
     reuse_db = (str(reuse_db).lower() == 'true')
     run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
     cmd_suffix = ''
