@@ -389,9 +389,9 @@ def run_tests(env="test", use_local_mode=False, reuse_db=False, db_type="mysql",
     run_selenium_tests = (str(run_selenium_tests).lower() == 'true')
     cmd_suffix = ''
     if run_in_parallel:
-        cmd_suffix = " --parallel"
+        cmd_suffix += " --parallel"
     if reuse_db:
-        cmd_suffix = " --keepdb"
+        cmd_suffix += " --keepdb"
     if exclude_tag and exclude_tag != "None":
         cmd_suffix += " --exclude-tag=%s" % exclude_tag
     if tag and tag != "None":
