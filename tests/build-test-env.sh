@@ -31,7 +31,7 @@ echo "Install Fabric"
 pip3 install fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.8
 
 echo "Install virtualenv"
-pip3 install virtualenv==20.26.3 # NB: Version 15.1.0 is installed on RHEL
+pip3 install virtualenv==20.24.5 # NB: Version 15.1.0 is installed on RHEL
 
 echo "Install wheel"
 sudo apt-get install -y python3-wheel-whl

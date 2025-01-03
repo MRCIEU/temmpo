@@ -8,7 +8,7 @@ echo "Collect static"
 python3 manage.py collectstatic --no-input
 
 echo "Run Django tests"
-python3 manage.py test --noinput
+python3 manage.py test --noinput --parallel
 
 # --parallel 
 # --failfast
