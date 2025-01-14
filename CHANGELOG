@@ -1,5 +1,8 @@
 # Changelog
 
+9.7.2   Apply Django security update
+        Update Python dependencies and packaging tools
+
 9.7.1   Update version of virtualenv used in testing
         Run tests in parallel
 
