@@ -84,7 +84,7 @@ pip3.12 install Fabric==1.15.0 # NB: v1.15.0 supports Python 2, & 3.6, 3.7, & 3.
 
 pip3.12 install mod_wsgi==4.9.4 # As per app servers
 ls /usr/local/lib64/python3.12/site-packages/mod_wsgi/server/
-pip3.12 install virtualenv==20.24.5 # As per app servers
+pip3.12 install virtualenv==20.27.1 # As per app servers
 
 ln -s /usr/local/bin/virtualenv /usr/bin/virtualenv-3.12
 
