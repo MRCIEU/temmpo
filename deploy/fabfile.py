@@ -18,7 +18,7 @@ GIT_SSH_HOSTS = ('bitbucket.org',
 
 # Tools not handled by pip-tools and/or requirements installs using pip
 # Also update pip version in tests/build-test-env.sh and Dockerfile
-PIP_VERSION = '24.3.1'
+PIP_VERSION = '25.0.1'
 SETUPTOOLS_VERSION = '75.8.0'
 PIP_TOOLS_VERSION = '7.4.1'
 

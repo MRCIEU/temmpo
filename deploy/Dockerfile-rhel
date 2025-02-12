@@ -46,10 +46,10 @@ RUN yum update -y && \
             python3.12-wheel \
             zip
 
-ENV PIP_VERSION='24.3.1'
+ENV PIP_VERSION='25.0.1'
 ENV SETUPTOOLS_VERSION='75.8.0'
 ENV PIP_TOOLS_VERSION='7.4.1'
-ENV VE_VERSION='20.24.5'
+ENV VE_VERSION='20.27.1'
 ENV FABRIC_VERSION='1.15.0'
 
 RUN pip3 -V
