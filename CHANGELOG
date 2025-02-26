@@ -1,5 +1,8 @@
 # Changelog
 
+9.7.4   Update Cypress
+        Update Python dependencies and packaging tools
+
 9.7.3   Update Python dependencies and packaging tools
 
 9.7.2   Apply Django security update
