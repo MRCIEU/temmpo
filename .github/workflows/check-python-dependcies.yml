@@ -30,7 +30,7 @@ jobs:
       run: |
         git status
     - name: Create Pull Request where required
-      uses: peter-evans/create-pull-request@v6
+      uses: peter-evans/create-pull-request@v7
       with:
         branch: python-package-updates
         title: Pending python dependency updates
