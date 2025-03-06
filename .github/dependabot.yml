@@ -9,10 +9,22 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   # Maintain dependencies for pip
   - package-ecosystem: "pip"
     directory: "/requirements"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+
+  # Maintain dependencies for docker compose
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/deploy"
+    schedule:
+      interval: "weekly"
