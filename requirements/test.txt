@@ -236,9 +236,9 @@ coverage==7.6.12 \
 csvvalidator==1.2 \
     --hash=sha256:f1f222993589f9d8f8d83088d0bf80475462e5fa848baf920d0c03c03690c37e
     # via -r test.in
-django==4.2.20 \
-    --hash=sha256:213381b6e4405f5c8703fffc29cd719efdf189dec60c67c04f76272b3dc845b9 \
-    --hash=sha256:92bac5b4432a64532abb73b2ac27203f485e40225d2640a7fbef2b62b876e789
+django==5.1.7 \
+    --hash=sha256:1323617cb624add820cb9611cdcc788312d250824f92ca6048fda8625514af2b \
+    --hash=sha256:30de4ee43a98e5d3da36a9002f287ff400b43ca51791920bfb35f6917bfe041c
     # via
     #   -r requirements.txt
     #   django-autocomplete-light
