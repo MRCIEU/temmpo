@@ -267,9 +267,9 @@ django-clamd==1.0.0 \
     --hash=sha256:106429a71db571b570c88493115891a5472623263d25ebe7f92bead6c2f04e81 \
     --hash=sha256:ee2d46ed535355aa0840f93dd8468bf9e2236e2a54ea2affa956e5c9326e328a
     # via -r test.txt
-django-debug-toolbar==5.0.1 \
-    --hash=sha256:296f6f18a80710e84fbb8361538ae5ec522a75ebe9ab67db34bcf1026cbeb420 \
-    --hash=sha256:7456cc2e951db37dab335686db7803c4a0ecb6736d120705f6668db9548bf49f
+django-debug-toolbar==5.1.0 \
+    --hash=sha256:8a3b9da4aeab8d384a366e20304bd939a451f0242523c5b7b402248ad474eed2 \
+    --hash=sha256:c0591e338ee9603bdfce5aebf8d18ca7341fdbb69595e2b0b34869be5857180e
     # via -r dev.in
 django-hcaptcha-field==1.4.0 \
     --hash=sha256:36001030f53af709db3be01bf1d25023706b701bb7130f67f2aa58900b20df42 \
