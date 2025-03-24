@@ -556,9 +556,9 @@ redis==5.2.1 \
     #   django-redis
     #   django-rq
     #   rq
-rq==2.1.0 \
-    --hash=sha256:3c6892c6ca848e5fb47c1875399a66f13656bf0e123bf725d9aa9a12718e2fdf \
-    --hash=sha256:764585b6cab69ef1412f4aee523347e5aa7ece3ca175c118b1d92223dd8c2826
+rq==2.2.0 \
+    --hash=sha256:b636760f1e4c183022031c142faa0483e687885824e9732ba2953f994104e203 \
+    --hash=sha256:dacbfe1ccb79a45c8cd95dec7951620679fa0195570b63da3f9347622d33accc
     # via
     #   -r requirements.in
     #   django-rq
