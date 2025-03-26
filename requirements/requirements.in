@@ -7,7 +7,7 @@ django-redis
 django-registration-redux>=2.12
 django-rq>=2.7.0
 django-autocomplete-light>=3.9.4
-Django<4.3
+Django<5.2
 django-hcaptcha-field>=1.4.0
 hiredis>=2.2.2
 lxml>=4.9.2
