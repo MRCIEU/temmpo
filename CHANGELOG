@@ -3,7 +3,7 @@
 9.7.6   Apply Python security update
         Update Python dependencies and packaging tools
         Update Cypress
-        Adjust dependabot configuraiton
+        Adjust dependabot configuration
 
 9.7.5   Apply Django security update
         Update Python dependencies
