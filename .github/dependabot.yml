@@ -27,7 +27,7 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "mysql"
-        update-types: ["version-update:semver-major"]
+        update-types: ["version-update:semver-minor"]
       - dependency-name: "redis"
         update-types: ["version-update:semver-major"]
 
