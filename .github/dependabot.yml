@@ -16,15 +16,26 @@ updates:
     directory: "/requirements"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "django"
+        versions: ["5.x"]
 
   # Maintain dependencies for docker compose
   - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "mysql"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "redis"
+        update-types: ["version-update:semver-major"]
 
   # Maintain dependencies for docker
   - package-ecosystem: "docker"
     directory: "/deploy"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "python"
+        update-types: ["version-update:semver-minor"]
