@@ -1,5 +1,9 @@
 # Changelog
 
+9.7.7   Apply Python dependency security update
+        Update Python dependencies
+        Upgrade Cypress
+
 9.7.6   Apply Python security update
         Update Python dependencies and packaging tools
         Update Cypress
