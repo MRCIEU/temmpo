@@ -34,7 +34,7 @@ services:
     platform: linux/amd64
 
   e2e:
-    image: cypress/included:14.3.1
+    image: cypress/included:14.3.2
     working_dir: /e2e/
     links:
       # - nginx:nginx
