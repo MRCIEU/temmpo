@@ -94,9 +94,9 @@ django-registration-redux==2.13 \
     --hash=sha256:547c86ad9b951cf743075b5486f304e51e450b45d04e5ef04392838a9cff3da8 \
     --hash=sha256:9793a05b32b1d7342c6ef3e0140b2951b7dbde058b3ba6e8a232b534928279f9
     # via -r requirements/requirements.in
-django-rq==3.0.0 \
-    --hash=sha256:7bdadb85d9909c118cf1ee1b9bdd1a74ebf141bf8f3c2de2409fcac6080f67ac \
-    --hash=sha256:bd2ef287a28301f64c4282293648e4f8c6076dd895a545c9c6b98bde4a82a4ce
+django-rq==3.0.1 \
+    --hash=sha256:bc0b7ef849592b699d0d388d8e6021c41271ac0f07db2a903352d0a1edcde16b \
+    --hash=sha256:d111f436608b95a58a6960174eaf44aa021e0a4a32f83a28a7221a9a916dd1ae
     # via -r requirements/requirements.in
 hiredis==3.1.0 \
     --hash=sha256:0322d70f3328b97da14b6e98b18f0090a12ed8a8bf7ae20932e2eb9d1bb0aa2c \
