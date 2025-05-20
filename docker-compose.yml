@@ -31,7 +31,7 @@ services:
   # https://hub.docker.com/_/redis
   redis:
     restart: always
-    image: redis:5.0.3 # Installed on RHEL 8 on site infrastructure 
+    image: redis:5.0.14 # Installed on RHEL 8 on site infrastructure 
     ports:
       - "6379:6379"
     env_file: .env
